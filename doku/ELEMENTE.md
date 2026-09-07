@@ -320,6 +320,37 @@ leistet, nur nimmt ihm dort der Freistellpfad die Zahlen ab.
 `\dsaTabellenkopf{Text}` setzt die Kopfleiste mit Verlauf von `Tabellenrot` nach Weiß,
 `\dsaTabellenlinie` die Linienfarbe auf `#BFBFBF`.
 
+**Tabellen kommen in `dsaTabelle`, nicht in `tabular`.** Die Umgebung nimmt dasselbe
+Spaltenformat:
+
+```latex
+\dsaTabellenkopf{Qualität und Preis einer Herberge}
+\dsaTabellenlinie
+\begin{dsaTabelle}{@{}ll@{}}
+ärmlich & 2 Kreuzer\\
+gut & 1 Silbertaler\\
+\end{dsaTabelle}
+```
+
+Warum nicht `tabular` allein: ohne Positionsargument setzt LaTeX die Tabelle als `\vcenter`,
+dessen Höhe halbe Tabellenhöhe plus Mathe-Achse ist. Die Box ist damit höher als eine Grundlinie,
+TeX kann die Grundlinienregel nicht anwenden und fällt auf `\lineskip` zurück — der Anfang hängt
+dann an der Tiefe der letzten Textzeile. Gemessen begann die Tabelle 0,7 bp neben dem Raster, und
+der Fließtext danach blieb 0,9 bp daneben, bis zum Spaltenende.
+
+`dsaTabelle` setzt die Tabelle mit `[t]` in eine Box ohne Höhe und Tiefe: die Referenzgrundlinie
+ist damit die erste Zeilengrundlinie und sitzt auf der laufenden Grundlinie. Den Raum liefert
+`\dsaRasterluft`, aufgerundet auf ganze Rastereinheiten — deshalb verträgt die Umgebung auch
+Linien und mehrzeilige Zellen.
+
+Derselbe Grund gilt für den Kopf: seine `tcolorbox` ist genau eine Rastereinheit hoch, also nicht
+niedriger als der Durchschuss. `\dsaTabellenkopf` setzt sie deshalb ebenfalls in eine Box ohne
+Höhe und schiebt sie um `\dsatabellenkopftiefer` (3,4 bp) nach unten, damit ihr Text auf der
+Grundlinie bleibt. Der Kopf belegt genau die Zeile, in der er steht.
+
+Gemessen an einer Probe mit drei Fällen — Tabelle ohne Kopf, Tabelle mit Kopf, Kopf allein —
+liegen alle Zeilen einschließlich des Folgetexts auf +0,00 bp.
+
 | Aufruf | wofür |
 |---|---|
 | `\dsaFeld{Name}{Wert}` | ein Feld |

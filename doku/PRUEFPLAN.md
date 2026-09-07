@@ -234,8 +234,12 @@ Vierzehn Fehler, alle erst am gesetzten Abzug sichtbar:
 Nicht behoben, weil kein Fehler: `\dsaBildKreis`, `\dsaBildForm` und `\dsaGanzseite` platzieren
 ihre Bilder größer als das Ziel und beschneiden. `nachmessen.py` zeigt die Platzierung.
 
-Offen: die Tabellenzeilen beginnen 0,7 bp neben dem Raster und halten danach 12 bp — der
-Musterbogen des Verlags weicht dort um +2,8 bis −5,7 bp ab.
+Behoben nach dem Prüflauf: die Tabellenzeilen begannen 0,7 bp neben dem Raster, und der
+Fließtext danach blieb 0,9 bp daneben. Ursache war zweifach — `tabular` ohne Positionsargument
+wird ein `\vcenter` und ist höher als eine Grundlinie, und die Kopfleiste ist mit genau einer
+Rastereinheit ebenso hoch wie der Durchschuss. In beiden Fällen greift TeXs Grundlinienregel nicht
+mehr. `dsaTabelle` und der umgebaute `\dsaTabellenkopf` setzen beides in Boxen ohne Höhe und
+Tiefe; gemessen liegen alle Zeilen auf +0,00 bp.
 
 Behoben nach dem Prüflauf: im Porträtkasten wich der Text dem Medaillon über die ganze Höhe aus und
 behielt nur 53 mm Breite. `\dsaPortraitfluss` setzt jetzt `\parshape` im Kasten — sieben schmale

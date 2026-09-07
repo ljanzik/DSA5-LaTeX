@@ -1067,19 +1067,78 @@
 
 % Die Kopfleiste ist genau eine Rastereinheit hoch, damit die Tabelle das
 % Raster nicht verlaesst. Ihr Text sitzt darin mittig.
+%
+% Sie darf aber nicht als eigener Absatz stehen: eine Box, die so hoch ist
+% wie der Durchschuss, sprengt die Grundlinienregel, TeX nimmt \lineskip,
+% und alles darunter lag gemessen 3,3 bp neben dem Raster. Deshalb steht sie
+% wie ein Bild in einer Box ohne Hoehe und Tiefe und belegt genau die Zeile,
+% in der sie aufgerufen wird.
+%
+% \dsatabellenkopftiefer schiebt sie so weit nach unten, dass ihr Text auf
+% der Grundlinie dieser Zeile sitzt. Der Wert ist an tabtest.pdf gemessen:
+% mit 4,6 bp lag der Kopftext 1,2 bp zu tief, mit 3,4 bp sitzt er.
+\newlength{\dsatabellenkopftiefer}
+\setlength{\dsatabellenkopftiefer}{3.4bp}
+
 \newcommand{\dsaTabellenkopf}[1]{%
-  \par\noindent\begin{tcolorbox}[
-    enhanced, blankest, nobeforeafter, width=\linewidth,
-    height=\dsaRaster{1}, valign=center,
-    left=1.5mm, right=1.5mm, top=0pt, bottom=0pt,
-    interior style={left color=dsatabellenrot, right color=white}]
-    \bfseries #1
-  \end{tcolorbox}\par}
+  \par\nobreak\noindent
+  \makebox[\linewidth][l]{%
+    \raisebox{-\dsatabellenkopftiefer}[0pt][0pt]{%
+      \begin{tcolorbox}[
+        enhanced, blankest, nobeforeafter, width=\linewidth,
+        height=\dsaRaster{1}, valign=center,
+        left=1.5mm, right=1.5mm, top=0pt, bottom=0pt,
+        interior style={left color=dsatabellenrot, right color=white}]
+        \bfseries #1
+      \end{tcolorbox}}}%
+  \par\nobreak}
 % PRUEFEN: „blend mode=multiply" braeuchte einen Treiber, der Mischmodi kann.
 % Unter XeLaTeX nicht selbstverstaendlich, deshalb weggelassen — auf weissem
 % Grund faellt der Unterschied nicht auf.
 
 \newcommand*{\dsaTabellenlinie}{\arrayrulecolor{dsatabellenlinie}}
+
+% Der rastertreue Weg zur Tabelle. \begin{tabular} allein genuegt nicht:
+% ohne Positionsargument wird die Tabelle ein \vcenter, dessen Hoehe halbe
+% Tabellenhoehe plus Mathe-Achse ist. Die Box ist damit hoeher als eine
+% Grundlinie, TeX faellt auf \lineskip zurueck, und der Anfang haengt an der
+% Tiefe der letzten Textzeile -- gemessen 0,7 bp neben dem Raster.
+%
+% \begin{dsaTabelle}{@{}ll@{}} nimmt dasselbe Spaltenformat wie tabular und
+% setzt sie in eine Box ohne Hoehe und Tiefe. Mit [t] ist die
+% Referenzgrundlinie der Box die erste Zeilengrundlinie; sie sitzt damit
+% genau auf der laufenden Grundlinie, die Zeilen darunter halten ihre 12 bp
+% von selbst. Den Raum liefert \dsaRasterluft, aufgerundet auf ganze
+% Rastereinheiten -- deshalb vertraegt die Umgebung auch Linien und
+% mehrzeilige Zellen.
+\newsavebox{\dsa@tabelle}
+\newenvironment{dsaTabelle}[1]
+  {\begin{lrbox}{\dsa@tabelle}\begin{tabular}[t]{#1}}
+  {\end{tabular}\end{lrbox}%
+   \dsa@tabellesetzen}
+
+\newcommand*{\dsa@tabellesetzen}{%
+  \par\nobreak
+  \begingroup
+    \dimen@=\dimexpr\ht\dsa@tabelle+\dp\dsa@tabelle\relax
+    % \numexpr teilt rundend, nicht abschneidend -- der uebliche
+    % Ceil-Trick rechnet damit falsch. Also rundend teilen und aufstocken,
+    % wenn das Ergebnis nicht reicht. Ein bp Toleranz, weil 12 bp keine
+    % ganze Zahl von sp sind.
+    \edef\dsa@tabzeilen{\the\numexpr
+      \number\dimen@/\number\dimexpr\dsaRaster{1}\relax\relax}%
+    \ifdim\dimexpr\dsaRaster{\dsa@tabzeilen}\relax
+          <\dimexpr\dimen@-1bp\relax
+      \edef\dsa@tabzeilen{\the\numexpr\dsa@tabzeilen+1\relax}%
+    \fi
+    \noindent
+    \makebox[\linewidth][l]{\raisebox{0pt}[0pt][0pt]{\usebox{\dsa@tabelle}}}%
+    \par
+    % Eine Einheit weniger: die erste Zeile sitzt schon auf der laufenden
+    % Grundlinie, und der Text danach kommt seinen Durchschuss spaeter.
+    \dsaRasterluft{\the\numexpr\dsa@tabzeilen-1\relax}%
+  \endgroup
+  \nobreak}
 
 % Kein \extrarowheight. Am gesetzten Ergebnis nachgemessen stehen die
 % Grundlinien einer Tabelle ohne Zutun genau 12 bp auseinander — mit 2 bp
