@@ -1,0 +1,84 @@
+%%% kaesten.tex — jeder Kasten einmal, jeder auf eigener Seite, damit
+%%% werkzeuge/nachmessen.py seine Lage eindeutig zuordnen kann.
+%%%
+%%% Ohne Seitenhintergrund, damit ein Lauf Sekunden dauert.
+
+\documentclass[raster,ohnehintergrund]{dsa5latex}
+
+% Die Grafiken liegen eine Ebene hoeher.
+\graphicspath{{../}}
+
+\begin{document}
+
+\begin{dsaPergamentKlein}
+Pergament klein.
+\end{dsaPergamentKlein}
+\clearpage
+
+\begin{dsaPergamentMittel}
+Pergament mittel.
+\end{dsaPergamentMittel}
+\clearpage
+
+\begin{dsaPergamentLang}
+Pergament lang.
+\end{dsaPergamentLang}
+\clearpage
+
+\begin{dsaPergamentSchmal}
+Pergament schmal.
+\end{dsaPergamentSchmal}
+\clearpage
+
+\begin{dsaWerteKlein}
+Werte klein.
+\end{dsaWerteKlein}
+\clearpage
+
+\begin{dsaWerteMittel}
+Werte mittel.
+\end{dsaWerteMittel}
+\clearpage
+
+\begin{dsaWerteGross}
+Werte gross.
+\end{dsaWerteGross}
+\clearpage
+
+\begin{dsaWerteKleinPortrait}[dsaportrait=grafiken/portraitrahmen]
+Werte klein mit Portrait.
+\end{dsaWerteKleinPortrait}
+\clearpage
+
+\begin{dsaWerteMittelPortrait}[dsaportrait=grafiken/portraitrahmen]
+Werte mittel mit Portrait.
+\end{dsaWerteMittelPortrait}
+\clearpage
+
+\begin{dsaMeisterSchmal}
+Meister schmal.
+\end{dsaMeisterSchmal}
+\clearpage
+
+\begin{dsaMeisterMaske}
+Meister mit Maske.
+\end{dsaMeisterMaske}
+\clearpage
+
+\begin{dsaMeisterMaskeKlein}
+Meister mit Maske, klein.
+\end{dsaMeisterMaskeKlein}
+\clearpage
+
+\onecolumn
+\begin{dsaMeisterBreit}
+Maskenfeld breit, einspaltig.
+\end{dsaMeisterBreit}
+\clearpage
+\twocolumn
+
+\begin{dsaPergamentBreit}
+Pergament breit.
+\end{dsaPergamentBreit}
+
+\end{document}

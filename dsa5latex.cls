@@ -233,7 +233,20 @@
 \ifdsa@raster
   \setlength{\topskip}{12pt}
   \setlength{\parskip}{0pt}
-  \setlength{\parindent}{1em}   % PRUEFEN: am offiziellen PDF nachmessen
+  % Kein Erstzeileneinzug. Die Absatzformate der IDML haben keinen: das
+  % Fliesstextformat traegt kein FirstLineIndent, und die einzigen Formate mit
+  % einem haben einen negativen — die haengenden Einzuege von Aufzaehlung
+  % (-17,01 pt) und Werteabsatz (-8,50 pt).
+  %
+  % Der Einzug hatte ausserdem alle Kaesten verschoben: eine tcolorbox ist ein
+  % Absatz und wurde um 1 em eingerueckt. Gemessen waren es 3,58 mm bei jedem
+  % der dreizehn Kaesten.
+  %
+  % Absaetze trennt der Baukasten weder durch Einzug noch durch Abstand —
+  % auch SpaceBefore und SpaceAfter fehlen in seinen Formaten. Getrennt wird
+  % durch Ueberschriften, Aufzaehlungen und Kaesten. Wer Luft braucht, nimmt
+  % \dsaRasterluft{1}; das haelt das Grundlinienraster.
+  \setlength{\parindent}{0pt}
   \flushbottom
 \fi
 
@@ -403,13 +416,18 @@
 % der er steht; die zweite Spalte liefe hinter das Banner.
 
 \newcounter{dsakapitel}
-\newlength{\dsabannerversatz} \setlength{\dsabannerversatz}{0mm}
-% Der innere Rand: auf einer rechten Seite links, auf einer linken rechts.
-% Fuer den Kapiteltitel wird er von der linken Papierkante aus gebraucht.
-\newlength{\dsa@innenrand}
-\newcommand*{\dsa@innenrandsetzen}{%
-  \ifodd\value{page}\setlength{\dsa@innenrand}{20mm}%
-  \else\setlength{\dsa@innenrand}{24mm}\fi}
+% Das Banner sitzt nicht an der Papierkante, sondern 11,32 mm darunter — so
+% liegt es im Musterbogen (Grafik bei y 11,32 mm, 210,06 x 43,18 mm gross).
+% Der Titel darin bleibt davon unberuehrt, seine Grundlinie ist als eigenes
+% Mass gesetzt.
+\newlength{\dsabannerversatz} \setlength{\dsabannerversatz}{11.32mm}
+% Der linke Rand des Satzspiegels: auf einer rechten Seite ist das der innere
+% (20 mm), auf einer linken der aeussere (24 mm). Der Kapiteltitel ist
+% linksbuendig im Satzspiegel und braucht deshalb dieses Mass.
+\newlength{\dsa@linkerrand}
+\newcommand*{\dsa@linkerrandsetzen}{%
+  \ifodd\value{page}\setlength{\dsa@linkerrand}{20mm}%
+  \else\setlength{\dsa@linkerrand}{24mm}\fi}
 % Der Baukasten setzt das Banner an die Papierkante. In gesetzten
 % Scriptorium-Abenteuern sitzt es 16 bis 25 mm darunter — als Laenge
 % gehalten, damit es sich ohne Eingriff verschieben laesst.
@@ -421,7 +439,7 @@
 \newlength{\dsabannertitelunten}\setlength{\dsabannertitelunten}{33.41mm}
 
 \newcommand*{\dsa@bannerblock}[1]{%
-  \dsa@innenrandsetzen
+  \dsa@linkerrandsetzen
   \begin{tikzpicture}[remember picture, overlay]
     \node[anchor=north, inner sep=0]
       at ([shift={(0pt,-\dsabannerversatz)}]current page.north)
@@ -430,8 +448,7 @@
     % Anfang der Zeile am inneren Rand. Kein text width und kein align —
     % der Titel ist linksbuendig.
     \node[anchor=base west, inner sep=0]
-      at ([shift={(\dsa@innenrand,%
-                   -\dsabannertitelunten-\dsabannerversatz)}]%
+      at ([shift={(\dsa@linkerrand,-\dsabannertitelunten)}]%
           current page.north west)
       {\dsaandalus\fontsize{23.5}{28.2}\selectfont
        \MakeUppercase{Kapitel \thedsakapitel: #1}};
@@ -570,11 +587,28 @@
 
 \tcbset{dsaueberhang/.style={grow to left by=#1, grow to right by=#1}}
 
+% Die Lage der Portraitkaesten: sie sind 13,5 mm breiter als eine Spalte, und
+% der Musterbogen verteilt das ungleich — 5,1 mm nach innen, 8,4 mm nach
+% aussen, wo auch das Medaillon sitzt. Gemessen auf beiden Seitenlagen des
+% Musterbogens, an allen drei Groessen.
+%
+% Der Kasten steht vorlaeufig nur auf rechten Seiten, weil der Baukasten die
+% Grafik nur in einer Lage liefert; dort ist innen links und aussen rechts.
+\newlength{\dsaportraitinnen}\setlength{\dsaportraitinnen}{5.1mm}
+\newlength{\dsaportraitaussen}\setlength{\dsaportraitaussen}{8.4mm}
+\tcbset{dsaportraitlage/.style={
+  grow to left by=\dsaportraitinnen, grow to right by=\dsaportraitaussen}}
+
 % \dsaKastenNeu{<Umgebung>}{<Breite>}{<Grafikhoehe>}{<Rastereinheiten>}
 %              {<Grafik>}{<weitere Schluessel>}
+\newlength{\dsa@kastenbreite}
+
 \newcommand{\dsaKastenNeu}[6]{%
   \newtcolorbox{#1}[1][]{%
     dsa@grundkasten,
+    % Die Breite der Kastengrafik merken: das Portraitmedaillon braucht sie,
+    % weil es an der Grafik haengt und nicht am Rahmen.
+    /utils/exec={\setlength{\dsa@kastenbreite}{#2}},
     width=#2, height=\dsaRaster{#4},
     underlay={\node[anchor=north west, inner sep=0] at (frame.north west)
       {\includegraphics[width=#2,height=#3]{\dsagrafik{#5}}};},
@@ -609,9 +643,14 @@
 % Das Portraitbild kommt als Schluessel, damit es im underlay landet: den
 % TikZ-Knoten „frame" gibt es nur dort, nicht im Kasteninhalt.
 
-\newlength{\dsaportraitgroesse} \setlength{\dsaportraitgroesse}{35.4mm}
-\newlength{\dsaportraitx}       \setlength{\dsaportraitx}{17mm}
-\newlength{\dsaportraity}       \setlength{\dsaportraity}{17mm}
+% Nicht die Groesse des Ornaments (35,4 mm), sondern die seines freien
+% Innenkreises: 21,0 mm, gemessen im Alphakanal von portraitrahmen.png. Zwei
+% Millimeter mehr, damit das Bild unter den Kranz reicht und keine Fuge bleibt.
+\newlength{\dsaportraitgroesse} \setlength{\dsaportraitgroesse}{23mm}
+% Die Lage der Ringmitte, gemessen an allen drei Portraitkaesten: 17,2 bis
+% 18,0 mm von der rechten Bildkante, 18,9 bis 20,2 mm unter der Oberkante.
+\newlength{\dsaportraitx}       \setlength{\dsaportraitx}{17.6mm}
+\newlength{\dsaportraity}       \setlength{\dsaportraity}{19.4mm}
 % Die Groesse steht im IDML: Ornament_Portrait_Wertekasten.psd sitzt in einem
 % Rahmen von 35,39 x 34,97 mm bei 300 gegen 300 ppi, also in 100 Prozent. Das
 % ist die Aussenkante des Rings; das Bild darin ist kleiner, weil der Ring
@@ -619,16 +658,23 @@
 % PRUEFEN: die beiden Versaetze sind weiter geschaetzt — das IDML sagt, wie
 % GROSS das Medaillon ist, nicht wo im Kasten es sitzt.
 
-% „overlay app" haengt an, was schon an Overlays da ist, und zeichnet
-% ueber den Inhalt. Genau richtig fuer das Medaillon, das ueber den Rand
-% des Kastens hinaustritt. Ein „underlay app" gibt es in tcolorbox nicht.
+% „overlay app" haengt an, was schon an Overlays da ist, und zeichnet ueber
+% den Inhalt. Genau richtig fuer das Medaillon, das ueber den Rand des
+% Kastens hinaustritt. Ein „underlay app" gibt es in tcolorbox nicht.
+%
+% Der Anker ist die GRAFIK, nicht der Rahmen: „frame" ist durch den Ueberhang
+% breiter als die Kastengrafik, und am Rahmen aufgehaengt ragte das Medaillon
+% um genau diesen Betrag hinaus. Die Grafik sitzt an frame.north west und ist
+% \dsa@kastenbreite breit — die merkt der Generator.
 \tcbset{dsaportrait/.style={overlay app={%
-  \node[inner sep=0] at ([shift={(-\dsaportraitx,-\dsaportraity)}]frame.north east)
+  \node[inner sep=0]
+    at ([shift={(\dsa@kastenbreite-\dsaportraitx,-\dsaportraity)}]%
+        frame.north west)
     {\dsaBildKreis{\dsaportraitgroesse}{#1}};}}}
 
-\dsaKastenNeu{dsaWerteKleinPortrait} {94.0mm}{59.2mm} {14}{werte-klein-portrait} {grow to right by=13.5mm,left=7mm,right=24mm}
-\dsaKastenNeu{dsaWerteMittelPortrait}{94.0mm}{104.0mm}{25}{werte-mittel-portrait}{grow to right by=13.5mm,left=7mm,right=24mm}
-\dsaKastenNeu{dsaWerteGrossPortrait} {94.0mm}{199.1mm}{47}{werte-gross-portrait} {grow to right by=13.5mm,left=7mm,right=24mm}
+\dsaKastenNeu{dsaWerteKleinPortrait} {94.0mm}{59.2mm} {14}{werte-klein-portrait} {dsaportraitlage,left=7mm,right=24mm}
+\dsaKastenNeu{dsaWerteMittelPortrait}{94.0mm}{104.0mm}{25}{werte-mittel-portrait}{dsaportraitlage,left=7mm,right=24mm}
+\dsaKastenNeu{dsaWerteGrossPortrait} {94.0mm}{199.1mm}{47}{werte-gross-portrait} {dsaportraitlage,left=7mm,right=24mm}
 
 % ---- Graue Kaesten ----
 %
@@ -710,7 +756,9 @@
 %%% 15  Marken im Text
 %%% ==================================================================
 
-% Das IDML rahmt Auge_Schwarz.eps und Auge_Weiss.eps mit 1,69 x 0,92 mm.
+% Das IDML rahmt Auge_Schwarz.eps und Auge_Weiss.eps mit 1,69 mm Breite; im
+% Musterbogen sitzt das Auge mit 1,66 x 2,95 mm. Gesetzt wird die Breite, die
+% Hoehe ergibt sich aus dem Seitenverhaeltnis der Grafik.
 \newlength{\dsaaugebreite}\setlength{\dsaaugebreite}{1.69mm}
 \newcommand*{\dsaAugeSchwarz}{%
   \smash{\raisebox{0.25\height}{%
@@ -722,8 +770,9 @@
 \newcommand{\dsaFokusregel}[1]{%
   \smash{\raisebox{-0.4\height}{%
     \begin{tikzpicture}
-      % 9,86 mm: das Rahmenmass im IDML.
-      \node[inner sep=0] {\includegraphics[width=9.86mm]{\dsagrafik{fokusregel}}};
+      % 10,57 mm: so gross sitzt die Marke im Musterbogen. Der IDML-Rahmen
+      % gibt 9,86 mm, das gesetzte Ergebnis ist groesser.
+      \node[inner sep=0] {\includegraphics[width=10.57mm]{\dsagrafik{fokusregel}}};
       \node[inner sep=0] {\footnotesize #1};
     \end{tikzpicture}}}}
 
@@ -783,9 +832,10 @@
 \setlist[dsaliste,1]{
   leftmargin=\dimexpr 6mm+\labelsep\relax,
   topsep=0pt, itemsep=0pt, parsep=0pt,
-  % 2,36 mm hoch: das Rahmenmass im IDML, 4,36 x 2,36 mm.
+  % 2,05 mm hoch. Der IDML-Rahmen ist 4,36 x 2,36 mm, im Musterbogen sitzt
+  % das Zeichen aber mit 3,78 x 2,05 mm — das gesetzte Ergebnis gilt.
   label={\smash{\raisebox{-0.25\height}{%
-    \includegraphics[height=2.36mm]{\dsagrafik{aufzaehlung}}}}}}
+    \includegraphics[height=2.05mm]{\dsagrafik{aufzaehlung}}}}}}
 
 \newlist{dsalisteblau}{itemize}{4}
 \setlist[dsalisteblau,1]{

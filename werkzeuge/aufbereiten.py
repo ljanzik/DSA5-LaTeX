@@ -6,6 +6,7 @@ Scriptorium-Baukasten auf.
     python3 werkzeuge/aufbereiten.py "/pfad/zum/Baukasten" --ziel /pfad/zum/projekt
     python3 werkzeuge/aufbereiten.py --liste
     python3 werkzeuge/aufbereiten.py "/pfad/zum/Baukasten" --png
+    python3 werkzeuge/aufbereiten.py "/pfad/zum/Baukasten" --ppi 200
 
 Mit --ziel schreibt es grafiken/ und schriften/ in ein anderes Projekt,
 das diese Klasse benutzt. Ohne --ziel in dieses hier.
@@ -14,6 +15,12 @@ Die vier Doppelseiten und der Rueckumschlag werden als JPEG abgelegt: als PNG
 sind das 7 bis 13 MB je Datei und im gesetzten PDF ueber 50 MB, als JPEG in
 Qualitaet 88 unter 1,5 MB, ohne sichtbaren Unterschied an einer
 Pergamentflaeche. Mit --png bleibt alles verlustlos.
+
+Alle uebrigen Grafiken haben echte Transparenz und bleiben PNG. Wer das PDF
+kleiner braucht, verkleinert sie mit --ppi: die Klasse setzt jede Grafik in
+ihrer Produktionsgroesse in Millimeter, die Aufloesung ist ihr gleich.
+300 ppi ist Druckqualitaet, 200 ppi ergibt 44 Prozent der Pixel, und eine
+gesetzte Veroeffentlichung, die wir vermessen haben, kommt mit 167 ppi aus.
 
 Das Bildmaterial ist NICHT Teil dieses Projekts und darf es nicht sein: es
 gehoert Ulisses Spiele und steht unter der Vereinbarung ueber
@@ -165,7 +172,22 @@ def hat_alpha(bild):
     return a.getextrema()[0] < 255
 
 
-def speichern(bild, ordner, name, nur_png=False):
+def verkleinern(bild, ppi):
+    """Rechnet ein Bild von 300 ppi auf eine andere Aufloesung herunter.
+
+    Die Klasse setzt jede Grafik in ihrer Produktionsgroesse in Millimeter,
+    also Pixel geteilt durch 300. Weniger Pixel heisst deshalb nicht kleiner
+    im Satz, sondern nur weniger Daten.
+    """
+    if ppi >= 300:
+        return bild
+    faktor = ppi / 300.0
+    neu = (max(1, int(round(bild.width * faktor))),
+           max(1, int(round(bild.height * faktor))))
+    return bild.resize(neu, Image.LANCZOS)
+
+
+def speichern(bild, ordner, name, nur_png=False, ppi=300):
     """Legt das Bild unter <name> ab, als JPEG wenn es dafuer vorgesehen ist.
 
     <name> kommt mit der Endung .png herein; steht der Name in ALS_JPEG und
@@ -174,6 +196,7 @@ def speichern(bild, ordner, name, nur_png=False):
     Zurueck kommt der wirklich geschriebene Dateiname.
     """
     stamm = os.path.splitext(name)[0]
+    bild = verkleinern(bild, ppi)
     if not nur_png and stamm in ALS_JPEG and not hat_alpha(bild):
         ziel = os.path.join(ordner, stamm + '.jpg')
         bild.convert('RGB').save(ziel, 'JPEG',
@@ -230,6 +253,14 @@ def main():
         return 0
 
     nur_png = '--png' in sys.argv
+    ppi = 300
+    if '--ppi' in sys.argv:
+        i = sys.argv.index('--ppi')
+        if i + 1 >= len(sys.argv):
+            print('--ppi braucht eine Zahl.')
+            return 2
+        ppi = int(sys.argv[i + 1])
+        print('Aufloesung          : %d ppi statt 300' % ppi)
     argumente = [a for a in sys.argv[1:] if not a.startswith('--')]
     if not argumente:
         print(__doc__)
@@ -281,8 +312,8 @@ def main():
             continue
         # Kandidaten fuer JPEG gehen durch Pillow, alle anderen werden
         # unveraendert kopiert.
-        if os.path.splitext(ziel)[0] in ALS_JPEG and not nur_png:
-            speichern(Image.open(q), zg, ziel, nur_png)
+        if (os.path.splitext(ziel)[0] in ALS_JPEG and not nur_png) or ppi < 300:
+            speichern(Image.open(q), zg, ziel, nur_png, ppi)
         else:
             shutil.copyfile(q, os.path.join(zg, ziel))
         getan += 1
@@ -305,9 +336,9 @@ def main():
         bogen = Image.open(q)
         mitte = bogen.width // 2
         speichern(bogen.crop((0, 0, mitte, bogen.height)), zg,
-                  'seite-links-%d.png' % i, nur_png)
+                  'seite-links-%d.png' % i, nur_png, ppi)
         speichern(bogen.crop((mitte, 0, bogen.width, bogen.height)), zg,
-                  'seite-rechts-%d.png' % i, nur_png)
+                  'seite-rechts-%d.png' % i, nur_png, ppi)
         geschnitten += 1
     print('Doppelseiten       : %d von %d geschnitten' % (geschnitten, len(DOPPELSEITEN)))
 
@@ -336,7 +367,7 @@ def main():
         if bild is None:
             fehlt.append('%s (PSD liess sich nicht rendern)' % ziel)
             continue
-        bild.save(os.path.join(zg, ziel))
+        speichern(bild, zg, ziel, nur_png, ppi)
         flach += 1
     print('aus PSD flach      : %d von %d' % (flach, len(PSD_FLACH)))
 
@@ -376,7 +407,7 @@ def main():
             if bild is not None:
                 b = treffer[0].bbox
                 leinwand.alpha_composite(bild.convert('RGBA'), (b[0], b[1]))
-            leinwand.save(os.path.join(zg, ziel))
+            speichern(leinwand, zg, ziel, nur_png, ppi)
             kapitel += 1
     print('Kapitelanfang      : %d von %d' % (kapitel, len(KAPITELSTART_EBENEN)))
 

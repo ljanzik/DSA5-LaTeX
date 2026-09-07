@@ -112,21 +112,21 @@ Musterbogen zeigt sie ohne Text.
 
 | Kasten | Grafik | Rastereinheiten | Innenabstände | Status |
 |---|---|---|---|---|
-| `dsaPergamentKlein` | 85,5 × 50,7 mm, Überhang 2,5 mm | 12 | geschätzt | — |
-| `dsaPergamentMittel` | 85,5 × 99,5 mm, Überhang 2,5 mm | 24 | geschätzt | — |
-| `dsaPergamentLang` | 85,5 × 192,4 mm, Überhang 2,5 mm | 46 | geschätzt | — |
+| `dsaPergamentKlein` | 85,5 × 50,7 mm, Überhang 2,5 mm | 12 | geschätzt | `#` |
+| `dsaPergamentMittel` | 85,5 × 99,5 mm, Überhang 2,5 mm | 24 | geschätzt | `#` |
+| `dsaPergamentLang` | 85,5 × 192,4 mm, Überhang 2,5 mm | 46 | geschätzt | `#` |
 | `dsaPergamentBreit` | 136,9 × 192,4 mm | 46 | geschätzt | — |
-| `dsaPergamentSchmal` | 48,9 × 192,4 mm | 46 | 6 mm | `ok` (Größe) |
-| `dsaWerteKlein` | 84,4 × 54,8 mm, Überhang 1,95 mm | 13 | 7 mm | — |
-| `dsaWerteMittel` | 86,9 × 103,8 mm, Überhang 3,2 mm | 25 | 7 mm | — |
-| `dsaWerteGross` | 85,0 × 197,1 mm, Überhang 2,25 mm | 47 | 7 mm | — |
-| `dsaWerteKleinPortrait` | 94,0 × 59,2 mm, 13,5 mm nach außen | 14 | 7/24 mm | — |
-| `dsaWerteMittelPortrait` | 94,0 × 104,0 mm, 13,5 mm nach außen | 25 | 7/24 mm | `!` |
-| `dsaWerteGrossPortrait` | 94,0 × 199,1 mm, 13,5 mm nach außen | 47 | 7/24 mm | — |
-| `dsaMeisterSchmal` | 59,9 × 114,2 mm | 27 | 6/8 mm | — |
-| `dsaMeisterBreit` | 177,9 × 114,2 mm, Überhang 5,95 mm | 27 | 10/8 mm | — |
-| `dsaMeisterMaske` | 84,0 × 108,0 mm, Überhang 1,75 mm | 26 | 7/10/8 mm | — |
-| `dsaMeisterMaskeKlein` | 84,0 × 45,0 mm, Überhang 1,75 mm | 11 | 7/10/6 mm | — |
+| `dsaPergamentSchmal` | 48,9 × 192,4 mm | 46 | 6 mm | `#` |
+| `dsaWerteKlein` | 84,4 × 54,8 mm, Überhang 1,95 mm | 13 | 7 mm | `#` |
+| `dsaWerteMittel` | 86,9 × 103,8 mm, Überhang 3,2 mm | 25 | 7 mm | `#` |
+| `dsaWerteGross` | 85,0 × 197,1 mm, Überhang 2,25 mm | 47 | 7 mm | `#` |
+| `dsaWerteKleinPortrait` | 94,0 × 59,2 mm, 13,5 mm nach außen | 14 | 7/24 mm | `#` |
+| `dsaWerteMittelPortrait` | 94,0 × 104,0 mm, 13,5 mm nach außen | 25 | 7/24 mm | `#` |
+| `dsaWerteGrossPortrait` | 94,0 × 199,1 mm, 13,5 mm nach außen | 47 | 7/24 mm | `#` |
+| `dsaMeisterSchmal` | 59,9 × 114,2 mm | 27 | 6/8 mm | `#` |
+| `dsaMeisterBreit` | 177,9 × 114,2 mm, Überhang 5,95 mm | 27 | 10/8 mm | `!` |
+| `dsaMeisterMaske` | 84,0 × 108,0 mm, Überhang 1,75 mm | 26 | 7/10/8 mm | `#` |
+| `dsaMeisterMaskeKlein` | 84,0 × 45,0 mm, Überhang 1,75 mm | 11 | 7/10/6 mm | `#` |
 | `dsaKastenFrei` | Höhe in Rastereinheiten, Zierleisten in wahrer Größe | frei | wie Pergament | — |
 | Porträtmedaillon | 35,39 × 34,97 mm, Lage im Kasten noch geschätzt | `Ornament_Portrait_Wertekasten.psd` | — | `#` |
 
@@ -175,6 +175,38 @@ Musterbogen zeigt sie ohne Text.
 |---|---|---|---|
 | Tabellenkopf, Linienstärke, Zeilenabstand | offen | IDML | — |
 | Probenzeile | offen | — | — |
+
+
+### Ergebnis des Kastenblocks
+
+Gemessen mit `beispiel/kaesten.tex` — jeder Kasten auf eigener Seite, ohne
+Seitenhintergrund, ein Lauf dauert eine Minute.
+
+**Ein einziger Wert war die Ursache für alle Verschiebungen.** Dreizehn Kästen saßen um genau
+3,58 mm zu weit innen, unabhängig von ihrem Überhang. 3,58 mm ist 1 em bei 10 pt, also
+`\parindent`: eine `tcolorbox` ist ein Absatz und wurde eingerückt wie einer. Mit `\parindent=0pt`
+— was die Absatzformate des Baukastens ohnehin verlangen — sitzen alle auf 0,07 mm genau:
+
+| Kasten | Überhang Soll | Ist |
+|---|---|---|
+| `pergament-klein`, `-mittel`, `-lang` | −2,50 mm | −2,43 mm |
+| `werte-klein` | −1,95 mm | −1,88 mm |
+| `werte-mittel` | −3,20 mm | −3,13 mm |
+| `werte-gross` | −2,25 mm | −2,18 mm |
+| `werte-klein-portrait` | −5,10 mm | −5,03 mm |
+| `meister-maske`, `-klein` | −1,75 mm | −1,68 mm |
+| `pergament-schmal`, `-breit`, `meister-schmal` | 0 | +0,07 mm |
+
+**Das Porträtmedaillon** hatte drei Fehler zugleich: die 35,4 mm aus der IDML sind das Ornament,
+nicht das Bild — der freie Innenkreis ist **21,0 mm**, die Kranzbreite 5,0 mm. Der Ring steckt
+zudem schon in der Kastengrafik, seine Mitte 17,6 mm von der rechten Bildkante und 19,4 mm unter
+der Oberkante. Und der Anker war der tcolorbox-`frame`, der durch den Überhang 13,5 mm breiter ist
+als die Grafik; deshalb ragte das Medaillon um genau diesen Betrag hinaus. Jetzt hängt es an der
+Grafik: gemessen sitzt es bei x 95,30 mm gegen 95,38 mm Soll und y 43,40 gegen 43,47.
+
+**Offen bleibt** `dsaMeisterBreit`: einspaltig gesetzt sitzt er bei x 14,12 mm statt 18,05 mm.
+Ein Kasten, der breiter ist als der einspaltige Satz, wird von tcolorbox anders behandelt als einer
+in der Spalte.
 
 ## Vorgehen
 
