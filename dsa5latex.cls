@@ -50,6 +50,8 @@
 % hier vollstaendig ersetzt wuerde. twoside und twocolumn kommen von hier,
 % damit \twocolumn[...] und figure* ohne Umstaende funktionieren.
 \LoadClass[10pt,a4paper,twoside,twocolumn]{article}
+% Die Grundschrift wird unten in bp neu gesetzt; die 10pt hier sind nur die
+% Grundlage fuer die Groessenbefehle von article.
 
 %%% ==================================================================
 %%% 2  Pakete
@@ -138,6 +140,15 @@
   ItalicFont     = GenBasI,
   BoldItalicFont = GenBasBI ]
 
+% Der Fliesstext: 10 bp auf 12 bp. Der Baukasten nennt „10 pt", und das sind
+% InDesign-Punkte, also bp. In TeX-Punkten waeren es 10,04 pt — der
+% Unterschied ist beim Grad kaum zu sehen, beim Zeilenabstand aber
+% entscheidend, weil er sich ueber die Spalte summiert.
+\newcommand*{\dsagrundgrad}{10}
+\newcommand*{\dsagrunddurchschuss}{12}
+\AtBeginDocument{%
+  \fontsize{\dsagrundgrad bp}{\dsagrunddurchschuss bp}\selectfont}
+
 % Andalus hat nur einen Schnitt. Ohne AutoFakeBold meldet der Lauf
 % „Font shape TU/andlso(0)/b/n undefined" und faellt still auf den normalen
 % zurueck — der Baukasten verlangt fuer Kapitel und Covertitel aber fett.
@@ -154,6 +165,8 @@
 \newlength{\dsa@kapgrad}
 \DeclareRobustCommand*{\dsaKapitaelchen}[1]{%
   \setlength{\dsa@kapgrad}{0.82\dimexpr\f@size pt\relax}%
+  % \f@size zaehlt in pt, \dsa@kapgrad ist deshalb eine pt-Laenge — richtig
+  % so, denn 82 Prozent des aktuellen Grades sind unabhaengig von der Einheit.
   {\fontsize{\the\dsa@kapgrad}{\baselineskip}\selectfont\MakeUppercase{#1}}}
 
 % Zahlenangaben im Textmodus statt im Mathematikmodus.
@@ -181,6 +194,21 @@
 \definecolor{dsazitat}{HTML}{404040}
 
 %%% ==================================================================
+% ---- Zur Einheit ----
+%
+% Alle Masse dieser Klasse, die aus dem Baukasten kommen, sind in bp
+% angegeben: PostScript-Punkte, 1/72 Zoll. So rechnet InDesign, und so
+% rechnet auch die Umrechnung von Pixeln (300 Pixel je Zoll geteilt durch 72).
+%
+% TeX rechnet ohne Einheit in pt, und ein pt ist 1/72,27 Zoll — 0,4 Prozent
+% kleiner. Beim Schriftgrad merkt man das nicht, beim Zeilenabstand schon:
+% ein Raster aus 12 pt statt 12 bp laeuft auf einer Spalte von 59 Zeilen um
+% 2,6 bp aus dem Tritt, fast einen Millimeter. Am gesetzten Ergebnis war das
+% als stetig wachsende Abweichung zu sehen, 0,03 pt je Zeile.
+%
+% Wer hier ein Mass ergaenzt: steht es im Baukasten, in einer IDML oder ist
+% es aus Pixeln gerechnet, dann ist es bp.
+
 %%% 7  Satzspiegel
 %%% ==================================================================
 %
@@ -200,7 +228,7 @@
 \geometry{
   a4paper, twoside,
   inner=20mm, outer=24mm, top=24mm,
-  textheight=708pt,
+  textheight=708bp,
   ignorehead, headheight=0pt, headsep=0pt,
   ignorefoot, footskip=10mm}
 
@@ -226,12 +254,23 @@
 % nachgemessen liegen alle Grundlinien auf 36 + 12*k pt unter der Oberkante,
 % und die Abstaende sind ausschliesslich 12, 24, 36 oder 72 pt.
 
-\newlength{\dsaRastermass}    \setlength{\dsaRastermass}{12pt}
+% 12 bp, nicht 12 pt. Der Baukasten ist in InDesign gesetzt, und dort ist
+% ein Punkt 1/72 Zoll — ein TeX-Punkt ist 1/72,27 Zoll und damit 0,4 Prozent
+% kleiner. Auf eine Spalte von 59 Zeilen summiert sich das zu fast einem
+% Millimeter, und die Grundlinien beider Spalten laufen auseinander.
+\newlength{\dsaRastermass}    \setlength{\dsaRastermass}{12bp}
 \newcommand*{\dsaRaster}[1]{#1\dsaRastermass}
 \newcommand*{\dsaRasterluft}[1]{\vspace*{\dsaRaster{#1}}}
 
 \ifdsa@raster
-  \setlength{\topskip}{12pt}
+  % Die erste Grundlinie der Seite muss auf einer Rasterlinie sitzen, sonst
+  % liegt die ganze Seite daneben. Der Satzspiegel beginnt bei 24 mm =
+  % 68,03 pt, das Raster liegt auf 36 + 12k pt. Die erste Linie darunter ist
+  % 84 pt, also 29,63 mm — und genau dort stehen im Musterbogen des
+  % Baukastens die Seitenueberschriften, auf jeder Seite.
+  %
+  %   \topskip = 84 bp - 24 mm
+  \setlength{\topskip}{\dimexpr 84bp-24mm\relax}
   \setlength{\parskip}{0pt}
   % Kein Erstzeileneinzug. Die Absatzformate der IDML haben keinen: das
   % Fliesstextformat traegt kein FirstLineIndent, und die einzigen Formate mit
@@ -395,7 +434,7 @@
   \begin{tikzpicture}[remember picture, overlay]
     \node[anchor=base, inner sep=0]
       at ([shift={(#2\dsaseitenzahlaussen,\dsaseitenzahlunten)}]#1)
-      {\dsaandalus\fontsize{\dsaseitenzahlgrad}{\dsaseitenzahlgrad}%
+      {\dsaandalus\fontsize{\dsaseitenzahlgrad bp}{\dsaseitenzahlgrad bp}%
        \selectfont\contourlength{\dsaseitenzahlkontur}%
        \contour{black}{\textcolor{white}{\thepage}}};
   \end{tikzpicture}}
@@ -450,7 +489,7 @@
     \node[anchor=base west, inner sep=0]
       at ([shift={(\dsa@linkerrand,-\dsabannertitelunten)}]%
           current page.north west)
-      {\dsaandalus\fontsize{23.5}{28.2}\selectfont
+      {\dsaandalus\fontsize{23.5bp}{28.2bp}\selectfont
        \MakeUppercase{Kapitel \thedsakapitel: #1}};
   \end{tikzpicture}%
   \dsaRasterluft{10}}
@@ -512,12 +551,12 @@
 \newcommand{\dsaunterkapitel}[1]{%
   \par\dsaRasterluft{1}%
   \addcontentsline{toc}{subsection}{#1}%
-  {\centering\dsaandalus\fontsize{14}{16.8}\selectfont #1\par}%
+  {\centering\dsaandalus\fontsize{14bp}{16.8bp}\selectfont #1\par}%
   \dsaRasterluft{1}\nobreak}
 
 \newcommand{\dsaabschnitt}[1]{%
   \par\dsaRasterluft{1}%
-  {\bfseries\fontsize{13}{15.6}\selectfont #1\par}\nobreak}
+  {\bfseries\fontsize{13bp}{15.6bp}\selectfont #1\par}\nobreak}
 
 \newcommand{\dsaunterabschnitt}[1]{%
   \par{\bfseries #1\par}\nobreak}
@@ -529,7 +568,7 @@
     enhanced, blankest, nobeforeafter, width=\linewidth,
     left=2mm, right=2mm, top=1mm, bottom=1mm,
     interior style={left color=dsapergamentgelb, right color=white}]
-    \bfseries\fontsize{13}{15.6}\selectfont #1
+    \bfseries\fontsize{13bp}{15.6bp}\selectfont #1
   \end{tcolorbox}\par
   \dsaRasterluft{1}}
 
@@ -583,7 +622,7 @@
   enhanced, breakable=false, blankest, nobeforeafter, valign=top,
   left=\dsakasteninnen, right=\dsakasteninnen,
   top=\dsakastenoben,   bottom=\dsakastenoben,
-  fontupper=\fontsize{\dsakastengrad}{\dsakastendurchschuss}\selectfont}}
+  fontupper=\fontsize{\dsakastengrad bp}{\dsakastendurchschuss bp}\selectfont}}
 
 \tcbset{dsaueberhang/.style={grow to left by=#1, grow to right by=#1}}
 
@@ -989,7 +1028,7 @@
 % Der Wert haengt am Text: Zeilen mit Unterlaengen brauchen weniger, eine
 % Zeile in Versalien mehr. 6,4 pt passt fuer einen zweizeiligen Titel aus
 % gemischten Buchstaben.
-\newcommand*{\dsatitelflaechetiefer}{6.4pt}
+\newcommand*{\dsatitelflaechetiefer}{6.4bp}
 %
 % Wie glatt der Rand der Flaeche wird, haengt am Abstand zweier Nachbarkopien
 % auf dem \contour-Kreis: liegt er unter der Strichstaerke des duennsten
@@ -1028,7 +1067,7 @@
 \newcommand*{\dsatitelbezugsgrad}{42.8}
 
 \newcommand*{\dsa@titelschrift}{%
-  \dsaandalus\fontsize{\dsatitelgrad}{\dsatiteldurchschuss}\selectfont\bfseries}
+  \dsaandalus\fontsize{\dsatitelgrad bp}{\dsatiteldurchschuss bp}\selectfont\bfseries}
 % Dieselbe Schrift in einem beliebigen Grad. Der Durchschuss ist gleich dem
 % Grad, weil jede Titelzeile fuer sich gesetzt wird.
 \newcommand{\dsa@titelschriftgrad}[1]{%
@@ -1052,7 +1091,7 @@
 \newlength{\dsa@titeltiefer}
 \newcommand{\dsa@titelform}[6]{%
   \foreach \dsa@k in {1,...,#4}{%
-    \pgfmathsetlength{\dsa@titelradius}{#3pt*\dsa@k/#4}%
+    \pgfmathsetlength{\dsa@titelradius}{#3bp*\dsa@k/#4}%
     % Kopienzahl: nur die aeusserste Lage braucht so viele, dass zwei
     % Nachbarkopien \dsatitelperlabstand nicht ueberschreiten.
     \ifnum\dsa@k=#4\relax
@@ -1281,7 +1320,7 @@
     \node[anchor=center, inner sep=0] at (current page.center)
       {\dsaBildDeckend{216mm}{303mm}{#1}};
   \end{tikzpicture}%
-  {\dsaandalus\fontsize{23.5}{28.2}\selectfont #2\par}%
+  {\dsaandalus\fontsize{23.5bp}{28.2bp}\selectfont #2\par}%
   \dsaRasterluft{2}#3\par
   \clearpage\dsaHintergrundAn}
 % PRUEFEN: Der Textblock ist noch nicht am Rahmen ausgerichtet.
@@ -1356,7 +1395,7 @@
   \begin{tikzpicture}[remember picture, overlay]
     \node[anchor=base, inner sep=0]
       at ([shift={(0pt,-\dsaimpressumkopf)}]current page.north)
-      {\dsaandalus\fontsize{\dsaimpressumkopfgrad}{\dsaimpressumkopfgrad}%
+      {\dsaandalus\fontsize{\dsaimpressumkopfgrad bp}{\dsaimpressumkopfgrad bp}%
        \selectfont\MakeUppercase{Impressum}};
   \end{tikzpicture}%
   \begingroup
@@ -1377,10 +1416,10 @@
 
 \newcommand{\dsaImpressumsblock}[2]{%
   \par
-  {\fontsize{\dsaimpressumrubrik}{\dsaimpressumabrubrik}\selectfont
+  {\fontsize{\dsaimpressumrubrik bp}{\dsaimpressumabrubrik bp}\selectfont
    \bfseries #1\par}%
   \nobreak
-  {\fontsize{\dsaimpressumwert}{\dsaimpressumabwert}\selectfont #2\par}}
+  {\fontsize{\dsaimpressumwert bp}{\dsaimpressumabwert bp}\selectfont #2\par}}
 
 % \dsaRechtevermerk{<Jahr>}{<Name oder Firma>}
 %
@@ -1402,10 +1441,10 @@
 
 \newcommand{\dsaRechtevermerk}[2]{%
   \par
-  {\fontsize{\dsaimpressumwert}{\dsaimpressumabvermerk}\selectfont
+  {\fontsize{\dsaimpressumwert bp}{\dsaimpressumabvermerk bp}\selectfont
    \bfseries Disclaimer\par}%
   \nobreak
-  \fontsize{\dsaimpressumwert}{\dsaimpressumzeile}\selectfont
+  \fontsize{\dsaimpressumwert bp}{\dsaimpressumzeile bp}\selectfont
   \setlength{\leftskip}{\dimexpr(\linewidth-\dsaimpressumblock)/2\relax}%
   \setlength{\rightskip}{\leftskip}%
   \addtolength{\leftskip}{\dsaimpressumversatz}%
@@ -1436,7 +1475,7 @@
 \newcommand{\dsaInhalt}{%
   \clearpage\onecolumn
   \thispagestyle{empty}%
-  {\dsaandalus\fontsize{23.5}{28.2}\selectfont\MakeUppercase{Inhalt}\par}%
+  {\dsaandalus\fontsize{23.5bp}{28.2bp}\selectfont\MakeUppercase{Inhalt}\par}%
   \dsaRasterluft{2}%
   \@starttoc{toc}%
   \clearpage\twocolumn}
