@@ -270,15 +270,11 @@ Aufbau und Rubriken nach dem Vorbild einer gesetzten Scriptorium-Veröffentlichu
 Redaktion, Lektorat, Korrektorat, Künstlerische Leitung, Coverbild, Satz Layout und Gestaltung,
 Innenillustrationen und Pläne, Version — oft mit einer Danksagung am Ende.
 
-**Der Rechtevermerk steht wörtlich in der Klasse und darf nicht umformuliert werden.** Zwei
-Fassungen sind im Umlauf: die ältere nennt „Marken von Ulisses Medien und Spiele Distribution GmbH
-in Deutschland, den U.S.A. und anderen Ländern" und steht so im Baukasten v4 und in gesetzten
-Abenteuern von 2021; die neuere nennt in Versalien „Marken der Ulisses Spiele GmbH, Waldems" und
-schreibt AVENTURIEN statt Aventuria. Eingebaut ist die neuere. Wer eine dritte vor sich hat, nimmt
-die neueste vom Verlag.
-
-`\dsaRechtstext{…}` mit einem Argument gibt es als alten Namen weiter, damit bestehende Dokumente
-weiterlaufen.
+**Der Rechtevermerk steht wörtlich in der Klasse und darf nicht umformuliert werden** — nicht
+kürzen, die Versalien nicht glätten. Ältere Veröffentlichungen führen einen anderen Wortlaut, unter
+anderem mit einem anderen Rechteinhaber; der in der Klasse ist der aktuelle. Wer eine neuere Fassung
+vom Verlag hat, ersetzt ihn dort. Es gibt absichtlich nur diesen einen Ort und nur diesen einen
+Befehl dafür.
 
 ---
 

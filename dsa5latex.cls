@@ -808,22 +808,15 @@
 
 % \dsaRechtevermerk{<Jahr>}{<Name oder Firma>}
 %
-% Vorgeschrieben und deshalb WOERTLICH — nicht umformulieren, nicht kuerzen,
-% die Versalien nicht glaetten. Die beiden Argumente ersetzen die Platzhalter
-% [2020] und [dein Name oder der deiner Firma] des Originals.
+% Der vorgeschriebene Rechte- und Markenhinweis. Er steht hier WOERTLICH —
+% nicht umformulieren, nicht kuerzen, die Versalien nicht glaetten. Die beiden
+% Argumente ersetzen die Platzhalter [2020] und [dein Name oder der deiner
+% Firma] des Originals.
 %
-% ACHTUNG, zwei Fassungen sind im Umlauf:
-%
-%   ALT, im Layout-Baukasten v4 auf Seite 2 und in „Auf kleiner Flamme"
-%   (2021) gesetzt: „Das Schwarze Auge und sein Logo sowie Aventuria, Dere,
-%   Myranor, Riesland, Tharun, Uthuria, The Dark Eye und ihre Logos sind
-%   eingetragene Marken von Ulisses Medien und Spiele Distribution GmbH in
-%   Deutschland, den U.S.A. und anderen Laendern."
-%
-%   NEU, hier eingesetzt: Versalien, AVENTURIEN statt Aventuria, keine
-%   Logos, und als Rechteinhaber die Ulisses Spiele GmbH, Waldems.
-%
-% Wer eine dritte Fassung vor sich hat, nimmt die neueste vom Verlag.
+% Aeltere Veroeffentlichungen und aeltere Fassungen des Baukastens fuehren
+% einen anderen Wortlaut, unter anderem mit einem anderen Rechteinhaber. Der
+% hier ist der aktuelle. Wer eine neuere Fassung vom Verlag hat, ersetzt
+% diesen Text — es gibt absichtlich nur diesen einen Ort dafuer.
 \newcommand{\dsaRechtevermerk}[2]{%
   \par\dsaRasterluft{1}%
   {\bfseries Disclaimer}\par\nobreak
@@ -839,9 +832,6 @@
   Alle anderen Originalmaterialien in diesem Werk sind Copyright #1 von #2 und
   werden im Rahmen der Vereinbarung über Gemeinschaftsinhalte für SCRIPTORIUM
   AVENTURIS veröffentlicht.\par}
-
-% Der alte Name mit einem Argument, damit bestehende Dokumente weiterlaufen.
-\newcommand{\dsaRechtstext}[1]{\dsaRechtevermerk{}{#1}}
 
 % ---- Inhaltsverzeichnis ----
 \newcommand{\dsaInhalt}{%
