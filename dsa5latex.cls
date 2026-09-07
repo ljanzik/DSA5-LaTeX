@@ -777,30 +777,71 @@
 % PRUEFEN: Der Textblock ist noch nicht am Rahmen ausgerichtet.
 
 % ---- Impressum ----
+%
+% Im deutschen Buchhandel heisst diese Seite Impressum; sie sitzt in der
+% Titelei, ueblicherweise auf der Titelrueckseite. Im Englischen: copyright
+% page. Der Markenhinweis darin ist der Rechtevermerk.
+%
+% Aufbau nach dem Vorbild einer gesetzten Scriptorium-Veroeffentlichung
+% („Auf kleiner Flamme", Seite 2): Ueberschrift IMPRESSUM, darunter je
+% Rubrik der Name der Rubrik und darunter der Wert, alles mittig, dann als
+% eigene Zwischenueberschrift „Disclaimer" und der Rechtevermerk.
+%
+% Die Rubriken dort, als Anhalt:
+%   Autor · Redaktion · Lektorat · Korrektorat · Kuenstlerische Leitung ·
+%   Coverbild · Satz, Layout und Gestaltung · Innenillustrationen und Plaene ·
+%   Version
+% Dazu am Ende oft eine Danksagung.
+
 \newenvironment{dsaImpressumseite}{%
   \clearpage\onecolumn
-  \thispagestyle{empty}\small
+  \thispagestyle{empty}%
+  {\dsaandalus\fontsize{23.5}{28.2}\selectfont\centering
+   \MakeUppercase{Impressum}\par}%
+  \dsaRasterluft{2}%
+  \begingroup\small\centering\setlength{\parindent}{0pt}%
 }{%
-  \clearpage\twocolumn}
+  \par\endgroup\clearpage\twocolumn}
 
 \newcommand{\dsaImpressumsblock}[2]{%
-  \par\noindent{\bfseries #1}\par\nobreak\noindent #2\par\dsaRasterluft{1}}
+  \par{\bfseries #1}\par\nobreak #2\par\dsaRasterluft{1}}
 
-% Der Wortlaut, der laut Baukasten „stets im Werk enthalten sein" muss.
-\newcommand{\dsaRechtstext}[1]{%
-  Dieses Produkt wurde unter Lizenz erstellt. Das Schwarze Auge und sein Logo
-  sowie Aventuria, Dere, Myranor, Riesland, Tharun, Uthuria, The Dark Eye und
-  ihre Logos sind eingetragene Marken von Ulisses Medien und Spiele
-  Distribution GmbH in Deutschland, den U.S.A. und anderen Ländern.\par
+% \dsaRechtevermerk{<Jahr>}{<Name oder Firma>}
+%
+% Vorgeschrieben und deshalb WOERTLICH — nicht umformulieren, nicht kuerzen,
+% die Versalien nicht glaetten. Die beiden Argumente ersetzen die Platzhalter
+% [2020] und [dein Name oder der deiner Firma] des Originals.
+%
+% ACHTUNG, zwei Fassungen sind im Umlauf:
+%
+%   ALT, im Layout-Baukasten v4 auf Seite 2 und in „Auf kleiner Flamme"
+%   (2021) gesetzt: „Das Schwarze Auge und sein Logo sowie Aventuria, Dere,
+%   Myranor, Riesland, Tharun, Uthuria, The Dark Eye und ihre Logos sind
+%   eingetragene Marken von Ulisses Medien und Spiele Distribution GmbH in
+%   Deutschland, den U.S.A. und anderen Laendern."
+%
+%   NEU, hier eingesetzt: Versalien, AVENTURIEN statt Aventuria, keine
+%   Logos, und als Rechteinhaber die Ulisses Spiele GmbH, Waldems.
+%
+% Wer eine dritte Fassung vor sich hat, nimmt die neueste vom Verlag.
+\newcommand{\dsaRechtevermerk}[2]{%
+  \par\dsaRasterluft{1}%
+  {\bfseries Disclaimer}\par\nobreak
+  Dieses Produkt wurde unter Lizenz erstellt. DAS SCHWARZE AUGE, AVENTURIEN,
+  DERE, MYRANOR, THARUN, UTHURIA, RIESLAND und THE DARK EYE sind eingetragene
+  Marken der Ulisses Spiele GmbH, Waldems.\par
   Ulisses Spiele und sein Logo sind eingetragene Marken der Ulisses Medien und
   Spiele Distribution GmbH.\par
   Dieses Werk enthält Material, das durch Ulisses Spiele und/oder andere
   Autoren urheberrechtlich geschützt ist. Solches Material wird mit Erlaubnis
   im Rahmen der Vereinbarung über Gemeinschaftsinhalte für SCRIPTORIUM
   AVENTURIS verwendet.\par
-  Alle anderen Originalmaterialien in diesem Werk sind Copyright #1 und werden
-  im Rahmen der Vereinbarung über Gemeinschaftsinhalte für SCRIPTORIUM
+  Alle anderen Originalmaterialien in diesem Werk sind Copyright #1 von #2 und
+  werden im Rahmen der Vereinbarung über Gemeinschaftsinhalte für SCRIPTORIUM
   AVENTURIS veröffentlicht.\par}
+
+% Der alte Name mit einem Argument, damit bestehende Dokumente weiterlaufen.
+\newcommand{\dsaRechtstext}[1]{\dsaRechtevermerk{}{#1}}
 
 % ---- Inhaltsverzeichnis ----
 \newcommand{\dsaInhalt}{%
