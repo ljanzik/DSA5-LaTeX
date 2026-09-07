@@ -127,6 +127,22 @@ eingerückt, sodass der Pergamentrand als Rahmen stehen bleibt, darüber das Dra
 Maske. Die Randbreite ist `\dsakapitelbildrand`, der Bannerversatz von der Papierkante
 `\dsabannerversatz`.
 
+### Die Probenzeile
+
+```latex
+\dsaProbe{Sinnesschärfe (Suchen), erschwert um 2}
+\dsaProbe[dsatabellenrot]{Odem Arcanum}
+```
+
+Ein Balken über die Spaltenbreite, 6,985 mm hoch, darin der Name der Probe in Gentium Basic fett
+auf 11 bp. Beides ist an einer gesetzten Veröffentlichung gemessen. Die Farbe wechselt dort je
+Probenart und steht im PDF nur als Pantone-Name, nicht als Wert — deshalb ist sie hier ein
+optionales Argument, voreingestellt auf das Pergamentgelb des Baukastens.
+
+Die 6,985 mm sind kein Vielfaches des Rasters. Der Balken behält sein Maß und wird in eine Box ohne
+Höhe gesetzt, die zwei Rastereinheiten belegt; sein Text sitzt damit auf einer Grundlinie und der
+Text darunter auch.
+
 ### Fußzeile: Seitenzahl und Kolumnentitel
 
 Beides sitzt auf einer Grundlinie 5,9 mm über der unteren Papierkante, gesetzt als TikZ-Knoten an
@@ -399,7 +415,7 @@ liegen alle Zeilen einschließlich des Folgetexts auf +0,00 bp.
 | `\dsaFeld{Name}{Wert}` | ein Feld |
 | `\begin{dsaWerteblock}` | Werte einer Meisterperson oder Kreatur |
 | `\begin{dsaKurzcharakteristik}` | Felder für soziale Begegnungen |
-| `\dsaProbe{Name}` | Kopfzeile einer Probe, danach eine `dsaliste` |
+| `\dsaProbe[Farbe]{Name}` | farbiger Balken über die Spalte, danach die QS-Staffel |
 | `\dsaZusammenfassung{…}` | fünf Rubriken für den Rücktitel |
 | `\dsaAnforderungen{a}{b}{c}{d}` | vier Rautenzeilen, Werte 1 bis 4 |
 

@@ -1988,7 +1988,40 @@
   \footnotesize\setlength{\parindent}{0pt}%
 }{\par}
 
-\newcommand{\dsaProbe}[1]{\par\noindent\textbf{#1}\par\nobreak}
+% Die Probenzeile: ein farbiger Balken ueber die Spaltenbreite, darin der
+% Name der Probe. Gemessen an einer gesetzten Veroeffentlichung, drei
+% Vorkommen auf zwei Seiten: der Balken ist 6,985 mm hoch und so breit wie
+% die Spalte, der Text steht in Gentium Basic fett auf 11 bp und schwarz,
+% seine Grundlinie 4,87 mm unter der Balkenoberkante.
+%
+% Die Farbe wechselt dort je Probenart und steht im PDF nur als
+% Pantone-Name, nicht als Wert. Deshalb ist sie hier ein optionales
+% Argument mit dem Pergamentgelb des Baukastens als Voreinstellung:
+% \dsaProbe[dsatabellenrot]{Odem Arcanum}.
+%
+% 6,985 mm sind 19,8 bp und damit kein Vielfaches des Rasters. Der Balken
+% behaelt sein Mass; gesetzt wird er wie der gelbe Abschnitt in einer Box
+% ohne Hoehe, die zwei Rastereinheiten belegt, damit sein Text auf einer
+% Grundlinie sitzt und der Text darunter auch.
+\newlength{\dsaprobehoehe}   \setlength{\dsaprobehoehe}{6.985mm}
+\newlength{\dsaprobetiefer}  \setlength{\dsaprobetiefer}{6.6bp}
+\newcommand*{\dsaprobegrad}{11}
+
+\newcommand{\dsaProbe}[2][dsapergamentgelb]{%
+  \par\dsaRasterluft{1}%
+  \nobreak\noindent
+  \makebox[\linewidth][l]{%
+    \raisebox{-\dsaprobetiefer}[0pt][0pt]{%
+      \begin{tcolorbox}[
+        enhanced, blankest, nobeforeafter, width=\linewidth,
+        height=\dsaprobehoehe, valign=center,
+        left=1.5mm, right=1.5mm, top=0pt, bottom=0pt,
+        colback=#1]
+        \dsa@lineskipraster\bfseries
+        \fontsize{\dsaprobegrad bp}{\dsaprobegrad bp}\selectfont #2
+      \end{tcolorbox}}}%
+  \par
+  \dsaRasterluft{1}\nobreak}
 
 \newcommand{\dsaZusammenfassung}[5]{%
   \begin{dsaWerteblock}

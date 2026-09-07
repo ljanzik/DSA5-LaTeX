@@ -215,6 +215,19 @@ Aus `Resources/Graphic.xml` des IDML, unverändert.
 | `dsagruenverlauf` | Grün für gradient | CMYK 70 53 91 17 |
 | `dsapergamentgelb` | Für Gelb | CMYK 9 26 56 9 |
 
+## Die Probenzeile
+
+Gemessen an einer gesetzten Veröffentlichung, drei Vorkommen auf zwei Seiten:
+
+| Maß | Wert |
+|---|---|
+| Balken | volle Spaltenbreite (dort 73,4 mm), 6,985 mm hoch |
+| Text | Gentium Basic fett, 11 bp, schwarz |
+| Grundlinie | 4,87 mm unter der Balkenoberkante |
+| Farbe | je Probenart eine andere Sonderfarbe (P220, P309, P330) |
+
+Die Sonderfarben stehen im PDF nur als Pantone-Namen; ihre Werte sind daraus nicht zu holen.
+
 ## Das Porträtmedaillon
 
 Die drei Kastengrafiken enthalten das Medaillon schon. Damit ist seine Lage kein Schätzwert,

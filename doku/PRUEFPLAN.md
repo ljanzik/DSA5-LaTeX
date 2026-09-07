@@ -173,8 +173,12 @@ Musterbogen zeigt sie ohne Text.
 
 | Prüfung | Sollmaß | Quelle | Status |
 |---|---|---|---|
-| Tabellenkopf, Linienstärke, Zeilenabstand | offen | IDML | — |
-| Probenzeile | offen | — | — |
+| Tabellenkopf, Linienstärke, Zeilenabstand | kein Sollmaß gefunden | IDML | — |
+| Probenzeile | Balken volle Spaltenbreite × 6,985 mm, Text Gentium fett 11 bp, Grundlinie 4,87 mm unter der Oberkante | gesetzte Veröffentlichung | `#` |
+
+Zum Tabellenkopf: die durchgesehene Veröffentlichung enthält keine Tabelle mit Kopfleiste. Die
+Balken, die dort wie Tabellenköpfe aussehen, sind Probenzeilen — dieselben Maße, andere Funktion.
+Solange kein Vorbild vorliegt, bleibt die Kopfleiste bei einer Rastereinheit Höhe.
 
 
 ### Ergebnis des Kastenblocks
