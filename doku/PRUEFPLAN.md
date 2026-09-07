@@ -76,7 +76,7 @@ tiefer.
 | Impressum: Überschrift, Rubriken, Vermerk | 37,6 mm / 14 pt / 94,5 mm | gesetzte Veröffentlichung | `#` |
 | Seitenzahl | 18,4 mm von außen, 5,9 mm über der Kante, Andalus 13 pt | Musterbogen | `#` |
 | Kolumnentitel (Kapitelname neben der Zahl) | Andalus 14 bp schwarz, Grundlinie wie die Zahl, rechts 24,29 mm und links 40,35 mm von der Außenkante | gesetzte Veröffentlichung | `#` |
-| Kapiteltitel im Banner | 12,93 mm unter der Bannerkante, 20,5 mm von links | IDML | `!` |
+| Kapiteltitel im Banner | erste Grundlinie 33,41 mm unter der Papierkante, linksbündig am inneren Rand | Musterbogen | `ok` |
 | Seitenhintergrund: Lage, Anschnitt, Folge 0,0,1,1,2,2,3,3 | 213 × 303 mm an der Außenkante | Schnitt der Doppelseiten | — |
 | Kapitelanfang: Banner, Bild, Pergamentrand | Banner 210,1 × 43,2 mm am oberen Rand | IDML | — |
 | Inhaltsverzeichnis | kein Sollmaß | — | — |
@@ -124,7 +124,7 @@ Musterbogen zeigt sie ohne Text.
 | `dsaWerteMittelPortrait` | 94,0 × 104,0 mm, 13,5 mm nach außen | 25 | 7/24 mm | `#` |
 | `dsaWerteGrossPortrait` | 94,0 × 199,1 mm, 13,5 mm nach außen | 47 | 7/24 mm | `#` |
 | `dsaMeisterSchmal` | 59,9 × 114,2 mm | 27 | 6/8 mm | `#` |
-| `dsaMeisterBreit` | 177,9 × 114,2 mm, Überhang 5,95 mm | 27 | 10/8 mm | `!` |
+| `dsaMeisterBreit` | 177,9 × 114,2 mm, Überhang 5,95 mm | 27 | 10/8 mm | `#` |
 | `dsaMeisterMaske` | 84,0 × 108,0 mm, Überhang 1,75 mm | 26 | 7/10/8 mm | `#` |
 | `dsaMeisterMaskeKlein` | 84,0 × 45,0 mm, Überhang 1,75 mm | 11 | 7/10/6 mm | `#` |
 | `dsaKastenFrei` | Höhe in Rastereinheiten, Zierleisten in wahrer Größe | frei | wie Pergament | — |
@@ -136,10 +136,10 @@ Musterbogen zeigt sie ohne Text.
 |---|---|---|---|
 | Kapitel, Unterkapitel, Abschnitt, Unterabschnitt | 23,5 / 14 / 13 / 10 pt | IDML, Absatzformate | `ok` |
 | Abstände der Überschriften, Raster gehalten | 12 pt nach Unterkapitel | IDML, `SpaceAfter` | `ok` |
-| `\parindent` | **0** — kein Absatzformat der IDML hat `FirstLineIndent` außer den hängenden | IDML | `!` |
+| `\parindent` | **0** — kein Absatzformat der IDML hat `FirstLineIndent` außer den hängenden | IDML | `#` |
 | Text im Kasten | 9,5 pt auf 11,4 pt, eigenes Raster | Musterbogen, IDML | `#` |
-| Kastenüberschrift | 12 pt | Musterbogen, Zeichenformat | `!` |
-| Vorlesetext, Zierleiste darüber | native 158,5 mm, im Baukasten auf 95,89 × 17,83 mm platziert | IDML | `!` |
+| Kastenüberschrift | 12 pt, als `\dsaKastentitel` | Musterbogen, Zeichenformat | `#` |
+| Vorlesetext, Zierleiste darüber | 15,39 mm breiter als die Spalte, mittig darüber | IDML und gesetzte Veröffentlichung | `#` |
 | Werteabsatz, hängender Einzug | 8,50 pt | IDML, Format „Werte" | `ok` |
 | Einführung, Stimmung, Zitat | Laufweite +10, Grau 404040 | IDML | — |
 | Aufzählungen: Einzug | 17,01 pt = 6,0 mm hängend | IDML, „Aufzählung v2" | `ok` |
@@ -157,7 +157,8 @@ Musterbogen zeigt sie ohne Text.
 | Porträtmedaillon, Größe | 35,39 × 34,97 mm bei 100 % | IDML | `#` |
 | Porträtmedaillon, Lage im Kasten | je Kasten 17,06/17,97, 17,91/16,87 und 17,57/16,62 mm | Alphakanal der Kastengrafiken | `#` |
 | Rautenskalen in TikZ | Vorbild `DSA5_Rauten_*` | PNG | — |
-| Band- und Fokusregelmarke | offen | — | — |
+| Bandmarke `\dsaBand` | Text, keine Grafik: hochgestelltes Kürzel plus Seite | Baukasten | `ok` |
+| Markengrafiken, Auflösung | mit 1700 bis 2700 ppi platziert, zusammen 2 MB | eigene Messung | `ok` |
 
 ### Bilder und Umfluss
 
@@ -235,6 +236,10 @@ Vierzehn Fehler, alle erst am gesetzten Abzug sichtbar:
 | `dsaKastenFrei` | Pergament um Faktor 3,2 gestaucht | Höhe erzwungen statt beschnitten |
 | Umschlagrückseite | Text im Satzspiegel statt im Rahmen | Rahmenmaße lagen ungenutzt in der IDML |
 
+Zur Aufloesung der Marken: sie sind klein platziert und deshalb mit sehr hohem ppi-Wert, aber
+jede Datei wird nur einmal in das PDF eingebettet. Alle Marken zusammen kosten 2 MB; die Groesse
+der Abzuege kommt von den Seitenhintergruenden und Pergamenten. Kein Handlungsbedarf.
+
 Nicht behoben, weil kein Fehler: `\dsaBildKreis`, `\dsaBildForm` und `\dsaGanzseite` platzieren
 ihre Bilder größer als das Ziel und beschneiden. `nachmessen.py` zeigt die Platzierung.
 
@@ -279,6 +284,26 @@ Voreinstellung der Basisklasse. Die bp-Maße standen nur in einem `\AtBeginDocum
 **Die Querseite selbst lag 1,5 bp unter dem Raster**, weil `\topskip` für einen Satzspiegel ab
 24 mm gerechnet ist und dort 15 mm gelten. `\dsaQuerAnfang` rechnet ihn neu, `\dsaQuerEnde`
 stellt den alten Wert zurück.
+
+### Vier Statuszeilen nachgeprüft
+
+Vier Zeilen trugen noch „Abweichung gefunden". An den Abzügen nachgemessen:
+
+* **Kapiteltitel im Banner** — kein Fehler. Die 12,93 mm der IDML sind die Oberkante des
+  Textrahmens, nicht die Grundlinie; die liegt bei Andalus 23,5 bp rund 9,2 mm darunter, also
+  33,41 mm unter der Papierkante — genau der Wert vom Musterbogen. Gemessen sitzt der Titel dort.
+* **`dsaMeisterBreit`** — kein Fehler. Gemessen 177,90 × 114,20 mm bei einem Überhang von 5,88 mm
+  gegen 5,95 mm Sollmaß.
+* **`\parindent`** — steht auf 0, in allen Abzügen beginnt jede Zeile am Satzspiegel.
+* **Zierleiste über dem Vorlesetext** — echter Fehler, behoben. Sie lag auf Spaltenbreite; der
+  Baukasten platziert sie 15,39 mm breiter, und eine gesetzte Veröffentlichung bestätigt das mit
+  89,9 mm Leiste über einer 73,4-mm-Spalte. Sie steht jetzt mittig über der Spalte und ragt
+  beidseitig 7,7 mm hinaus, wie der Zierrand der Kästen. Mit der größeren Breite wächst die Höhe
+  auf 50,5 bp, deshalb sind fünf Rastereinheiten die Voreinstellung und neun der einspaltige Fall.
+
+Dazu neu: `\dsaKastentitel` für die Kastenüberschrift mit den 12 bp des Musterbogens. Die dort
+genannte Titelgrundlinie von 5,16 mm unter der Oberkante gilt für die gezeichneten Kästen ohne
+Zierrand; in den Grafikkästen beginnt der Inhalt bei `\dsakastenoben`.
 
 ## Elemente mit eigenem Raster
 

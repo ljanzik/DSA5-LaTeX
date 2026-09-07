@@ -1017,16 +1017,29 @@
 % sass 4,7 bp neben dem Raster. Die Leiste steht deshalb in einer Box aus
 % ganzen Rastereinheiten und darin mittig.
 %
-% Vier Einheiten passen fuer eine Spalte. Einspaltig braucht die Leiste mehr,
-% weil sie breiter und damit hoeher wird — dort acht.
-\newcommand{\dsaVorlesetext}[2][4]{%
+% Fuenf Einheiten passen fuer eine Spalte. Einspaltig braucht die Leiste mehr,
+% weil sie breiter und damit hoeher wird — dort neun.
+% Die Leiste ist breiter als die Spalte und steht mittig darueber -- wie der
+% Zierrand der Kaesten, der ebenfalls ausserhalb des Textbereichs liegt.
+% Der Baukasten platziert sie auf 95,89 x 17,83 mm bei einer Spalte von
+% 80,5 mm, also 15,39 mm breiter. An einer gesetzten Veroeffentlichung
+% bestaetigt: dort 89,9 x 16,7 mm bei einer Spalte von 73,4 mm, mittig.
+\newlength{\dsavorleseueberhang}
+\setlength{\dsavorleseueberhang}{15.39mm}
+
+\newcommand{\dsaVorlesetext}[2][5]{%
   \par\dsaRasterluft{1}%
   % Die Grafik hat keine eigene Hoehe (\raisebox mit Null fuer Hoehe und
   % Tiefe) und wird um #1 Rastereinheiten nach unten gesetzt. Den Raum gibt
   % danach \dsaRasterluft, und der ist ein Vielfaches der Rastereinheit.
+  %
+  % Fuenf Einheiten fuer eine Spalte: 95,89 mm Breite ergeben 17,83 mm Hoehe,
+  % also 50,5 bp, und das sprengt vier Einheiten. Einspaltig braucht die
+  % Leiste neun.
   \noindent\makebox[\linewidth][c]{%
     \raisebox{-\dsaRaster{#1}}[0pt][0pt]{%
-      \includegraphics[width=\linewidth]{\dsagrafik{vorlesetext}}}}%
+      \includegraphics[width=\dimexpr\linewidth+\dsavorleseueberhang\relax]%
+        {\dsagrafik{vorlesetext}}}}%
   \par\dsaRasterluft{#1}%
   \nobreak #2\par
   \dsaRasterluft{1}}
@@ -1220,6 +1233,19 @@
 % PRUEFEN: „blend mode=multiply" braeuchte einen Treiber, der Mischmodi kann.
 % Unter XeLaTeX nicht selbstverstaendlich, deshalb weggelassen — auf weissem
 % Grund faellt der Unterschied nicht auf.
+
+% Die Kastenueberschrift. Der Musterbogen gibt 12 pt, der Kastentext hat
+% 9,5 bp auf 11,4 bp -- ein Kasten ist ein eigener Satzraum und folgt nicht
+% dem Grundlinienraster der Seite.
+%
+% Die Titelgrundlinie sitzt dort 5,16 mm unter der Kastenoberkante, der
+% Kastentext beginnt bei \dsakastenoben, also 6 mm darunter. Der Titel steht
+% damit in der ersten Zeile des Kastens und braucht keine eigene Lage.
+\newcommand*{\dsakastentitelgrad}{12}
+\newcommand{\dsaKastentitel}[1]{%
+  {\bfseries\fontsize{\dsakastentitelgrad bp}{\dsakastendurchschuss bp}%
+   \selectfont #1\par}%
+  \nobreak}
 
 \newcommand*{\dsaTabellenlinie}{\arrayrulecolor{dsatabellenlinie}}
 

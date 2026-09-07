@@ -187,7 +187,8 @@ ist so übernommen. Wer es symmetrisch will, setzt `\dsakolumneaussenlinks` glei
 | `\dsaEinfuehrung{Text}` | kursiv, Laufweite +10 |
 | `\dsaStimmung{Text}{Quelle}` | Pfeile aufrecht, Text kursiv, Quelle mit Bindestrich, ohne Punkt |
 | `\dsaZitat{Text}` | `#404040`, kursiv, zentriert |
-| `\dsaVorlesetext{Text}` | Zierleiste darüber, Spaltenbreite |
+| `\dsaVorlesetext[Einheiten]{Text}` | Zierleiste darüber, 15,39 mm breiter als die Spalte |
+| `\dsaKastentitel{Titel}` | Überschrift im Kasten, 12 bp fett |
 | `\begin{dsaWerteabsatz}` | hängender Einzug 8,504 pt |
 | `\dsaBand{ABE}{8}` | hochgestelltes Bandkürzel |
 | `\dsaKapitaelchen{Text}` | nachgebildete Kapitälchen, 82 % Versalien |
