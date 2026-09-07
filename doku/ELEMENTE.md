@@ -69,21 +69,28 @@ Gesetzt wird von unten: die Grundlinie der **letzten** Zeile sitzt auf `\dsatite
 weitere Zeile schiebt nach oben. Ein dreizeiliger Titel wächst also in das Bild hinein und nicht in
 den unteren Rahmen.
 
-Der Aufbau folgt `Cover_Buchtitel.psd` aus dem Baukasten: eine graue Fläche hinter dem Schriftzug,
-ihr Schlagschatten, der Schlagschatten der Schrift, eine feine Lichtkante und der Verlauf in der
-Schrift. Alles einstellbar, in der Präambel:
+Der Aufbau hat drei Lagen, von hinten nach vorn: die graue Fläche in der Form des Schriftzugs, der
+helle Rand um die Schrift, der Verlauf in der Schrift. Das PSD führt zusätzlich zwei Schlagschatten,
+einen für die Fläche und einen für die Schrift; beide sind dort weichgezeichnet und teildeckend.
+Hart nachgebildet lasen sie sich als zweiter, versetzter Schriftzug und überdeckten den hellen Rand
+— sie sind deshalb nicht enthalten.
+
+Alles einstellbar, in der Präambel:
 
 | Befehl | Voreinstellung | Wirkung |
 |---|---|---|
 | `\dsaTitelGrad{42.8}` | 42,8 pt | Schriftgrad aller Zeilen |
-| `\dsaTitelRand{8.4}` | 8,4 pt | Breite der grauen Fläche um die Schrift |
+| `\dsaTitelRand{13}` | 13 pt | Breite der grauen Fläche um die Schrift |
+| `\dsaTitelKontur{0.24}` | 0,24 pt | Breite des hellen Rands (1 px bei 300 ppi; das PSD gibt 0,72) |
 | `\dsaTitelZeilenfaktor{1.0}` | 1,0 | Zeilenabstand als Vielfaches des Grads; ab etwa 1,25 stehen die Flächen getrennt |
 | `\dsaTitelUnten{31.3mm}` | 31,3 mm | Grundlinie der letzten Zeile über der Papierkante |
-| `\dsaTitelTiefer{2.5pt}` | 2,5 pt | Versatz der Fläche nach unten, Ausgleich für Oberlängen |
+| `\dsaTitelTiefer{6.4pt}` | 6,4 pt | Versatz der Fläche nach unten, Ausgleich für Oberlängen |
 | `\dsaTitelVerlaufAus` | — | schlicht weiß mit Kontur |
 | `\dsaTitelFlaecheAus` | — | ohne graue Fläche |
-| `\dsaTitelRahmenAus` | — | ohne Lichtkante |
-| `\dsaTitelStrichAus` | — | Fläche über `\contour` statt über einen Konturstrich; braucht keine PDF-Specials, dauert aber rund zwanzigmal so lang |
+| `\dsaTitelRahmenAus` | — | ohne hellen Rand |
+
+Zwei Werte in der Klasse steuern, wie glatt der Rand der Fläche wird: `\dsatitelperlabstand`
+(0,6 pt) und `\dsatitelflaechenstufen` (5). Warum, steht in `MASSE.md`.
 
 Nicht gebaut: der **Buchrücken**. Die Grafik dafür (`Cover_Buchtitel`, 184,3 mm breit — genau der
 Grafikbereich) liegt im Baukasten, das Element fehlt.

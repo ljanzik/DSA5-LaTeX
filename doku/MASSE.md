@@ -114,16 +114,40 @@ Vier Effekte liegen im PSD auf der Titelebene, ein fünfter auf der Ebene *Rahme
 
 | Lage | PSD | in der Klasse |
 |---|---|---|
-| Fläche „Rahmen" | Block mit harter Kante, 35 px um die Textbox, `2E2832` | Silhouette der Schrift, 8,4 pt Abstand |
-| Schlagschatten der Fläche | 21 px Abstand, 21 px Weichzeichnung, 75 % | dieselbe Silhouette, 2,5/−4,3 pt versetzt |
-| Schlagschatten der Schrift | 31 px Abstand, 18 px Weichzeichnung, 63 % | Strich in `1A161B`, 3,7/−6,4 pt versetzt |
-| Kontur | 3 px, Verlauf `A6A6A6` nach `2B2630` | Strich 0,72 pt in `A6A6A6` |
+| Fläche „Rahmen" | Block mit harter Kante, 35 px um die Textbox, `2E2832` | Silhouette der Schrift, 13 pt Abstand |
+| Schlagschatten der Fläche | 21 px Abstand, 21 px Weichzeichnung, 75 % | **nicht enthalten** |
+| Schlagschatten der Schrift | 31 px Abstand, 18 px Weichzeichnung, 63 % | **nicht enthalten** |
+| Kontur | 3 px, Verlauf `A6A6A6` nach `2B2630` | 0,24 pt in `A6A6A6`, einfarbig |
 | Verlauf in der Schrift | senkrecht `C5B8CE` nach `28232D`, 42 % Skalierung | Schattierung mit vier Haltepunkten, vom Schriftzug maskiert |
 
+Beide Schlagschatten sind im PSD weichgezeichnet und teildeckend. Ohne Weichzeichnung nachgebildet
+bleibt von ihnen ein zweiter, versetzter Schriftzug, der den hellen Rand auf zwei Seiten überdeckt
+und selbst wie die Umrandung wirkt. Sie sind deshalb nicht enthalten.
+
 Die Fläche ist im PSD ein Block, hier eine Silhouette: der Block müsste für jeden Titel neu
-gezeichnet werden, die Silhouette passt sich an. Weil die Silhouette den Oberlängen folgt, steht
-über einer Zeile ohne Unterlängen mehr Fläche als darunter; 2,5 pt Versatz nach unten gleichen das
-aus, am gerasterten Ergebnis gemessen.
+gezeichnet werden, die Silhouette passt sich an. 13 pt statt der 35 px des PSD, damit die Flächen
+zweier Zeilen ineinanderlaufen — bei 42,8 pt Zeilenabstand und rund 31 pt hoher Tinte bleiben
+11,8 pt Luft, in denen sich zwei Ränder von je 13 pt um 14 pt überlappen.
+
+**Warum der Rand ausfranst, und was dagegen hilft.** `\contour` setzt seine Kopien auf einem
+*Kreisumfang* vom Radius R, nicht in der Fläche. Bei R = 8,4 pt und 24 Kopien liegen zwei
+Nachbarkopien 2π·R/24 = 2,2 mm auseinander — wo ein Buchstabenzug schmaler ist als dieser Abstand,
+überlappen die Kopien nicht mehr und der Rand wird zur Perlenschnur. Die Kopienzahl hängt deshalb
+am Radius: `ceil(2π·R / \dsatitelperlabstand)` mit 0,6 pt, bei 13 pt Radius also 137 Kopien. Nur
+die äußerste Lage braucht das; die inneren füllen die Lücke zwischen Kopienring und Schrift und
+bleiben bei `\dsatitelkopieninnen` = 16.
+
+**Und warum die Fläche einen Versatz braucht.** Sie folgt der Tinte, und Oberlängen reichen weiter
+nach oben, als die Grundlinie nach unten reicht. Gemessen am gerasterten Titel, Fläche über ihre
+Farbe und Schrift über ihre Helligkeit getrennt:
+
+| Versatz | Rand oben | Rand unten |
+|---|---|---|
+| 0 pt | 18,72 pt | 6,00 pt |
+| 6 pt | 12,72 pt | 12,00 pt |
+| **6,4 pt** | **12,24 pt** | **12,24 pt** |
+
+Der Wert hängt am Text: Zeilen mit Unterlängen brauchen weniger, Versalien mehr.
 
 **Zwei Fallen dabei**, beide gekostet haben sie einen halben Tag:
 
@@ -159,11 +183,19 @@ links.
 
 ### Laufzeit
 
-Ein Lauf mit Umschlag dauert knapp eine Minute. Das sind nicht die Textabzüge des Titels — mit
-einer Kopie statt zweihundert bleibt es dabei. Es sind die Seitenhintergründe: 7 bis 8 MB je Seite,
-und jeder Lauf bettet sie neu ein. Die Klassenoption `ohnehintergrund` lässt sie weg und bringt den
-Lauf auf 8 Sekunden, das PDF von 19 auf 4 MB. `entwurf` ersetzt darüber hinaus alle Grafiken durch
-Rahmen.
+Ein Lauf mit Umschlag dauert knapp eine Minute. Das sind **nicht** die Textabzüge des Titels: der
+Versuch, sie durch einen einzigen Konturstrich zu ersetzen, brachte 59 auf 59 Sekunden. Es sind die
+Seitenhintergründe — 7 bis 8 MB je Seite, und jeder Lauf bettet sie neu ein. Die Klassenoption
+`ohnehintergrund` lässt sie weg und bringt den Lauf auf 6 bis 8 Sekunden, das PDF von 19 auf 4 MB.
+`entwurf` ersetzt darüber hinaus alle Grafiken durch Rahmen.
+
+Der Konturstrich selbst wäre der elegantere Weg gewesen: PDF kann Text stricheln
+(Textrendermodus 2), und unter XeLaTeX geht das über ein dvipdfmx-Special — `pdfrender` kann es
+nicht, es braucht pdfTeX. Für den feinen hellen Rand funktioniert es auch. Für die 13 pt breite
+Fläche nicht: bei dieser Strichbreite zeichnet der Renderer nichts mehr. Deshalb bleibt es bei
+`\contour`. Zwei Fallen dabei, für den Fall, dass es jemand erneut versucht: die Strichbreite `w`
+gilt im Textraum, eine Einheit ist Grad/1000 Punkt, und der Strich liegt mittig auf der
+Glyphenkante — für einen Außenrand braucht es die doppelte Breite.
 
 **Zwei Eigenheiten der Schriften.** Andalus hat nur einen Schnitt — Fett und Kursiv rechnet XeLaTeX
 daraus selbst. Und **keine** der fünf Dateien hat das OpenType-Feature `smcp`, echte Kapitälchen

@@ -759,9 +759,10 @@
 % Zeilenabstand — der Durchschuss ist damit das Uebliche 1,2fache.
 \newcommand*{\dsatitelgrad}{42.8}        % Schriftgrad in pt, aus dem PSD
 \newcommand*{\dsatiteldurchschuss}{51.4} % Zeilenabstand in pt, 1,2fach
-\newlength{\dsatitelkontur}    \setlength{\dsatitelkontur}{0.72pt}
-\newcommand*{\dsatitelkonturpt}{0.72}  % dasselbe als Zahl, fuer den Strich
-% 0,72 pt sind die 3 px Kontur aus Cover_Buchtitel.psd bei 300 ppi.
+% Die Kontur des Schriftzugs, der helle Saum. Das PSD gibt 3 px, also
+% 0,72 pt bei 300 ppi. Voreinstellung hier ist 1 px = 0,24 pt: die feine
+% Linie, nicht der breite Saum. Aendern mit \dsaTitelKontur.
+\newcommand*{\dsatitelkonturmass}{0.24}  % Breite des hellen Rands in pt
 \newlength{\dsatitelzeileeins} \setlength{\dsatitelzeileeins}{55mm}
 \newlength{\dsatitelzeilezwei} \setlength{\dsatitelzeilezwei}{77mm}
 
@@ -809,29 +810,51 @@
 % Masse in pt, aus dem PSD umgerechnet (300 ppi, 1 px = 0,24 pt).
 %
 % Die Flaeche haelt 35 px = 8,4 pt Abstand zur Schrift, auf allen Seiten
-% gleich. Ihr Schlagschatten: 21 px Abstand unter 120 Grad, 75 Prozent.
-\newcommand*{\dsatitelrand}{8.4}          % Abstand der Flaeche zur Schrift
-\newcommand*{\dsatitelflaechenversatzx}{2.5pt}
-\newcommand*{\dsatitelflaechenversatzy}{-4.3pt}
-\newcommand*{\dsatitelflaechendeckung}{0.5}
-% Die Flaeche folgt der Schrift, also auch ihren Oberlaengen. Eine Zeile ohne
-% Unterlaengen — „Ganter" etwa — bekommt dadurch oben mehr Flaeche als unten,
-% und die Schrift sitzt zu tief darin. Dieser Versatz nach unten gleicht das
-% aus. Kein Mass aus dem PSD, sondern am eigenen Ergebnis gemessen: der
-% gerasterte Titel, Flaeche und Kontur ueber ihre Farben getrennt, ergab ohne
-% Versatz 10,8 pt Rand oben gegen 3,4 pt unten und mit 4 pt umgekehrt
-% 6,7 gegen 11,0. Ausgeglichen ist es bei 2,5 pt.
-\newcommand*{\dsatitelflaechetiefer}{2.5pt}
+% gleich.
 %
-% Der Schlagschatten des Schriftzugs: 31 px Abstand unter 120 Grad, 18 px
-% Weichzeichnung, 63 Prozent. Nachgebildet als \contour-Lagen mit steigendem
-% Radius und fallender Deckung, je Eintrag „Radius/Deckung".
-% Kopien je \contour-Ring. Weniger macht die Kante der Flaeche kantig,
-% mehr kostet Rechenzeit: jede Kopie ist ein eigener Textabzug.
-\newcommand*{\dsatitelkopien}{24}
-\newcommand*{\dsatitelschriftschatten}{2/0.3, 4/0.18}
-\newcommand*{\dsatitelschriftversatzx}{3.7pt}
-\newcommand*{\dsatitelschriftversatzy}{-6.4pt}
+% Ihren Schlagschatten — im PSD 21 px Abstand unter 120 Grad, 21 px
+% Weichzeichnung, 75 Prozent — gibt es hier nicht. Ohne Weichzeichnung
+% nachgebildet blieb davon eine zweite, versetzte Silhouette, und die liest
+% sich als Schlagschatten des Schriftzugs statt als Schatten einer Flaeche.
+% 8,4 pt sind die 35 px des PSD. Mehr laesst die Flaechen zweier Zeilen
+% ineinanderlaufen: bei 42,8 pt Zeilenabstand und rund 31 pt hoher Tinte
+% bleiben 11,8 pt Luft zwischen den Zeilen, in denen sich zwei Raender von
+% je 13 pt um 14 pt ueberlappen. Damit ist auch die Einschnuerung zwischen
+% den Zeilen weg. Wer die Zeilen stattdessen zusammenruecken will, nimmt
+% \dsaTitelZeilenfaktor{0.95} und laesst den Rand kleiner.
+\newcommand*{\dsatitelrand}{13}           % Abstand der Flaeche zur Schrift
+\newcommand*{\dsatitelflaechenstufen}{5}  % Radienstufen der Flaeche
+% Die Flaeche folgt der Schrift, also auch ihren Oberlaengen — und die reichen
+% weiter nach oben, als die Grundlinie nach unten reicht. Ohne Ausgleich
+% steht deshalb oben deutlich mehr Flaeche als unten, und der Schriftzug
+% sitzt zu tief darin. Dieser Versatz nach unten gleicht es aus.
+%
+% Kein Mass aus dem PSD, sondern am eigenen Ergebnis gemessen: Flaeche ueber
+% ihre Farbe und Schrift ueber ihre Helligkeit getrennt, an zwei Punkten:
+%
+%   Versatz 0 pt   Rand oben 18,72 pt   unten  6,00 pt
+%   Versatz 6 pt   Rand oben 12,72 pt   unten 12,00 pt
+%
+% Der Wert haengt am Text: Zeilen mit Unterlaengen brauchen weniger, eine
+% Zeile in Versalien mehr. 6,4 pt passt fuer einen zweizeiligen Titel aus
+% gemischten Buchstaben.
+\newcommand*{\dsatitelflaechetiefer}{6.4pt}
+%
+% Wie glatt der Rand der Flaeche wird, haengt am Abstand zweier Nachbarkopien
+% auf dem \contour-Kreis: liegt er unter der Strichstaerke des duennsten
+% Buchstabenzugs, verschmelzen die Kopien und der Rand ist glatt; darueber
+% perlt er aus. 0,6 pt ist bei Andalus in 42,8 pt sicher, kostet aber bei
+% 11 pt Radius schon 116 Kopien.
+%
+% Diese Zahl braucht nur die AEUSSERSTE Lage. Die inneren fuellen die Luecke
+% zwischen Kopienring und Schrift und duerfen grob bleiben.
+\newcommand*{\dsatitelperlabstand}{0.6}
+\newcommand*{\dsatitelkopieninnen}{16}
+%
+% Den Schlagschatten des Schriftzugs — im PSD 31 px Abstand, 18 px
+% Weichzeichnung, 63 Prozent — gibt es hier nicht. Hart nachgebildet, ohne
+% Weichzeichnung und ohne Teildeckung, ueberdeckte er die feine Kontur auf
+% zwei Seiten und wirkte selbst wie die Umrandung.
 
 % Der Verlauf laeuft nicht ueber die ganze Zeilenhoehe: Photoshop skaliert ihn
 % auf 42 Prozent und versetzt ihn nach unten. Darunter bleibt es durchgehend
@@ -841,33 +864,6 @@
 \pgfdeclareverticalshading{dsatitelverlauf}{100bp}{%
   color(0bp)=(dsatiteldunkel); color(15bp)=(dsatiteldunkel);
   color(78bp)=(dsatitelhell);  color(100bp)=(dsatitelhell)}
-\newcommand*{\dsatitelkonturkopien}{16}   % Kopien fuer die Kontur
-
-% Dieselben Farben in PDF-Schreibweise, fuer den Konturstrich. Ein Special
-% kennt keine xcolor-Namen.
-\newcommand*{\dsatitelflaechepdf}{0.180 0.157 0.196}  % 2E2832
-\newcommand*{\dsatitelkantepdf}{0.651 0.651 0.651}    % A6A6A6
-\newcommand*{\dsatitelschattenpdf}{0.055 0.047 0.059} % Schatten der Flaeche
-\newcommand*{\dsatitelschriftpdf}{0.102 0.086 0.106}  % Schatten der Schrift
-
-% Der Rahmen als Strich (Voreinstellung) oder als \contour-Stapel. Der Stapel
-% ist der Rueckfallweg, falls ein anderer Treiber die Specials verwirft: er
-% braucht keine, dauert aber rund zwanzigmal so lang.
-\newif\ifdsa@titelstrich \dsa@titelstrichtrue
-\newcommand*{\dsaTitelStrichAus}{\dsa@titelstrichfalse}
-\newcommand*{\dsaTitelStrichAn}{\dsa@titelstrichtrue}
-
-% #1 Strichbreite in Textraumeinheiten  #2 Farben in PDF-Schreibweise
-\newcommand{\dsa@strichan}[2]{\special{pdf:code q 2 Tr #1 w 1 J 1 j #2}}
-\newcommand*{\dsa@strichaus}{\special{pdf:code 0 Tr Q}}
-
-% Eine Textkopie mit Strich. #1 Anker  #2 Strichbreite in pt
-% #3 Farben  #4 Schriftgrad  #5 Text
-\newcommand{\dsa@titelstrichform}[5]{%
-  \pgfmathsetmacro{\dsa@strichw}{#2*1000/#4}%
-  \node[anchor=center, inner sep=1pt] at (#1)
-    {\dsa@strichan{\dsa@strichw}{#3 RG #3 rg}%
-     \dsa@titelschriftgrad{#4}#5\dsa@strichaus};}
 
 % Die beiden Lagen hinter dem Schriftzug einzeln schaltbar: der duenne Rahmen
 % (die Kontur des Schriftzugs) und der grosse graue (die Ebene „Rahmen").
@@ -903,17 +899,21 @@
 % #5 Schriftgrad  #6 Text
 \newlength{\dsa@titelradius}
 \newlength{\dsa@titeltiefer}
-\newlength{\dsa@titelhilf}
-\newlength{\dsa@titelschattenx}
-\newlength{\dsa@titelschatteny}
-\newlength{\dsa@titelschriftx}
-\newlength{\dsa@titelschrifty}
 \newcommand{\dsa@titelform}[6]{%
   \foreach \dsa@k in {1,...,#4}{%
     \pgfmathsetlength{\dsa@titelradius}{#3pt*\dsa@k/#4}%
+    % Kopienzahl: nur die aeusserste Lage braucht so viele, dass zwei
+    % Nachbarkopien \dsatitelperlabstand nicht ueberschreiten.
+    \ifnum\dsa@k=#4\relax
+      \pgfmathtruncatemacro{\dsa@kopien}%
+        {max(\dsatitelkopieninnen,
+             ceil(6.2832*#3/\dsatitelperlabstand))}%
+    \else
+      \pgfmathtruncatemacro{\dsa@kopien}{\dsatitelkopieninnen}%
+    \fi
     \node[anchor=center, inner sep=1pt] at (#1)
       {\dsa@titelschriftgrad{#5}%
-       \contourlength{\dsa@titelradius}\contournumber{\dsatitelkopien}%
+       \contourlength{\dsa@titelradius}\contournumber{\dsa@kopien}%
        \contour{#2}{\textcolor{#2}{#6}}};}}
 
 % Der Verlauf entsteht NICHT ueber ein pgf-Fading. Das waere der naheliegende
@@ -954,10 +954,9 @@
 % ausgeschrieben, bevor er hierher kommt.
 %
 % Reihenfolge von hinten nach vorn, wie im PSD:
-%   1 der grosse graue Rahmen: sein Schlagschatten, dann die Flaeche
-%   2 der Schlagschatten des Schriftzugs
-%   3 der duenne Rahmen: die Kontur des Schriftzugs
-%   4 der Verlauf in der Schrift
+%   1 die graue Flaeche in der Form des Schriftzugs
+%   2 der helle Rand: die Kontur des Schriftzugs
+%   3 der Verlauf in der Schrift
 \newcommand{\dsaTitelZeileAn}[4]{%
   % Alle Masse gelten fuer \dsatitelbezugsgrad und skalieren mit dem Grad
   % dieser Zeile.
@@ -968,14 +967,7 @@
   % stehen. Erst als Teil der Koordinate wirkt der Versatz.
   \pgfmathsetlength{\dsa@titeltiefer}%
                    {\dsa@titelskala*\dsatitelflaechetiefer}%
-  \pgfmathsetlength{\dsa@titelschattenx}%
-                   {\dsa@titelskala*\dsatitelflaechenversatzx}%
-  \pgfmathsetlength{\dsa@titelschatteny}%
-                   {\dsa@titelskala*\dsatitelflaechenversatzy-\dsa@titeltiefer}%
-  \pgfmathsetlength{\dsa@titelschriftx}%
-                   {\dsa@titelskala*\dsatitelschriftversatzx}%
-  \pgfmathsetlength{\dsa@titelschrifty}%
-                   {\dsa@titelskala*\dsatitelschriftversatzy}%
+
   \node[anchor=south, inner sep=0] at (#2){%
     \begin{tikzpicture}
       \node[anchor=center, inner sep=1pt, opacity=0] (dsa@tzk)
@@ -983,71 +975,28 @@
       \path[use as bounding box]
         (dsa@tzk.south west) rectangle (dsa@tzk.north east);
       \ifdsa@titelverlauf
-        \ifdsa@titelstrich
-          %%% Weg 1: Strich. Vier Textkopien, keine Stapel.
-          \ifdsa@titelflaeche
-            % 1a der Schlagschatten der Flaeche, versetzt und dunkler
-            \pgfmathsetlength{\dsa@titelhilf}%
-                             {\dsa@titelschattenx}%
-            \dsa@titelstrichform{[shift={(\dsa@titelschattenx,%
-                                          \dsa@titelschatteny)}]dsa@tzk.center}%
-                                {\dsa@titelrandjetzt}{\dsatitelschattenpdf}%
-                                {#3}{#4}%
-            % 1b die Flaeche
-            \dsa@titelstrichform{[shift={(0pt,-\dsa@titeltiefer)}]%
-                                 dsa@tzk.center}%
-                                {\dsa@titelrandjetzt}{\dsatitelflaechepdf}%
-                                {#3}{#4}%
-          \fi
-          % 2 der Schlagschatten des Schriftzugs, auf der Flaeche liegend.
-          % Statt Transparenz eine dunklere Farbe — er liegt ohnehin nur auf
-          % der Flaeche, und ein Special fuer Transparenz waere ein weiterer
-          % Grafikzustand.
-          \pgfmathsetmacro{\dsa@rjetzt}{3*\dsa@titelskala}%
-          \dsa@titelstrichform{[shift={(\dsa@titelschriftx,%
-                                        \dsa@titelschrifty)}]dsa@tzk.center}%
-                              {\dsa@rjetzt}{\dsatitelschriftpdf}{#3}{#4}%
-          \ifdsa@titelrahmen
-            % 3 die feine Kontur als Lichtsaum
-            \pgfmathsetmacro{\dsa@rjetzt}%
-                            {\dsa@titelskala*\dsatitelkonturpt}%
-            \dsa@titelstrichform{dsa@tzk.center}{\dsa@rjetzt}%
-                                {\dsatitelkantepdf}{#3}{#4}%
-          \fi
-        \else
-          %%% Weg 2: \contour-Stapel. Rueckfallweg ohne Specials.
-          \ifdsa@titelflaeche
-            \begin{scope}[transparency group,
-                          opacity=\dsatitelflaechendeckung]
-              \dsa@titelform{[shift={(\dsa@titelschattenx,\dsa@titelschatteny)}]%
-                             dsa@tzk.center}%
-                            {black}{\dsa@titelrandjetzt}{2}{#3}{#4}
-            \end{scope}
-            \dsa@titelform{[shift={(0pt,-\dsa@titeltiefer)}]dsa@tzk.center}%
-                          {dsatitelflaeche}{\dsa@titelrandjetzt}{3}{#3}{#4}%
-          \fi
-          \foreach \dsa@r/\dsa@d in \dsatitelschriftschatten {%
-            \pgfmathsetmacro{\dsa@rjetzt}{\dsa@r*\dsa@titelskala}%
-            \begin{scope}[transparency group, opacity=\dsa@d]
-              \dsa@titelform{[shift={(\dsa@titelschriftx,%
-                                      \dsa@titelschrifty)}]dsa@tzk.center}%
-                            {black}{\dsa@rjetzt}{1}{#3}{#4}
-            \end{scope}}%
-          \ifdsa@titelrahmen
-            \pgfmathsetlength{\dsa@titelradius}%
-                             {\dsa@titelskala*\dsatitelkontur}%
-            \node[anchor=center, inner sep=1pt] at (dsa@tzk.center)
-              {\dsa@titelschriftgrad{#3}\contourlength{\dsa@titelradius}%
-               \contournumber{\dsatitelkonturkopien}%
-               \contour{dsatitelkante}{\textcolor{dsatitelkante}{#4}}};
-          \fi
+        \ifdsa@titelflaeche
+          % 1 die graue Flaeche, gleichmaessig aufgeblaeht, harte Kante
+          \dsa@titelform{[shift={(0pt,-\dsa@titeltiefer)}]dsa@tzk.center}%
+                        {dsatitelflaeche}{\dsa@titelrandjetzt}%
+                        {\dsatitelflaechenstufen}{#3}{#4}%
         \fi
-        % 4 der Verlauf, vom Schriftzug maskiert
+        \ifdsa@titelrahmen
+          % 2 der helle Rand um den Schriftzug, ueber dieselbe Routine wie
+          % die Flaeche: eine Lage genuegt, weil bei so kleinem Radius keine
+          % Luecke zum Schriftzug bleibt.
+          \pgfmathsetmacro{\dsa@randjetzt}%
+                          {\dsa@titelskala*\dsatitelkonturmass}%
+          \dsa@titelform{dsa@tzk.center}{dsatitelkante}{\dsa@randjetzt}%
+                        {1}{#3}{#4}%
+        \fi
+        % 3 der Verlauf, vom Schriftzug maskiert
         \shade[shading=dsatitelverlauf, path fading=#1, fit fading=false]
           (dsa@tzk.south west) rectangle (dsa@tzk.north east);
       \else
+        \pgfmathsetlength{\dsa@titelradius}{\dsatitelkonturmass pt}%
         \node[anchor=center, inner sep=1pt] at (dsa@tzk.center)
-          {\dsa@titelschriftgrad{#3}\contourlength{\dsatitelkontur}%
+          {\dsa@titelschriftgrad{#3}\contourlength{\dsa@titelradius}%
            \contour{black}{\textcolor{white}{#4}}};
       \fi
     \end{tikzpicture}};}
@@ -1105,7 +1054,8 @@
 %   \dsaTitelZeilenfaktor{1.0}  Zeilenabstand als Vielfaches des Grads
 %   \dsaTitelUnten{31.3mm}      Grundlinie der letzten Zeile ueber der
 %                               unteren Papierkante
-%   \dsaTitelTiefer{4pt}        Versatz des Rahmens nach unten
+%   \dsaTitelTiefer{2.5pt}      Versatz des Rahmens nach unten
+%   \dsaTitelKontur{0.24}       Breite der Kontur in pt (1 px bei 300 ppi)
 %   \dsaTitelVerlaufAus         schlicht weiss mit Kontur statt Verlauf
 %   \dsaTitelFlaecheAus         ohne grauen Rahmen
 %   \dsaTitelRahmenAus          ohne die feine Kontur
@@ -1118,6 +1068,9 @@
   \renewcommand*{\dsatitelzeilenfaktor}{#1}}
 \newcommand{\dsaTitelUnten}[1]{\setlength{\dsatitelunten}{#1}}
 \newcommand{\dsaTitelTiefer}[1]{\renewcommand*{\dsatitelflaechetiefer}{#1}}
+% Breite der Kontur, als Zahl in pt. Setzt beide Fassungen: die Laenge fuer
+% den \contour-Weg und die Zahl fuer den Strich.
+\newcommand{\dsaTitelKontur}[1]{\renewcommand*{\dsatitelkonturmass}{#1}}
 
 \newcounter{dsa@titelzahl}
 \newcounter{dsa@titelnr}
