@@ -1,0 +1,264 @@
+%%% beispiel.tex — zeigt jedes Element der Klasse genau einmal.
+%%%
+%%%   cd beispiel && xelatex beispiel.tex     (dreimal)
+%%%
+%%% Vorher muessen die Grafiken und Schriften da sein:
+%%%   python3 ../werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
+%%%   python3 ../werkzeuge/pruefen.py
+%%%
+%%% Dieses Dokument ist zugleich der Probelauf. Die Abschnitte sind einzeln
+%%% auskommentierbar, um einen Fehler einzukreisen. Die Liste der Stellen, die
+%%% beim ersten Lauf zu pruefen sind, steht in doku/ELEMENTE.md.
+
+\documentclass[raster,rasterzeigen]{dsa5satz}
+
+% Die Klasse sucht Grafiken und Schriften relativ zum Arbeitsverzeichnis.
+% Von beispiel/ aus liegen sie eine Ebene hoeher.
+\graphicspath{{../}}
+
+\begin{document}
+
+%%% ==================================================================
+%%% Umschlag
+%%% ==================================================================
+% Braucht ein Coverbild. Ohne eigenes: die Aventurienkarte nehmen, die das
+% Aufbereitungswerkzeug mitliefert.
+\dsaUmschlagVorne{grafiken/aventurienkarte}{Ein Beispiel}{in zwei Zeilen}
+
+%%% ==================================================================
+%%% Impressum
+%%% ==================================================================
+\begin{dsaImpressumseite}
+
+\dsaImpressumsblock{Autor}{[Name]}
+\dsaImpressumsblock{Satz, Layout \& Gestaltung}{[Name]}
+\dsaImpressumsblock{Layoutvorlagen}{Ulisses Spiele, Scriptorium Aventuris v4}
+
+\dsaRasterluft{2}
+\dsaRechtstext{2026 von [Name]}
+
+\end{dsaImpressumseite}
+
+\dsaInhalt
+
+%%% ==================================================================
+\dsakapitel{Satzspiegel und Raster}
+%%% ==================================================================
+
+Diese Seite ist mit \verb|rasterzeigen| gebaut. Die feinen Linien sind das
+Grundlinienraster, 12 pt Abstand, erste Linie 12,7 mm unter der
+Papieroberkante. Die staerkere Linie ist die Oberkante des Satzspiegels bei
+24 mm.
+
+\textbf{Was zu pruefen ist:} Jede Textzeile muss auf einer feinen Linie
+sitzen, und die Zeilen beider Spalten muessen auf derselben Hoehe liegen.
+
+Sollmasse: Satzbreite 166 mm, Spaltenbreite 80,5 mm, Spaltensteg 5 mm, 59
+Zeilen je Spalte. Zugleich der Test fuer die deutsche Silbentrennung:
+Grundlinienraster, Abenteuerzusammenfassung, Meisterinformationen,
+Aufzaehlungszeichen, Seitenhintergrundgrafik, Spaltenzwischenraum.
+
+\dsaunterkapitel{Unterkapitel, zentriert}
+\dsaabschnitt{Abschnitt, Gentium Basic fett 13 pt}
+\dsaunterabschnitt{Unterabschnitt, Gentium Basic fett 10 pt}
+
+Alle vier Groessen sind im Klartext des Verlags belegt.
+
+\dsaAbschnittGelb{Abschnitt mit Pergamentverlauf}
+
+\clearpage
+
+%%% ==================================================================
+\dsakapitel{Fliesstext und Marken}
+%%% ==================================================================
+
+\dsaEinfuehrung{Einfuehrungstext, kursiv mit Laufweite plus zehn.}
+
+\dsaStimmung{Wer zaehlt, der irrt sich nur einmal. Wer nicht zaehlt, irrt
+sich immer.}{Ein Sprichwort, aufgeschrieben irgendwo}
+
+\dsaZitat{Freistehendes Zitat, Grauwert 404040, kursiv, zentriert.}
+
+Gewoehnlicher Fliesstext im Blocksatz, Gentium Basic 10 pt auf 12 pt. Ein
+Verweis steht hochgestellt hinter dem Regelelement, etwa
+Trampeln\dsaBand{ABE}{8}. Zahlenangaben stehen im Textmodus:
+\dsaFormel{1W6+4} Schaden, ein Modifikator von \dsaMod{-}{2}, eine Tragkraft
+von KK\dsaMal 2. \dsaKapitaelchen{Nachgebildete Kapitaelchen} — keine der
+Schriften hat echte.
+
+Meisterinformation beginnt hier \dsaAugeSchwarz{} und endet im Kasten
+\dsaAugeWeiss{}. Fokusregel: \dsaFokusregel{Neu}. Gegnerabstufung:
+\dsaBauer{} \dsaSpringer{} \dsaTurm{} \dsaKoenig{}. Rautenskalen, in TikZ
+gezeichnet: \dsaRautenRot{2}{18mm} und \dsaRautenGruen{4}{18mm}.
+
+\dsaFiole{l}
+Die Fiole am linken Rand markiert einen Vorschlag, die Szene leichter zu
+machen. Sie ist 9,1 mm gross, wie im Baukasten.
+
+\dsaSchaedel{r}
+Der Totenkopf markiert das Gegenteil. Ebenfalls 9,1 mm.
+
+\begin{dsaliste}
+\item Aufzaehlung mit der DSA-Raute
+\item zweite Zeile
+\end{dsaliste}
+
+\begin{dsalisteblau}
+\item Blaue Raute
+\end{dsalisteblau}
+
+\begin{dsaWerteabsatz}
+Werteabsatz mit haengendem Einzug von 8,504 pt. Die zweite Zeile ruecken ein.
+\end{dsaWerteabsatz}
+
+\dsaVorlesetext{Vorlesetext mit der Zierleiste darueber.}
+
+\clearpage
+
+%%% ==================================================================
+\dsakapitel{Kaesten}
+%%% ==================================================================
+
+\begin{dsaPergamentKlein}
+Pergament klein, 85,5 mal 50,7 mm, 12 Rastereinheiten. Ragt 2,5 mm je Seite
+ueber die Spalte — so gewollt, der Zierrand liegt ausserhalb des
+Textbereichs.
+\end{dsaPergamentKlein}
+
+\begin{dsaWerteMittel}
+Wertekasten mittel, 86,9 mal 103,8 mm.
+
+\begin{dsaWerteblock}
+MU 11 \quad KL 13 \quad IN 14 \quad CH 10\\
+LeP 30 \quad INI \dsaFormel{12+1W6}
+\end{dsaWerteblock}
+\end{dsaWerteMittel}
+
+\clearpage
+
+% Das Portraitbild kommt als Schluessel, nicht als Befehl im Inhalt.
+\begin{dsaWerteMittelPortrait}[dsaportrait=grafiken/aventurienkarte]
+Wertekasten mittel mit Portrait, 94,0 mal 104,0 mm. Das Medaillon tritt
+13,5 mm zur Aussenseite heraus. Vorlaeufig nur die rechte Lage.
+\end{dsaWerteMittelPortrait}
+
+\begin{dsaMeisterMaske}
+Meisterkasten mit angesetzter Maske, 84,0 mal 108,0 mm, Text weiss. Der
+Regelfall im Text, weil er fast Spaltenbreite hat.
+\end{dsaMeisterMaske}
+
+\begin{dsaMeisterSchmal}
+Meisterkasten, 59,9 mal 114,2 mm — hochkant.
+\end{dsaMeisterSchmal}
+
+\clearpage
+\onecolumn
+
+\begin{dsaMeisterBreit}
+Maskenfeld breit, 177,9 mal 114,2 mm, breiter als die Satzbreite. Einspaltig.
+\end{dsaMeisterBreit}
+
+\twocolumn
+
+\begin{dsaKastenFrei}{14}
+Kasten in freier Hoehe, 14 Rastereinheiten. Pergamentflaeche in der
+gewuenschten Hoehe, Zierleisten oben und unten in wahrer Groesse — die
+Bauweise des Verlags.
+\end{dsaKastenFrei}
+
+\dsaMeistermaske[2]{Die fertige Meistermaske aus dem Baukasten, mittlere
+Hoehe. Sie enthaelt die gestrichelte Verbindung schon.}
+
+\clearpage
+
+%%% ==================================================================
+\dsakapitel{Bilder, Umfluss, Tabellen}
+%%% ==================================================================
+
+\dsaBildSpalte{grafiken/aventurienkarte}{10}
+
+Darunter laeuft der Text weiter und sitzt wieder auf der Grundlinie, weil das
+Bild eine ganze Zahl Rastereinheiten belegt.
+
+\dsaabschnitt{Kreis und Freiform}
+
+\dsaBildKreis{25mm}{grafiken/aventurienkarte}
+\dsaBildForm{30mm}{20mm}{(0,0) (1,0.6) (1.6,-0.3) (0.6,-1)}{grafiken/aventurienkarte}
+
+\dsaabschnitt{Umfluss mit festem Einzug}
+
+\dsaUmfluss{l}{2}{4}{25mm}
+Erstes Argument ist die Spalte, nicht die Seite. Zwei Zeilen stehen voll,
+dann weichen vier Zeilen um 25 mm aus, danach wieder voll. Der Text muss lang
+genug sein, dass alle sieben angegebenen Zeilen wirklich entstehen, sonst ist
+der Befund nicht aussagekraeftig. Noch ein Satz dafuer.
+
+\dsaabschnitt{Umfluss entlang einer Silhouette}
+
+\dsaUmflussKontur{r}{0}{11.6mm,12.1mm,13.5mm,13.4mm,11.9mm,16.4mm,16mm,17.9mm}
+Der Text umfliesst nicht den Bildrahmen, sondern den Freistellpfad. Deshalb
+ein Einzug je Zeile. Die acht Werte sind die ersten acht einer gemessenen
+Kontur. Der Absatz muss lang genug sein, dass alle acht Zeilen entstehen.
+
+\dsaabschnitt{Tabelle}
+
+\dsaTabellenkopf{Qualitaet und Preis einer Herberge}
+
+\dsaTabellenlinie
+\begin{tabular}{@{}ll@{}}
+\hline
+1 & jaemmerliche Bruchbude, 50 Prozent\\
+3 & einfache Herberge, Normalpreis\\
+6 & luxurioese Unterkunft, 400 Prozent\\
+\hline
+\end{tabular}
+
+\dsaProbe{Sinnesschaerfe (Suchen), erschwert um 2}
+\begin{dsaliste}
+\item QS 1: die erste Stufe
+\item QS 2: die zweite
+\item QS 3 und mehr: die dritte
+\end{dsaliste}
+
+\clearpage
+
+%%% ==================================================================
+\dsakapitel{Seitentypen}
+%%% ==================================================================
+
+Neun Typen, aber nur die zeigen sich in einem Musterbogen, die keine eigene
+Seite brauchen.
+
+\begin{dsaSeiteOhneZahl}
+Seite ohne Seitenzahl. Hintergrund ja, Seitenzahl nein.
+\end{dsaSeiteOhneZahl}
+
+\dsaGanzseite{grafiken/aventurienkarte}
+
+Ganzseitige Grafik im Grafikbereich, 184 mal 265 mm — der zweite Rahmen des
+Baukastens.
+
+% Querformat zuletzt, weil \newgeometry das Raster fuer die Folgeseiten neu
+% setzt und danach geprueft werden muss.
+\dsaQuerAnfang
+Querformat, etwa fuer einen Meisterschirm. Nicht im Baukasten, aber ein
+haeufiger Bedarf.
+\dsaQuerEnde
+
+Text nach der Querseite. Mit \verb|rasterzeigen| nachsehen, ob die
+Grundlinien wieder stimmen.
+
+%%% ==================================================================
+%%% Rueckseite
+%%% ==================================================================
+
+\dsaUmschlagHinten{grafiken/umschlag-hinten}{Ein Beispiel}{%
+  Hier steht der Klappentext.
+
+  \dsaZusammenfassung{ein Beispiel in wenigen Worten}{Beispiel}{keine}%
+    {irgendwo}{jederzeit}
+
+  \dsaAnforderungen{1}{4}{2}{1}
+}
+
+\end{document}

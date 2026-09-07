@@ -1,0 +1,23 @@
+# Bildmaterial und Schriften gehoeren NICHT ins Repository.
+# Beides ist Ulisses-Material unter der Scriptorium-Vereinbarung und mit
+# Apache 2.0 nicht vereinbar. Siehe README.md, Abschnitt "Warum keine
+# Grafiken im Projekt".
+grafiken/*
+!grafiken/.gitkeep
+schriften/*
+!schriften/.gitkeep
+
+# LaTeX-Zwischenstaende
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.xdv
+beispiel/*.pdf
+
+# Python
+__pycache__/
+*.pyc
