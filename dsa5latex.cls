@@ -33,11 +33,16 @@
 \newif\ifdsa@raster        \dsa@rastertrue
 \newif\ifdsa@rasterzeigen  \dsa@rasterzeigenfalse
 \newif\ifdsa@entwurf       \dsa@entwurffalse
+% Die Seitenhintergruende sind die groessten Grafiken im Satz, 7 bis 8 MB je
+% Seite. Wer am Umschlag oder am Text arbeitet, braucht sie nicht, und der
+% Lauf wird deutlich kuerzer.
+\newif\ifdsa@ohnehintergrund \dsa@ohnehintergrundfalse
 
 \DeclareOption{raster}{\dsa@rastertrue}
 \DeclareOption{ohneraster}{\dsa@rasterfalse}
 \DeclareOption{rasterzeigen}{\dsa@rasterzeigentrue}
 \DeclareOption{entwurf}{\dsa@entwurftrue}
+\DeclareOption{ohnehintergrund}{\dsa@ohnehintergrundtrue}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions\relax
 
@@ -56,7 +61,7 @@
 \RequirePackage{fontspec}
 \RequirePackage{polyglossia}
 \RequirePackage{tikz}
-\usetikzlibrary{calc}
+\usetikzlibrary{calc,shadows.blur}
 \RequirePackage[most]{tcolorbox}
 \RequirePackage{eso-pic}
 \RequirePackage{fancyhdr}
@@ -123,11 +128,15 @@
   ItalicFont     = GenBasI,
   BoldItalicFont = GenBasBI ]
 
+% Andalus hat nur einen Schnitt. Ohne AutoFakeBold meldet der Lauf
+% „Font shape TU/andlso(0)/b/n undefined" und faellt still auf den normalen
+% zurueck — der Baukasten verlangt fuer Kapitel und Covertitel aber fett.
+% Also nachbilden lassen.
 \newfontfamily{\dsaandalus}{andlso}[
-  Path      = schriften/,
-  Extension = .ttf ]
-% PRUEFEN: Andalus hat nur einen Schnitt. Fett und kursiv rechnet XeLaTeX
-% daraus selbst.
+  Path          = schriften/,
+  Extension     = .ttf,
+  AutoFakeBold  = 1.5,
+  AutoFakeSlant = 0.2 ]
 
 % Kapitaelchen. Keine der beiden Schriften hat das OpenType-Feature smcp —
 % nachgesehen in allen fuenf Dateien. \textsc tut damit nichts, still und
@@ -312,6 +321,7 @@
 \newcommand*{\dsa@bgvariante}{\intcalcMod{\intcalcDiv{\value{page}}{2}}{4}}
 
 \AddToShipoutPictureBG{%
+  \ifdsa@ohnehintergrund\else
   \ifdsa@bgaus\else
     \begin{tikzpicture}[remember picture, overlay]
       \ifodd\value{page}
@@ -324,7 +334,7 @@
           {\includegraphics[width=213mm,height=303mm]{\dsagrafik{seite-links-\dsa@bgvariante}}};
       \fi
     \end{tikzpicture}%
-  \fi}
+  \fi\fi}
 % PRUEFEN: Ob der Anker an der Aussenkante die Zierleisten richtig trifft,
 % zeigt der erste Abzug. Bleibt ein weisser Streifen, ist der Anker falsch
 % gewaehlt, nicht das Mass. Und: die Folge muss 0,0,1,1,2,2,3,3 sein.
@@ -739,27 +749,423 @@
 
 % ---- Umschlag vorne ----
 % umschlag-vorne ist 216,0 x 303,0 mm — A4 plus 3 mm auf allen vier Seiten.
-% Titel Andalus 28 pt fett laut Baukasten.
-\newlength{\dsatitelzeileeins} \setlength{\dsatitelzeileeins}{95mm}
-\newlength{\dsatitelzeilezwei} \setlength{\dsatitelzeilezwei}{115mm}
-% PRUEFEN: beide Lagen geschaetzt, am Coverrahmen nachmessen.
+% Der Covertitel ist Gestaltung, nicht Mass — deshalb alles einstellbar.
+%
+% Der Baukasten fuehrt fuer die Formatvorlage „DSA Cover Vordergrund" 28 pt.
+% Das ist der Wert der Wordvorlage, nicht der des gesetzten Umschlags: die
+% Textebene „Abenteuertitel" in Cover_Buchtitel.psd traegt FontSize 75 bei
+% einer Ebenentransformation von 2,3776, also 178,3 px, und Leading 90, also
+% 213,3 px. Bei 300 ppi sind das 42,8 pt Schriftgrad und 51,2 pt
+% Zeilenabstand — der Durchschuss ist damit das Uebliche 1,2fache.
+\newcommand*{\dsatitelgrad}{42.8}        % Schriftgrad in pt, aus dem PSD
+\newcommand*{\dsatiteldurchschuss}{51.4} % Zeilenabstand in pt, 1,2fach
+\newlength{\dsatitelkontur}    \setlength{\dsatitelkontur}{0.72pt}
+\newcommand*{\dsatitelkonturpt}{0.72}  % dasselbe als Zahl, fuer den Strich
+% 0,72 pt sind die 3 px Kontur aus Cover_Buchtitel.psd bei 300 ppi.
+\newlength{\dsatitelzeileeins} \setlength{\dsatitelzeileeins}{55mm}
+\newlength{\dsatitelzeilezwei} \setlength{\dsatitelzeilezwei}{77mm}
 
-\newcommand{\dsaUmschlagVorne}[3]{%
+% Der Covertitel, nachgebildet nach Cover_Buchtitel.psd aus dem Baukasten.
+% Ausgelesen mit psd-tools; die Ebene „Abenteuertitel" traegt vier Effekte,
+% und unter ihr liegt eine eigene Ebene „Rahmen":
+%
+%   Rahmen (Flaeche in Titelform, 1434 x 325 px zu 1364 x 126 px Text,
+%           also 35 px ueber den Text hinaus)
+%     Flaechenfarbe 2E2832, Kontur 3 px mit Verlauf A6A6A6 nach 2B2630,
+%     Schlagschatten 21 px Abstand, 21 px Weichzeichnung, 75 Prozent, 120 Grad
+%   Abenteuertitel
+%     Verlauf senkrecht C5B8CE nach 28232D, 42 Prozent Skalierung,
+%       9 Prozent nach oben versetzt
+%     Schein aussen 341811, 51 px Weichzeichnung, 100 Prozent
+%     Kontur 3 px, Verlauf A6A6A6 nach 2B2630 — oben hell, unten dunkel
+%     Schlagschatten 31 px Abstand, 18 px Weichzeichnung, 63 Prozent
+%
+% Das PSD ist 300 ppi, also 1 px = 0,24 pt. Die Radien unten sind daraus
+% umgerechnete Absolutwerte und gelten fuer den Schriftgrad des PSD, 42,8 pt.
+% Wer den Titel deutlich groesser setzt, skaliert sie mit.
+%
+% Die Ebene „Rahmen" ist auf den Beispieltitel des Baukastens zugeschnitten
+% und als Grafik unbrauchbar. Ihr Alpha ist ein Block mit harter Kante,
+% 35 px um die Textbox. Nachgebaut wird sie hier nicht als Block, sondern als
+% Silhouette des eigenen Schriftzugs, gleichmaessig um denselben Abstand
+% aufgeblaeht: ein Block waere fuer jeden Titel neu zu zeichnen, die
+% Silhouette passt sich an. Die Kante ist wie im PSD hart, der Schlagschatten
+% ist dieselbe Silhouette, versetzt. Der Schein aussen (341811, 51 px) faellt
+% weg: auf der deckenden Flaeche ist er nicht zu sehen.
+%
+% Mit \dsaTitelVerlaufAus wird stattdessen schlicht weiss mit Kontur gesetzt.
+\newif\ifdsa@titelverlauf \dsa@titelverlauftrue
+\newcommand*{\dsaTitelVerlaufAn}{\dsa@titelverlauftrue}
+\newcommand*{\dsaTitelVerlaufAus}{\dsa@titelverlauffalse}
+
+\definecolor{dsatitelhell}{HTML}{C5B8CE}    % Verlauf oben
+% Verlauf unten. Das PSD gibt 28232D — praktisch die Farbe der Flaeche
+% darunter (2E2832). In Photoshop trennt die weichgezeichnete Kontur beides;
+% ohne sie klebt der Schriftzug an der Flaeche, deshalb hier etwas heller.
+\definecolor{dsatiteldunkel}{HTML}{3A3442}  % Verlauf unten
+\definecolor{dsatitelflaeche}{HTML}{2E2832} % Ebene „Rahmen"
+\definecolor{dsatitelkante}{HTML}{A6A6A6}   % Kontur, Lichtkante
+
+% Masse in pt, aus dem PSD umgerechnet (300 ppi, 1 px = 0,24 pt).
+%
+% Die Flaeche haelt 35 px = 8,4 pt Abstand zur Schrift, auf allen Seiten
+% gleich. Ihr Schlagschatten: 21 px Abstand unter 120 Grad, 75 Prozent.
+\newcommand*{\dsatitelrand}{8.4}          % Abstand der Flaeche zur Schrift
+\newcommand*{\dsatitelflaechenversatzx}{2.5pt}
+\newcommand*{\dsatitelflaechenversatzy}{-4.3pt}
+\newcommand*{\dsatitelflaechendeckung}{0.5}
+% Die Flaeche folgt der Schrift, also auch ihren Oberlaengen. Eine Zeile ohne
+% Unterlaengen — „Ganter" etwa — bekommt dadurch oben mehr Flaeche als unten,
+% und die Schrift sitzt zu tief darin. Dieser Versatz nach unten gleicht das
+% aus. Kein Mass aus dem PSD, sondern am eigenen Ergebnis gemessen: der
+% gerasterte Titel, Flaeche und Kontur ueber ihre Farben getrennt, ergab ohne
+% Versatz 10,8 pt Rand oben gegen 3,4 pt unten und mit 4 pt umgekehrt
+% 6,7 gegen 11,0. Ausgeglichen ist es bei 2,5 pt.
+\newcommand*{\dsatitelflaechetiefer}{2.5pt}
+%
+% Der Schlagschatten des Schriftzugs: 31 px Abstand unter 120 Grad, 18 px
+% Weichzeichnung, 63 Prozent. Nachgebildet als \contour-Lagen mit steigendem
+% Radius und fallender Deckung, je Eintrag „Radius/Deckung".
+% Kopien je \contour-Ring. Weniger macht die Kante der Flaeche kantig,
+% mehr kostet Rechenzeit: jede Kopie ist ein eigener Textabzug.
+\newcommand*{\dsatitelkopien}{24}
+\newcommand*{\dsatitelschriftschatten}{2/0.3, 4/0.18}
+\newcommand*{\dsatitelschriftversatzx}{3.7pt}
+\newcommand*{\dsatitelschriftversatzy}{-6.4pt}
+
+% Der Verlauf laeuft nicht ueber die ganze Zeilenhoehe: Photoshop skaliert ihn
+% auf 42 Prozent und versetzt ihn nach unten. Darunter bleibt es durchgehend
+% dunkel, darueber durchgehend hell. Nachgebildet als Schattierung mit vier
+% Haltepunkten; die 100 bp sind eine Bezugshoehe, \shade skaliert sie auf die
+% Hoehe der Zeile.
+\pgfdeclareverticalshading{dsatitelverlauf}{100bp}{%
+  color(0bp)=(dsatiteldunkel); color(15bp)=(dsatiteldunkel);
+  color(78bp)=(dsatitelhell);  color(100bp)=(dsatitelhell)}
+\newcommand*{\dsatitelkonturkopien}{16}   % Kopien fuer die Kontur
+
+% Dieselben Farben in PDF-Schreibweise, fuer den Konturstrich. Ein Special
+% kennt keine xcolor-Namen.
+\newcommand*{\dsatitelflaechepdf}{0.180 0.157 0.196}  % 2E2832
+\newcommand*{\dsatitelkantepdf}{0.651 0.651 0.651}    % A6A6A6
+\newcommand*{\dsatitelschattenpdf}{0.055 0.047 0.059} % Schatten der Flaeche
+\newcommand*{\dsatitelschriftpdf}{0.102 0.086 0.106}  % Schatten der Schrift
+
+% Der Rahmen als Strich (Voreinstellung) oder als \contour-Stapel. Der Stapel
+% ist der Rueckfallweg, falls ein anderer Treiber die Specials verwirft: er
+% braucht keine, dauert aber rund zwanzigmal so lang.
+\newif\ifdsa@titelstrich \dsa@titelstrichtrue
+\newcommand*{\dsaTitelStrichAus}{\dsa@titelstrichfalse}
+\newcommand*{\dsaTitelStrichAn}{\dsa@titelstrichtrue}
+
+% #1 Strichbreite in Textraumeinheiten  #2 Farben in PDF-Schreibweise
+\newcommand{\dsa@strichan}[2]{\special{pdf:code q 2 Tr #1 w 1 J 1 j #2}}
+\newcommand*{\dsa@strichaus}{\special{pdf:code 0 Tr Q}}
+
+% Eine Textkopie mit Strich. #1 Anker  #2 Strichbreite in pt
+% #3 Farben  #4 Schriftgrad  #5 Text
+\newcommand{\dsa@titelstrichform}[5]{%
+  \pgfmathsetmacro{\dsa@strichw}{#2*1000/#4}%
+  \node[anchor=center, inner sep=1pt] at (#1)
+    {\dsa@strichan{\dsa@strichw}{#3 RG #3 rg}%
+     \dsa@titelschriftgrad{#4}#5\dsa@strichaus};}
+
+% Die beiden Lagen hinter dem Schriftzug einzeln schaltbar: der duenne Rahmen
+% (die Kontur des Schriftzugs) und der grosse graue (die Ebene „Rahmen").
+\newif\ifdsa@titelrahmen  \dsa@titelrahmentrue
+\newif\ifdsa@titelflaeche \dsa@titelflaechetrue
+\newcommand*{\dsaTitelRahmenAus}{\dsa@titelrahmenfalse}
+\newcommand*{\dsaTitelFlaecheAus}{\dsa@titelflaechefalse}
+
+% Der Bezugsgrad, auf den sich alle Masse des Rahmens beziehen: der Grad der
+% PSD-Ebene. Eine Zeile in einem anderen Grad skaliert sie im Verhaeltnis.
+\newcommand*{\dsatitelbezugsgrad}{42.8}
+
+\newcommand*{\dsa@titelschrift}{%
+  \dsaandalus\fontsize{\dsatitelgrad}{\dsatiteldurchschuss}\selectfont\bfseries}
+% Dieselbe Schrift in einem beliebigen Grad. Der Durchschuss ist gleich dem
+% Grad, weil jede Titelzeile fuer sich gesetzt wird.
+\newcommand{\dsa@titelschriftgrad}[1]{%
+  \dsaandalus\fontsize{#1}{#1}\selectfont\bfseries}
+
+% WICHTIG: kein text width und kein align an den Titelknoten. Mit text width
+% setzt TikZ den Inhalt als echten Absatz, und dort verliert \contour beim
+% mehrfachen Setzen die Leerzeichen — aus „Der falsche" wird „Derfalsche".
+% Ohne text width steckt der Text in einer Box und bleibt heil. Die Zeilen
+% sind einzeilig, text width braucht es also nicht.
+
+% Eine geschlossene Flaeche in der Form des Schriftzugs, um #3 pt aufgeblaeht.
+% \contour setzt Kopien auf einem Kreis vom Radius #3; eine einzelne Lage gibt
+% deshalb nur einen Ring und laesst zwischen Ring und Schrift Luecken. #4 sagt,
+% in wie vielen Stufen der Radius durchlaufen wird: eine Stufe genuegt fuer
+% einen Saumring, drei fuellen bis zur Schrift durch.
+%
+% #1 Ankerkoordinate  #2 Farbe  #3 Radius in pt  #4 Stufen
+% #5 Schriftgrad  #6 Text
+\newlength{\dsa@titelradius}
+\newlength{\dsa@titeltiefer}
+\newlength{\dsa@titelhilf}
+\newlength{\dsa@titelschattenx}
+\newlength{\dsa@titelschatteny}
+\newlength{\dsa@titelschriftx}
+\newlength{\dsa@titelschrifty}
+\newcommand{\dsa@titelform}[6]{%
+  \foreach \dsa@k in {1,...,#4}{%
+    \pgfmathsetlength{\dsa@titelradius}{#3pt*\dsa@k/#4}%
+    \node[anchor=center, inner sep=1pt] at (#1)
+      {\dsa@titelschriftgrad{#5}%
+       \contourlength{\dsa@titelradius}\contournumber{\dsatitelkopien}%
+       \contour{#2}{\textcolor{#2}{#6}}};}}
+
+% Der Verlauf entsteht NICHT ueber ein pgf-Fading. Das waere der naheliegende
+% Weg, laesst sich aber nicht verlaesslich auf den Schriftzug ausrichten:
+% „fit fading" skaliert die Fadingbox auf die Pfadbox, und beide stimmen nicht
+% ueberein, sobald eine Kontur im Spiel ist. Drei Anlaeufe, drei Versaetze.
+%
+% Stattdessen: den Schriftzug mehrfach zeichnen, jedes Mal auf einen
+% waagerechten Streifen beschnitten und in einer anderen Farbe. Beschneiden
+% auf ein Rechteck ist in TikZ exakt. Kontur und Fuellung entstehen im selben
+% Streifen, damit beide demselben Verlauf folgen — im PSD hat auch die Kontur
+% einen: oben hell, unten dunkel. Ohne diese Lichtkante verschwindet der
+% Schriftzug in der dunklen Flaeche.
+%
+% Wird DIREKT in eine bestehende tikzpicture gezeichnet, nicht in einen
+% Knoten. Eine verschachtelte tikzpicture waere naheliegender, aber die
+% inneren \clip-Pfade veraendern deren Begrenzungsrahmen und verschieben
+% dadurch die Ausrichtung gegen die Kontur.
+%
+% Reihenfolge von hinten nach vorn:
+%   1 der Saum, aussen nach innen immer deckender
+%   2 der deckende Kern der Flaeche
+%   3 je Streifen die Kontur, dann die Fuellung
+%
+% #1 Name des Fadings, je Zeile ein eigenes  #2 Koordinate
+% #3 Schriftgrad in pt  #4 Text
+%
+% Gezeichnet wird in einer eigenen tikzpicture, deren Bezugsknoten im
+% Ursprung sitzt. Nur so trifft ein unskaliertes Fading den Schriftzug:
+% „fit fading=false" legt es um den Ursprung, ohne es auf die Pfadbox zu
+% ziehen. Der Begrenzungsrahmen wird auf die Textbox festgelegt, damit die
+% Zeile an ihrer Grundlinie haengt und nicht am Saum.
+%
+% Zum Namen des Fadings: \pgfdeclarefading nimmt ihn unexpandiert,
+% „path fading" expandiert ihn. Ein Zaehlermakro im Namen laesst die
+% Referenz deshalb ins Leere greifen, ohne Fehlermeldung, und pgf benutzt
+% still das zuletzt gesetzte Fading. Deshalb wird der Name mit \edef
+% ausgeschrieben, bevor er hierher kommt.
+%
+% Reihenfolge von hinten nach vorn, wie im PSD:
+%   1 der grosse graue Rahmen: sein Schlagschatten, dann die Flaeche
+%   2 der Schlagschatten des Schriftzugs
+%   3 der duenne Rahmen: die Kontur des Schriftzugs
+%   4 der Verlauf in der Schrift
+\newcommand{\dsaTitelZeileAn}[4]{%
+  % Alle Masse gelten fuer \dsatitelbezugsgrad und skalieren mit dem Grad
+  % dieser Zeile.
+  \pgfmathsetmacro{\dsa@titelskala}{#3/\dsatitelbezugsgrad}%
+  \pgfmathsetmacro{\dsa@titelrandjetzt}{\dsatitelrand*\dsa@titelskala}%
+  % Die Versaetze gehoeren an die Ankerkoordinaten, nicht an einen scope:
+  % TikZ-Knoten sind transformationsinvariant, ein scope-shift laesst sie
+  % stehen. Erst als Teil der Koordinate wirkt der Versatz.
+  \pgfmathsetlength{\dsa@titeltiefer}%
+                   {\dsa@titelskala*\dsatitelflaechetiefer}%
+  \pgfmathsetlength{\dsa@titelschattenx}%
+                   {\dsa@titelskala*\dsatitelflaechenversatzx}%
+  \pgfmathsetlength{\dsa@titelschatteny}%
+                   {\dsa@titelskala*\dsatitelflaechenversatzy-\dsa@titeltiefer}%
+  \pgfmathsetlength{\dsa@titelschriftx}%
+                   {\dsa@titelskala*\dsatitelschriftversatzx}%
+  \pgfmathsetlength{\dsa@titelschrifty}%
+                   {\dsa@titelskala*\dsatitelschriftversatzy}%
+  \node[anchor=south, inner sep=0] at (#2){%
+    \begin{tikzpicture}
+      \node[anchor=center, inner sep=1pt, opacity=0] (dsa@tzk)
+        {\dsa@titelschriftgrad{#3}#4};
+      \path[use as bounding box]
+        (dsa@tzk.south west) rectangle (dsa@tzk.north east);
+      \ifdsa@titelverlauf
+        \ifdsa@titelstrich
+          %%% Weg 1: Strich. Vier Textkopien, keine Stapel.
+          \ifdsa@titelflaeche
+            % 1a der Schlagschatten der Flaeche, versetzt und dunkler
+            \pgfmathsetlength{\dsa@titelhilf}%
+                             {\dsa@titelschattenx}%
+            \dsa@titelstrichform{[shift={(\dsa@titelschattenx,%
+                                          \dsa@titelschatteny)}]dsa@tzk.center}%
+                                {\dsa@titelrandjetzt}{\dsatitelschattenpdf}%
+                                {#3}{#4}%
+            % 1b die Flaeche
+            \dsa@titelstrichform{[shift={(0pt,-\dsa@titeltiefer)}]%
+                                 dsa@tzk.center}%
+                                {\dsa@titelrandjetzt}{\dsatitelflaechepdf}%
+                                {#3}{#4}%
+          \fi
+          % 2 der Schlagschatten des Schriftzugs, auf der Flaeche liegend.
+          % Statt Transparenz eine dunklere Farbe — er liegt ohnehin nur auf
+          % der Flaeche, und ein Special fuer Transparenz waere ein weiterer
+          % Grafikzustand.
+          \pgfmathsetmacro{\dsa@rjetzt}{3*\dsa@titelskala}%
+          \dsa@titelstrichform{[shift={(\dsa@titelschriftx,%
+                                        \dsa@titelschrifty)}]dsa@tzk.center}%
+                              {\dsa@rjetzt}{\dsatitelschriftpdf}{#3}{#4}%
+          \ifdsa@titelrahmen
+            % 3 die feine Kontur als Lichtsaum
+            \pgfmathsetmacro{\dsa@rjetzt}%
+                            {\dsa@titelskala*\dsatitelkonturpt}%
+            \dsa@titelstrichform{dsa@tzk.center}{\dsa@rjetzt}%
+                                {\dsatitelkantepdf}{#3}{#4}%
+          \fi
+        \else
+          %%% Weg 2: \contour-Stapel. Rueckfallweg ohne Specials.
+          \ifdsa@titelflaeche
+            \begin{scope}[transparency group,
+                          opacity=\dsatitelflaechendeckung]
+              \dsa@titelform{[shift={(\dsa@titelschattenx,\dsa@titelschatteny)}]%
+                             dsa@tzk.center}%
+                            {black}{\dsa@titelrandjetzt}{2}{#3}{#4}
+            \end{scope}
+            \dsa@titelform{[shift={(0pt,-\dsa@titeltiefer)}]dsa@tzk.center}%
+                          {dsatitelflaeche}{\dsa@titelrandjetzt}{3}{#3}{#4}%
+          \fi
+          \foreach \dsa@r/\dsa@d in \dsatitelschriftschatten {%
+            \pgfmathsetmacro{\dsa@rjetzt}{\dsa@r*\dsa@titelskala}%
+            \begin{scope}[transparency group, opacity=\dsa@d]
+              \dsa@titelform{[shift={(\dsa@titelschriftx,%
+                                      \dsa@titelschrifty)}]dsa@tzk.center}%
+                            {black}{\dsa@rjetzt}{1}{#3}{#4}
+            \end{scope}}%
+          \ifdsa@titelrahmen
+            \pgfmathsetlength{\dsa@titelradius}%
+                             {\dsa@titelskala*\dsatitelkontur}%
+            \node[anchor=center, inner sep=1pt] at (dsa@tzk.center)
+              {\dsa@titelschriftgrad{#3}\contourlength{\dsa@titelradius}%
+               \contournumber{\dsatitelkonturkopien}%
+               \contour{dsatitelkante}{\textcolor{dsatitelkante}{#4}}};
+          \fi
+        \fi
+        % 4 der Verlauf, vom Schriftzug maskiert
+        \shade[shading=dsatitelverlauf, path fading=#1, fit fading=false]
+          (dsa@tzk.south west) rectangle (dsa@tzk.north east);
+      \else
+        \node[anchor=center, inner sep=1pt] at (dsa@tzk.center)
+          {\dsa@titelschriftgrad{#3}\contourlength{\dsatitelkontur}%
+           \contour{black}{\textcolor{white}{#4}}};
+      \fi
+    \end{tikzpicture}};}
+
+% Der Titel wird von der UNTEREN Papierkante aus gesetzt. Damit bleibt die
+% Unterkante des Titelblocks fest, und jede weitere Zeile schiebt nach oben —
+% bei einem dreizeiligen Titel wandert er also nach oben statt in die
+% Rahmen-Illustration hinein.
+%
+% Die Zeilen schreibt der Autor als Folge von \dsaTitelZeile:
+%
+%   \dsaUmschlagVorne{bild}{%
+%     \dsaTitelZeile{Der falsche}%
+%     \dsaTitelZeile{Ganter}}
+%
+% Eine Zeile kann ihren eigenen Schriftgrad haben, etwa fuer einen
+% Untertitel. Das PSD fuehrt Titel und Untertitel getrennt, mit 42,8 pt und
+% 27,9 pt:
+%
+%   \dsaUmschlagVorne{bild}{%
+%     \dsaTitelZeile{Der falsche Ganter}%
+%     \dsaTitelZeile[27.9]{Akt 1 der Fuchsgrund-Reihe}}
+%
+% Gezaehlt wird in einem ersten Durchgang, gezeichnet im zweiten — nur so
+% weiss die erste Zeile, wie hoch sie sitzen muss.
+\newlength{\dsatitelunten}      \setlength{\dsatitelunten}{31.3mm}
+\newcommand*{\dsatitelzeilenfaktor}{1.0}
+% \dsatitelunten ist der Abstand der Grundlinie der LETZTEN Zeile von der
+% unteren Papierkante. Der Abstand zweier Zeilen ist das
+% \dsatitelzeilenfaktor-fache des Schriftgrads der unteren — so bekommt eine
+% kleinere Zeile auch einen kleineren Vorschub.
+%
+% Beide Werte stehen im PSD: die Textebene „Abenteuertitel" endet 405 px
+% ueber der unteren Beschnittkante des Umschlags (3579 px hoch, 300 ppi,
+% also 34,3 mm); abzueglich 3 mm Beschnitt sitzt die Unterkante 31,3 mm
+% ueber der Papierkante. Der Zeilenabstand ist der Durchschuss der
+% Titelschrift, 51,4 pt = 18,1 mm.
+%
+% Der Titel sitzt damit unten, wie auf offiziellen Umschlaegen. Wer ihn
+% hoeher haben will, setzt \dsatitelunten neu — die Unterkante des
+% Titelblocks bleibt fest, weitere Zeilen schieben nach oben.
+%
+% Zum Zeilenabstand: die graue Flaeche steht 8,4 pt ueber die Schrift hinaus,
+% oben und unten. Beim 1,0fachen des Grads ueberlappen sich die Flaechen
+% zweier Zeilen und laufen zu einer zusammen — so wie im PSD, wo Titel und
+% Untertitel in einem durchgehenden Block liegen. Wer sie getrennt sehen
+% will, erhoeht \dsatitelzeilenfaktor auf etwa 1,25.
+
+% ---- Stellbefehle fuer den Titel ----
+%
+% In die Praeambel des Dokuments, nach \documentclass:
+%
+%   \dsaTitelGrad{42.8}         Schriftgrad der Titelzeilen in pt
+%   \dsaTitelRand{8.4}          Breite des grauen Rahmens in pt
+%   \dsaTitelZeilenfaktor{1.0}  Zeilenabstand als Vielfaches des Grads
+%   \dsaTitelUnten{31.3mm}      Grundlinie der letzten Zeile ueber der
+%                               unteren Papierkante
+%   \dsaTitelTiefer{4pt}        Versatz des Rahmens nach unten
+%   \dsaTitelVerlaufAus         schlicht weiss mit Kontur statt Verlauf
+%   \dsaTitelFlaecheAus         ohne grauen Rahmen
+%   \dsaTitelRahmenAus          ohne die feine Kontur
+%
+% Eine einzelne Zeile kann ihren Grad selbst mitbringen:
+%   \dsaTitelZeile[27.9]{Akt 1 der Fuchsgrund-Reihe}
+\newcommand{\dsaTitelGrad}[1]{\renewcommand*{\dsatitelgrad}{#1}}
+\newcommand{\dsaTitelRand}[1]{\renewcommand*{\dsatitelrand}{#1}}
+\newcommand{\dsaTitelZeilenfaktor}[1]{%
+  \renewcommand*{\dsatitelzeilenfaktor}{#1}}
+\newcommand{\dsaTitelUnten}[1]{\setlength{\dsatitelunten}{#1}}
+\newcommand{\dsaTitelTiefer}[1]{\renewcommand*{\dsatitelflaechetiefer}{#1}}
+
+\newcounter{dsa@titelzahl}
+\newcounter{dsa@titelnr}
+\newcommand{\dsaTitelZeile}[2][\dsatitelgrad]{} % je Durchgang neu belegt
+\newlength{\dsa@titelhoehe}
+\newlength{\dsa@titelrest}
+\newlength{\dsa@titelvorschub}
+
+\newcommand{\dsaUmschlagVorne}[2]{%
   \dsaHintergrundAus
   \thispagestyle{empty}%
+  % erster Durchgang: Zeilen zaehlen, je Zeile ihr Fading anlegen und die
+  % Gesamthoehe des Titelblocks summieren.
+  % \pgfdeclarefading geht nur ausserhalb einer tikzpicture, und jede Zeile
+  % braucht ihr eigenes: derselbe Name zweimal, und die zweite Deklaration
+  % wird stillschweigend verworfen.
+  \setcounter{dsa@titelzahl}{0}%
+  \setlength{\dsa@titelrest}{0pt}%
+  \renewcommand{\dsaTitelZeile}[2][\dsatitelgrad]{%
+    \stepcounter{dsa@titelzahl}%
+    \pgfmathsetlength{\dsa@titelvorschub}{\dsatitelzeilenfaktor*##1}%
+    \addtolength{\dsa@titelrest}{\dsa@titelvorschub}%
+    \edef\dsa@titelname{dsatitelzeile\thedsa@titelzahl}%
+    \expandafter\pgfdeclarefading\expandafter{\dsa@titelname}{%
+      \tikz\node[inner sep=1pt, text=white]
+        {\dsa@titelschriftgrad{##1}##2};}}%
+  #2%
   \begin{tikzpicture}[remember picture, overlay]
     \node[anchor=center, inner sep=0] at (current page.center)
       {\dsaBildDeckend{216mm}{303mm}{#1}};
     \node[anchor=center, inner sep=0] at (current page.center)
       {\includegraphics[width=216mm,height=303mm]{\dsagrafik{umschlag-vorne}}};
-    \node[anchor=north, text width=170mm, align=center, inner sep=0]
-      at ([shift={(0pt,-\dsatitelzeileeins)}]current page.north)
-      {\dsaandalus\fontsize{28}{33.6}\selectfont\bfseries
-       \contour{black}{\textcolor{white}{#2}}};
-    \node[anchor=north, text width=170mm, align=center, inner sep=0]
-      at ([shift={(0pt,-\dsatitelzeilezwei)}]current page.north)
-      {\dsaandalus\fontsize{28}{33.6}\selectfont\bfseries
-       \contour{black}{\textcolor{white}{#3}}};
+    % zweiter Durchgang: zeichnen, von unten gerechnet
+    % zweiter Durchgang: zeichnen. \dsa@titelrest traegt noch die Summe aller
+    % Vorschuebe; jede Zeile zieht ihren eigenen ab, bevor sie sich setzt.
+    % Damit sitzt die letzte Zeile auf \dsatitelunten und jede weitere
+    % darueber.
+    \setcounter{dsa@titelnr}{0}%
+    \renewcommand{\dsaTitelZeile}[2][\dsatitelgrad]{%
+      \stepcounter{dsa@titelnr}%
+      \pgfmathsetlength{\dsa@titelvorschub}{\dsatitelzeilenfaktor*##1}%
+      \addtolength{\dsa@titelrest}{-\dsa@titelvorschub}%
+      \setlength{\dsa@titelhoehe}{\dsatitelunten}%
+      \addtolength{\dsa@titelhoehe}{\dsa@titelrest}%
+      \edef\dsa@titelname{dsatitelzeile\thedsa@titelnr}%
+      \expandafter\dsaTitelZeileAn\expandafter{\dsa@titelname}%
+        {[shift={(0pt,\dsa@titelhoehe)}]current page.south}{##1}{##2}}%
+    #2%
   \end{tikzpicture}%
   \clearpage\dsaHintergrundAn}
 
@@ -782,10 +1188,10 @@
 % Titelei, ueblicherweise auf der Titelrueckseite. Im Englischen: copyright
 % page. Der Markenhinweis darin ist der Rechtevermerk.
 %
-% Aufbau nach dem Vorbild einer gesetzten Scriptorium-Veroeffentlichung
-% („Auf kleiner Flamme", Seite 2): Ueberschrift IMPRESSUM, darunter je
-% Rubrik der Name der Rubrik und darunter der Wert, alles mittig, dann als
-% eigene Zwischenueberschrift „Disclaimer" und der Rechtevermerk.
+% Aufbau nach dem Vorbild einer gesetzten Scriptorium-Veroeffentlichung:
+% Ueberschrift IMPRESSUM, darunter je Rubrik der Name der Rubrik und darunter
+% der Wert, alles mittig, dann als eigene Zwischenueberschrift „Disclaimer"
+% und der Rechtevermerk.
 %
 % Die Rubriken dort, als Anhalt:
 %   Autor · Redaktion · Lektorat · Korrektorat · Kuenstlerische Leitung ·
@@ -793,18 +1199,84 @@
 %   Version
 % Dazu am Ende oft eine Danksagung.
 
+% Die Masse stammen aus einer gesetzten Veroeffentlichung, vermessen mit
+% pdftotext -bbox-layout, die Schriftgrade aus dem Vergleich der Zeilenbreiten
+% mit denselben Zeichenketten in diesen Schriften:
+%
+%   Ueberschrift IMPRESSUM   Andalus 23,5 pt, Versalien
+%                            Grundlinie 37,6 mm unter der Papieroberkante
+%   Rubrikname               Gentium Basic fett 14 pt
+%   Wert                     Gentium Basic 10 pt
+%   Grundlinie Rubrik -> Wert            14,0 pt
+%   Grundlinie Wert -> naechste Rubrik   24,0 pt
+%   Grundlinie letzter Wert -> Disclaimer 41,4 pt
+%
+% Die Messung am Vorbild gibt 12,8 und 25,1 pt. Das sind Abstaende zwischen
+% den Unterkanten der Zeilenboxen, nicht zwischen den Grundlinien: pdftotext
+% kennt nur die Box. Zwischen einer 14-pt- und einer 10-pt-Zeile
+% unterscheiden sich die Unterlaengen um 1,1 pt, und mit dieser Korrektur
+% werden aus den beiden Messwerten glatte 14,0 und 24,0 pt.
+%   Disclaimer-Text          Gentium Basic 10 pt auf 11,6 pt,
+%                            Blockbreite 94,5 mm, Absaetze durch eine
+%                            Freizeile getrennt
+%
+% Alles ist auf die Mitte des Papiers zentriert, nicht auf die Mitte des
+% Satzspiegels — der liegt bei zweiseitigem Satz 2 mm daneben.
+%
+% Die Grundlinienabstaende stehen als Durchschuss im jeweiligen \fontsize:
+% TeX setzt zwischen zwei Zeilen den Durchschuss der FOLGENDEN Zeile, also
+% traegt jede Zeile den Abstand zu ihrer Vorgaengerin.
+% 34,1 mm ist die Grundlinie; die 37,6 mm der Messung sind deren Unterkante
+% samt Unterlaengen der Andalus, also 3,5 mm tiefer.
+\newcommand*{\dsaimpressumkopf}{34.1mm}   % Grundlinie der Ueberschrift
+\newcommand*{\dsaimpressumkopfgrad}{23.5}
+\newcommand*{\dsaimpressumstart}{25.1pt}  % bis zur ersten Rubrikgrundlinie
+% Der Satzspiegel ist nicht mittig auf dem Papier: innen 20 mm, aussen 24 mm.
+% Seine Mitte liegt also 2 mm neben der Papiermitte, auf einer linken Seite
+% nach rechts. Das Impressum steht auf Seite 2, mithin links, und wird um
+% diesen Betrag zurueckgeschoben.
+\newlength{\dsaimpressumversatz}\setlength{\dsaimpressumversatz}{-2mm}
+\newcommand*{\dsaimpressumrubrik}{14}     % Grad Rubrikname
+\newcommand*{\dsaimpressumwert}{10}       % Grad Wert
+\newcommand*{\dsaimpressumabrubrik}{24.0} % Grundlinie Wert -> Rubrik
+\newcommand*{\dsaimpressumabwert}{14.0}   % Grundlinie Rubrik -> Wert
+\newcommand*{\dsaimpressumabvermerk}{41.4}% Grundlinie Wert -> Disclaimer
+\newcommand*{\dsaimpressumzeile}{11.6}    % Durchschuss im Disclaimer
+\newlength{\dsaimpressumblock}\setlength{\dsaimpressumblock}{94.5mm}
+
 \newenvironment{dsaImpressumseite}{%
   \clearpage\onecolumn
-  \thispagestyle{empty}%
-  {\dsaandalus\fontsize{23.5}{28.2}\selectfont\centering
-   \MakeUppercase{Impressum}\par}%
-  \dsaRasterluft{2}%
-  \begingroup\small\centering\setlength{\parindent}{0pt}%
+  % Die Ueberschrift steht als Knoten am Papier, nicht im Fluss: nur so
+  % sitzt ihre Grundlinie auf dem gemessenen Mass, unabhaengig davon, was
+  % \topskip mit der ersten Zeile macht.
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=base, inner sep=0]
+      at ([shift={(0pt,-\dsaimpressumkopf)}]current page.north)
+      {\dsaandalus\fontsize{\dsaimpressumkopfgrad}{\dsaimpressumkopfgrad}%
+       \selectfont\MakeUppercase{Impressum}};
+  \end{tikzpicture}%
+  \begingroup
+  \setlength{\parindent}{0pt}%
+  % Statt \centering: ein fester Anteil verschiebt auf die Papiermitte, der
+  % dehnbare zentriert. \centering allein kennt keinen Versatz.
+  \setlength{\leftskip}{\dsaimpressumversatz}%
+  \addtolength{\leftskip}{0pt plus 1fil}%
+  \setlength{\rightskip}{-\dsaimpressumversatz}%
+  \addtolength{\rightskip}{0pt plus 1fil}%
+  % \parfillskip bleibt 0pt: mit einem fil-Anteil stehen bei einzeiligen
+  % Absaetzen rechts zwei dehnbare Anteile gegen einen links, und die Zeile
+  % rutscht nach links statt mittig zu stehen.
+  \setlength{\parfillskip}{0pt}%
+  \vspace*{\dsaimpressumstart}%
 }{%
   \par\endgroup\clearpage\twocolumn}
 
 \newcommand{\dsaImpressumsblock}[2]{%
-  \par{\bfseries #1}\par\nobreak #2\par\dsaRasterluft{1}}
+  \par
+  {\fontsize{\dsaimpressumrubrik}{\dsaimpressumabrubrik}\selectfont
+   \bfseries #1\par}%
+  \nobreak
+  {\fontsize{\dsaimpressumwert}{\dsaimpressumabwert}\selectfont #2\par}}
 
 % \dsaRechtevermerk{<Jahr>}{<Name oder Firma>}
 %
@@ -817,18 +1289,41 @@
 % einen anderen Wortlaut, unter anderem mit einem anderen Rechteinhaber. Der
 % hier ist der aktuelle. Wer eine neuere Fassung vom Verlag hat, ersetzt
 % diesen Text — es gibt absichtlich nur diesen einen Ort dafuer.
+% Der Textblock ist schmaler als der Satzspiegel und mittig: 94,5 mm. Statt
+% \centering, das mit eigenen Raendern nicht zusammengeht, tragen \leftskip
+% und \rightskip den Rand und je einen dehnbaren Anteil — das ergibt
+% zentrierte Zeilen innerhalb eines schmaleren Blocks.
+% Eine Freizeile zwischen zwei Absaetzen des Vermerks.
+\newcommand*{\dsa@vermerkluft}{\par\vspace{\dsaimpressumzeile pt}}
+
 \newcommand{\dsaRechtevermerk}[2]{%
-  \par\dsaRasterluft{1}%
-  {\bfseries Disclaimer}\par\nobreak
+  \par
+  {\fontsize{\dsaimpressumwert}{\dsaimpressumabvermerk}\selectfont
+   \bfseries Disclaimer\par}%
+  \nobreak
+  \fontsize{\dsaimpressumwert}{\dsaimpressumzeile}\selectfont
+  \setlength{\leftskip}{\dimexpr(\linewidth-\dsaimpressumblock)/2\relax}%
+  \setlength{\rightskip}{\leftskip}%
+  \addtolength{\leftskip}{\dsaimpressumversatz}%
+  \addtolength{\rightskip}{-\dsaimpressumversatz}%
+  \addtolength{\leftskip}{0pt plus 1fil}%
+  \addtolength{\rightskip}{0pt plus 1fil}%
+  % \parfillskip bleibt 0pt: mit einem fil-Anteil stehen bei einzeiligen
+  % Absaetzen rechts zwei dehnbare Anteile gegen einen links, und die Zeile
+  % rutscht nach links statt mittig zu stehen.
+  \setlength{\parfillskip}{0pt}%
+  % Kein \parskip: der wuerde auch hinter „Disclaimer" wirken. Die Freizeile
+  % steht einzeln zwischen den Absaetzen.
+  \setlength{\parskip}{0pt}%
   Dieses Produkt wurde unter Lizenz erstellt. DAS SCHWARZE AUGE, AVENTURIEN,
   DERE, MYRANOR, THARUN, UTHURIA, RIESLAND und THE DARK EYE sind eingetragene
-  Marken der Ulisses Spiele GmbH, Waldems.\par
+  Marken der Ulisses Spiele GmbH, Waldems.\dsa@vermerkluft
   Ulisses Spiele und sein Logo sind eingetragene Marken der Ulisses Medien und
-  Spiele Distribution GmbH.\par
+  Spiele Distribution GmbH.\dsa@vermerkluft
   Dieses Werk enthält Material, das durch Ulisses Spiele und/oder andere
   Autoren urheberrechtlich geschützt ist. Solches Material wird mit Erlaubnis
   im Rahmen der Vereinbarung über Gemeinschaftsinhalte für SCRIPTORIUM
-  AVENTURIS verwendet.\par
+  AVENTURIS verwendet.\dsa@vermerkluft
   Alle anderen Originalmaterialien in diesem Werk sind Copyright #1 von #2 und
   werden im Rahmen der Vereinbarung über Gemeinschaftsinhalte für SCRIPTORIUM
   AVENTURIS veröffentlicht.\par}

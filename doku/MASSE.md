@@ -93,10 +93,77 @@ Wortlaut, `Scriptorium Aventuris Lies mich zuerst v1.4.pdf`:
 | Unterkapitel | Andalus 14 pt | **zentriert**, 12 pt Abstand danach |
 | Abschnitt | Gentium Basic fett 13 pt | linksbündig |
 | Unterabschnitt | Gentium Basic fett 10 pt | linksbündig |
-| Covertitel | Andalus 28 pt fett | zentriert |
+| Covertitel | Andalus 42,8 pt fett | zentriert, aus dem PSD |
+| Titel im Impressum | Andalus 23,5 pt | Versalien, zentriert |
+| Rubrik im Impressum | Gentium Basic fett 14 pt | zentriert |
+| Wert im Impressum | Gentium Basic 10 pt | zentriert |
 
 Trennung laut IDML: Wörter ab 5 Zeichen, mindestens 2 nach dem Anfang und 2 vor dem Ende, auch
 Großgeschriebenes.
+
+Der Covertitel stand vorher mit 28 pt hier — das ist der Wert der Formatvorlage „DSA Cover
+Vordergrund" aus der Wordvorlage. Der gesetzte Umschlag sagt etwas anderes: die Textebene
+*Abenteuertitel* in `Cover_Buchtitel.psd` trägt `FontSize 75` bei einer Ebenentransformation von
+2,3776, also 178,3 px, und `Leading 90`, also 213,3 px. Bei 300 ppi sind das **42,8 pt Schriftgrad**
+und **51,4 pt Zeilenabstand**. Die Grundlinie liegt 401 px über der unteren Beschnittkante, nach
+Abzug der 3 mm Beschnitt also **31,3 mm über der Papierkante**.
+
+### Der Titeleffekt
+
+Vier Effekte liegen im PSD auf der Titelebene, ein fünfter auf der Ebene *Rahmen* darunter:
+
+| Lage | PSD | in der Klasse |
+|---|---|---|
+| Fläche „Rahmen" | Block mit harter Kante, 35 px um die Textbox, `2E2832` | Silhouette der Schrift, 8,4 pt Abstand |
+| Schlagschatten der Fläche | 21 px Abstand, 21 px Weichzeichnung, 75 % | dieselbe Silhouette, 2,5/−4,3 pt versetzt |
+| Schlagschatten der Schrift | 31 px Abstand, 18 px Weichzeichnung, 63 % | Strich in `1A161B`, 3,7/−6,4 pt versetzt |
+| Kontur | 3 px, Verlauf `A6A6A6` nach `2B2630` | Strich 0,72 pt in `A6A6A6` |
+| Verlauf in der Schrift | senkrecht `C5B8CE` nach `28232D`, 42 % Skalierung | Schattierung mit vier Haltepunkten, vom Schriftzug maskiert |
+
+Die Fläche ist im PSD ein Block, hier eine Silhouette: der Block müsste für jeden Titel neu
+gezeichnet werden, die Silhouette passt sich an. Weil die Silhouette den Oberlängen folgt, steht
+über einer Zeile ohne Unterlängen mehr Fläche als darunter; 2,5 pt Versatz nach unten gleichen das
+aus, am gerasterten Ergebnis gemessen.
+
+**Zwei Fallen dabei**, beide gekostet haben sie einen halben Tag:
+
+`\pgfdeclarefading` nimmt den Namen des Fadings **unexpandiert**, `path fading=` expandiert ihn.
+Ein Zählermakro im Namen lässt die Referenz deshalb ins Leere greifen — ohne Fehlermeldung, und pgf
+benutzt still das zuletzt gesetzte Fading. Der Name muss mit `\edef` ausgeschrieben werden, bevor er
+in die Zeichenroutine geht. Und: `fit fading=false` ist Pflicht, sonst zieht pgf das Fading auf die
+Pfadbox und der Verlauf sitzt schräg im Schriftzug.
+
+TikZ-Knoten sind **transformationsinvariant**: ein `shift` am umgebenden `scope` verschiebt sie
+nicht. Jeder Versatz muss in die Ankerkoordinate, `([shift={(dx,dy)}]knoten.center)`.
+
+### Das Impressum
+
+Vermessen an einer gesetzten Veröffentlichung mit `pdftotext -bbox-layout`, die Schriftgrade über
+den Vergleich der Zeilenbreiten mit denselben Zeichenketten:
+
+| Mass | Sollwert | erreicht |
+|---|---|---|
+| Grundlinie der Überschrift | 37,6 mm unter der Papieroberkante | 37,58 mm |
+| Grundlinie der ersten Rubrik | 47,2 mm | 47,25 mm |
+| Grundlinie Rubrik → Wert | 12,8 pt | 12,82 pt |
+| Grundlinie Wert → nächste Rubrik | 25,1 pt | 25,04 pt |
+| Blockbreite des Rechtevermerks | 94,5 mm | 93,2 mm (Umbruch) |
+| Zeilenabstand im Vermerk | 11,5 pt, Absätze 23,2 pt | 11,6 und 23,1 pt |
+
+Zentriert wird auf die **Papiermitte**, nicht auf die Mitte des Satzspiegels: der liegt bei innen
+20 mm und außen 24 mm um 2 mm daneben. `\centering` allein kann das nicht, weil es keinen Versatz
+kennt — `\leftskip` und `\rightskip` tragen den Versatz als festen und die Zentrierung als
+dehnbaren Anteil. `\parfillskip` muss dabei 0 pt bleiben; mit einem `fil`-Anteil stehen bei
+einzeiligen Absätzen rechts zwei dehnbare Anteile gegen einen links, und die Zeile rutscht nach
+links.
+
+### Laufzeit
+
+Ein Lauf mit Umschlag dauert knapp eine Minute. Das sind nicht die Textabzüge des Titels — mit
+einer Kopie statt zweihundert bleibt es dabei. Es sind die Seitenhintergründe: 7 bis 8 MB je Seite,
+und jeder Lauf bettet sie neu ein. Die Klassenoption `ohnehintergrund` lässt sie weg und bringt den
+Lauf auf 8 Sekunden, das PDF von 19 auf 4 MB. `entwurf` ersetzt darüber hinaus alle Grafiken durch
+Rahmen.
 
 **Zwei Eigenheiten der Schriften.** Andalus hat nur einen Schnitt — Fett und Kursiv rechnet XeLaTeX
 daraus selbst. Und **keine** der fünf Dateien hat das OpenType-Feature `smcp`, echte Kapitälchen

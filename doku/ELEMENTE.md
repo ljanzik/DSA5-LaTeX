@@ -44,7 +44,7 @@ diese Aufteilung.
 
 | Typ | Aufruf | Spalten | Seitenzahl | Hintergrund |
 |---|---|---|---|---|
-| Umschlag vorne | `\dsaUmschlagVorne{Bild}{Zeile1}{Zeile2}` | — | nein | nein |
+| Umschlag vorne | `\dsaUmschlagVorne{Bild}{\dsaTitelZeile{…}…}` | — | nein | nein |
 | Umschlag hinten | `\dsaUmschlagHinten{Karte}{Titel}{Inhalt}` | 1 | nein | nein |
 | Impressum | `\begin{dsaImpressumseite}` | 1 | nein | ja |
 | Inhaltsverzeichnis | `\dsaInhalt` | 1 | nein | ja |
@@ -53,6 +53,37 @@ diese Aufteilung.
 | Seite ohne Seitenzahl | `\begin{dsaSeiteOhneZahl}` | 2 | nein | ja |
 | Ganzseitige Grafik | `\dsaGanzseite{Bild}` | — | nein | nein |
 | Querformat | `\dsaQuerAnfang` … `\dsaQuerEnde` | 1 | nein | nein |
+
+### Der Titel auf dem Umschlag
+
+Die Zeilen kommen einzeln, jede darf ihren eigenen Schriftgrad haben:
+
+```latex
+\dsaUmschlagVorne{grafiken/titelbild}{%
+  \dsaTitelZeile{Der falsche}%
+  \dsaTitelZeile{Ganter}%
+  \dsaTitelZeile[27.9]{Akt 1 der Fuchsgrund-Reihe}}
+```
+
+Gesetzt wird von unten: die Grundlinie der **letzten** Zeile sitzt auf `\dsatitelunten`, jede
+weitere Zeile schiebt nach oben. Ein dreizeiliger Titel wächst also in das Bild hinein und nicht in
+den unteren Rahmen.
+
+Der Aufbau folgt `Cover_Buchtitel.psd` aus dem Baukasten: eine graue Fläche hinter dem Schriftzug,
+ihr Schlagschatten, der Schlagschatten der Schrift, eine feine Lichtkante und der Verlauf in der
+Schrift. Alles einstellbar, in der Präambel:
+
+| Befehl | Voreinstellung | Wirkung |
+|---|---|---|
+| `\dsaTitelGrad{42.8}` | 42,8 pt | Schriftgrad aller Zeilen |
+| `\dsaTitelRand{8.4}` | 8,4 pt | Breite der grauen Fläche um die Schrift |
+| `\dsaTitelZeilenfaktor{1.0}` | 1,0 | Zeilenabstand als Vielfaches des Grads; ab etwa 1,25 stehen die Flächen getrennt |
+| `\dsaTitelUnten{31.3mm}` | 31,3 mm | Grundlinie der letzten Zeile über der Papierkante |
+| `\dsaTitelTiefer{2.5pt}` | 2,5 pt | Versatz der Fläche nach unten, Ausgleich für Oberlängen |
+| `\dsaTitelVerlaufAus` | — | schlicht weiß mit Kontur |
+| `\dsaTitelFlaecheAus` | — | ohne graue Fläche |
+| `\dsaTitelRahmenAus` | — | ohne Lichtkante |
+| `\dsaTitelStrichAus` | — | Fläche über `\contour` statt über einen Konturstrich; braucht keine PDF-Specials, dauert aber rund zwanzigmal so lang |
 
 Nicht gebaut: der **Buchrücken**. Die Grafik dafür (`Cover_Buchtitel`, 184,3 mm breit — genau der
 Grafikbereich) liegt im Baukasten, das Element fehlt.
