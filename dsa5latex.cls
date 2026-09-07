@@ -107,6 +107,10 @@
 
 \newcommand*{\dsagrafik}[1]{grafiken/#1}
 
+% Gesucht wird in beiden Ordnern: neben dem Dokument und eine Ebene hoeher.
+% So laeuft ein Satz auch aus einem Unterordner heraus, etwa beispiel/.
+\graphicspath{{./}{../}}
+
 % Die Endungsreihenfolge: JPEG vor PNG.
 %
 % Grafiken werden ohne Endung angesprochen, graphicx probiert sie der Reihe
@@ -133,8 +137,20 @@
 
 \defaultfontfeatures{Ligatures=TeX}
 
+% Der Ordner mit den Schriften: erst neben dem Dokument suchen, dann eine
+% Ebene hoeher. fontspec nimmt nur einen Pfad, deshalb wird er hier bestimmt,
+% bevor die erste Schrift geladen wird.
+\IfFileExists{schriften/GenBasR.ttf}
+  {\newcommand*{\dsa@schriften}{schriften/}}
+  {\IfFileExists{../schriften/GenBasR.ttf}
+     {\newcommand*{\dsa@schriften}{../schriften/}}
+     {\newcommand*{\dsa@schriften}{schriften/}%
+      \ClassWarning{dsa5latex}{Der Ordner schriften/ ist weder neben dem
+        Dokument noch eine Ebene hoeher zu finden. Erzeugen mit
+        werkzeuge/aufbereiten.py}}}
+
 \setmainfont{GenBasR}[
-  Path           = schriften/,
+  Path           = \dsa@schriften,
   Extension      = .ttf,
   BoldFont       = GenBasB,
   ItalicFont     = GenBasI,
@@ -154,7 +170,7 @@
 % zurueck — der Baukasten verlangt fuer Kapitel und Covertitel aber fett.
 % Also nachbilden lassen.
 \newfontfamily{\dsaandalus}{andlso}[
-  Path          = schriften/,
+  Path          = \dsa@schriften,
   Extension     = .ttf,
   AutoFakeBold  = 1.5,
   AutoFakeSlant = 0.2 ]
@@ -286,6 +302,13 @@
   % durch Ueberschriften, Aufzaehlungen und Kaesten. Wer Luft braucht, nimmt
   % \dsaRasterluft{1}; das haelt das Grundlinienraster.
   \setlength{\parindent}{0pt}
+  % Kein \lineskip. Ist eine Zeile hoeher als der Durchschuss — und das ist
+  % jede Ueberschrift —, dann schiebt TeX sie normalerweise auseinander und
+  % haelt dabei nur einen Mindestabstand ein. Im Rastersatz ist das genau
+  % falsch: der Durchschuss ist das Raster, und er muss immer gelten. Mit
+  % einem Grenzwert von -\maxdimen greift die Regel nie.
+  \setlength{\lineskip}{0pt}
+  \setlength{\lineskiplimit}{-\maxdimen}
   \flushbottom
 \fi
 
@@ -551,12 +574,16 @@
 \newcommand{\dsaunterkapitel}[1]{%
   \par\dsaRasterluft{1}%
   \addcontentsline{toc}{subsection}{#1}%
-  {\centering\dsaandalus\fontsize{14bp}{16.8bp}\selectfont #1\par}%
+  % Zwei Rastereinheiten: eine fuer die Zeile, eine fuer den Abstand danach,
+  % den die IDML als SpaceAfter 12 pt nennt.
+  {\centering\dsaandalus\fontsize{14bp}{24bp}\selectfont #1\par}%
   \dsaRasterluft{1}\nobreak}
 
 \newcommand{\dsaabschnitt}[1]{%
   \par\dsaRasterluft{1}%
-  {\bfseries\fontsize{13bp}{15.6bp}\selectfont #1\par}\nobreak}
+  % Eine Rastereinheit. Der Baukasten gibt dieser Ueberschrift keinen
+% eigenen Abstand.
+  {\bfseries\fontsize{13bp}{12bp}\selectfont #1\par}\nobreak}
 
 \newcommand{\dsaunterabschnitt}[1]{%
   \par{\bfseries #1\par}\nobreak}
@@ -568,7 +595,7 @@
     enhanced, blankest, nobeforeafter, width=\linewidth,
     left=2mm, right=2mm, top=1mm, bottom=1mm,
     interior style={left color=dsapergamentgelb, right color=white}]
-    \bfseries\fontsize{13bp}{15.6bp}\selectfont #1
+    \bfseries\fontsize{13bp}{12bp}\selectfont #1
   \end{tcolorbox}\par
   \dsaRasterluft{1}}
 
@@ -870,7 +897,10 @@
 \newlist{dsaliste}{itemize}{4}
 \setlist[dsaliste,1]{
   leftmargin=\dimexpr 6mm+\labelsep\relax,
-  topsep=0pt, itemsep=0pt, parsep=0pt,
+  % partopsep gehoert dazu: enumitem addiert es zu topsep, wenn die
+  % Liste nach einem Absatz beginnt. Ohne das sass jede Liste 2 bp zu
+  % tief, und alles danach mit ihr.
+  topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt,
   % 2,05 mm hoch. Der IDML-Rahmen ist 4,36 x 2,36 mm, im Musterbogen sitzt
   % das Zeichen aber mit 3,78 x 2,05 mm — das gesetzte Ergebnis gilt.
   label={\smash{\raisebox{-0.25\height}{%
@@ -879,14 +909,20 @@
 \newlist{dsalisteblau}{itemize}{4}
 \setlist[dsalisteblau,1]{
   leftmargin=\dimexpr 6mm+\labelsep\relax,
-  topsep=0pt, itemsep=0pt, parsep=0pt,
+  % partopsep gehoert dazu: enumitem addiert es zu topsep, wenn die
+  % Liste nach einem Absatz beginnt. Ohne das sass jede Liste 2 bp zu
+  % tief, und alles danach mit ihr.
+  topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt,
   label={\smash{\raisebox{-0.25\height}{%
     \includegraphics[height=2.4mm]{\dsagrafik{aufzaehlung-blau}}}}}}
 
 \newlist{dsalisterot}{itemize}{4}
 \setlist[dsalisterot,1]{
   leftmargin=\dimexpr 6mm+\labelsep\relax,
-  topsep=0pt, itemsep=0pt, parsep=0pt,
+  % partopsep gehoert dazu: enumitem addiert es zu topsep, wenn die
+  % Liste nach einem Absatz beginnt. Ohne das sass jede Liste 2 bp zu
+  % tief, und alles danach mit ihr.
+  topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt,
   label={\smash{\raisebox{-0.25\height}{%
     \includegraphics[height=2.4mm]{\dsagrafik{aufzaehlung-rot}}}}}}
 
@@ -920,18 +956,31 @@
 % Kopfleiste mit Verlauf von „Tabellenrot" nach Weiss, Linien in #BFBFBF.
 % Der Baukasten warnt: Objekte mit Farbverlauf gehoeren auf „Multiplizieren".
 
+% Die Kopfleiste ist genau eine Rastereinheit hoch, damit die Tabelle das
+% Raster nicht verlaesst. Ihr Text sitzt darin mittig.
 \newcommand{\dsaTabellenkopf}[1]{%
-  \noindent\begin{tcolorbox}[
+  \par\noindent\begin{tcolorbox}[
     enhanced, blankest, nobeforeafter, width=\linewidth,
-    left=1.5mm, right=1.5mm, top=0.5mm, bottom=0.5mm,
+    height=\dsaRaster{1}, valign=center,
+    left=1.5mm, right=1.5mm, top=0pt, bottom=0pt,
     interior style={left color=dsatabellenrot, right color=white}]
     \bfseries #1
-  \end{tcolorbox}}
+  \end{tcolorbox}\par}
 % PRUEFEN: „blend mode=multiply" braeuchte einen Treiber, der Mischmodi kann.
 % Unter XeLaTeX nicht selbstverstaendlich, deshalb weggelassen — auf weissem
 % Grund faellt der Unterschied nicht auf.
 
 \newcommand*{\dsaTabellenlinie}{\arrayrulecolor{dsatabellenlinie}}
+
+% Die Zeilen einer Tabelle richten sich nach ihrem Inhalt und verlassen damit
+% das Raster. \extrarowheight aus dem array-Paket hebt jede Zeile um einen
+% festen Betrag: bei 10 bp Text fehlen rund 2 bp auf die Rastereinheit, und
+% damit stehen die Grundlinien 12 bp auseinander wie im uebrigen Satz.
+%
+% Der Wert ist am gesetzten Ergebnis bestimmt, nicht gerechnet — die Hoehe
+% einer Zeile haengt daran, welche Zeichen darin stehen.
+\newlength{\dsatabellenluft}\setlength{\dsatabellenluft}{2bp}
+\AtBeginDocument{\setlength{\extrarowheight}{\dsatabellenluft}}
 
 %%% ==================================================================
 %%% 18  Seitentypen

@@ -1,0 +1,80 @@
+%%% raster.tex — welche Elemente verlassen das Grundlinienraster?
+%%%
+%%% Jedes Element steht zwischen zwei Absaetzen Fliesstext. Wenn die Zeilen
+%%% danach nicht mehr auf dem Raster sitzen, liegt es an dem Element
+%%% dazwischen — und werkzeuge/nachmessen.py sagt, um wie viel.
+%%%
+%%%   xelatex raster.tex
+%%%   python3 ../werkzeuge/nachmessen.py raster.pdf --seite 1 --text
+
+\documentclass[raster,ohnehintergrund]{dsa5latex}
+\graphicspath{{../}}
+
+\begin{document}
+\onecolumn
+
+Erste Zeile vor allen Elementen, sie setzt den Bezug.
+Zweite Zeile.
+Dritte Zeile.
+
+\begin{dsaliste}
+\item Erster Punkt einer Aufzaehlung
+\item Zweiter Punkt
+\end{dsaliste}
+
+Nach der Aufzaehlung, erste Zeile.
+Nach der Aufzaehlung, zweite Zeile.
+
+\begin{dsalisteblau}
+\item Blaue Raute, erster Punkt
+\end{dsalisteblau}
+
+Nach der blauen Aufzaehlung.
+
+\begin{dsaWerteabsatz}
+Werteabsatz mit haengendem Einzug, erste Zeile, lang genug fuer einen Umbruch
+in eine zweite Zeile.
+\end{dsaWerteabsatz}
+
+Nach dem Werteabsatz.
+
+\dsaVorlesetext{Vorlesetext mit der Zierleiste darueber.}
+
+Nach dem Vorlesetext, erste Zeile.
+Nach dem Vorlesetext, zweite Zeile.
+
+\dsaEinfuehrung{Einfuehrungstext, kursiv mit Laufweite.}
+
+Nach der Einfuehrung.
+
+\dsaZitat{Freistehendes Zitat.}
+
+Nach dem Zitat.
+
+\dsaabschnitt{Abschnitt, 13 bp fett}
+
+Nach dem Abschnitt.
+
+\dsaunterabschnitt{Unterabschnitt, 10 bp fett}
+
+Nach dem Unterabschnitt.
+
+\dsaunterkapitel{Unterkapitel, 14 bp zentriert}
+
+Nach dem Unterkapitel.
+
+\dsaTabellenkopf{Ein Tabellenkopf}
+
+\dsaTabellenlinie
+\begin{tabular}{@{}ll@{}}
+1 & erster Wert\\
+2 & zweiter Wert\\
+\end{tabular}
+
+Nach der Tabelle.
+
+\dsaProbe{Sinnesschaerfe (Suchen), erschwert um 2}
+
+Nach der Probenzeile.
+
+\end{document}
