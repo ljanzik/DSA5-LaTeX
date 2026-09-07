@@ -155,7 +155,7 @@ Musterbogen zeigt sie ohne Text.
 | Gegnerabstufung | Bauer 3,00 / Springer 3,17 / Turm 3,27 / König 3,21 mm hoch | IDML | `#` |
 | Fokusregelmarke | 9,86 × 9,61 mm | IDML | `#` |
 | Porträtmedaillon, Größe | 35,39 × 34,97 mm bei 100 % | IDML | `#` |
-| Porträtmedaillon, Lage im Kasten | geschätzt | — | `!` |
+| Porträtmedaillon, Lage im Kasten | je Kasten 17,06/17,97, 17,91/16,87 und 17,57/16,62 mm | Alphakanal der Kastengrafiken | `#` |
 | Rautenskalen in TikZ | Vorbild `DSA5_Rauten_*` | PNG | — |
 | Band- und Fokusregelmarke | offen | — | — |
 

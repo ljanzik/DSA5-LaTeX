@@ -898,16 +898,39 @@
 % also 0,81 mm links der Mitte der Datei.
 \newlength{\dsaportraitring}    \setlength{\dsaportraitring}{35.4mm}
 \newlength{\dsaportraitringx}   \setlength{\dsaportraitringx}{0.81mm}
-% Die Lage der Ringmitte, gemessen an allen drei Portraitkaesten: 17,2 bis
-% 18,0 mm von der rechten Bildkante, 18,9 bis 20,2 mm unter der Oberkante.
-\newlength{\dsaportraitx}       \setlength{\dsaportraitx}{17.6mm}
-\newlength{\dsaportraity}       \setlength{\dsaportraity}{19.4mm}
+% Die Lage der Kranzmitte. Nicht geschaetzt: die drei Kastengrafiken
+% enthalten das Medaillon bereits, also ist die Lage im Alphakanal zu messen,
+% und unser Ring muss deckungsgleich darauf liegen.
+%
+% Gemessen an den drei Dateien bei 300 ppi, jeweils aus zwei Wegen -- dem
+% Scheitel oben plus Kranzradius und dem rechtesten Punkt:
+%
+%   werte-klein-portrait    17,06 mm von rechts, 17,97 mm unter der Oberkante
+%   werte-mittel-portrait   17,91 mm             16,87 mm
+%   werte-gross-portrait    17,57 mm             16,62 mm
+%
+% Der sichtbare Kranzradius ist in allen drei Dateien 15,62 mm, genau wie in
+% portraitrahmen.png. Die frueheren 19,4 mm kamen daher, dass dort der
+% Aussenradius der Ringdatei gerechnet wurde -- 17,7 mm, die halbe
+% Bildbreite -- und nicht der Kranz.
+%
+% Die Werte streuen um 1,4 mm, weil die Dateien unterschiedlich beschnitten
+% sind. Jeder Kasten setzt deshalb seine eigenen; die Voreinstellung ist der
+% Mittelwert und gilt, wenn jemand den Stil ohne Kasten benutzt.
+\newlength{\dsaportraitx}       \setlength{\dsaportraitx}{17.51mm}
+\newlength{\dsaportraity}       \setlength{\dsaportraity}{17.15mm}
+
+% Je Kasten die gemessene Lage. \dsaKastenNeu gibt die Liste an tcolorbox
+% weiter; „code" wird beim Setzen der Optionen ausgefuehrt, also vor dem
+% Overlay, das die Laengen liest.
+\tcbset{dsaportraitlagen/.style 2 args={code={%
+  \setlength{\dsaportraitx}{#1}\setlength{\dsaportraity}{#2}}}}
 % Die Groesse steht im IDML: Ornament_Portrait_Wertekasten.psd sitzt in einem
 % Rahmen von 35,39 x 34,97 mm bei 300 gegen 300 ppi, also in 100 Prozent. Das
 % ist die Aussenkante des Rings; das Bild darin ist kleiner, weil der Ring
 % selbst Breite hat.
-% PRUEFEN: die beiden Versaetze sind weiter geschaetzt — das IDML sagt, wie
-% GROSS das Medaillon ist, nicht wo im Kasten es sitzt.
+% Wo im Kasten es sitzt, sagt das IDML nicht -- das steht in den
+% Kastengrafiken selbst, siehe oben.
 
 % „overlay app" haengt an, was schon an Overlays da ist, und zeichnet ueber
 % den Inhalt. Genau richtig fuer das Medaillon, das ueber den Rand des
@@ -929,9 +952,9 @@
                  -\dsaportraity)}]frame.north west)
     {\includegraphics[width=\dsaportraitring]{\dsagrafik{portraitrahmen}}};}}}
 
-\dsaKastenNeu{dsaWerteKleinPortrait} {94.0mm}{59.2mm} {14}{werte-klein-portrait} {dsaportraitlage,left=7mm,right=\dsaportraitfrei}
-\dsaKastenNeu{dsaWerteMittelPortrait}{94.0mm}{104.0mm}{25}{werte-mittel-portrait}{dsaportraitlage,left=7mm,right=\dsaportraitfrei}
-\dsaKastenNeu{dsaWerteGrossPortrait} {94.0mm}{199.1mm}{47}{werte-gross-portrait} {dsaportraitlage,left=7mm,right=\dsaportraitfrei}
+\dsaKastenNeu{dsaWerteKleinPortrait} {94.0mm}{59.2mm} {14}{werte-klein-portrait} {dsaportraitlage,dsaportraitlagen={17.06mm}{17.97mm},left=7mm,right=\dsaportraitfrei}
+\dsaKastenNeu{dsaWerteMittelPortrait}{94.0mm}{104.0mm}{25}{werte-mittel-portrait}{dsaportraitlage,dsaportraitlagen={17.91mm}{16.87mm},left=7mm,right=\dsaportraitfrei}
+\dsaKastenNeu{dsaWerteGrossPortrait} {94.0mm}{199.1mm}{47}{werte-gross-portrait} {dsaportraitlage,dsaportraitlagen={17.57mm}{16.62mm},left=7mm,right=\dsaportraitfrei}
 
 % ---- Graue Kaesten ----
 %

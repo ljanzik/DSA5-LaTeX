@@ -228,8 +228,21 @@ im `underlay`:
 
 Alle drei Porträtvarianten sind 94,0 mm breit; das Medaillon tritt 13,5 mm zur Außenseite heraus.
 **Vorläufig nur die rechte Lage** — der Baukasten liefert die Grafik nur in einer Richtung, also
-Porträtkästen auf rechte Seiten setzen. Gesteuert über `\dsaportraitgroesse`, `\dsaportraitx` und
-`\dsaportraity`.
+Porträtkästen auf rechte Seiten setzen.
+
+Die Lage des Medaillons ist **nicht** einstellbar geschätzt, sondern gemessen: die drei
+Kastengrafiken enthalten das Medaillon bereits, und der Ring der Klasse muss deckungsgleich darauf
+liegen. Weil die Dateien unterschiedlich beschnitten sind, setzt jeder Kasten seine eigene Lage
+über `dsaportraitlagen`:
+
+| Kasten | Kranzmitte von rechts | unter der Oberkante |
+|---|---|---|
+| `dsaWerteKleinPortrait` | 17,06 mm | 17,97 mm |
+| `dsaWerteMittelPortrait` | 17,91 mm | 16,87 mm |
+| `dsaWerteGrossPortrait` | 17,57 mm | 16,62 mm |
+
+Der sichtbare Kranzradius ist überall 15,62 mm. Nachgemessen an `beispiel/kaesten.pdf` liegt der
+Ring in allen drei Kästen mit 0,15 mm auf dem eingebauten Medaillon.
 
 Der Text weicht dem Medaillon aus, und zwar dem **Kranz** des Ornaments, nicht dem Bild darin: der
 Kranz reicht 33,2 mm nach innen, also hält `\dsaportraitfrei` 34 mm frei. Damit bleiben 53 mm

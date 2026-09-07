@@ -215,6 +215,26 @@ Aus `Resources/Graphic.xml` des IDML, unverändert.
 | `dsagruenverlauf` | Grün für gradient | CMYK 70 53 91 17 |
 | `dsapergamentgelb` | Für Gelb | CMYK 9 26 56 9 |
 
+## Das Porträtmedaillon
+
+Die drei Kastengrafiken enthalten das Medaillon schon. Damit ist seine Lage kein Schätzwert,
+sondern im Alphakanal messbar — und der Ring, den die Klasse darüberlegt, muss genau darauf sitzen.
+
+| Datei | Kranzmitte von rechts | unter der Oberkante | Kranzradius |
+|---|---|---|---|
+| `werte-klein-portrait` | 17,06 mm | 17,97 mm | 15,62 mm |
+| `werte-mittel-portrait` | 17,91 mm | 16,87 mm | 15,62 mm |
+| `werte-gross-portrait` | 17,57 mm | 16,62 mm | 15,62 mm |
+
+Zwei Wege führen zur Kranzmitte und stimmen auf 0,2 mm überein: der Scheitel oben plus der
+Kranzradius, und der rechteste deckende Punkt. `portraitrahmen.png` deckt die Pixel 15 bis 384 von
+418 waagerecht und 20 bis 391 von 413 senkrecht — die Kranzmitte liegt darin 0,81 mm links und
+0,08 mm über der Bildmitte, weshalb der Ring um `\dsaportraitringx` versetzt angesetzt wird.
+
+Die früheren 19,4 mm unter der Oberkante kamen daher, dass dort der Außenradius der Ringdatei
+gerechnet wurde — 17,7 mm, die halbe Bildbreite — und nicht der Kranz. Das Medaillon saß damit
+2,1 mm zu tief.
+
 ## Fußzeile
 
 Gemessen an einer gesetzten Veröffentlichung des Verlags, vier Seiten:
