@@ -88,12 +88,14 @@ SCHRIFTEN = ['andlso.ttf', 'GenBasR.ttf', 'GenBasB.ttf',
              'GenBasI.ttf', 'GenBasBI.ttf']
 
 # Ohne diese bricht der Lauf. Der Rest ist nur fuer einzelne Elemente noetig.
+# Ohne Endung: eine Vollseitengrafik liegt als .jpg vor, alle anderen als
+# .png, und die Klasse nennt sie ohnehin ohne Endung.
 UNVERZICHTBAR = {
-    'pergament-klein.png', 'pergament-mittel.png', 'pergament-lang.png',
-    'werte-klein.png', 'werte-mittel.png',
-    'kapitelbanner.png', 'umschlag-vorne.png',
-    'aufzaehlung.png', 'auge-schwarz.png', 'auge-weiss.png',
-    'seite-links-0.png', 'seite-rechts-0.png',
+    'pergament-klein', 'pergament-mittel', 'pergament-lang',
+    'werte-klein', 'werte-mittel',
+    'kapitelbanner', 'umschlag-vorne',
+    'aufzaehlung', 'auge-schwarz', 'auge-weiss',
+    'seite-links-0', 'seite-rechts-0',
 }
 
 
@@ -113,9 +115,13 @@ def main():
     fehlt, falsch, ok = [], [], 0
 
     for name, (bs, hs) in sorted(SOLL.items()):
+        # Die Vollseitengrafiken liegen als JPEG, alle anderen als PNG. Beide
+        # Endungen gelten, denn die Klasse nennt ihre Grafiken ohne Endung.
         p = os.path.join(zg, name)
         if not os.path.isfile(p):
-            fehlt.append(name)
+            p = os.path.splitext(p)[0] + '.jpg'
+        if not os.path.isfile(p):
+            fehlt.append(os.path.splitext(name)[0])
             continue
         if Image is None:
             ok += 1
@@ -123,7 +129,8 @@ def main():
         im = Image.open(p)
         if (im.width, im.height) != (bs, hs):
             falsch.append('%s: %d x %d px, erwartet %d x %d'
-                          % (name, im.width, im.height, bs, hs))
+                          % (os.path.basename(p), im.width, im.height,
+                             bs, hs))
         else:
             ok += 1
 

@@ -347,12 +347,34 @@
 \fancyhf{}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
-\contourlength{0.6pt}
-\newcommand*{\dsa@seitenzahl}{%
-  {\dsaandalus\fontsize{14}{14}\selectfont
-   \contour{black}{\textcolor{white}{\thepage}}}}
-\fancyfoot[LE]{\dsa@seitenzahl}
-\fancyfoot[RO]{\dsa@seitenzahl}
+
+% Die Zahl gehoert in das Ornament am unteren Aussenrand des
+% Seitenhintergrunds. Gemessen an einer gesetzten Veroeffentlichung,
+% ueber zwoelf Seiten gleich: Mitte 21 mm von der Aussenkante,
+% Grundlinie 4 mm ueber der unteren Papierkante, Andalus 21 pt.
+%
+% Gesetzt als Knoten an der Papierkante, nicht ueber die Spalten von
+% fancyhdr: die sitzen im Satzspiegel und wissen nichts vom Anschnitt.
+\newlength{\dsaseitenzahlaussen}\setlength{\dsaseitenzahlaussen}{21mm}
+\newlength{\dsaseitenzahlunten} \setlength{\dsaseitenzahlunten}{5.2mm}
+\newcommand*{\dsaseitenzahlgrad}{20}
+\newlength{\dsaseitenzahlkontur}\setlength{\dsaseitenzahlkontur}{0.6pt}
+
+% #1 die Ecke, von der aus gemessen wird
+% #2 Vorzeichen der Richtung nach innen
+\newcommand{\dsa@seitenzahlan}[2]{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=base, inner sep=0]
+      at ([shift={(#2\dsaseitenzahlaussen,\dsaseitenzahlunten)}]#1)
+      {\dsaandalus\fontsize{\dsaseitenzahlgrad}{\dsaseitenzahlgrad}%
+       \selectfont\contourlength{\dsaseitenzahlkontur}%
+       \contour{black}{\textcolor{white}{\thepage}}};
+  \end{tikzpicture}}
+
+\fancyfoot[LE]{\dsa@seitenzahlan{current page.south west}{}}
+\fancyfoot[RO]{\dsa@seitenzahlan{current page.south east}{-}}
+% PRUEFEN: Im Vorbild steht neben der Zahl noch der Kapitelname, nach
+% innen versetzt. Ein solcher Kolumnentitel fehlt hier noch.
 
 %%% ==================================================================
 %%% 12  Gliederung
@@ -535,7 +557,10 @@
 % PRUEFEN: alle drei geschaetzt. Der Ring in portraitrahmen.png ist im IDML
 % 35,4 x 35,0 mm gerahmt; der Innenkreis ist kleiner.
 
-\tcbset{dsaportrait/.style={underlay app={%
+% „overlay app" haengt an, was schon an Overlays da ist, und zeichnet
+% ueber den Inhalt. Genau richtig fuer das Medaillon, das ueber den Rand
+% des Kastens hinaustritt. Ein „underlay app" gibt es in tcolorbox nicht.
+\tcbset{dsaportrait/.style={overlay app={%
   \node[inner sep=0] at ([shift={(-\dsaportraitx,-\dsaportraity)}]frame.north east)
     {\dsaBildKreis{\dsaportraitgroesse}{#1}};}}}
 

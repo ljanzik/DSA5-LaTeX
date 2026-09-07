@@ -5,9 +5,15 @@ Scriptorium-Baukasten auf.
     python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
     python3 werkzeuge/aufbereiten.py "/pfad/zum/Baukasten" --ziel /pfad/zum/projekt
     python3 werkzeuge/aufbereiten.py --liste
+    python3 werkzeuge/aufbereiten.py "/pfad/zum/Baukasten" --png
 
 Mit --ziel schreibt es grafiken/ und schriften/ in ein anderes Projekt,
 das diese Klasse benutzt. Ohne --ziel in dieses hier.
+
+Die vier Doppelseiten und der Rueckumschlag werden als JPEG abgelegt: als PNG
+sind das 7 bis 13 MB je Datei und im gesetzten PDF ueber 50 MB, als JPEG in
+Qualitaet 88 unter 1,5 MB, ohne sichtbaren Unterschied an einer
+Pergamentflaeche. Mit --png bleibt alles verlustlos.
 
 Das Bildmaterial ist NICHT Teil dieses Projekts und darf es nicht sein: es
 gehoert Ulisses Spiele und steht unter der Vereinbarung ueber
@@ -131,11 +137,57 @@ KAPITELSTART_EBENEN = {
     'kapitelstart-ornament.png':  'Ebene 10',
 }
 
+# Diese Grafiken werden als JPEG abgelegt, nicht als PNG. Es sind die
+# Vollseitengrafiken: 2516 x 3579 px in RGB, als PNG 7 bis 13 MB je Datei, als
+# JPEG in Qualitaet 88 unter 1,5 MB. Einen Alphakanal haben sie nicht, und
+# ihre Motive sind Pergamentflaechen mit weichen Verlaeufen — dafuer ist JPEG
+# gemacht. Wer sie doch verlustlos will, ruft das Werkzeug mit --png auf.
+#
+# Der Coverrahmen ist NICHT dabei: er hat echte Transparenz.
+ALS_JPEG = {
+    'umschlag-hinten',
+    'seite-links-0', 'seite-links-1', 'seite-links-2', 'seite-links-3',
+    'seite-rechts-0', 'seite-rechts-1', 'seite-rechts-2', 'seite-rechts-3',
+}
+JPEG_QUALITAET = 88
+
 SCHRIFTEN = ['andlso.ttf', 'GenBasR.ttf', 'GenBasB.ttf',
              'GenBasI.ttf', 'GenBasBI.ttf']
 
 
 # ---------------------------------------------------------------- Helfer
+
+def hat_alpha(bild):
+    """Ist wirklich etwas durchsichtig, oder nur ein leerer Alphakanal?"""
+    if bild.mode not in ('RGBA', 'LA', 'P'):
+        return False
+    a = bild.convert('RGBA').split()[3]
+    return a.getextrema()[0] < 255
+
+
+def speichern(bild, ordner, name, nur_png=False):
+    """Legt das Bild unter <name> ab, als JPEG wenn es dafuer vorgesehen ist.
+
+    <name> kommt mit der Endung .png herein; steht der Name in ALS_JPEG und
+    hat das Bild keine Transparenz, wird daraus .jpg. Die Klasse nennt ihre
+    Grafiken ohne Endung, deshalb ist der Wechsel dort nicht zu merken.
+    Zurueck kommt der wirklich geschriebene Dateiname.
+    """
+    stamm = os.path.splitext(name)[0]
+    if not nur_png and stamm in ALS_JPEG and not hat_alpha(bild):
+        ziel = os.path.join(ordner, stamm + '.jpg')
+        bild.convert('RGB').save(ziel, 'JPEG',
+                                 quality=JPEG_QUALITAET, optimize=True,
+                                 progressive=False, subsampling=0)
+        # Ein altes PNG desselben Namens muss weg, sonst findet graphicx es
+        # zuerst und die Ersparnis verpufft.
+        alt = os.path.join(ordner, stamm + '.png')
+        if os.path.isfile(alt):
+            os.remove(alt)
+        return stamm + '.jpg'
+    bild.save(os.path.join(ordner, name))
+    return name
+
 
 def finde(wurzel, kandidaten):
     for k in kandidaten:
@@ -177,6 +229,7 @@ def main():
         liste_ausgeben()
         return 0
 
+    nur_png = '--png' in sys.argv
     argumente = [a for a in sys.argv[1:] if not a.startswith('--')]
     if not argumente:
         print(__doc__)
@@ -209,26 +262,31 @@ def main():
     fehlt = []
     getan = 0
 
+    # Pillow braucht es fuer die Seitenhintergruende, den Kapitelanfang und
+    # die JPEG-Wandlung des Rueckumschlags — also schon beim Kopieren.
+    try:
+        from PIL import Image
+        Image.MAX_IMAGE_PIXELS = None
+    except ImportError:
+        print()
+        print('Pillow fehlt. Nachinstallieren mit:')
+        print('    python3 -m pip install Pillow psd-tools')
+        return 1
+
     # 1 -- einfaches Kopieren
     for ziel, quellen in sorted(KOPIEREN.items()):
         q = finde(wurzel, quellen)
         if q is None:
             fehlt.append('%s (gesucht: %s)' % (ziel, quellen[0]))
             continue
-        shutil.copyfile(q, os.path.join(zg, ziel))
+        # Kandidaten fuer JPEG gehen durch Pillow, alle anderen werden
+        # unveraendert kopiert.
+        if os.path.splitext(ziel)[0] in ALS_JPEG and not nur_png:
+            speichern(Image.open(q), zg, ziel, nur_png)
+        else:
+            shutil.copyfile(q, os.path.join(zg, ziel))
         getan += 1
     print('kopiert            : %d von %d' % (getan, len(KOPIEREN)))
-
-    # Ab hier braucht es Pillow, fuer PSD zusaetzlich psd-tools.
-    try:
-        from PIL import Image
-        Image.MAX_IMAGE_PIXELS = None
-    except ImportError:
-        print()
-        print('Pillow fehlt. Ohne Pillow bleiben die Seitenhintergruende und')
-        print('der Kapitelanfang aus. Nachinstallieren mit:')
-        print('    python3 -m pip install Pillow psd-tools')
-        return 1
 
     # 2 -- Doppelseiten schneiden
     #
@@ -246,10 +304,10 @@ def main():
             continue
         bogen = Image.open(q)
         mitte = bogen.width // 2
-        bogen.crop((0, 0, mitte, bogen.height)).save(
-            os.path.join(zg, 'seite-links-%d.png' % i))
-        bogen.crop((mitte, 0, bogen.width, bogen.height)).save(
-            os.path.join(zg, 'seite-rechts-%d.png' % i))
+        speichern(bogen.crop((0, 0, mitte, bogen.height)), zg,
+                  'seite-links-%d.png' % i, nur_png)
+        speichern(bogen.crop((mitte, 0, bogen.width, bogen.height)), zg,
+                  'seite-rechts-%d.png' % i, nur_png)
         geschnitten += 1
     print('Doppelseiten       : %d von %d geschnitten' % (geschnitten, len(DOPPELSEITEN)))
 
