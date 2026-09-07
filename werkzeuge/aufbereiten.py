@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
-"""Bereitet die Grafiken und Schriften fuer dsa5satz aus dem offiziellen
+"""Bereitet die Grafiken und Schriften fuer dsa5-latex aus dem offiziellen
 Scriptorium-Baukasten auf.
 
     python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
+    python3 werkzeuge/aufbereiten.py "/pfad/zum/Baukasten" --ziel /pfad/zum/projekt
     python3 werkzeuge/aufbereiten.py --liste
+
+Mit --ziel schreibt es grafiken/ und schriften/ in ein anderes Projekt,
+das diese Klasse benutzt. Ohne --ziel in dieses hier.
 
 Das Bildmaterial ist NICHT Teil dieses Projekts und darf es nicht sein: es
 gehoert Ulisses Spiele und steht unter der Vereinbarung ueber
@@ -11,6 +15,9 @@ Gemeinschaftsinhalte fuer SCRIPTORIUM AVENTURIS, die mit Apache 2.0 nicht
 vereinbar ist. Dieses Werkzeug holt es aus dem Paket, das jeder selbst
 herunterlaedt, und benennt es auf Namen ohne Leerzeichen und Umlaute um,
 weil LaTeX mit beidem schlecht umgeht.
+
+Der Baukasten, kostenlos bei Ulisses:
+https://www.ulisses-ebooks.de/de/product/197880/scriptorium-aventuris-layout-baukasten
 
 Copyright 2026 Leif Janzik. Apache License 2.0.
 """
@@ -170,16 +177,30 @@ def main():
         liste_ausgeben()
         return 0
 
-    if len(sys.argv) < 2:
+    argumente = [a for a in sys.argv[1:] if not a.startswith('--')]
+    if not argumente:
         print(__doc__)
         return 2
 
-    wurzel = sys.argv[1].rstrip('/\\')
+    wurzel = argumente[0].rstrip('/\\')
     if not os.path.isdir(wurzel):
         print('Kein Ordner: %s' % wurzel)
         return 2
 
-    projekt = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # Ziel ist normalerweise dieses Projekt. Mit --ziel <pfad> schreibt es in
+    # ein anderes, das diese Klasse benutzt.
+    if '--ziel' in sys.argv:
+        i = sys.argv.index('--ziel')
+        if i + 1 >= len(sys.argv):
+            print('--ziel braucht einen Pfad.')
+            return 2
+        projekt = os.path.abspath(sys.argv[i + 1].rstrip('/\\'))
+        if not os.path.isdir(projekt):
+            print('Kein Ordner: %s' % projekt)
+            return 2
+    else:
+        projekt = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    print('Ziel               : %s' % projekt)
     zg = os.path.join(projekt, ZIEL_GRAFIK)
     zs = os.path.join(projekt, ZIEL_SCHRIFT)
     os.makedirs(zg, exist_ok=True)

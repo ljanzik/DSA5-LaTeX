@@ -9,10 +9,10 @@ Vollständiges Beispiel: `beispiel/beispiel.tex`.
 ## Klassenoptionen
 
 ```latex
-\documentclass[raster]{dsa5satz}              % Grundlinienraster ein, Standard
-\documentclass[ohneraster]{dsa5satz}          % Raster aus
-\documentclass[raster,rasterzeigen]{dsa5satz} % Grundlinien mitdrucken
-\documentclass[raster,entwurf]{dsa5satz}      % Bilder als Rahmen, schnelles Bauen
+\documentclass[raster]{dsa5latex}              % Grundlinienraster ein, Standard
+\documentclass[ohneraster]{dsa5latex}          % Raster aus
+\documentclass[raster,rasterzeigen]{dsa5latex} % Grundlinien mitdrucken
+\documentclass[raster,entwurf]{dsa5latex}      % Bilder als Rahmen, schnelles Bauen
 ```
 
 **Nach jeder Änderung an Kästen, Bildern oder Überschriftenabständen einmal mit `rasterzeigen`

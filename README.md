@@ -1,4 +1,4 @@
-# dsa5satz
+# dsa5-latex
 
 Eine LaTeX-Dokumentklasse, die Abenteuer im Layout von **Das Schwarze Auge 5** setzt — nach den
 Maßen des offiziellen *Scriptorium Aventuris – Layout Baukastens* von Ulisses Spiele.
@@ -34,9 +34,11 @@ Die **Maße** in diesem Projekt sind kein Bildmaterial, sondern Messergebnisse. 
 
 ### Schritt 1 — den Baukasten herunterladen
 
-Der *Scriptorium Aventuris – Layout Baukasten* liegt kostenlos im Scriptorium Aventuris von
-Ulisses Spiele. Herunterladen und entpacken. Der Ordner heißt bei der hier verwendeten Fassung
-`Scriptorium Aventuris v4` und enthält unter anderem:
+**<https://www.ulisses-ebooks.de/de/product/197880/scriptorium-aventuris-layout-baukasten>**
+
+Der *Scriptorium Aventuris – Layout Baukasten* von Ulisses Spiele, kostenlos. Herunterladen und
+entpacken. Der Ordner heißt bei der hier verwendeten Fassung `Scriptorium Aventuris v4` und
+enthält unter anderem:
 
 ```
 Scriptorium Aventuris v4/
@@ -108,10 +110,10 @@ microtype hyperref`.
 ### Klassenoptionen
 
 ```latex
-\documentclass[raster]{dsa5satz}              % Grundlinienraster ein, Standard
-\documentclass[ohneraster]{dsa5satz}          % Raster aus
-\documentclass[raster,rasterzeigen]{dsa5satz} % Grundlinien mitdrucken
-\documentclass[raster,entwurf]{dsa5satz}      % Bilder als Rahmen, schnelles Bauen
+\documentclass[raster]{dsa5latex}              % Grundlinienraster ein, Standard
+\documentclass[ohneraster]{dsa5latex}          % Raster aus
+\documentclass[raster,rasterzeigen]{dsa5latex} % Grundlinien mitdrucken
+\documentclass[raster,entwurf]{dsa5latex}      % Bilder als Rahmen, schnelles Bauen
 ```
 
 Die Elementreferenz steht in `doku/ELEMENTE.md`.

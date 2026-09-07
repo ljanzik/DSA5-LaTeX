@@ -1,8 +1,8 @@
-%%% dsa5satz.cls — Dokumentklasse fuer Abenteuer im Layout von
+%%% dsa5latex.cls — Dokumentklasse fuer Abenteuer im Layout von
 %%% Das Schwarze Auge 5, nach den Massen des offiziellen
 %%% „Scriptorium Aventuris – Layout Baukastens" von Ulisses Spiele.
 %%%
-%%%   \documentclass{dsa5satz}
+%%%   \documentclass{dsa5latex}
 %%%
 %%% Copyright 2026 Leif Janzik. Apache License 2.0, siehe LICENSE.
 %%%
@@ -24,7 +24,7 @@
 %%% LaTeX-Installation zur Verfuegung.
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{dsa5satz}[2026/09/07 v2.0 DSA5-Satz nach Scriptorium Aventuris v4]
+\ProvidesClass{dsa5latex}[2026/09/07 v2.0 DSA5-Satz nach Scriptorium Aventuris v4]
 
 %%% ==================================================================
 %%% 1  Optionen
