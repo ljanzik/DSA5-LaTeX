@@ -214,6 +214,15 @@ Aus `Resources/Graphic.xml` des IDML, unverändert.
 | `dsadunkelblau` | dunkle Blau | CMYK 75 53 10 2 |
 | `dsagruenverlauf` | Grün für gradient | CMYK 70 53 91 17 |
 | `dsapergamentgelb` | Für Gelb | CMYK 9 26 56 9 |
+
+## Warum `\normalsize` umdefiniert ist
+
+Die Grundschrift steht auf 10 bp mit 12 bp Durchschuss, nicht auf pt. Es genügt aber nicht, sie
+einmal im `\AtBeginDocument` einzustellen: `\normalsize` ist der Haken, den LaTeX für die
+Grundschrift vorsieht, und jede Stelle, die ihn zieht, holte sonst die 10 pt auf 12 pt der
+Basisklasse zurück. Gemessen hatte `\newgeometry` genau das getan — ab dem ersten Querformat lief
+der Satz mit 12,0 statt 12,045 pt, und zwar auch auf allen folgenden Seiten. Über 59 Zeilen sind
+das 2,6 bp Drift, also eine viertel Zeile.
 | `dsawesenzug` | Wesenzüge Lokal | CMYK 64 17 82 13 |
 | `dsatuerkis` | Word_R0_G176_B240 | RGB 0 176 240 |
 | `dsaprofession` | professionspaket | LAB 50,6 / 21 / 43, umgerechnet zu RGB 170 105 46 |

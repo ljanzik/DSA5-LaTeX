@@ -251,9 +251,30 @@ Damit weicht in `raster.pdf`, `kaesten.pdf`, `rest.pdf`, `beispiel.pdf`, `probes
 `ganter.pdf` keine Zeile mehr vom Raster ab, außer den Elementen mit eigenem Maß.
 
 Behoben nach dem Prüflauf: im Porträtkasten wich der Text dem Medaillon über die ganze Höhe aus und
-behielt nur 53 mm Breite. `\dsaPortraitfluss` setzt jetzt `\parshape` im Kasten — sieben schmale
-Zeilen, danach volle Breite. Nachgemessen an `beispiel/kaesten.pdf` Seite 9: Zeile 1 bis 7 enden bei
-74,9 mm, Zeile 8 und die folgenden bei 101,5 mm, der Kranz beginnt bei 76,6 mm.
+behielt nur 53 mm Breite. `\dsaPortraitfluss` setzt jetzt `\parshape` im Kasten — acht schmale
+Zeilen, danach volle Breite. Nachgemessen an `beispiel/kaesten.pdf` Seite 9: Zeile 1 bis 8 enden bei
+74,9 mm, Zeile 9 und die folgenden bei 101,5 mm, der Kranz beginnt bei 76,6 mm und endet 58,9 mm unter der Papierkante, die erste breite Zeile liegt bei 64,7 mm.
+
+### Drei Funde beim Messen des Rasters über alle Abzüge
+
+Die Messung aller sechs Abzüge, Zeile für Zeile, hat drei Fehler gezeigt, die einzelne Elemente
+nicht verraten hätten:
+
+**Tabellen mit `\hline` lagen 3,2 bp daneben**, ohne Linie saßen sie. Bei `tabular[t]` ist die
+Referenzgrundlinie die der ersten Reihe — steht dort eine Linie, ist sie diese Reihe. Ihr `\ht`
+ist dann 0,0 pt, die Linie liegt vollständig unter der Referenz, und die erste Textgrundlinie folgt
+erst nach Linienstärke plus Strut. `dsaTabelle` erkennt den Fall an der Boxhöhe und hebt um
+`\ht\strutbox` plus `\arrayrulewidth`.
+
+**Der Durchschuss fiel im Querformat auf 12,0 pt** — den TeX-Punkt statt den bp — und blieb dort
+auch nach `\dsaQuerEnde`. Jede Seite nach einem Querformat lief also 0,37 Prozent zu eng, über
+59 Zeilen 2,6 bp Drift. Ursache: `\newgeometry` ruft `\normalsize`, und das war die
+Voreinstellung der Basisklasse. Die bp-Maße standen nur in einem `\AtBeginDocument`. Jetzt ist
+`\normalsize` selbst auf die bp-Maße gesetzt — der Haken, den LaTeX für die Grundschrift vorsieht.
+
+**Die Querseite selbst lag 1,5 bp unter dem Raster**, weil `\topskip` für einen Satzspiegel ab
+24 mm gerechnet ist und dort 15 mm gelten. `\dsaQuerAnfang` rechnet ihn neu, `\dsaQuerEnde`
+stellt den alten Wert zurück.
 
 ## Elemente mit eigenem Raster
 
@@ -268,6 +289,9 @@ wer sie in einer Messung als Abweichung findet, hat nichts gefunden:
 | Text in Kästen | 9,5 bp auf 11,4 bp | eigener Durchschuss im Kasten |
 | Umschlagrückseite: Klappentext, Anforderungen, Zusammenfassung | 8 und 10 bp | freie Lage im Rahmen des Umschlags |
 | Titelzeilen auf dem Umschlag | 42,8 bp, von der Papierkante gesetzt | freie Lage |
+
+Das Querformat gehört **nicht** dazu: seine Zeilen sitzen auf demselben Raster, gerechnet ab der
+Papierkante.
 
 Alles andere gehört auf das Raster. Der Prüfbefehl dazu:
 

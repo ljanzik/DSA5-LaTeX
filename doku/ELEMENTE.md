@@ -216,14 +216,21 @@ Anfang des Inhalts gibt die Breite darunter zurück:
 ```latex
 \begin{dsaWerteMittelPortrait}[dsaportrait=bilder/dorle]
 \dsaPortraitfluss
-Die ersten sieben Zeilen bleiben schmal, ab der achten läuft der Satz auf die volle Kastenbreite.
+Die ersten acht Zeilen bleiben schmal, ab der neunten läuft der Satz auf die volle Kastenbreite.
 \end{dsaWerteMittelPortrait}
 ```
 
-Gemessen: Zeile 1 bis 7 enden bei 74,9 mm, Zeile 8 und die folgenden bei 101,5 mm; der Kranz
-beginnt bei 76,6 mm. Sieben Zeilen, weil der Kranz 34,9 mm unter die Kastenoberkante reicht, der
-Text 6 mm darunter beginnt und eine Zeile 11,4 bp hoch ist. `\parshape` verlangt seine Zeilen
-ausgeschrieben — wer die Zahl ändert, ändert die Liste in der Klasse und die `8` davor. Der Befehl
+Gemessen: Zeile 1 bis 8 enden bei 74,9 mm, Zeile 9 und die folgenden bei 101,5 mm; der Kranz
+beginnt bei 76,6 mm und endet 58,9 mm unter der Papierkante; die erste breite Zeile liegt bei
+64,7 mm, also 5,8 mm darunter.
+
+Acht Zeilen, und zwar so gerechnet: der Kranz reicht 34,9 mm unter die Kastenoberkante, der Text
+beginnt 6 mm darunter, eine Zeile ist 11,4 bp = 4,02 mm hoch. Unter dem Kranz liegen muss nicht die
+Grundlinie der ersten breiten Zeile, sondern ihre Oberkante — die Grundlinie also eine Versalhöhe
+von 2,4 mm tiefer, unter 37,3 mm. Das sind acht schmale Zeilen; die neunte beginnt bei 38,2 mm. Mit
+sieben lief die erste breite Zeile noch in den Kranz, und das sieht man nur, wenn man neben dem
+rechten Zeilenende auch die Höhe misst. `\parshape` verlangt seine Zeilen
+ausgeschrieben — wer die Zahl ändert, ändert die Liste in der Klasse und die `9` davor. Der Befehl
 gilt für den Absatz, der folgt; bei mehreren Absätzen also nur für den ersten. Ohne ihn bleibt der
 Satz durchgehend schmal: sicher, nur enger.
 

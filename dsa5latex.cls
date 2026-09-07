@@ -163,8 +163,21 @@
 % entscheidend, weil er sich ueber die Spalte summiert.
 \newcommand*{\dsagrundgrad}{10}
 \newcommand*{\dsagrunddurchschuss}{12}
-\AtBeginDocument{%
-  \fontsize{\dsagrundgrad bp}{\dsagrunddurchschuss bp}\selectfont}
+
+% \normalsize selbst umdefinieren, nicht nur die Schrift im
+% \AtBeginDocument einstellen: \normalsize ist der Haken, den LaTeX fuer
+% die Grundschrift vorsieht, und alles, was ihn zieht, holte sonst die
+% 10 pt auf 12 pt der Basisklasse zurueck.
+%
+% Gemessen hatte \newgeometry genau das getan. Ab \dsaQuerAnfang lief der
+% Satz mit 12,0 statt 12,045 pt Durchschuss -- und nach \dsaQuerEnde
+% weiter, also auf jeder Seite nach einem Querformat. Ueber 59 Zeilen sind
+% das 2,6 bp Drift.
+\renewcommand{\normalsize}{%
+  \@setfontsize\normalsize{\dsagrundgrad bp}{\dsagrunddurchschuss bp}%
+  \abovedisplayskip\z@ \belowdisplayskip\z@
+  \abovedisplayshortskip\z@ \belowdisplayshortskip\z@}
+\AtBeginDocument{\normalsize}
 
 % Andalus hat nur einen Schnitt. Ohne AutoFakeBold meldet der Lauf
 % „Font shape TU/andlso(0)/b/n undefined" und faellt still auf den normalen
@@ -304,6 +317,8 @@
   %
   %   \topskip = 84 bp - 24 mm
   \setlength{\topskip}{\dimexpr 84bp-24mm\relax}
+  % Gemerkt, damit \dsaQuerEnde den Wert zurueckstellen kann.
+  \newlength{\dsa@topskip}\setlength{\dsa@topskip}{\topskip}
   \setlength{\parskip}{0pt}
   % Kein Erstzeileneinzug. Die Absatzformate der IDML haben keinen: das
   % Fliesstextformat traegt kein FirstLineIndent, und die einzigen Formate mit
@@ -732,21 +747,30 @@
 % darunter gibt \dsaPortraitfluss zurueck, gleich hier darunter.
 \newlength{\dsaportraitfrei}\setlength{\dsaportraitfrei}{34mm}
 
-% \dsaPortraitfluss am Anfang des Kasteninhalts: die ersten sieben Zeilen
+% \dsaPortraitfluss am Anfang des Kasteninhalts: die ersten acht Zeilen
 % bleiben schmal, die folgenden laufen auf die volle Kastenbreite. Gilt fuer
-% den Absatz, der folgt — bei mehreren Absaetzen also den ersten.
+% den Absatz, der folgt — bei mehreren Absaetzen also den ersten. Wer den
+% Fluss ueber einen ganzen Kasten braucht, setzt den Text als einen Absatz.
 %
-% Sieben Zeilen, weil der Kranz des Ornaments 34,9 mm unter die
-% Kastenoberkante reicht, der Text 6 mm darunter beginnt und eine Zeile
-% 11,4 bp hoch ist: (34,9 - 6) mm sind 82 bp, geteilt durch 11,4 ergibt 7.
+% Acht Zeilen, und zwar so gerechnet: der Kranz des Ornaments reicht 34,9 mm
+% unter die Kastenoberkante, der Text beginnt 6 mm darunter, eine Zeile ist
+% 11,4 bp = 4,02 mm hoch. Nicht die Grundlinie der ersten breiten Zeile muss
+% unter dem Kranz liegen, sondern ihre Oberkante -- also die Grundlinie
+% mindestens eine Versalhoehe von 2,4 mm tiefer, unter 37,3 mm. Mit 6 mm
+% Vorlauf sind das acht schmale Zeilen; die neunte beginnt bei 38,2 mm.
+%
+% Mit sieben Zeilen lief die erste breite Zeile noch in den Kranz. Das war
+% an der gerenderten Datei nur zu sehen, wenn man nicht bloss das rechte
+% Zeilenende, sondern auch die Hoehe mitmisst.
 %
 % \parshape verlangt seine Zeilen ausgeschrieben, eine Wiederholung kennt es
-% nicht. Wer die Zahl aendert, aendert die Liste — und die 8 davor.
+% nicht. Wer die Zahl aendert, aendert die Liste — und die 9 davor.
 %
 % Ohne den Befehl bleibt der Satz durchgehend schmal. Das ist sicher, aber
 % enger als noetig.
 \newcommand*{\dsaPortraitfluss}{%
-  \parshape 8
+  \parshape 9
+    0pt \linewidth
     0pt \linewidth
     0pt \linewidth
     0pt \linewidth
@@ -1152,8 +1176,27 @@
           <\dimexpr\dimen@-1bp\relax
       \edef\dsa@tabzeilen{\the\numexpr\dsa@tabzeilen+1\relax}%
     \fi
+    % Die Box so heben, dass ihre erste TEXTgrundlinie auf der laufenden
+    % Grundlinie liegt.
+    %
+    % Bei tabular[t] ist die Referenzgrundlinie die der ersten Reihe. Steht
+    % dort eine \hline, ist diese Reihe die Linie, ihre Hoehe also
+    % \arrayrulewidth statt 0,7\baselineskip, und die erste Textzeile liegt
+    % eine Zeilenhoehe tiefer. Gemessen waren das 8,8 bp.
+    %
+    % Eine Box mit weniger als einer halben Zeilenhoehe hat oben eine Linie
+    % und keine Textzeile -- daran ist der Fall zu erkennen. Gemessen ist
+    % ihr \ht dann 0,0 pt: die Linie liegt vollstaendig unter der
+    % Referenzgrundlinie, und die erste Textgrundlinie folgt erst nach
+    % Linienstaerke plus Strutshoehe.
+    \ifdim\ht\dsa@tabelle<0.5\baselineskip
+      \dimen2=\dimexpr\ht\strutbox+\arrayrulewidth\relax
+    \else
+      \dimen2=\z@
+    \fi
     \noindent
-    \makebox[\linewidth][l]{\raisebox{0pt}[0pt][0pt]{\usebox{\dsa@tabelle}}}%
+    \makebox[\linewidth][l]{%
+      \raisebox{\dimen2}[0pt][0pt]{\usebox{\dsa@tabelle}}}%
     \par
     % Eine Einheit weniger: die erste Zeile sitzt schon auf der laufenden
     % Grundlinie, und der Text danach kommt seinen Durchschuss spaeter.
@@ -1827,6 +1870,16 @@
   % dvipdfmx nimmt die Papiergroesse aus einem Special; \pagewidth gibt es
   % in XeTeX nicht.
   \special{papersize=297mm,210mm}%
+  % \newgeometry hat \normalsize gezogen; ausdruecklich neu setzen, damit
+  % der Durchschuss nicht von der Reihenfolge der Aufrufe abhaengt.
+  \normalsize
+  % \topskip gilt fuer einen Satzspiegel ab 24 mm. Hier beginnt er bei
+  % 15 mm, also neu rechnen: die erste Rasterlinie liegt bei 12,7 mm, die
+  % erste unter dem Rand ist die zweite bei 12,7 + 2 * 12 bp = 21,17 mm.
+  % Ohne das lagen alle Zeilen der Querseite 1,5 bp unter dem Raster.
+  \ifdsa@raster
+    \setlength{\topskip}{\dimexpr 12.7mm+2\dsaRastermass-15mm\relax}%
+  \fi
   \onecolumn\pagestyle{empty}\dsaHintergrundAus}
 
 \newcommand*{\dsaQuerEnde}{%
@@ -1835,6 +1888,8 @@
   \setlength{\paperheight}{\dsa@querbreite}%
   \restoregeometry
   \special{papersize=210mm,297mm}%
+  \normalsize
+  \ifdsa@raster\setlength{\topskip}{\dsa@topskip}\fi
   \pagestyle{fancy}\dsaHintergrundAn\twocolumn}
 % PRUEFEN: \restoregeometry stellt \textheight wieder her; danach mit der
 % Option rasterzeigen pruefen, ob die Grundlinien wieder sitzen.
