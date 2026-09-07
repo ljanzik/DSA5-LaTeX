@@ -208,6 +208,25 @@ Alle drei Porträtvarianten sind 94,0 mm breit; das Medaillon tritt 13,5 mm zur 
 Porträtkästen auf rechte Seiten setzen. Gesteuert über `\dsaportraitgroesse`, `\dsaportraitx` und
 `\dsaportraity`.
 
+Der Text weicht dem Medaillon aus, und zwar dem **Kranz** des Ornaments, nicht dem Bild darin: der
+Kranz reicht 33,2 mm nach innen, also hält `\dsaportraitfrei` 34 mm frei. Damit bleiben 53 mm
+Textbreite — für den ganzen Kasten zu schmal, denn das Medaillon sitzt nur oben. Ein Befehl am
+Anfang des Inhalts gibt die Breite darunter zurück:
+
+```latex
+\begin{dsaWerteMittelPortrait}[dsaportrait=bilder/dorle]
+\dsaPortraitfluss
+Die ersten sieben Zeilen bleiben schmal, ab der achten läuft der Satz auf die volle Kastenbreite.
+\end{dsaWerteMittelPortrait}
+```
+
+Gemessen: Zeile 1 bis 7 enden bei 74,9 mm, Zeile 8 und die folgenden bei 101,5 mm; der Kranz
+beginnt bei 76,6 mm. Sieben Zeilen, weil der Kranz 34,9 mm unter die Kastenoberkante reicht, der
+Text 6 mm darunter beginnt und eine Zeile 11,4 bp hoch ist. `\parshape` verlangt seine Zeilen
+ausgeschrieben — wer die Zahl ändert, ändert die Liste in der Klasse und die `8` davor. Der Befehl
+gilt für den Absatz, der folgt; bei mehreren Absätzen also nur für den ersten. Ohne ihn bleibt der
+Satz durchgehend schmal: sicher, nur enger.
+
 ### Freie Höhe
 
 ```latex
@@ -319,7 +338,7 @@ Im deutschen Buchhandel heißt diese Seite **Impressum**; sie sitzt in der **Tit
 auf der **Titelrückseite**. Im Englischen: *copyright page*. Der Markenhinweis darin ist der
 **Rechtevermerk** — das ist der Teil mit dem eigenen Namen.
 
-`egin{dsaImpressumseite}` setzt die Überschrift IMPRESSUM und stellt alles mittig,
+`\begin{dsaImpressumseite}` setzt die Überschrift IMPRESSUM und stellt alles mittig,
 `\dsaImpressumsblock{Rubrik}{Inhalt}` je Angabe, `\dsaRechtevermerk{Jahr}{Name}` den
 vorgeschriebenen Hinweis mit der Zwischenüberschrift „Disclaimer".
 

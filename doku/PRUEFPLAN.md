@@ -235,9 +235,12 @@ Nicht behoben, weil kein Fehler: `\dsaBildKreis`, `\dsaBildForm` und `\dsaGanzse
 ihre Bilder größer als das Ziel und beschneiden. `nachmessen.py` zeigt die Platzierung.
 
 Offen: die Tabellenzeilen beginnen 0,7 bp neben dem Raster und halten danach 12 bp — der
-Musterbogen des Verlags weicht dort um +2,8 bis −5,7 bp ab. Und im Porträtkasten bleiben 53 mm
-Textbreite, weil der Text dem Medaillon über die ganze Höhe ausweicht statt nur im oberen Drittel;
-dafür bräuchte es `\parshape` innerhalb der `tcolorbox`.
+Musterbogen des Verlags weicht dort um +2,8 bis −5,7 bp ab.
+
+Behoben nach dem Prüflauf: im Porträtkasten wich der Text dem Medaillon über die ganze Höhe aus und
+behielt nur 53 mm Breite. `\dsaPortraitfluss` setzt jetzt `\parshape` im Kasten — sieben schmale
+Zeilen, danach volle Breite. Nachgemessen an `beispiel/kaesten.pdf` Seite 9: Zeile 1 bis 7 enden bei
+74,9 mm, Zeile 8 und die folgenden bei 101,5 mm, der Kranz beginnt bei 76,6 mm.
 
 ## Vorgehen
 

@@ -707,10 +707,33 @@
 % Abstand lief der Text 3,2 mm darunter, bei 24 mm sogar 5,7 mm.
 %
 % Damit bleiben 94 - 7 - 34 = 53 mm Textbreite. Das ist schmal und mehr, als
-% noetig waere, denn das Medaillon sitzt nur im oberen Drittel. Wer die
-% Breite darunter nutzen will, braucht \parshape im Kasten; innerhalb einer
-% tcolorbox greift \dsaUmfluss nicht ohne Weiteres.
+% noetig waere, denn das Medaillon sitzt nur im oberen Drittel. Die Breite
+% darunter gibt \dsaPortraitfluss zurueck, gleich hier darunter.
 \newlength{\dsaportraitfrei}\setlength{\dsaportraitfrei}{34mm}
+
+% \dsaPortraitfluss am Anfang des Kasteninhalts: die ersten sieben Zeilen
+% bleiben schmal, die folgenden laufen auf die volle Kastenbreite. Gilt fuer
+% den Absatz, der folgt — bei mehreren Absaetzen also den ersten.
+%
+% Sieben Zeilen, weil der Kranz des Ornaments 34,9 mm unter die
+% Kastenoberkante reicht, der Text 6 mm darunter beginnt und eine Zeile
+% 11,4 bp hoch ist: (34,9 - 6) mm sind 82 bp, geteilt durch 11,4 ergibt 7.
+%
+% \parshape verlangt seine Zeilen ausgeschrieben, eine Wiederholung kennt es
+% nicht. Wer die Zahl aendert, aendert die Liste — und die 8 davor.
+%
+% Ohne den Befehl bleibt der Satz durchgehend schmal. Das ist sicher, aber
+% enger als noetig.
+\newcommand*{\dsaPortraitfluss}{%
+  \parshape 8
+    0pt \linewidth
+    0pt \linewidth
+    0pt \linewidth
+    0pt \linewidth
+    0pt \linewidth
+    0pt \linewidth
+    0pt \linewidth
+    0pt \dimexpr\linewidth+\dsaportraitfrei-\dsakasteninnen\relax}
 
 \newlength{\dsaportraitinnen}\setlength{\dsaportraitinnen}{5.1mm}
 \newlength{\dsaportraitaussen}\setlength{\dsaportraitaussen}{8.4mm}
