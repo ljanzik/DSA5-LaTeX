@@ -127,6 +127,29 @@ eingerückt, sodass der Pergamentrand als Rahmen stehen bleibt, darüber das Dra
 Maske. Die Randbreite ist `\dsakapitelbildrand`, der Bannerversatz von der Papierkante
 `\dsabannerversatz`.
 
+### Fußzeile: Seitenzahl und Kolumnentitel
+
+Beides sitzt auf einer Grundlinie 5,9 mm über der unteren Papierkante, gesetzt als TikZ-Knoten an
+der Papierkante — nicht über die Spalten von `fancyhdr`, die im Satzspiegel sitzen und nichts vom
+Anschnitt wissen.
+
+| Element | Schrift | Lage |
+|---|---|---|
+| Seitenzahl | Andalus 13 bp, weiß mit Kontur | Mitte 18,4 mm von der Außenkante |
+| Kolumnentitel | Andalus 14 bp, schwarz | rechte Seiten rechtsbündig 24,29 mm, linke linksbündig 40,35 mm von der Außenkante |
+
+Der Kolumnentitel ist `Abenteuertitel – Kapitelname`. Den Titel setzt die Präambel, der Kapitelname
+kommt über die Marken von LaTeX aus `\dsakapitel`:
+
+```latex
+\dsaAbenteuertitel{Der falsche Ganter}
+```
+
+Ohne diesen Befehl bleibt der Kapitelname allein stehen, vor dem ersten Kapitel bleibt die Zeile
+leer. Die Lage ist im Vorbild **nicht** spiegelbildlich, und zwar stabil über mehrere Seiten; das
+ist so übernommen. Wer es symmetrisch will, setzt `\dsakolumneaussenlinks` gleich
+`\dsakolumneaussenrechts`.
+
 ---
 
 ## Gliederung

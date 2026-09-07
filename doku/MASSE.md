@@ -215,6 +215,26 @@ Aus `Resources/Graphic.xml` des IDML, unverändert.
 | `dsagruenverlauf` | Grün für gradient | CMYK 70 53 91 17 |
 | `dsapergamentgelb` | Für Gelb | CMYK 9 26 56 9 |
 
+## Fußzeile
+
+Gemessen an einer gesetzten Veröffentlichung des Verlags, vier Seiten:
+
+| Maß | Wert |
+|---|---|
+| Grundlinie von Zahl und Kolumnentitel | 291,92 mm von oben, also 5,08 mm über der Papierkante |
+| Seitenzahl | Andalus 20 bp, weiß; Mitte 19,47 mm von der Außenkante |
+| Kolumnentitel | Andalus 14 bp, schwarz, ohne Kontur |
+| Kolumnentitel, rechte Seiten | rechtsbündig, Ende 24,29 mm von der Außenkante |
+| Kolumnentitel, linke Seiten | linksbündig, Anfang 40,35 mm von der Außenkante |
+| Trennzeichen | Gedankenstrich U+2013, 2,48 mm breit |
+
+Zwei rechte Seiten enden beide bei 185,71 mm, zwei linke beginnen beide bei 40,35 mm — die
+Asymmetrie ist also gewollt und keine Streuung.
+
+Die Klasse setzt die Zahl mit Andalus 13 bp und 18,4 mm von der Außenkante, weil sie in das
+Ornament des Seitenhintergrunds gehört; das ist am Musterbogen des Baukastens gemessen und weicht
+damit bewusst von den 20 bp der Veröffentlichung ab.
+
 ## Warum `\normalsize` umdefiniert ist
 
 Die Grundschrift steht auf 10 bp mit 12 bp Durchschuss, nicht auf pt. Es genügt aber nicht, sie

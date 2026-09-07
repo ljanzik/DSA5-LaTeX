@@ -505,10 +505,64 @@
        \contour{black}{\textcolor{white}{\thepage}}};
   \end{tikzpicture}}
 
-\fancyfoot[LE]{\dsa@seitenzahlan{current page.south west}{}}
-\fancyfoot[RO]{\dsa@seitenzahlan{current page.south east}{-}}
-% PRUEFEN: Im Vorbild steht neben der Zahl noch der Kapitelname, nach
-% innen versetzt. Ein solcher Kolumnentitel fehlt hier noch.
+% Der Kolumnentitel neben der Zahl. Gemessen an einer gesetzten
+% Veroeffentlichung des Verlags: Andalus 14 bp, schwarz und ohne Kontur, auf
+% derselben Grundlinie wie die Zahl. Der Text ist der Abenteuertitel, ein
+% Gedankenstrich und der Kapitelname.
+%
+% Die Lage ist im Vorbild nicht spiegelbildlich, und zwar stabil: zwei
+% rechte Seiten enden beide 24,29 mm von der Aussenkante, unmittelbar an der
+% Zahl; zwei linke beginnen beide 40,35 mm von der Aussenkante, also mit
+% 12,8 mm Abstand zu ihr. Das ist uebernommen, nicht geglaettet -- wer es
+% anders will, aendert die zwei Laengen.
+\newlength{\dsakolumneaussenrechts}
+\setlength{\dsakolumneaussenrechts}{24.29mm}
+\newlength{\dsakolumneaussenlinks}
+\setlength{\dsakolumneaussenlinks}{40.35mm}
+\newcommand*{\dsakolumnegrad}{14}
+
+% Der Abenteuertitel, in der Praeambel zu setzen. Ohne ihn bleibt der
+% Kolumnentitel der Kapitelname allein; ohne Kapitel bleibt er ganz leer.
+\newcommand*{\dsa@abenteuertitel}{}
+\newcommand*{\dsaAbenteuertitel}[1]{\renewcommand*{\dsa@abenteuertitel}{#1}}
+
+% Der Kapitelname kommt ueber die Marken von LaTeX, damit jede Seite den
+% Namen ihres Kapitels traegt und nicht den des naechsten.
+% Der Leertest auf \leftmark muss die Expansion pruefen: \ifx vergleicht
+% Makros, und \leftmark ist auch dann ein anderes Makro als \@empty, wenn
+% es sich zu nichts expandiert. Vor dem ersten Kapitel stand sonst der
+% Trennstrich ohne Namen. \detokenize taugt dafuer nicht -- es
+% verhindert die weitere Expansion seines Arguments, und \leftmark
+% braucht mehr als einen Schritt.
+\newcommand*{\dsa@kolumnetext}{%
+  \begingroup
+    \protected@edef\dsa@kolumnemarke{\leftmark}%
+    \ifx\dsa@kolumnemarke\@empty
+      \dsa@abenteuertitel
+    \else
+      \ifx\dsa@abenteuertitel\@empty
+        \leftmark
+      \else
+        \dsa@abenteuertitel\,--\,\leftmark
+      \fi
+    \fi
+  \endgroup}
+
+% #1 die Ecke, #2 Vorzeichen nach innen, #3 der Abstand, #4 der Anker
+\newcommand{\dsa@kolumnean}[4]{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=#4, inner sep=0]
+      at ([shift={(#2#3,\dsaseitenzahlunten)}]#1)
+      {\dsaandalus\fontsize{\dsakolumnegrad bp}{\dsakolumnegrad bp}%
+       \selectfont\dsa@kolumnetext};
+  \end{tikzpicture}}
+
+\fancyfoot[LE]{%
+  \dsa@seitenzahlan{current page.south west}{}%
+  \dsa@kolumnean{current page.south west}{}{\dsakolumneaussenlinks}{base west}}
+\fancyfoot[RO]{%
+  \dsa@seitenzahlan{current page.south east}{-}%
+  \dsa@kolumnean{current page.south east}{-}{\dsakolumneaussenrechts}{base east}}
 
 %%% ==================================================================
 %%% 12  Gliederung
@@ -572,6 +626,9 @@
 \newcommand{\dsakapitel}[2][]{%
   \stepcounter{dsakapitel}%
   \twocolumn[\dsa@bannerblock{#2}]%
+  % In die Marken, damit der Kolumnentitel in der Fusszeile den Namen des
+  % Kapitels kennt, auf dessen Seite er steht.
+  \markboth{#2}{#2}%
   \addcontentsline{toc}{section}{\thedsakapitel\quad #2}%
   \if\relax\detokenize{#1}\relax\else\dsaKapitelbild{#1}\fi}
 

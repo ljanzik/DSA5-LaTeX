@@ -75,13 +75,13 @@ tiefer.
 | Titel: Fläche, Rand, Verlauf | 13 pt / 0,24 pt / vier Haltepunkte | PSD, eigene Messung | `#` |
 | Impressum: Überschrift, Rubriken, Vermerk | 37,6 mm / 14 pt / 94,5 mm | gesetzte Veröffentlichung | `#` |
 | Seitenzahl | 18,4 mm von außen, 5,9 mm über der Kante, Andalus 13 pt | Musterbogen | `#` |
-| Kolumnentitel (Kapitelname neben der Zahl) | fehlt noch ganz | gesetzte Veröffentlichung | `!` |
+| Kolumnentitel (Kapitelname neben der Zahl) | Andalus 14 bp schwarz, Grundlinie wie die Zahl, rechts 24,29 mm und links 40,35 mm von der Außenkante | gesetzte Veröffentlichung | `#` |
 | Kapiteltitel im Banner | 12,93 mm unter der Bannerkante, 20,5 mm von links | IDML | `!` |
 | Seitenhintergrund: Lage, Anschnitt, Folge 0,0,1,1,2,2,3,3 | 213 × 303 mm an der Außenkante | Schnitt der Doppelseiten | — |
 | Kapitelanfang: Banner, Bild, Pergamentrand | Banner 210,1 × 43,2 mm am oberen Rand | IDML | — |
 | Inhaltsverzeichnis | kein Sollmaß | — | — |
 | Ganzseitige Grafik | 184 × 265 mm im Grafikbereich | IDML, zweiter Rahmen | — |
-| Umschlag hinten: Textblock am Rahmen | offen | — | `!` |
+| Umschlag hinten: Textblock am Rahmen | 78,10 / 52,91 / 194,99 mm | IDML | `#` |
 | Querformat, Raster danach | kein Sollmaß | — | — |
 
 ### Kästen
