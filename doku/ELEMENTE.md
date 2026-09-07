@@ -46,6 +46,7 @@ diese Aufteilung.
 |---|---|---|---|---|
 | Umschlag vorne | `\dsaUmschlagVorne{Bild}{\dsaTitelZeile{…}…}` | — | nein | nein |
 | Umschlag hinten | `\dsaUmschlagHinten{Karte}{Titel}{Inhalt}` | 1 | nein | nein |
+| Feld auf der Rückseite | `\dsaRueckenfeld{Inhalt}` | — | nein | nein |
 | Impressum | `\begin{dsaImpressumseite}` | 1 | nein | ja |
 | Inhaltsverzeichnis | `\dsaInhalt` | 1 | nein | ja |
 | Kapitelanfang | `\dsakapitel[Bild]{Titel}` | 2 | ja | ja |
@@ -91,6 +92,24 @@ Alles einstellbar, in der Präambel:
 
 Zwei Werte in der Klasse steuern, wie glatt der Rand der Fläche wird: `\dsatitelperlabstand`
 (0,6 pt) und `\dsatitelflaechenstufen` (5). Warum, steht in `MASSE.md`.
+
+### Bilder auf dem Raster
+
+Jedes Bild im Textfluss muss eine ganze Zahl Rastereinheiten belegen, sonst sitzt alles darunter
+daneben. Dafür gibt es einen Befehl, der beliebigen Inhalt so setzt:
+
+```latex
+\dsaBildRaster{7}{\dsaBildKreis{25mm}{grafiken/portrait}}
+\dsaBildRaster{6}{\dsaBildForm{30mm}{20mm}{(0,0) (1,0.6) (1.6,-0.3)}{grafiken/karte}}
+```
+
+`\dsaBildSpalte{Bild}{Einheiten}` und `\dsaBildBreit` benutzen ihn schon selbst, ebenso
+`\dsaVorlesetext[Einheiten]{Text}` — dort sind vier Einheiten für eine Spalte richtig und acht für
+einspaltigen Satz.
+
+Warum keine `\parbox` mit fester Höhe: ihre Grundlinie liegt bei `[t]` an der Oberkante und bei
+`[c]` in der Mitte, und beides verschiebt alles darunter. `\dsaBildRaster` gibt dem Inhalt Höhe und
+Tiefe null, verschiebt ihn nach unten und lässt den Raum von `\dsaRasterluft` kommen.
 
 Nicht gebaut: der **Buchrücken**. Die Grafik dafür (`Cover_Buchtitel`, 184,3 mm breit — genau der
 Grafikbereich) liegt im Baukasten, das Element fehlt.

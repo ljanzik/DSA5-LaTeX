@@ -208,6 +208,37 @@ Grafik: gemessen sitzt es bei x 95,30 mm gegen 95,38 mm Soll und y 43,40 gegen 4
 Ein Kasten, der breiter ist als der einspaltige Satz, wird von tcolorbox anders behandelt als einer
 in der Spalte.
 
+## Was der Prüflauf ergeben hat
+
+Vierzehn Fehler, alle erst am gesetzten Abzug sichtbar:
+
+| Element | Fehler | Ursache |
+|---|---|---|
+| alle Kästen | 3,58 mm zu weit innen | `\parindent` — eine `tcolorbox` ist ein Absatz |
+| alle Kästen | Text rechts 2,7 mm, links 7,9 mm vom Rand | `grow to left by` verbreitert die Box, nicht nur ihre Lage |
+| `dsaMeisterBreit` | einspaltig 3,9 mm daneben | dieselbe Ursache |
+| Porträtkasten | Text 5,7 mm unter dem Medaillon | rechter Innenabstand zu klein; maßgeblich ist der Kranz, nicht das Bild |
+| Porträtmedaillon | 13,5 mm über den Kasten hinaus | Anker war der `frame`, nicht die Grafik |
+| Porträtbild | verdeckte Kranz und Schlagschatten | lag über dem Ring statt darunter |
+| Fließtext | 4,5 pt neben dem Raster | `\topskip`, und alle Maße sind bp statt pt |
+| fünf Elemente | verließen das Raster | `\lineskip`, Überschriftendurchschuss, `partopsep` |
+| drei Bildbefehle | verließen das Raster | eigene Höhe statt Rastereinheiten |
+| Inhaltsverzeichnis | 0,8 pt daneben | Überschrift höher als `\topskip` |
+| Kapitelbanner | 11,3 mm zu hoch, Titel zentriert | geschätzt statt gemessen |
+| Seitenzahl | 20 pt statt 13 bp, 2,6 mm zu weit innen | aus der falschen Quelle |
+| Seitenhintergrund | auf jeder Seite derselbe | `\value{page}` ist im Ausschießen nicht die Seitenzahl |
+| Querformat | war keins | `\newgeometry` kann kein Papierformat |
+| `dsaKastenFrei` | Pergament um Faktor 3,2 gestaucht | Höhe erzwungen statt beschnitten |
+| Umschlagrückseite | Text im Satzspiegel statt im Rahmen | Rahmenmaße lagen ungenutzt in der IDML |
+
+Nicht behoben, weil kein Fehler: `\dsaBildKreis`, `\dsaBildForm` und `\dsaGanzseite` platzieren
+ihre Bilder größer als das Ziel und beschneiden. `nachmessen.py` zeigt die Platzierung.
+
+Offen: die Tabellenzeilen beginnen 0,7 bp neben dem Raster und halten danach 12 bp — der
+Musterbogen des Verlags weicht dort um +2,8 bis −5,7 bp ab. Und im Porträtkasten bleiben 53 mm
+Textbreite, weil der Text dem Medaillon über die ganze Höhe ausweicht statt nur im oberen Drittel;
+dafür bräuchte es `\parshape` innerhalb der `tcolorbox`.
+
 ## Vorgehen
 
 Seriell von oben nach unten, je Block: `probeseiten.tex` bauen, mit `nachmessen.py` die Zahlen

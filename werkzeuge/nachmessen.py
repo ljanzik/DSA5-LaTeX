@@ -37,15 +37,25 @@ def hilfe():
 
 
 def bildname(px, py):
-    """Ordnet Pixelmasse einer Grafik des Baukastens zu, wenn sie bekannt sind."""
+    """Ordnet Pixelmasse einer Grafik des Baukastens zu, wenn sie bekannt sind.
+
+    Die Zuordnung ist nicht immer eindeutig: die acht Seitenhintergruende
+    haben alle 2516 x 3579 px, Pergament und Ornament des Kapitelanfangs
+    beide 1290 x 3543. Mehrdeutige Treffer werden deshalb als solche
+    ausgewiesen — sonst haelt man zwei Grafiken fuer eine doppelt gesetzte.
+    """
     try:
         from pruefen import SOLL
     except ImportError:
         return None
-    for name, mass in SOLL.items():
-        if mass == (px, py):
-            return name.rsplit('.', 1)[0]
-    return None
+    treffer = [name.rsplit('.', 1)[0]
+               for name, mass in SOLL.items() if mass == (px, py)]
+    if not treffer:
+        return None
+    if len(treffer) == 1:
+        return treffer[0]
+    treffer.sort()
+    return '%s oder %d weitere' % (treffer[0], len(treffer) - 1)
 
 
 def seite_vermessen(seite, nummer, mit_text):

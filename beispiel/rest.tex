@@ -1,0 +1,48 @@
+%%% rest.tex — die Elemente, die weder raster.tex noch kaesten.tex zeigen:
+%%% Kapitelanfang mit Bild, Kreis- und Freiformmaske, Inhaltsverzeichnis,
+%%% Rueckseite. Ohne Seitenhintergrund, damit ein Lauf kurz ist.
+%%%
+%%%   xelatex -output-directory=beispiel beispiel/rest.tex   (dreimal)
+%%%   python3 werkzeuge/nachmessen.py beispiel/rest.pdf --text
+
+\documentclass[raster,ohnehintergrund]{dsa5latex}
+
+\begin{document}
+
+\dsaInhalt
+
+\dsakapitel[grafiken/aventurienkarte]{Kapitel mit Bild}
+
+\dsaKapitelseiteEnde
+
+Text nach der Kapitelanfangsseite. Er muss auf dem Grundlinienraster sitzen
+und darf nicht hinter dem Kapitelbild liegen.
+
+\dsaabschnitt{Masken}
+
+\dsaBildRaster{7}{\dsaBildKreis{25mm}{grafiken/aventurienkarte}}
+
+Text nach dem Kreisbild.
+
+\dsaBildRaster{6}{\dsaBildForm{30mm}{20mm}{(0,0) (1,0.6) (1.6,-0.3) (0.6,-1)}{grafiken/aventurienkarte}}
+
+Text nach der Freiform.
+
+\dsaabschnitt{Bild in Spaltenbreite}
+
+\dsaBildSpalte{grafiken/aventurienkarte}{10}
+
+Darunter laeuft der Text weiter und muss wieder auf der Grundlinie sitzen,
+weil das Bild eine ganze Zahl Rastereinheiten belegt. Noch ein Satz, damit
+mehrere Zeilen entstehen und die Lage zu messen ist.
+
+\dsaUmschlagHinten{grafiken/aventurienkarte}{Ein Beispiel}{%
+  Hier steht der Klappentext, der auf der Rueckseite im Rahmen sitzen soll.
+
+  \dsaZusammenfassung{ein Beispiel in wenigen Worten}{Ermittlung}{keine}%
+    {irgendwo}{jederzeit}
+
+  \dsaAnforderungen{1}{4}{2}{1}
+}
+
+\end{document}

@@ -699,14 +699,18 @@
 % Der Kasten steht vorlaeufig nur auf rechten Seiten, weil der Baukasten die
 % Grafik nur in einer Lage liefert; dort ist innen links und aussen rechts.
 % Der rechte Innenabstand im Portraitkasten: so weit muss der Text vom Rand
-% wegbleiben, damit er nicht unter das Medaillon laeuft. Die Ringmitte sitzt
-% 17,6 mm vom rechten Rand der Kastengrafik, das Bild darin ist 23 mm gross,
-% seine linke Kante liegt also 29,1 mm vom Rand. Gemessen lief der Text bei
-% 24 mm Abstand 5,7 mm unter das Medaillon.
+% wegbleiben, damit er nicht unter das Medaillon laeuft.
 %
-% Das Medaillon sitzt nur im oberen Teil des Kastens; darunter bliebe Platz.
-% Wer ihn nutzen will, braucht \parshape im Kasten.
-\newlength{\dsaportraitfrei}\setlength{\dsaportraitfrei}{30mm}
+% Das Mass ist der KRANZ des Ornaments, nicht das Bild darin. Die Ringmitte
+% sitzt 17,6 mm vom rechten Rand der Kastengrafik, der deckende Kranz hat
+% einen Radius von 15,5 mm und reicht damit 33,2 mm nach innen. Bei 30 mm
+% Abstand lief der Text 3,2 mm darunter, bei 24 mm sogar 5,7 mm.
+%
+% Damit bleiben 94 - 7 - 34 = 53 mm Textbreite. Das ist schmal und mehr, als
+% noetig waere, denn das Medaillon sitzt nur im oberen Drittel. Wer die
+% Breite darunter nutzen will, braucht \parshape im Kasten; innerhalb einer
+% tcolorbox greift \dsaUmfluss nicht ohne Weiteres.
+\newlength{\dsaportraitfrei}\setlength{\dsaportraitfrei}{34mm}
 
 \newlength{\dsaportraitinnen}\setlength{\dsaportraitinnen}{5.1mm}
 \newlength{\dsaportraitaussen}\setlength{\dsaportraitaussen}{8.4mm}
@@ -1441,17 +1445,46 @@
   \clearpage\dsaHintergrundAn}
 
 % ---- Umschlag hinten ----
+%
+% Die Rueckseite hat eigene Rahmen, und sie stehen im IDML. Aus dem Spread
+% mit BackCover_Umschlag.tif, umgerechnet auf die Papierkante:
+%
+%   x  12,70 mm, Breite 125,18 mm, Oberkante 48,83 mm   Klappentext
+%   x  72,55 mm, Breite  62,59 mm, Oberkante 182,38 mm  eine Zeile
+%   x  78,10 mm, Breite  52,91 mm, Oberkante 194,99 mm  Feld unten mittig
+%
+% Titel und Klappentext stehen im ersten Rahmen. Fuer das Feld unten gibt es
+% \dsaRueckenfeld — dort gehoeren die Anforderungen hin.
+\newlength{\dsarueckenlinks}  \setlength{\dsarueckenlinks}{12.70mm}
+\newlength{\dsarueckenbreite} \setlength{\dsarueckenbreite}{125.18mm}
+\newlength{\dsarueckenoben}   \setlength{\dsarueckenoben}{48.83mm}
+\newlength{\dsarueckenfeldx}  \setlength{\dsarueckenfeldx}{78.10mm}
+\newlength{\dsarueckenfeldb}  \setlength{\dsarueckenfeldb}{52.91mm}
+\newlength{\dsarueckenfeldy}  \setlength{\dsarueckenfeldy}{194.99mm}
+
+\newcommand{\dsaRueckenfeld}[1]{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=north west, inner sep=0, align=left,
+          text width=\dsarueckenfeldb]
+      at ([shift={(\dsarueckenfeldx,-\dsarueckenfeldy)}]current page.north west)
+      {\fontsize{8bp}{9.6bp}\selectfont #1};
+  \end{tikzpicture}}
+
 \newcommand{\dsaUmschlagHinten}[3]{%
   \clearpage\dsaHintergrundAus\onecolumn
   \thispagestyle{empty}%
   \begin{tikzpicture}[remember picture, overlay]
     \node[anchor=center, inner sep=0] at (current page.center)
       {\dsaBildDeckend{216mm}{303mm}{#1}};
+    \node[anchor=north west, inner sep=0, align=left,
+          text width=\dsarueckenbreite]
+      at ([shift={(\dsarueckenlinks,-\dsarueckenoben)}]current page.north west)
+      {\dsaandalus\fontsize{23.5bp}{28.2bp}\selectfont #2\par
+       \vspace{\dsaRaster{1}}%
+       \normalfont\fontsize{10bp}{12bp}\selectfont #3\par};
   \end{tikzpicture}%
-  {\dsaandalus\fontsize{23.5bp}{28.2bp}\selectfont #2\par}%
-  \dsaRasterluft{2}#3\par
+  \mbox{}%
   \clearpage\dsaHintergrundAn}
-% PRUEFEN: Der Textblock ist noch nicht am Rahmen ausgerichtet.
 
 % ---- Impressum ----
 %
@@ -1600,10 +1633,50 @@
   AVENTURIS veröffentlicht.\par}
 
 % ---- Inhaltsverzeichnis ----
+% Die Eintraege setzt die Klasse selbst, statt \l@section aus article zu
+% nehmen: dessen Abstaende sind in pt und passen nicht ins Raster, und seine
+% Einrueckungen und Nummerierungen braucht ein Abenteuerheft nicht. Eine
+% Zeile je Eintrag, Punktfuehrung, Seitenzahl rechts.
+%
+% Der Durchschuss der Ueberschrift ist zwei Rastereinheiten, nicht das
+% 1,2fache des Grades — sonst sitzt schon die erste Zeile daneben.
+\renewcommand*{\l@section}[2]{%
+  \par\noindent
+  \hbox to \linewidth{%
+    \strut #1\hspace{0.5em}%
+    \leaders\hbox{\hspace{0.4em}.\hspace{0.4em}}\hfill
+    \hspace{0.5em}#2}%
+  \par}
+\renewcommand*{\l@subsection}[2]{%
+  \par\noindent
+  \hbox to \linewidth{%
+    \hspace{6mm}\strut #1\hspace{0.5em}%
+    \leaders\hbox{\hspace{0.4em}.\hspace{0.4em}}\hfill
+    \hspace{0.5em}#2}%
+  \par}
+
+% Die Ueberschrift sitzt auf der ersten Rasterlinie, 84 bp = 29,63 mm unter
+% der Papieroberkante — dort, wo im Musterbogen des Baukastens jede
+% Seitenueberschrift steht. Als Knoten am Papier, damit sie den Textfluss
+% nicht verschiebt: im Fluss wuerde \topskip sie nach unten druecken, weil
+% eine Andalus-Zeile in 23,5 bp hoeher ist als der Vorlauf bis zur ersten
+% Rasterlinie.
+\newlength{\dsainhaltkopf}\setlength{\dsainhaltkopf}{84bp}
+\newcommand*{\dsainhaltkopfgrad}{23.5}
+
 \newcommand{\dsaInhalt}{%
   \clearpage\onecolumn
   \thispagestyle{empty}%
-  {\dsaandalus\fontsize{23.5bp}{28.2bp}\selectfont\MakeUppercase{Inhalt}\par}%
+  \dsa@linkerrandsetzen
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=base west, inner sep=0]
+      at ([shift={(\dsa@linkerrand,-\dsainhaltkopf)}]current page.north west)
+      {\dsaandalus\fontsize{\dsainhaltkopfgrad bp}{\dsainhaltkopfgrad bp}%
+       \selectfont\MakeUppercase{Inhalt}};
+  \end{tikzpicture}%
+  % Zwei Rastereinheiten Vorlauf: eine fuer die Zeile der Ueberschrift, eine
+  % als Abstand. Die erste Eintragszeile sitzt damit auf der dritten
+  % Rasterlinie.
   \dsaRasterluft{2}%
   \@starttoc{toc}%
   \clearpage\twocolumn}
@@ -1707,17 +1780,33 @@
 % ausgeschlossen — in InDesign geht es, weil dort beide Spalten gleichzeitig
 % im Blick sind. Deshalb vier Bausteine, von einfach nach aufwendig.
 
-\newcommand{\dsaBildSpalte}[2]{%
+% \dsaBildRaster{<Rastereinheiten>}{<Inhalt>}
+%
+% Setzt beliebigen Inhalt so, dass er genau so viele Rastereinheiten belegt.
+% Der Inhalt bekommt Hoehe und Tiefe null und wird nach unten verschoben; den
+% Raum gibt \dsaRasterluft. Eine \parbox mit fester Hoehe taete es nicht:
+% ihre Grundlinie liegt bei [t] an der Oberkante und bei [c] in der Mitte,
+% und beides verschiebt alles darunter.
+%
+% Damit ist jedes Bild rastertreu — auch ein Kreisbild oder eine Freiform,
+% deren Hoehe man nicht im Voraus kennt:
+%
+%   \dsaBildRaster{7}{\dsaBildKreis{25mm}{grafiken/portrait}}
+\newcommand{\dsaBildRaster}[2]{%
   \par\nobreak
-  \noindent\parbox[t][\dsaRaster{#2}][t]{\linewidth}{%
-    \centering\includegraphics[width=\linewidth]{#1}}%
-  \par\nobreak}
+  \noindent\makebox[\linewidth][c]{%
+    \raisebox{-\dsaRaster{#1}}[0pt][0pt]{#2}}%
+  \par\dsaRasterluft{#1}\nobreak}
+
+\newcommand{\dsaBildSpalte}[2]{%
+  \dsaBildRaster{#2}{%
+    \dsaBildDeckend{\linewidth}{\dsaRaster{#2}}{#1}}}
 
 \newcommand{\dsaBildBreit}[2]{%
   \begin{figure*}[t]
     \centering
-    \parbox[t][\dsaRaster{#2}][t]{\textwidth}{%
-      \centering\includegraphics[width=\textwidth]{#1}}%
+    \dsaBildRaster{#2}{%
+      \dsaBildDeckend{\textwidth}{\dsaRaster{#2}}{#1}}%
   \end{figure*}}
 
 \newcommand{\dsaBildUmflossen}[3]{%
