@@ -105,6 +105,16 @@
 
 \newcommand*{\dsagrafik}[1]{grafiken/#1}
 
+% Die Endungsreihenfolge: JPEG vor PNG.
+%
+% Grafiken werden ohne Endung angesprochen, graphicx probiert sie der Reihe
+% nach — und zwar fuer jede Endung alle Suchpfade. Wenn ein Projekt seinen
+% eigenen Ordner grafiken/ hat und TEXINPUTS zusaetzlich auf den Ordner der
+% Klasse zeigt, gewinnt so ein altes PNG im einen Ordner gegen das neue JPEG
+% im anderen. Da die Vollseitengrafiken absichtlich als JPEG vorliegen, wird
+% diese Reihenfolge umgedreht.
+\DeclareGraphicsExtensions{.jpg,.jpeg,.png,.pdf}
+
 %%% ==================================================================
 %%% 5  Schriften
 %%% ==================================================================
@@ -349,15 +359,21 @@
 \renewcommand{\footrulewidth}{0pt}
 
 % Die Zahl gehoert in das Ornament am unteren Aussenrand des
-% Seitenhintergrunds. Gemessen an einer gesetzten Veroeffentlichung,
-% ueber zwoelf Seiten gleich: Mitte 21 mm von der Aussenkante,
-% Grundlinie 4 mm ueber der unteren Papierkante, Andalus 21 pt.
+% Seitenhintergrunds. Gemessen am Musterbogen des Baukastens: Andalus 13 pt,
+% Grundlinie 5,9 mm ueber der unteren Papierkante, Mitte 18,4 mm von der
+% Aussenkante. Die Grundlinie stammt aus der Textmatrix; die Unterkante der
+% Zeichenbox liegt 1,9 mm tiefer und ist nicht das gesuchte Mass. Die Zeichenformate der IDML nennen fuer die Grundeinstellung
+% ebenfalls Andalus 13 pt.
+%
+% Aussen oder innen: im Musterbogen traegt die PDF-Seite 3 die Zahl „2", das
+% Deckblatt zaehlt also nicht mit. PDF-Seite 3 ist damit die gedruckte
+% Seite 2, eine linke Seite, und dort steht die Zahl links — aussen.
 %
 % Gesetzt als Knoten an der Papierkante, nicht ueber die Spalten von
 % fancyhdr: die sitzen im Satzspiegel und wissen nichts vom Anschnitt.
-\newlength{\dsaseitenzahlaussen}\setlength{\dsaseitenzahlaussen}{21mm}
-\newlength{\dsaseitenzahlunten} \setlength{\dsaseitenzahlunten}{5.2mm}
-\newcommand*{\dsaseitenzahlgrad}{20}
+\newlength{\dsaseitenzahlaussen}\setlength{\dsaseitenzahlaussen}{18.4mm}
+\newlength{\dsaseitenzahlunten} \setlength{\dsaseitenzahlunten}{5.9mm}
+\newcommand*{\dsaseitenzahlgrad}{13}
 \newlength{\dsaseitenzahlkontur}\setlength{\dsaseitenzahlkontur}{0.6pt}
 
 % #1 die Ecke, von der aus gemessen wird
@@ -388,24 +404,45 @@
 
 \newcounter{dsakapitel}
 \newlength{\dsabannerversatz} \setlength{\dsabannerversatz}{0mm}
+% Der innere Rand: auf einer rechten Seite links, auf einer linken rechts.
+% Fuer den Kapiteltitel wird er von der linken Papierkante aus gebraucht.
+\newlength{\dsa@innenrand}
+\newcommand*{\dsa@innenrandsetzen}{%
+  \ifodd\value{page}\setlength{\dsa@innenrand}{20mm}%
+  \else\setlength{\dsa@innenrand}{24mm}\fi}
 % Der Baukasten setzt das Banner an die Papierkante. In gesetzten
 % Scriptorium-Abenteuern sitzt es 16 bis 25 mm darunter — als Laenge
 % gehalten, damit es sich ohne Eingriff verschieben laesst.
 
+% Die Lage des Titels, gemessen am Musterbogen: erste Grundlinie 33,41 mm
+% unter der Papieroberkante, Zeilenabstand 28,2 pt, linksbuendig ab dem
+% inneren Rand. Der Textrahmen im Banner ist laut IDML 166,25 mm breit und
+% 20,53 mm von links eingesetzt — also genau der Satzspiegel.
+\newlength{\dsabannertitelunten}\setlength{\dsabannertitelunten}{33.41mm}
+
 \newcommand*{\dsa@bannerblock}[1]{%
+  \dsa@innenrandsetzen
   \begin{tikzpicture}[remember picture, overlay]
     \node[anchor=north, inner sep=0]
       at ([shift={(0pt,-\dsabannerversatz)}]current page.north)
       {\includegraphics[width=210.1mm]{\dsagrafik{kapitelbanner}}};
-    \node[anchor=north, inner sep=0, text width=150mm, align=center]
-      at ([shift={(0pt,-22mm-\dsabannerversatz)}]current page.north)
+    % anchor=base west: die Grundlinie sitzt auf dem gemessenen Mass, der
+    % Anfang der Zeile am inneren Rand. Kein text width und kein align —
+    % der Titel ist linksbuendig.
+    \node[anchor=base west, inner sep=0]
+      at ([shift={(\dsa@innenrand,%
+                   -\dsabannertitelunten-\dsabannerversatz)}]%
+          current page.north west)
       {\dsaandalus\fontsize{23.5}{28.2}\selectfont
        \MakeUppercase{Kapitel \thedsakapitel: #1}};
   \end{tikzpicture}%
   \dsaRasterluft{10}}
-% PRUEFEN: Titelzeile 22 mm unter der Kante, mittig auf 150 mm — geschaetzt,
-% am Banner nachmessen. Bei zweizeiligen Titeln reichen 10 Rastereinheiten
-% nicht.
+% PRUEFEN: pdfplumber liest fuer die Titelzeilen des Musterbogens 31,7 pt,
+% waehrend Absatz- und Zeichenformat 23,5 pt nennen und der Durchschuss von
+% 28,2 pt zu 23,5 pt passt. Hier gilt der Formatwert.
+% PRUEFEN: Ob der Verlag „Kapitel N:" voranstellt, ist nicht belegt — im
+% Musterbogen steht nur der Titel.
+% PRUEFEN: Bei zweizeiligen Titeln reichen 10 Rastereinheiten nicht.
 
 % \dsakapitel[<Bild>]{<Titel>}
 % Reihenfolge: erst \twocolumn, also neue Seite plus Banner, dann das
@@ -512,10 +549,24 @@
 % PRUEFEN: beide geschaetzt und fuer alle Kaesten gueltig. Am ersten Abzug
 % nachmessen, wie weit der Zierrand der Grafik nach innen reicht.
 
+% Der Text im Kasten ist kleiner als der Fliesstext: 9,5 pt auf 11,4 pt. So
+% nennen es die Absatzformate der IDML („4_Pergamentkasten",
+% „Kasten_optional_Text"), und so steht es im Musterbogen -- dort liegen die
+% Grundlinien im Kasten 4,02 mm auseinander, das 1,2fache von 9,5 pt.
+%
+% Der Kastentext folgt dabei NICHT dem Grundlinienraster der Seite: im
+% Musterbogen weichen seine Zeilen um 0,4 bis 2,8 pt davon ab, wachsend von
+% Zeile zu Zeile. Ein Kasten ist ein eigener Satzraum, und das ist auch
+% sinnvoll -- sonst passte in einen Kasten von zwoelf Rastereinheiten kaum
+% Text.
+\newcommand*{\dsakastengrad}{9.5}
+\newcommand*{\dsakastendurchschuss}{11.4}
+
 \tcbset{dsa@grundkasten/.style={
   enhanced, breakable=false, blankest, nobeforeafter, valign=top,
   left=\dsakasteninnen, right=\dsakasteninnen,
-  top=\dsakastenoben,   bottom=\dsakastenoben}}
+  top=\dsakastenoben,   bottom=\dsakastenoben,
+  fontupper=\fontsize{\dsakastengrad}{\dsakastendurchschuss}\selectfont}}
 
 \tcbset{dsaueberhang/.style={grow to left by=#1, grow to right by=#1}}
 
@@ -534,7 +585,14 @@
 \dsaKastenNeu{dsaPergamentMittel}{85.5mm} {99.5mm} {24}{pergament-mittel}{dsaueberhang=2.5mm}
 \dsaKastenNeu{dsaPergamentLang}  {85.5mm} {192.4mm}{46}{pergament-lang}  {dsaueberhang=2.5mm}
 % Breit und schmal passen nicht in eine Spalte — einspaltig setzen.
+% PRUEFEN: Der Baukasten rahmt diese Grafik mit 136,57 x 189,26 mm. Die
+% Breite passt zur Produktionsgroesse (136,90 mm), die Hoehe nicht (189,26
+% gegen 192,37). Der Rahmen ist also nicht proportional, die Grafik dort
+% vermutlich beschnitten. Solange das nicht geklaert ist, gilt die
+% Produktionsgroesse.
 \dsaKastenNeu{dsaPergamentBreit} {136.9mm}{192.4mm}{46}{pergament-breit} {}
+% Produktionsgroesse, hochkant. Der Musterbogen des Baukastens zeigt diese
+% Grafik GEDREHT, 186,08 x 47,26 mm — eine Vorfuehrung, keine Vorschrift.
 \dsaKastenNeu{dsaPergamentSchmal}{48.9mm} {192.4mm}{46}{pergament-schmal}{left=6mm,right=6mm}
 
 % ---- Wertekaesten ----
@@ -551,11 +609,15 @@
 % Das Portraitbild kommt als Schluessel, damit es im underlay landet: den
 % TikZ-Knoten „frame" gibt es nur dort, nicht im Kasteninhalt.
 
-\newlength{\dsaportraitgroesse} \setlength{\dsaportraitgroesse}{30mm}
+\newlength{\dsaportraitgroesse} \setlength{\dsaportraitgroesse}{35.4mm}
 \newlength{\dsaportraitx}       \setlength{\dsaportraitx}{17mm}
 \newlength{\dsaportraity}       \setlength{\dsaportraity}{17mm}
-% PRUEFEN: alle drei geschaetzt. Der Ring in portraitrahmen.png ist im IDML
-% 35,4 x 35,0 mm gerahmt; der Innenkreis ist kleiner.
+% Die Groesse steht im IDML: Ornament_Portrait_Wertekasten.psd sitzt in einem
+% Rahmen von 35,39 x 34,97 mm bei 300 gegen 300 ppi, also in 100 Prozent. Das
+% ist die Aussenkante des Rings; das Bild darin ist kleiner, weil der Ring
+% selbst Breite hat.
+% PRUEFEN: die beiden Versaetze sind weiter geschaetzt — das IDML sagt, wie
+% GROSS das Medaillon ist, nicht wo im Kasten es sitzt.
 
 % „overlay app" haengt an, was schon an Overlays da ist, und zeichnet
 % ueber den Inhalt. Genau richtig fuer das Medaillon, das ueber den Rand
@@ -573,6 +635,10 @@
 % meister-schmal ist HOCHKANT, 59,9 x 114,2 mm. meister-breit ist mit
 % 177,9 mm breiter als die Satzbreite von 166 mm und ragt je Seite 5,95 mm
 % hinaus — einspaltig setzen.
+% PRUEFEN: Das IDML rahmt Meisterkasten.psd mit 84,60 x 42,25 mm — quer,
+% obwohl die Grafik mit 707 x 1349 px hochkant ist. Das passt zu keiner
+% Skalierung und deutet auf einen gedrehten Rahmen; Drehungen liest das
+% Messwerkzeug nicht aus. Hier gilt die Produktionsgroesse.
 \dsaKastenNeu{dsaMeisterSchmal}    {59.9mm} {114.2mm}{27}{meister-schmal}     {coltext=white,left=6mm,right=6mm,top=8mm,bottom=8mm}
 \dsaKastenNeu{dsaMeisterBreit}     {177.9mm}{114.2mm}{27}{meister-breit}      {coltext=white,dsaueberhang=5.95mm,left=10mm,right=10mm,top=8mm,bottom=8mm}
 \dsaKastenNeu{dsaMeisterMaske}     {84.0mm} {108.0mm}{26}{meister-maske}      {coltext=white,dsaueberhang=1.75mm,left=7mm,right=7mm,top=10mm,bottom=8mm}
@@ -608,14 +674,18 @@
 %%% 14  Vorlesetext, Meistermaske, NSC-Kopf
 %%% ==================================================================
 
+% Die Zierleiste ist 158,5 x 29,5 mm gross, wird im Baukasten aber auf
+% 95,89 x 17,83 mm platziert — 496 gegen 300 ppi, also auf 60 Prozent
+% verkleinert. 95,89 mm sind breiter als eine Spalte (80,5 mm); die Leiste
+% laeuft dort also ueber den Satz hinaus oder wird schmaler gesetzt. Bis das
+% an einem Abzug entschieden ist, bleibt sie auf Spaltenbreite.
 \newcommand{\dsaVorlesetext}[1]{%
   \par\dsaRasterluft{1}%
   \noindent\includegraphics[width=\linewidth]{\dsagrafik{vorlesetext}}%
   \par\nobreak #1\par
   \dsaRasterluft{1}}
-% PRUEFEN: Die Leiste ist native 158,5 x 29,5 mm und wird hier auf
-% Spaltenbreite gestaucht. Ob der Vorlesetext kursiv gesetzt wird, sagt der
-% Baukasten nicht — hier aufrecht.
+% PRUEFEN: Ob der Vorlesetext kursiv gesetzt wird, sagt der Baukasten nicht —
+% hier aufrecht.
 
 % Der Baukasten liefert die Meistermaske MIT gestrichelter Verbindung als
 % fertige Grafik in drei Hoehen — deshalb keine TikZ-Konstruktion.
@@ -640,41 +710,46 @@
 %%% 15  Marken im Text
 %%% ==================================================================
 
+% Das IDML rahmt Auge_Schwarz.eps und Auge_Weiss.eps mit 1,69 x 0,92 mm.
+\newlength{\dsaaugebreite}\setlength{\dsaaugebreite}{1.69mm}
 \newcommand*{\dsaAugeSchwarz}{%
-  \smash{\raisebox{0.25\height}{\includegraphics[width=3mm]{\dsagrafik{auge-schwarz}}}}}
+  \smash{\raisebox{0.25\height}{%
+    \includegraphics[width=\dsaaugebreite]{\dsagrafik{auge-schwarz}}}}}
 \newcommand*{\dsaAugeWeiss}{%
-  \smash{\raisebox{0.25\height}{\includegraphics[width=3mm]{\dsagrafik{auge-weiss}}}}}
-% PRUEFEN: 3 mm gewaehlt. Im IDML sitzen die Augen als verankerte Objekte im
-% Text und haben kein eigenes Rahmenmass — Sollgroesse offen.
+  \smash{\raisebox{0.25\height}{%
+    \includegraphics[width=\dsaaugebreite]{\dsagrafik{auge-weiss}}}}}
 
 \newcommand{\dsaFokusregel}[1]{%
   \smash{\raisebox{-0.4\height}{%
     \begin{tikzpicture}
-      \node[inner sep=0] {\includegraphics[width=9.9mm]{\dsagrafik{fokusregel}}};
+      % 9,86 mm: das Rahmenmass im IDML.
+      \node[inner sep=0] {\includegraphics[width=9.86mm]{\dsagrafik{fokusregel}}};
       \node[inner sep=0] {\footnotesize #1};
     \end{tikzpicture}}}}
 
 \newcommand{\dsaFiole}[1]{%
-  \begin{wrapfigure}{#1}{9.1mm}
+  \begin{wrapfigure}{#1}{9.06mm}
     \centering\vspace*{-\dsaRaster{1}}%
-    \includegraphics[width=9.1mm]{\dsagrafik{fiole}}%
+    \includegraphics[width=9.06mm]{\dsagrafik{fiole}}%
     \vspace*{-\dsaRaster{1}}%
   \end{wrapfigure}}
 \newcommand{\dsaSchaedel}[1]{%
-  \begin{wrapfigure}{#1}{9.1mm}
+  \begin{wrapfigure}{#1}{9.06mm}
     \centering\vspace*{-\dsaRaster{1}}%
-    \includegraphics[width=9.1mm]{\dsagrafik{totenkopf}}%
+    \includegraphics[width=9.06mm]{\dsagrafik{totenkopf}}%
     \vspace*{-\dsaRaster{1}}%
   \end{wrapfigure}}
 
-% Gegnerabstufung. Verschiedene Seitenverhaeltnisse, deshalb ueber die Hoehe.
-\newcommand*{\dsa@figur}[1]{%
-  \smash{\raisebox{-0.15\height}{\includegraphics[height=4mm]{\dsagrafik{#1}}}}}
-\newcommand*{\dsaBauer}{\dsa@figur{icon-bauer}}
-\newcommand*{\dsaSpringer}{\dsa@figur{icon-springer}}
-\newcommand*{\dsaTurm}{\dsa@figur{icon-turm}}
-\newcommand*{\dsaKoenig}{\dsa@figur{icon-koenig}}
-% PRUEFEN: 4 mm gewaehlt, nicht belegt.
+% Gegnerabstufung. Jede Figur hat im IDML ihr eigenes Rahmenmass, und die
+% Hoehen unterscheiden sich: Bauer 3,00 mm, Springer 3,17 mm, Turm 3,27 mm,
+% Koenig 3,21 mm. Gesetzt wird deshalb je Figur ihre eigene Hoehe.
+\newcommand*{\dsa@figur}[2]{%
+  \smash{\raisebox{-0.15\height}{%
+    \includegraphics[height=#2]{\dsagrafik{#1}}}}}
+\newcommand*{\dsaBauer}{\dsa@figur{icon-bauer}{3.00mm}}
+\newcommand*{\dsaSpringer}{\dsa@figur{icon-springer}{3.17mm}}
+\newcommand*{\dsaTurm}{\dsa@figur{icon-turm}{3.27mm}}
+\newcommand*{\dsaKoenig}{\dsa@figur{icon-koenig}{3.21mm}}
 
 % Rautenskalen, selbst gezeichnet. Der Baukasten hat sie nicht als Grafik.
 \newcommand*{\dsa@rauten}[3]{%
@@ -708,8 +783,9 @@
 \setlist[dsaliste,1]{
   leftmargin=\dimexpr 6mm+\labelsep\relax,
   topsep=0pt, itemsep=0pt, parsep=0pt,
+  % 2,36 mm hoch: das Rahmenmass im IDML, 4,36 x 2,36 mm.
   label={\smash{\raisebox{-0.25\height}{%
-    \includegraphics[height=2.4mm]{\dsagrafik{aufzaehlung}}}}}}
+    \includegraphics[height=2.36mm]{\dsagrafik{aufzaehlung}}}}}}
 
 \newlist{dsalisteblau}{itemize}{4}
 \setlist[dsalisteblau,1]{

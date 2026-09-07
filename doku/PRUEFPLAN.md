@@ -1,0 +1,184 @@
+# Prüfplan
+
+*Was geprüft wird, woran gemessen wird, und was dabei herauskam.*
+
+Die Klasse ist aus den Maßen des Layout-Baukastens gebaut. Ein Maß im Quelltext ist aber noch kein
+Maß auf dem Papier: ein Kasten kann zwei Millimeter zu weit außen sitzen, ein Medaillon um seine
+halbe Breite verschoben sein, ein Textblock neben seinem Rahmen liegen. Im PDF sieht man das als
+„irgendwie schief", nicht als Zahl. Dieser Plan macht daraus Zahlen.
+
+## Wie gemessen wird
+
+```sh
+# Bilder und Textzeilen eines gesetzten PDF, mit Lage und Größe in mm
+python3 werkzeuge/nachmessen.py probeseiten.pdf --seite 5 --text
+
+# Pixelmaße der Grafiken gegen die Sollwerte des Baukastens
+python3 werkzeuge/pruefen.py
+```
+
+`nachmessen.py` erkennt jede Grafik an ihren Pixelmaßen und nennt sie beim Namen — die Zuordnung
+kommt aus `pruefen.py`. Für Dinge ohne Text und ohne Grafik (Rautenskalen, TikZ-Zeichnungen)
+bleibt das Rastern eines Ausschnitts und das Messen im Bild.
+
+**Zu den Quellen.** Der Baukasten selbst ist die erste Quelle: sein Klartext, seine IDML, seine
+PSD-Dateien, die Pixelmasse seiner PNG. Wo er schweigt — Impressum, Seitenzahl, Kolumnentitel —,
+bleibt eine gesetzte Veroeffentlichung als Anhalt. Deren Satzspiegel ist aber **nicht** der des
+Baukastens: gemessen 160,9 mm Satzbreite, 74,6 mm Spalten, 11,7 mm Steg, Hintergrundbilder mit
+167 ppi. Der Baukasten nennt 166 mm, 80,5 mm und 5 mm. Eine Veroeffentlichung taugt deshalb nur
+fuer Elemente, die der Baukasten nicht kennt, und niemals fuer den Satzspiegel.
+
+Drei Fehlerarten sind zu unterscheiden:
+
+1. **Falsches Sollmaß** — der Wert in der Klasse stimmt nicht mit dem Baukasten überein. Quelle
+   prüfen (IDML, PSD, PNG-Pixelmaß), Wert korrigieren, in `MASSE.md` festhalten.
+2. **Richtiges Maß, falsch gesetzt** — der Wert ist richtig, kommt aber nicht dort an: falscher
+   Anker, `shift` an einem transformationsinvarianten Knoten, ein Maß im Textraum statt im
+   Nutzerraum.
+3. **Kein Sollmaß vorhanden** — der Baukasten sagt nichts dazu. Dann Augenmaß, und der Wert wird
+   als geschätzt gekennzeichnet.
+
+## Status
+
+`—` nicht geprüft · `ok` gemessen und in Ordnung · `!` Abweichung gefunden · `#` behoben und
+nachgemessen
+
+### Satzspiegel und Raster
+
+| Prüfung | Sollmaß | Quelle | Status |
+|---|---|---|---|
+| Satzbreite, Ränder | 166 mm, innen 20, außen 24, oben 24 | Baukasten, Klartext | `ok` |
+| Spaltenbreite und -steg | 80,5 mm, 5 mm | daraus gerechnet | `ok` |
+| Zeilen je Spalte | 59 auf 12 pt | textheight 708 pt | — |
+| Grundlinienraster | erste Linie 12,7 mm, dann 12 pt | Musterbogen | `ok` |
+| Beide Spalten auf derselben Linie | — | `rasterzeigen` | — |
+
+Der Satzspiegel ist am Musterbogen des Baukastens dreifach bestätigt:
+
+* Textzeilen der zweiten Spalte beginnen bei **x 105,50 mm** und enden bei 186,8 mm. Das ist genau
+  innen 20 + 80,5 + 5 = 105,5 und innen 20 + 166 = 186.
+* Die Kästen auf Musterseite 7 sind **exakt 80,50 mm breit** und sitzen bei x 24,00 und
+  x 109,39 mm — auf einer linken Seite also außen 24 mm, Spalte 2 bei 24 + 80,5 + 5 = 109,5.
+* Alle Zeilen des Fließtextes (10 pt) liegen mit **±0,00 pt** auf dem Raster aus erster Linie
+  12,7 mm und 12 pt Schritt. Auch die Kapitelüberschrift sitzt darauf.
+
+Gemessen mit `nachmessen.py`, das die Grundlinie aus der Textmatrix nimmt. Die Unterkante der
+Zeichenbox taugt dafür nicht: sie liegt je Schriftgrad anders, bei 13 pt Andalus etwa 1,9 mm
+tiefer.
+
+### Seitentypen
+
+| Prüfung | Sollmaß | Quelle | Status |
+|---|---|---|---|
+| Umschlag vorne, Rahmen randabfallend | 216 × 303 mm, mittig | PNG-Pixelmaß | `#` |
+| Covertitel: Grad, Zeilenabstand, Lage | 42,8 pt, 51,4 pt, 31,3 mm über der Kante | `Cover_Buchtitel.psd` | `#` |
+| Titel: Fläche, Rand, Verlauf | 13 pt / 0,24 pt / vier Haltepunkte | PSD, eigene Messung | `#` |
+| Impressum: Überschrift, Rubriken, Vermerk | 37,6 mm / 14 pt / 94,5 mm | gesetzte Veröffentlichung | `#` |
+| Seitenzahl | 18,4 mm von außen, 5,9 mm über der Kante, Andalus 13 pt | Musterbogen | `#` |
+| Kolumnentitel (Kapitelname neben der Zahl) | fehlt noch ganz | gesetzte Veröffentlichung | `!` |
+| Kapiteltitel im Banner | 12,93 mm unter der Bannerkante, 20,5 mm von links | IDML | `!` |
+| Seitenhintergrund: Lage, Anschnitt, Folge 0,0,1,1,2,2,3,3 | 213 × 303 mm an der Außenkante | Schnitt der Doppelseiten | — |
+| Kapitelanfang: Banner, Bild, Pergamentrand | Banner 210,1 × 43,2 mm am oberen Rand | IDML | — |
+| Inhaltsverzeichnis | kein Sollmaß | — | — |
+| Ganzseitige Grafik | 184 × 265 mm im Grafikbereich | IDML, zweiter Rahmen | — |
+| Umschlag hinten: Textblock am Rahmen | offen | — | `!` |
+| Querformat, Raster danach | kein Sollmaß | — | — |
+
+### Kästen
+
+Für jeden Kasten sind vier Dinge zu prüfen: die **Größe** der Hintergrundgrafik (steht in der
+Klasse, prüfbar über die Pixelmaße), die **Lage** in der Spalte samt Überhang, die **Innenabstände**
+des Textes und ob der Text nach dem Kasten **wieder auf der Grundlinie** sitzt.
+
+**Die Größen sind geprüft.** Dreizehn von fünfzehn stimmen mit den Platzierungen der IDML auf ein
+Zehntel Millimeter überein — `Kasten_Pergament_ver3` 85,51 × 50,72 mm, `Kleiner Wertekasten`
+84,41 × 54,78 mm, `MeisterkastenMitMaske` 83,99 × 108,03 mm und so weiter, jeweils bei 300 gegen
+300 ppi, also in 100 Prozent platziert. Zwei Fälle sehen im ersten Blick anders aus:
+
+* `Kasten_Pergament_sehr schmal` wird im Musterbogen **gedreht** gezeigt, 186,08 × 47,26 mm statt
+  48,86 × 192,37 mm hochkant. Das ist eine Vorführung, keine Vorschrift.
+* `Meisterkasten.psd` erscheint mit 84,60 × 42,25 mm quer, obwohl die Grafik hochkant ist —
+  ebenfalls gedreht platziert.
+
+**Der Text im Kasten ist 9,5 pt auf 11,4 pt** und folgt *nicht* dem Grundlinienraster der Seite: im
+Musterbogen weichen seine Zeilen um 0,4 bis 2,8 pt davon ab, wachsend von Zeile zu Zeile. Ein
+Kasten ist ein eigener Satzraum. Die Kastenüberschrift ist 12 pt.
+
+**Die Innenabstände** der gezeichneten Kästen auf Musterseite 7: Text 3,0 mm vom linken und
+2,25 mm vom rechten Kastenrand, Titel 1,46 mm, Titelgrundlinie 5,16 mm unter der Oberkante. Diese
+Kästen sind spaltenbreit und haben keinen Überhang. Für die Grafikkästen, die über die Spalte
+hinausragen, gilt das nicht unmittelbar: dort kommt die Breite des Zierrandes hinzu, und der
+Musterbogen zeigt sie ohne Text.
+
+| Kasten | Grafik | Rastereinheiten | Innenabstände | Status |
+|---|---|---|---|---|
+| `dsaPergamentKlein` | 85,5 × 50,7 mm, Überhang 2,5 mm | 12 | geschätzt | — |
+| `dsaPergamentMittel` | 85,5 × 99,5 mm, Überhang 2,5 mm | 24 | geschätzt | — |
+| `dsaPergamentLang` | 85,5 × 192,4 mm, Überhang 2,5 mm | 46 | geschätzt | — |
+| `dsaPergamentBreit` | 136,9 × 192,4 mm | 46 | geschätzt | — |
+| `dsaPergamentSchmal` | 48,9 × 192,4 mm | 46 | 6 mm | `ok` (Größe) |
+| `dsaWerteKlein` | 84,4 × 54,8 mm, Überhang 1,95 mm | 13 | 7 mm | — |
+| `dsaWerteMittel` | 86,9 × 103,8 mm, Überhang 3,2 mm | 25 | 7 mm | — |
+| `dsaWerteGross` | 85,0 × 197,1 mm, Überhang 2,25 mm | 47 | 7 mm | — |
+| `dsaWerteKleinPortrait` | 94,0 × 59,2 mm, 13,5 mm nach außen | 14 | 7/24 mm | — |
+| `dsaWerteMittelPortrait` | 94,0 × 104,0 mm, 13,5 mm nach außen | 25 | 7/24 mm | `!` |
+| `dsaWerteGrossPortrait` | 94,0 × 199,1 mm, 13,5 mm nach außen | 47 | 7/24 mm | — |
+| `dsaMeisterSchmal` | 59,9 × 114,2 mm | 27 | 6/8 mm | — |
+| `dsaMeisterBreit` | 177,9 × 114,2 mm, Überhang 5,95 mm | 27 | 10/8 mm | — |
+| `dsaMeisterMaske` | 84,0 × 108,0 mm, Überhang 1,75 mm | 26 | 7/10/8 mm | — |
+| `dsaMeisterMaskeKlein` | 84,0 × 45,0 mm, Überhang 1,75 mm | 11 | 7/10/6 mm | — |
+| `dsaKastenFrei` | Höhe in Rastereinheiten, Zierleisten in wahrer Größe | frei | wie Pergament | — |
+| Porträtmedaillon | 35,39 × 34,97 mm, Lage im Kasten noch geschätzt | `Ornament_Portrait_Wertekasten.psd` | — | `#` |
+
+### Gliederung und Fließtext
+
+| Prüfung | Sollmaß | Quelle | Status |
+|---|---|---|---|
+| Kapitel, Unterkapitel, Abschnitt, Unterabschnitt | 23,5 / 14 / 13 / 10 pt | IDML, Absatzformate | `ok` |
+| Abstände der Überschriften, Raster gehalten | 12 pt nach Unterkapitel | IDML, `SpaceAfter` | `ok` |
+| `\parindent` | **0** — kein Absatzformat der IDML hat `FirstLineIndent` außer den hängenden | IDML | `!` |
+| Text im Kasten | 9,5 pt auf 11,4 pt, eigenes Raster | Musterbogen, IDML | `#` |
+| Kastenüberschrift | 12 pt | Musterbogen, Zeichenformat | `!` |
+| Vorlesetext, Zierleiste darüber | native 158,5 mm, im Baukasten auf 95,89 × 17,83 mm platziert | IDML | `!` |
+| Werteabsatz, hängender Einzug | 8,50 pt | IDML, Format „Werte" | `ok` |
+| Einführung, Stimmung, Zitat | Laufweite +10, Grau 404040 | IDML | — |
+| Aufzählungen: Einzug | 17,01 pt = 6,0 mm hängend | IDML, „Aufzählung v2" | `ok` |
+| Aufzählungen: Zeichengröße | 4,36 × 2,36 mm | IDML, Rahmenmaß | `#` |
+
+### Marken und Zeichen
+
+| Prüfung | Sollmaß | Quelle | Status |
+|---|---|---|---|
+| Auge schwarz und weiß | 1,69 × 0,92 mm | IDML, Rahmenmaß | `#` |
+| Aufzählungszeichen | 4,36 × 2,36 mm | IDML, Rahmenmaß | `#` |
+| Fiole, Totenkopf | 9,06 × 9,06 mm bei 100 % | IDML, Rahmenmaß | `#` |
+| Gegnerabstufung | Bauer 3,00 / Springer 3,17 / Turm 3,27 / König 3,21 mm hoch | IDML | `#` |
+| Fokusregelmarke | 9,86 × 9,61 mm | IDML | `#` |
+| Porträtmedaillon, Größe | 35,39 × 34,97 mm bei 100 % | IDML | `#` |
+| Porträtmedaillon, Lage im Kasten | geschätzt | — | `!` |
+| Rautenskalen in TikZ | Vorbild `DSA5_Rauten_*` | PNG | — |
+| Band- und Fokusregelmarke | offen | — | — |
+
+### Bilder und Umfluss
+
+| Prüfung | Sollmaß | Quelle | Status |
+|---|---|---|---|
+| Spaltenbild, ganze Rastereinheiten | Text sitzt danach auf der Linie | — | — |
+| `\dsaBildDeckend`: Beschnitt statt Verzerrung | Seitenverhältnis bleibt | — | — |
+| Kreis- und Freiformmaske | — | — | — |
+| Umfluss mit festem Einzug | — | — | — |
+| Umfluss entlang einer Silhouette | gemessene Kontur aus einer Veröffentlichung | eigene Messung | — |
+
+### Tabellen
+
+| Prüfung | Sollmaß | Quelle | Status |
+|---|---|---|---|
+| Tabellenkopf, Linienstärke, Zeilenabstand | offen | IDML | — |
+| Probenzeile | offen | — | — |
+
+## Vorgehen
+
+Seriell von oben nach unten, je Block: `probeseiten.tex` bauen, mit `nachmessen.py` die Zahlen
+holen, Abweichungen gegen die Quelle prüfen, korrigieren, neu bauen, nachmessen, Status hier
+fortschreiben. Jede Korrektur mit Begründung in `MASSE.md`, wenn sie ein Maß betrifft, und in
+`ELEMENTE.md`, wenn sie einen Aufruf ändert.
