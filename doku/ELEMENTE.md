@@ -137,7 +137,7 @@ Maske. Die Randbreite ist `\dsakapitelbildrand`, der Bannerversatz von der Papie
 | `\dsaunterkapitel{Titel}` | Andalus 14 pt, zentriert, 12 pt danach |
 | `\dsaabschnitt{Titel}` | Gentium Basic fett 13 pt |
 | `\dsaunterabschnitt{Titel}` | Gentium Basic fett 10 pt |
-| `\dsaAbschnittGelb{Titel}` | wie Abschnitt, auf Pergamentverlauf |
+| `\dsaAbschnittGelb{Titel}` | wie Abschnitt, auf Pergamentverlauf, Fläche zwei Rastereinheiten |
 
 ---
 

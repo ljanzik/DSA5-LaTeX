@@ -241,10 +241,40 @@ Rastereinheit ebenso hoch wie der Durchschuss. In beiden Fällen greift TeXs Gru
 mehr. `dsaTabelle` und der umgebaute `\dsaTabellenkopf` setzen beides in Boxen ohne Höhe und
 Tiefe; gemessen liegen alle Zeilen auf +0,00 bp.
 
+Ebenfalls behoben: `\dsaAbschnittGelb` lag 4,1 bp neben dem Raster und schob den Fließtext danach
+auf −1,9 bp — dieselbe Ursache, eine `tcolorbox` als eigener Absatz, knapp 19 bp hoch. Der
+Baukasten gibt für dieses Element keine Maße her, also nach der Regel des Rasters: die Fläche ist
+zwei Einheiten hoch, ihr Text sitzt mittig darin auf einer Grundlinie, davor und danach eine
+Leerzeile. Gemessen +0,00 bp für die Überschrift und den Text danach.
+
+Damit weicht in `raster.pdf`, `kaesten.pdf`, `rest.pdf`, `beispiel.pdf`, `probeseiten.pdf` und
+`ganter.pdf` keine Zeile mehr vom Raster ab, außer den Elementen mit eigenem Maß.
+
 Behoben nach dem Prüflauf: im Porträtkasten wich der Text dem Medaillon über die ganze Höhe aus und
 behielt nur 53 mm Breite. `\dsaPortraitfluss` setzt jetzt `\parshape` im Kasten — sieben schmale
 Zeilen, danach volle Breite. Nachgemessen an `beispiel/kaesten.pdf` Seite 9: Zeile 1 bis 7 enden bei
 74,9 mm, Zeile 8 und die folgenden bei 101,5 mm, der Kranz beginnt bei 76,6 mm.
+
+## Elemente mit eigenem Raster
+
+Nicht jede Zeile gehört auf das Grundlinienraster der Seite. Diese Elemente weichen bewusst ab —
+wer sie in einer Messung als Abweichung findet, hat nichts gefunden:
+
+| Element | eigenes Maß | Grund |
+|---|---|---|
+| Impressum | Rubrik 24,0 pt, Wert 14,0 pt | gegen ein gesetztes Vorbild vermessen, ±0,04 mm |
+| Kapiteltitel im Banner | Banner am Papierrand | sitzt über dem Satzspiegel |
+| Seitenzahl | 13 bp in der Fußzeile | TikZ-Knoten an der Papierkante |
+| Text in Kästen | 9,5 bp auf 11,4 bp | eigener Durchschuss im Kasten |
+| Umschlagrückseite: Klappentext, Anforderungen, Zusammenfassung | 8 und 10 bp | freie Lage im Rahmen des Umschlags |
+| Titelzeilen auf dem Umschlag | 42,8 bp, von der Papierkante gesetzt | freie Lage |
+
+Alles andere gehört auf das Raster. Der Prüfbefehl dazu:
+
+```sh
+python3 werkzeuge/nachmessen.py <datei>.pdf --text \
+  | awk '$2=="mm" && $4=="mm" && $10!="+0.00" {print $9, $10, $11}'
+```
 
 ## Vorgehen
 

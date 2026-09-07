@@ -620,15 +620,36 @@
   \par{\bfseries #1\par}\nobreak}
 
 % Abschnitt mit Pergamentverlauf, Farbfeld „Fuer Gelb" des Baukastens.
+% Der Abschnitt auf Pergamentverlauf. Der Baukasten gibt fuer dieses
+% Element keine Masse her, also nach der Regel des Rasters: die Flaeche ist
+% \dsaabschnittgelbeinheiten Einheiten hoch, ihr Text sitzt mittig darin auf
+% einer Grundlinie, davor und danach eine Leerzeile.
+%
+% Wie beim Tabellenkopf darf die Box nicht als eigener Absatz stehen: mit
+% 1 mm oben, 1 mm unten und einer 13-bp-Zeile war sie knapp 19 bp hoch, also
+% hoeher als der Durchschuss und keine ganze Zahl von Einheiten. Gemessen lag
+% die Ueberschrift 4,1 bp neben dem Raster und der Text danach 1,9 bp.
+%
+% \dsaabschnittgelbtiefer schiebt die Flaeche so weit nach unten, dass ihr
+% Text auf der Grundlinie seiner Zeile sitzt.
+\newcommand*{\dsaabschnittgelbeinheiten}{2}
+\newlength{\dsaabschnittgelbtiefer}
+\setlength{\dsaabschnittgelbtiefer}{8.6bp}
+
 \newcommand{\dsaAbschnittGelb}[1]{%
   \par\dsaRasterluft{1}%
-  \noindent\begin{tcolorbox}[
-    enhanced, blankest, nobeforeafter, width=\linewidth,
-    left=2mm, right=2mm, top=1mm, bottom=1mm,
-    interior style={left color=dsapergamentgelb, right color=white}]
-    \dsa@lineskipraster\bfseries\fontsize{13bp}{12bp}\selectfont #1
-  \end{tcolorbox}\par
-  \dsaRasterluft{1}}
+  \nobreak\noindent
+  \makebox[\linewidth][l]{%
+    \raisebox{-\dsaabschnittgelbtiefer}[0pt][0pt]{%
+      \begin{tcolorbox}[
+        enhanced, blankest, nobeforeafter, width=\linewidth,
+        height=\dsaRaster{\dsaabschnittgelbeinheiten}, valign=center,
+        left=2mm, right=2mm, top=0pt, bottom=0pt,
+        interior style={left color=dsapergamentgelb, right color=white}]
+        \dsa@lineskipraster\bfseries\fontsize{13bp}{12bp}\selectfont #1
+      \end{tcolorbox}}}%
+  \par
+  \dsaRasterluft{1}\nobreak}
 
 %%% ==================================================================
 %%% 13  Kaesten
