@@ -421,13 +421,23 @@
 
 % Ganzzahlige Division und Rest — \numexpr rundet kaufmaennisch und taugt
 % dafuer nicht.
-\newcommand*{\dsa@bgvariante}{\intcalcMod{\intcalcDiv{\value{page}}{2}}{4}}
+% Die Nummer der ausgegebenen Seite steht im Haken nicht in \value{page} —
+% der LaTeX-Zaehler ist dort noch nicht gesetzt —, sondern in \count0, dem
+% Register, das TeX beim Ausschiessen fuehrt. Mit \value{page} war die
+% Variante auf jeder Seite 0 und die Lage immer die linke.
+\newcommand*{\dsa@bgseite}{\the\count0}
+% Die Folge soll 0,0,1,1,2,2,3,3 sein: je zwei Seiten eine Variante,
+% beginnend mit der ersten. Deshalb wird (Seite - 1) geteilt — mit der Seite
+% selbst waere die Folge 0,1,1,2,2,3,3,0 und die erste Variante kaeme nur
+% einmal vor.
+\newcommand*{\dsa@bgvariante}{%
+  \intcalcMod{\intcalcDiv{\numexpr\dsa@bgseite-1\relax}{2}}{4}}
 
 \AddToShipoutPictureBG{%
   \ifdsa@ohnehintergrund\else
   \ifdsa@bgaus\else
     \begin{tikzpicture}[remember picture, overlay]
-      \ifodd\value{page}
+      \ifodd\count0
         \node[anchor=north east, inner sep=0]
           at ([shift={(\dsabeschnitt,\dsabeschnitt)}]current page.north east)
           {\includegraphics[width=213mm,height=303mm]{\dsagrafik{seite-rechts-\dsa@bgvariante}}};
@@ -672,7 +682,14 @@
   top=\dsakastenoben,   bottom=\dsakastenoben,
   fontupper=\fontsize{\dsakastengrad bp}{\dsakastendurchschuss bp}\selectfont}}
 
-\tcbset{dsaueberhang/.style={grow to left by=#1, grow to right by=#1}}
+% Der Ueberhang verschiebt den Kasten, er macht ihn nicht breiter.
+%
+% „grow to left by" waere das Naheliegende, macht die Box aber breiter als
+% die Kastengrafik — und der Text folgt der Box. Gemessen sass er dann links
+% 7,9 mm vom Grafikrand und rechts 2,7 mm. „enlarge left by" mit negativem
+% Wert verschiebt die Box nach links und laesst ihre Breite, weil die mit
+% „width" gesetzt ist.
+\tcbset{dsaueberhang/.style={enlarge left by=-#1}}
 
 % Die Lage der Portraitkaesten: sie sind 13,5 mm breiter als eine Spalte, und
 % der Musterbogen verteilt das ungleich — 5,1 mm nach innen, 8,4 mm nach
@@ -681,10 +698,20 @@
 %
 % Der Kasten steht vorlaeufig nur auf rechten Seiten, weil der Baukasten die
 % Grafik nur in einer Lage liefert; dort ist innen links und aussen rechts.
+% Der rechte Innenabstand im Portraitkasten: so weit muss der Text vom Rand
+% wegbleiben, damit er nicht unter das Medaillon laeuft. Die Ringmitte sitzt
+% 17,6 mm vom rechten Rand der Kastengrafik, das Bild darin ist 23 mm gross,
+% seine linke Kante liegt also 29,1 mm vom Rand. Gemessen lief der Text bei
+% 24 mm Abstand 5,7 mm unter das Medaillon.
+%
+% Das Medaillon sitzt nur im oberen Teil des Kastens; darunter bliebe Platz.
+% Wer ihn nutzen will, braucht \parshape im Kasten.
+\newlength{\dsaportraitfrei}\setlength{\dsaportraitfrei}{30mm}
+
 \newlength{\dsaportraitinnen}\setlength{\dsaportraitinnen}{5.1mm}
 \newlength{\dsaportraitaussen}\setlength{\dsaportraitaussen}{8.4mm}
 \tcbset{dsaportraitlage/.style={
-  grow to left by=\dsaportraitinnen, grow to right by=\dsaportraitaussen}}
+  enlarge left by=-\dsaportraitinnen}}
 
 % \dsaKastenNeu{<Umgebung>}{<Breite>}{<Grafikhoehe>}{<Rastereinheiten>}
 %              {<Grafik>}{<weitere Schluessel>}
@@ -733,7 +760,15 @@
 % Nicht die Groesse des Ornaments (35,4 mm), sondern die seines freien
 % Innenkreises: 21,0 mm, gemessen im Alphakanal von portraitrahmen.png. Zwei
 % Millimeter mehr, damit das Bild unter den Kranz reicht und keine Fuge bleibt.
-\newlength{\dsaportraitgroesse} \setlength{\dsaportraitgroesse}{23mm}
+% Der Durchmesser des Bildes im Medaillon. Der freie Innenkreis ist 21,0 mm;
+% weil der Kranz darueber liegt und die Kante verdeckt, darf das Bild
+% groesser sein. 26 mm lassen unter keinen Umstaenden eine Fuge.
+\newlength{\dsaportraitgroesse} \setlength{\dsaportraitgroesse}{26mm}
+% Die Groesse des Ornaments und der Versatz seines Kranzes gegen die
+% Bildmitte: der Kranz reicht von Pixel 16 bis 383 von 418, seine Mitte liegt
+% also 0,81 mm links der Mitte der Datei.
+\newlength{\dsaportraitring}    \setlength{\dsaportraitring}{35.4mm}
+\newlength{\dsaportraitringx}   \setlength{\dsaportraitringx}{0.81mm}
 % Die Lage der Ringmitte, gemessen an allen drei Portraitkaesten: 17,2 bis
 % 18,0 mm von der rechten Bildkante, 18,9 bis 20,2 mm unter der Oberkante.
 \newlength{\dsaportraitx}       \setlength{\dsaportraitx}{17.6mm}
@@ -753,15 +788,21 @@
 % breiter als die Kastengrafik, und am Rahmen aufgehaengt ragte das Medaillon
 % um genau diesen Betrag hinaus. Die Grafik sitzt an frame.north west und ist
 % \dsa@kastenbreite breit — die merkt der Generator.
+% Zwei Lagen: das Bild, darueber der Ring. „overlay app" zeichnet beide ueber
+% den Inhalt, in der Reihenfolge, in der sie hier stehen.
 \tcbset{dsaportrait/.style={overlay app={%
   \node[inner sep=0]
     at ([shift={(\dsa@kastenbreite-\dsaportraitx,-\dsaportraity)}]%
         frame.north west)
-    {\dsaBildKreis{\dsaportraitgroesse}{#1}};}}}
+    {\dsaBildKreis{\dsaportraitgroesse}{#1}};
+  \node[inner sep=0]
+    at ([shift={(\dsa@kastenbreite-\dsaportraitx+\dsaportraitringx,%
+                 -\dsaportraity)}]frame.north west)
+    {\includegraphics[width=\dsaportraitring]{\dsagrafik{portraitrahmen}}};}}}
 
-\dsaKastenNeu{dsaWerteKleinPortrait} {94.0mm}{59.2mm} {14}{werte-klein-portrait} {dsaportraitlage,left=7mm,right=24mm}
-\dsaKastenNeu{dsaWerteMittelPortrait}{94.0mm}{104.0mm}{25}{werte-mittel-portrait}{dsaportraitlage,left=7mm,right=24mm}
-\dsaKastenNeu{dsaWerteGrossPortrait} {94.0mm}{199.1mm}{47}{werte-gross-portrait} {dsaportraitlage,left=7mm,right=24mm}
+\dsaKastenNeu{dsaWerteKleinPortrait} {94.0mm}{59.2mm} {14}{werte-klein-portrait} {dsaportraitlage,left=7mm,right=\dsaportraitfrei}
+\dsaKastenNeu{dsaWerteMittelPortrait}{94.0mm}{104.0mm}{25}{werte-mittel-portrait}{dsaportraitlage,left=7mm,right=\dsaportraitfrei}
+\dsaKastenNeu{dsaWerteGrossPortrait} {94.0mm}{199.1mm}{47}{werte-gross-portrait} {dsaportraitlage,left=7mm,right=\dsaportraitfrei}
 
 % ---- Graue Kaesten ----
 %
@@ -791,15 +832,19 @@
     width=85.5mm, height=\dsaRaster{#2},
     dsaueberhang=2.5mm, top=8mm, bottom=8mm,
     underlay={%
+      % Die Pergamentflaeche wird beschnitten, nicht gestaucht: bei 14
+      % Rastereinheiten waeren aus 192,4 mm Grafik 59,3 mm zu machen, ein
+      % Faktor von 3,2, und die Textur waere sichtbar gequetscht.
       \node[anchor=north west, inner sep=0] at (frame.north west)
-        {\includegraphics[width=85.5mm,height=\dsaRaster{#2}]{\dsagrafik{pergament-lang}}};
+        {\dsaBildDeckend{85.5mm}{\dsaRaster{#2}}{\dsagrafik{pergament-lang}}};
+      % 55,80 x 10,37 mm: das Rahmenmass von Absatztrenner_oben.psd im IDML.
       \node[anchor=north, inner sep=0] at (frame.north)
-        {\includegraphics[width=52.8mm,height=9.8mm]{\dsagrafik{trenner-oben}}};
+        {\includegraphics[width=55.8mm,height=10.37mm]{\dsagrafik{trenner-oben}}};
       \node[anchor=south, inner sep=0] at (frame.south)
-        {\includegraphics[width=52.8mm,height=9.8mm]{\dsagrafik{trenner-unten}}};},
+        {\includegraphics[width=55.8mm,height=10.37mm]{\dsagrafik{trenner-unten}}};},
     #1]%
 }{\end{tcolorbox}}
-% PRUEFEN: Die Pergamentflaeche wird in der Hoehe gestreckt, und
+% Die Pergamentflaeche wird beschnitten statt gestreckt, und
 % pergament-lang hat auch in der Flaeche eine gezeichnete Kante. Sauberer
 % waere ein Mittelstreifen zum Kacheln.
 
@@ -1579,14 +1624,42 @@
   \clearpage}
 
 % ---- Querformat, etwa fuer einen Meisterschirm ----
+%
 % Zwei Befehle, keine Umgebung: \newgeometry darf nicht in einer Gruppe
 % stehen, eine \newenvironment-Umgebung bildet aber eine.
+%
+% \newgeometry allein genuegt nicht. Es nimmt keine Papierformatangaben an —
+% „a4paper" und „landscape" werden dort verworfen, und die Seite bleibt
+% hochkant, nur mit breiterem Textblock. Gemessen war die Querseite 210 x
+% 297 mm wie jede andere.
+%
+% Die Papiergroesse mitten im Dokument aendert man ueber die Ausgabemasse:
+% \pagewidth und \pageheight sind die XeTeX-Register dafuer. \paperwidth und
+% \paperheight muessen mit, sonst rechnen geometry und TikZ weiter mit dem
+% alten Papier — „current page" waere dann falsch.
+\newlength{\dsa@querbreite} \setlength{\dsa@querbreite}{297mm}
+\newlength{\dsa@querhoehe}  \setlength{\dsa@querhoehe}{210mm}
+
 \newcommand*{\dsaQuerAnfang}{%
   \clearpage
-  \newgeometry{a4paper, landscape, margin=15mm}%
-  \onecolumn\thispagestyle{empty}\dsaHintergrundAus}
+  \setlength{\paperwidth}{\dsa@querbreite}%
+  \setlength{\paperheight}{\dsa@querhoehe}%
+  \newgeometry{margin=15mm}%
+  % Nach \newgeometry: geometry schreibt beim Aufruf seine gespeicherten
+  % Papiermasse in die Ausgaberegister zurueck. Davor gesetzt, waeren sie
+  % gleich wieder ueberschrieben, und die Seite bliebe hochkant.
+  % dvipdfmx nimmt die Papiergroesse aus einem Special; \pagewidth gibt es
+  % in XeTeX nicht.
+  \special{papersize=297mm,210mm}%
+  \onecolumn\pagestyle{empty}\dsaHintergrundAus}
+
 \newcommand*{\dsaQuerEnde}{%
-  \clearpage\restoregeometry\dsaHintergrundAn\twocolumn}
+  \clearpage
+  \setlength{\paperwidth}{\dsa@querhoehe}%
+  \setlength{\paperheight}{\dsa@querbreite}%
+  \restoregeometry
+  \special{papersize=210mm,297mm}%
+  \pagestyle{fancy}\dsaHintergrundAn\twocolumn}
 % PRUEFEN: \restoregeometry stellt \textheight wieder her; danach mit der
 % Option rasterzeigen pruefen, ob die Grundlinien wieder sitzen.
 
