@@ -73,6 +73,7 @@
 \RequirePackage{changepage}
 \RequirePackage{intcalc}
 \RequirePackage{array}
+\RequirePackage{etoolbox}
 \RequirePackage{colortbl}
 \RequirePackage{textcomp}
 \RequirePackage{microtype}
@@ -274,6 +275,22 @@
 % ein Punkt 1/72 Zoll — ein TeX-Punkt ist 1/72,27 Zoll und damit 0,4 Prozent
 % kleiner. Auf eine Spalte von 59 Zeilen summiert sich das zu fast einem
 % Millimeter, und die Grundlinien beider Spalten laufen auseinander.
+% Zwei Zustaende fuer \lineskip.
+%
+% Im Rastersatz gilt: immer den Durchschuss nehmen, nie zusaetzlichen Raum
+% einfuegen. Nur so haelt eine Ueberschrift, die hoeher ist als der
+% Durchschuss, das Raster.
+%
+% Vor einer hohen Box gilt das Gegenteil: dort muss TeX den Raum vergeben,
+% den die Box braucht. Sonst bekommt eine Tabelle von 84 bp Hoehe 12 bp und
+% laeuft ueber den Text darunter.
+\newcommand*{\dsa@lineskipnormal}{%
+  \setlength{\lineskip}{1pt}%
+  \setlength{\lineskiplimit}{0pt}}
+\newcommand*{\dsa@lineskipraster}{%
+  \setlength{\lineskip}{0pt}%
+  \setlength{\lineskiplimit}{-\maxdimen}}
+
 \newlength{\dsaRastermass}    \setlength{\dsaRastermass}{12bp}
 \newcommand*{\dsaRaster}[1]{#1\dsaRastermass}
 \newcommand*{\dsaRasterluft}[1]{\vspace*{\dsaRaster{#1}}}
@@ -302,13 +319,14 @@
   % durch Ueberschriften, Aufzaehlungen und Kaesten. Wer Luft braucht, nimmt
   % \dsaRasterluft{1}; das haelt das Grundlinienraster.
   \setlength{\parindent}{0pt}
-  % Kein \lineskip. Ist eine Zeile hoeher als der Durchschuss — und das ist
-  % jede Ueberschrift —, dann schiebt TeX sie normalerweise auseinander und
-  % haelt dabei nur einen Mindestabstand ein. Im Rastersatz ist das genau
-  % falsch: der Durchschuss ist das Raster, und er muss immer gelten. Mit
-  % einem Grenzwert von -\maxdimen greift die Regel nie.
-  \setlength{\lineskip}{0pt}
-  \setlength{\lineskiplimit}{-\maxdimen}
+  % \lineskip bleibt hier auf den Standardwerten. Es waere verlockend, den
+  % Grenzwert global auf -\maxdimen zu setzen — dann haelt TeX immer den
+  % Durchschuss, und Ueberschriften verlassen das Raster nicht. Nur gilt das
+  % auch fuer jede hohe Box: eine Tabelle von 84 bp Hoehe bekaeme 12 bp Raum
+  % und liefe ueber den Text darunter. Gemessen und im Abzug gesehen.
+  %
+  % Die Regel gilt deshalb nur dort, wo sie gebraucht wird: in den
+  % Ueberschriften, ueber \dsa@lineskipraster in einer Gruppe.
   \flushbottom
 \fi
 
@@ -575,15 +593,18 @@
   \par\dsaRasterluft{1}%
   \addcontentsline{toc}{subsection}{#1}%
   % Zwei Rastereinheiten: eine fuer die Zeile, eine fuer den Abstand danach,
-  % den die IDML als SpaceAfter 12 pt nennt.
-  {\centering\dsaandalus\fontsize{14bp}{24bp}\selectfont #1\par}%
+  % den die IDML als SpaceAfter 12 pt nennt. \dsa@lineskipraster haelt den
+  % Durchschuss, obwohl die Zeile hoeher ist als er.
+  {\centering\dsa@lineskipraster
+   \dsaandalus\fontsize{14bp}{24bp}\selectfont #1\par}%
   \dsaRasterluft{1}\nobreak}
 
 \newcommand{\dsaabschnitt}[1]{%
   \par\dsaRasterluft{1}%
   % Eine Rastereinheit. Der Baukasten gibt dieser Ueberschrift keinen
 % eigenen Abstand.
-  {\bfseries\fontsize{13bp}{12bp}\selectfont #1\par}\nobreak}
+  {\dsa@lineskipraster\bfseries\fontsize{13bp}{12bp}\selectfont #1\par}%
+  \nobreak}
 
 \newcommand{\dsaunterabschnitt}[1]{%
   \par{\bfseries #1\par}\nobreak}
@@ -595,7 +616,7 @@
     enhanced, blankest, nobeforeafter, width=\linewidth,
     left=2mm, right=2mm, top=1mm, bottom=1mm,
     interior style={left color=dsapergamentgelb, right color=white}]
-    \bfseries\fontsize{13bp}{12bp}\selectfont #1
+    \dsa@lineskipraster\bfseries\fontsize{13bp}{12bp}\selectfont #1
   \end{tcolorbox}\par
   \dsaRasterluft{1}}
 
@@ -791,10 +812,26 @@
 % verkleinert. 95,89 mm sind breiter als eine Spalte (80,5 mm); die Leiste
 % laeuft dort also ueber den Satz hinaus oder wird schmaler gesetzt. Bis das
 % an einem Abzug entschieden ist, bleibt sie auf Spaltenbreite.
-\newcommand{\dsaVorlesetext}[1]{%
+% \dsaVorlesetext[<Rastereinheiten>]{<Text>}
+%
+% Die Zierleiste darueber wird auf Spaltenbreite gesetzt, und ihre Hoehe folgt
+% der Proportion der Grafik: 29,5 zu 158,5 ergibt in einer Spalte von 80,5 mm
+% rund 42,5 bp. Das ist kein Vielfaches der Rastereinheit, und alles darunter
+% sass 4,7 bp neben dem Raster. Die Leiste steht deshalb in einer Box aus
+% ganzen Rastereinheiten und darin mittig.
+%
+% Vier Einheiten passen fuer eine Spalte. Einspaltig braucht die Leiste mehr,
+% weil sie breiter und damit hoeher wird — dort acht.
+\newcommand{\dsaVorlesetext}[2][4]{%
   \par\dsaRasterluft{1}%
-  \noindent\includegraphics[width=\linewidth]{\dsagrafik{vorlesetext}}%
-  \par\nobreak #1\par
+  % Die Grafik hat keine eigene Hoehe (\raisebox mit Null fuer Hoehe und
+  % Tiefe) und wird um #1 Rastereinheiten nach unten gesetzt. Den Raum gibt
+  % danach \dsaRasterluft, und der ist ein Vielfaches der Rastereinheit.
+  \noindent\makebox[\linewidth][c]{%
+    \raisebox{-\dsaRaster{#1}}[0pt][0pt]{%
+      \includegraphics[width=\linewidth]{\dsagrafik{vorlesetext}}}}%
+  \par\dsaRasterluft{#1}%
+  \nobreak #2\par
   \dsaRasterluft{1}}
 % PRUEFEN: Ob der Vorlesetext kursiv gesetzt wird, sagt der Baukasten nicht —
 % hier aufrecht.
@@ -972,14 +1009,11 @@
 
 \newcommand*{\dsaTabellenlinie}{\arrayrulecolor{dsatabellenlinie}}
 
-% Die Zeilen einer Tabelle richten sich nach ihrem Inhalt und verlassen damit
-% das Raster. \extrarowheight aus dem array-Paket hebt jede Zeile um einen
-% festen Betrag: bei 10 bp Text fehlen rund 2 bp auf die Rastereinheit, und
-% damit stehen die Grundlinien 12 bp auseinander wie im uebrigen Satz.
-%
-% Der Wert ist am gesetzten Ergebnis bestimmt, nicht gerechnet — die Hoehe
-% einer Zeile haengt daran, welche Zeichen darin stehen.
-\newlength{\dsatabellenluft}\setlength{\dsatabellenluft}{2bp}
+% Kein \extrarowheight. Am gesetzten Ergebnis nachgemessen stehen die
+% Grundlinien einer Tabelle ohne Zutun genau 12 bp auseinander — mit 2 bp
+% Zugabe waren es 14, und die Tabelle lief aus dem Raster. Wer die Zeilen
+% luftiger braucht, nimmt ein Vielfaches von 12 bp, nicht irgendeinen Wert.
+\newlength{\dsatabellenluft}\setlength{\dsatabellenluft}{0bp}
 \AtBeginDocument{\setlength{\extrarowheight}{\dsatabellenluft}}
 
 %%% ==================================================================
