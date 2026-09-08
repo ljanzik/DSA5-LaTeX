@@ -34,8 +34,10 @@ herunterlaedt, und benennt es auf Namen ohne Leerzeichen und Umlaute um,
 weil LaTeX mit beidem schlecht umgeht.
 
 Mit --rueckseiten kommt das zweite Paket dazu: eine fertige Rueckseite mit
-Zierrahmen und 28 Fassungen davon, in denen je eine Region Aventuriens
-hervorgehoben ist. Sie werden zu ruecken-neutral und ruecken-<region>.
+Zierrahmen und 28 Masken, die je eine Region Aventuriens hervorheben. Eine
+Maske ist die verdunkelte Karte mit einem Loch an der Stelle der Region; das
+Werkzeug legt sie ueber die neutrale Rueckseite und speichert das Ergebnis
+als ruecken-<region>.
 
 Mit --zusatz kommt ein Ordner mit einzelnen Grafikdateien dazu. Daraus
 stammt der Zierrahmen des Kapitelanfangs (DSA5-Kapitelstart.png): ein
@@ -184,7 +186,10 @@ RUECKEN_PRAEFIX = 'Aventurien_'
 # Zielname -> moegliche Quellnamen.
 ZUSATZ = {
     'kapitelstart-rahmen.png': ['DSA5-Kapitelstart.png'],
-    'aventurienkarte-kosch.png': ['DSA5-Aventurienkarte_Kosch.png'],
+    # Eine fertige Rueckseite mit hervorgehobenem Kosch. Die Grenzebene des
+    # Kartenpakets kennt nur die grossen Regionen, der Kosch ist dort nicht
+    # abgegrenzt -- diese Datei schliesst die Luecke.
+    'ruecken-kosch.png': ['DSA5-Aventurienkarte_Kosch.png'],
 }
 
 
@@ -480,16 +485,25 @@ def main():
             rueck += 1
         else:
             fehlt.append('ruecken-neutral (gesucht: %s)' % RUECKEN_NEUTRAL)
+        # Die Regionalfassungen sind Masken: die verdunkelte Karte mit
+        # einem Loch an der Stelle der Region. Sie gehoeren UEBER die
+        # neutrale Rueckseite, in der die Karte hell und farbig ist -- dann
+        # bleibt die Region hell und der Rest tritt zurueck. Auf weiss
+        # flachgelegt waere die Region ein weisses Loch.
+        if os.path.exists(quelle):
+            unterlage = Image.open(quelle).convert('RGBA')
+        else:
+            unterlage = None
         for name in sorted(os.listdir(paket)):
             if not name.startswith(RUECKEN_PRAEFIX) or not name.endswith('.png'):
                 continue
-            # In jeder Fassung ist eine Region ausgeschnitten, damit die
-            # helle Flaeche der Vorlage durchscheint. Auf weiss flachgelegt
-            # sieht sie genauso aus und wird als JPEG ein Zehntel so gross.
-            bild = Image.open(os.path.join(paket, name)).convert('RGBA')
-            grund = Image.new('RGBA', bild.size, (255, 255, 255, 255))
-            flach = Image.alpha_composite(grund, bild).convert('RGB')
-            speichern(flach, zg, 'ruecken-%s.png' % kuerzel(name),
+            maske = Image.open(os.path.join(paket, name)).convert('RGBA')
+            if unterlage is not None and unterlage.size == maske.size:
+                fertig = Image.alpha_composite(unterlage, maske).convert('RGB')
+            else:
+                # Ohne Unterlage bleibt die Maske, was sie ist.
+                fertig = maske
+            speichern(fertig, zg, 'ruecken-%s.png' % kuerzel(name),
                       nur_png, ppi)
             rueck += 1
         print('Rueckseiten        : %d aus dem Kartenpaket' % rueck)
@@ -515,7 +529,9 @@ def main():
             if q is None:
                 fehlt.append('%s (gesucht: %s)' % (ziel, quellen[0]))
                 continue
-            if ppi < 300:
+            # Die Rueckseiten sind flaechige Bilder und gehen als JPEG;
+            # der Zierrahmen braucht seine Transparenz und bleibt PNG.
+            if ppi < 300 or ziel.startswith('ruecken-'):
                 speichern(Image.open(q), zg, ziel, nur_png, ppi)
             else:
                 shutil.copyfile(q, os.path.join(zg, ziel))

@@ -175,9 +175,16 @@ nicht bis zum Rand deckt.
 ```
 
 Die Grafik kommt aus dem **Rückseiten-Karten-Paket** von Ulisses, einem zweiten Paket neben dem
-Baukasten. Es bringt eine fertige Rückseite mit Zierrahmen (`ruecken-neutral`) und 28 Fassungen, in
-denen je eine Region Aventuriens hervorgehoben ist (`ruecken-mittelreich` und so weiter).
-`werkzeuge/aufbereiten.py --rueckseiten <pfad>` holt sie.
+Baukasten. Es bringt eine fertige Rückseite mit Zierrahmen (`ruecken-neutral`) und 28 **Masken** —
+jede ist die verdunkelte Karte mit einem Loch an der Stelle einer Region. Über die neutrale
+Rückseite gelegt bleibt die Region hell und der Rest tritt zurück.
+`werkzeuge/aufbereiten.py --rueckseiten <pfad>` setzt beides zusammen und legt es als
+`ruecken-mittelreich`, `ruecken-thorwal` und so weiter ab.
+
+Für eine eigene Aufteilung gibt es `werkzeuge/regionsmaske.py`: es flutet von einem Saatpunkt aus
+innerhalb der Grenzlinien und schneidet die gefundene Fläche aus der Verdunkelung. Das Grenznetz
+des Pakets kennt allerdings nur die großen Regionen — eine Saat im Kosch flutet das ganze
+Mittelreich. Für den Kosch selbst liegt eine fertige Fassung als `ruecken-kosch` bereit.
 
 Der Aufbau ist an der Rückseite einer gesetzten Veröffentlichung vermessen: Titel in Andalus 18 bp,
 Autorzeile 12 bp, ein Strich darunter, der Klappentext 81,7 mm breit im Blocksatz, und der graue

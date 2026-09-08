@@ -48,6 +48,48 @@ Scriptorium Aventuris v4/
 └── PNG aussen/         Umschlag vorne und hinten
 ```
 
+### Schritt 1b — das Rückseiten-Karten-Paket
+
+**<https://www.ulisses-ebooks.de/product/240903/Ruckseiten-Karten-Paket>**
+
+Das *Rückseiten Karten Paket* von Ulisses Spiele, ein eigenes Produkt (nicht kostenlos, rund
+einen Euro). Es liefert die letzte Seite eines Hefts: eine fertige Rückseite mit Zierrahmen,
+Banner und kleiner Aventurienkarte, dazu 28 **Masken**, die je eine Region hervorheben.
+
+```
+Rückseiten_Karten_Paket/
+├── ScriptoriumAventuris-hinten.png   die Rückseite mit heller Karte
+├── Aventurien_Mittelreich.png        28 Masken, je eine Region
+├── Aventurien_Thorwal.png            …
+├── KarteVerdunkelt.png               die Karte, ganz verdunkelt
+├── Grenzen.png                       das Netz der Regionsgrenzen
+└── Karte_mit_Grenzen_Paket.pdn       beide Ebenen als Arbeitsdatei
+```
+
+**Eine Maske ist keine fertige Seite.** Sie ist die verdunkelte Karte mit einem Loch an der Stelle
+der Region — bei `Aventurien_Mittelreich.png` sind das 2,3 Prozent der Fläche, mitten in der Karte.
+Erst über die neutrale Rückseite gelegt entsteht das gewünschte Bild: die Region bleibt hell, der
+Rest tritt zurück. `aufbereiten.py --rueckseiten` setzt beides zusammen und legt alle 29 Fassungen
+als `ruecken-neutral`, `ruecken-mittelreich`, `ruecken-thorwal` und so weiter ab.
+
+Für eine eigene Aufteilung gibt es `werkzeuge/regionsmaske.py`: es flutet von einem Saatpunkt aus
+innerhalb der Grenzlinien und schneidet die gefundene Fläche aus der Verdunkelung. Das Grenznetz
+kennt allerdings nur die großen Regionen — eine Saat im Kosch flutet das ganze Mittelreich.
+
+### Schritt 1c — einzelne Grafikdateien (nicht zwingend)
+
+Zwei Elemente fehlen in beiden Paketen und kommen aus einem Ordner mit einzelnen Grafikdateien,
+wie ihn die ältere LaTeX-Vorlage DSaTeX mitbringt:
+
+| Datei | wofür |
+|---|---|
+| `DSA5-Kapitelstart.png` | der Zierrahmen des Kapitelanfangs, innen offen für das Bild |
+| `DSA5-Aventurienkarte_Kosch.png` | eine fertige Rückseite mit hervorgehobenem Kosch |
+
+Der Baukasten liefert am Kapitelanfang nur eine Pergamentfläche, auf die das Bild eingerückt gelegt
+wird — nicht den Rahmen. Und der Kosch ist im Grenznetz des Kartenpakets nicht abgegrenzt. Ohne
+`--zusatz` bleiben beide Elemente aus; alles andere läuft.
+
 ### Schritt 2 — aufbereiten
 
 Der bequeme Weg. Das Werkzeug legt alles an, was die Klasse braucht, und benennt es passend:
@@ -57,9 +99,10 @@ python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
 ```
 
 Für die Rückseite gibt es ein zweites Paket, das **Rückseiten-Karten-Paket**. Es bringt eine
-fertige Rückseite mit Zierrahmen und 28 Fassungen davon, in denen je eine Region Aventuriens
-hervorgehoben ist. Und mit `--zusatz` kommt ein Ordner mit einzelnen Grafikdateien dazu — daraus
-stammt der Zierrahmen des Kapitelanfangs, den der Baukasten nicht als fertige Datei enthält:
+fertige Rückseite mit Zierrahmen und 28 Masken, die je eine Region Aventuriens
+hervorheben. Und mit `--zusatz` kommt ein Ordner mit einzelnen Grafikdateien dazu — daraus stammen
+der Zierrahmen des Kapitelanfangs und die Kosch-Fassung der Rückseite, die der Baukasten nicht
+enthält:
 
 ```sh
 python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4" \
@@ -183,8 +226,9 @@ verwenden will, holt sie aus seiner Vorlage und nennt ihn im Impressum.
 
 Der Code dieses Projekts steht unter **Apache License 2.0**, siehe `LICENSE` und `NOTICE`.
 
-Das gilt **nicht** für das Material, das in `grafiken/` und `schriften/` landet. Dafür gilt die
-*Vereinbarung über Gemeinschaftsinhalte für SCRIPTORIUM AVENTURIS*. Der Baukasten schreibt einen
+Das gilt **nicht** für das Material, das in `grafiken/` und `schriften/` landet — weder für das aus
+dem Baukasten noch für die Karten des Rückseiten-Pakets oder die einzelnen Grafikdateien. Dafür
+gilt die *Vereinbarung über Gemeinschaftsinhalte für SCRIPTORIUM AVENTURIS*. Der Baukasten schreibt einen
 Wortlaut vor, der in jedem damit gesetzten Werk stehen muss; die Klasse stellt ihn als
 `\dsaRechtstext{…}` bereit.
 

@@ -261,12 +261,31 @@ Der Kasten ist im PDF des Vorbilds kein Rechteck, sondern gerastert — die Farb
 gerenderten Bild abgelesen. Blocksatz verträgt die Breite nicht: bei 55 mm wurde
 „Komplexität (Spieler/Meister)" gesperrt und trotzdem getrennt, deshalb linksbündig.
 
-Die Grafiken kommen aus dem Rückseiten-Karten-Paket, einem zweiten Paket neben dem Baukasten. Jede
-der 28 Regionalfassungen ist eine vollständige A4-Seite bei 300 ppi, in der genau eine Region
-ausgeschnitten ist, damit die helle Fläche der Vorlage durchscheint — bei
-`Aventurien_Mittelreich.png` sind das 2,3 Prozent der Fläche, mitten in der Karte.
-`werkzeuge/aufbereiten.py` legt sie auf weiß und speichert sie als JPEG: 1,8 statt 11 MB je Datei,
-ohne sichtbaren Unterschied.
+Die Grafiken kommen aus dem Rückseiten-Karten-Paket, einem zweiten Paket neben dem Baukasten. Die
+28 Regionalfassungen sind **Masken**, keine fertigen Seiten: jede ist die verdunkelte Karte auf
+einer A4-Fläche bei 300 ppi, mit einem Loch an der Stelle einer Region. Bei
+`Aventurien_Mittelreich.png` sind 2,3 Prozent der Fläche transparent, und sie liegen mitten in der
+Karte — von 126,5 bis 194,8 mm waagerecht und 80,2 bis 124,2 mm senkrecht.
+
+Über die neutrale Rückseite gelegt, in der die Karte hell und farbig ist, bleibt die Region hell und
+der Rest tritt zurück. `werkzeuge/aufbereiten.py` setzt beides zusammen und speichert das Ergebnis
+als JPEG: 1,7 statt 11 MB je Datei.
+
+Wer die Maske stattdessen auf weiß flachlegt, bekommt kein hervorgehobenes Gebiet, sondern ein
+weißes Loch in der Karte. Genau das war hier zuerst der Fall.
+
+### Was die Arbeitsdatei hergibt
+
+`Karte_mit_Grenzen_Paket.pdn` ist eine Paint.NET-Datei mit zwei Ebenen: der verdunkelten Karte und
+einem Netz aus Regionsgrenzen (0,6 Prozent der Fläche, also feine Linien). Dieselben Ebenen liegen
+als `KarteVerdunkelt.png` und `Grenzen.png` daneben. Daraus lässt sich eine eigene Maske schneiden —
+`werkzeuge/regionsmaske.py` tut das per Flutfüllung.
+
+Die Grenze des Verfahrens ist die Grenzebene selbst: sie kennt die großen Regionen, nicht die
+Provinzen darin. Eine Saat im Kosch flutet das ganze Mittelreich (128 bis 193 mm waagerecht, 80 bis
+124 mm senkrecht), unabhängig davon, ab welcher Deckung man eine Linie als Linie zählt. Der Kosch
+liegt im Vorbild bei 143 bis 153 mm und 96 bis 112 mm — ein Zehntel davon. Er ist dort von Hand
+geschnitten, und die fertige Datei `DSA5-Aventurienkarte_Kosch.png` liegt im Zusatzordner.
 
 ## Der Innenraum der Kästen
 
