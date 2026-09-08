@@ -133,6 +133,26 @@ eingerückt, sodass der Pergamentrand als Rahmen stehen bleibt, darüber das Dra
 Maske. Die Randbreite ist `\dsakapitelbildrand`, der Bannerversatz von der Papierkante
 `\dsabannerversatz`.
 
+### Die vier Zierleisten
+
+Der Baukasten hat vier, und **alle** tragen ein Mittelornament:
+
+| Datei | Motiv | Rolle |
+|---|---|---|
+| `trenner-oben` | Auge, 52,8 × 9,8 mm | die obere Leiste, immer dieselbe |
+| `trenner-unten` | Auge, 158,5 × 29,5 mm | untere, allgemeiner Abschluss |
+| `trenner-maske` | Maske | untere, Meisterhinweis |
+| `trenner-buch` | Buch | untere, Vorlesetext |
+
+Oben steht immer dieselbe Leiste; das Motiv unten sagt, um welche Art Block es sich handelt.
+Vorher stand die Buchleiste **oben** und der allgemeine Trenner unten — beides untere Leisten, und
+das Motiv am falschen Ende. Die Namen hießen `trenner-unten` (Maske) und `trenner-unten-breit`
+(Auge); jetzt heißen sie nach ihrem Motiv.
+
+Die Schachfiguren und die Maske gehören zur selben Bildsprache: Bauer, Springer, Turm und König
+sind die Gegnerabstufung — Fußvolk, Handlanger, Anführer, Gegenspieler —, die Maske steht für
+Meisterinformation, im Text ebenso das Auge (`\dsaAugeSchwarz` öffnet, `\dsaAugeWeiss` schließt).
+
 ### Zwei Arten von Kapitelseiten
 
 ```latex
@@ -255,7 +275,8 @@ setzt `\dsakolumneaussenlinks` auf 40,35 mm.
 | `\dsaEinfuehrung{Text}` | kursiv, Laufweite +10 |
 | `\dsaStimmung{Text}{Quelle}` | Pfeile aufrecht, Text kursiv, Quelle mit Bindestrich, ohne Punkt |
 | `\dsaZitat{Text}` | `#404040`, kursiv, zentriert |
-| `\dsaVorlesetext[Einheiten]{Text}` | Zierleisten darüber **und** darunter, 15,39 mm breiter als die Spalte |
+| `\dsaVorlesetext[Einheiten]{Text}` | Zierleisten darüber und darunter, unten das Buch |
+| `\dsaMeisterhinweis[Einheiten]{Text}` | dasselbe, unten die Maske |
 | `\dsaKastentitel{Titel}` | Überschrift im Kasten, 12 bp fett |
 | `\begin{dsaWerteabsatz}` | hängender Einzug 8,504 pt |
 | `\dsaBand{ABE}{8}` | hochgestelltes Bandkürzel |
@@ -383,12 +404,16 @@ Verbindung ausgeht, `\dsaAugeWeiss` die im Kasten.
 | `\dsaSchaedel{l}` / `{r}` | 9,1 mm — schwerer machen |
 | `\dsaFokusregel{Kürzel}` | 9,9 mm |
 | `\dsaBauer` `\dsaSpringer` `\dsaTurm` `\dsaKoenig` | 4 mm hoch |
-| `\dsaRautenRot{1..4}{Breite}` | in TikZ gezeichnet |
+| `\dsaRautenRot{1..4}{Breite}` | Skala aus der Vorlage |
 | `\dsaRautenGruen{1..4}{Breite}` | dito |
+| `\dsaRauten{2}{6}{rot}{27mm}` | frei lange Skala |
 | `\dsaNSCkopf` | Kopfleiste über einem NSC-Kasten |
 
-Die Rautenskalen sind **nicht** aus dem Baukasten — dort gibt es sie nicht als Grafik. Vier Karos in
-aufsteigender Zahl zeichnet TikZ selbst.
+Die Rautenskalen **sind** aus dem Baukasten: acht fertige Skalen, je vier Rauten in einer Reihe mit
+n gefüllten. `aufbereiten.py` schneidet daraus drei Kacheln — gefüllt rot, gefüllt grün, grau —,
+und `\dsaRauten` setzt sie aneinander. Damit ist die Skala beliebig lang, und nichts ist
+nachgezeichnet. Vorher zeichnete TikZ sie nach, obwohl das Material vorlag; die Maße stehen in
+`MASSE.md`.
 
 ---
 

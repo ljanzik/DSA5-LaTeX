@@ -215,6 +215,24 @@ Aus `Resources/Graphic.xml` des IDML, unverändert.
 | `dsagruenverlauf` | Grün für gradient | CMYK 70 53 91 17 |
 | `dsapergamentgelb` | Für Gelb | CMYK 9 26 56 9 |
 
+## Die Rautenskala
+
+Der Baukasten liefert acht fertige Skalen — `DSA5_Rauten_rot_1` bis `_4` und `DSA5_Rauten_gruen_1`
+bis `_4`, je 860 × 259 Pixel und damit 72,81 × 21,93 mm bei 300 ppi. Jede zeigt vier Rauten in
+einer Reihe, davon n gefüllt und der Rest grau.
+
+Gemessen liegen die vier Rauten bei x 1–204, 216–419, 431–634 und 647–850 Pixel, jede 204 Pixel
+breit, senkrecht von 12 bis 247. Die Teilung ist damit 215 Pixel.
+
+`aufbereiten.py` schneidet daraus drei Kacheln — eine gefüllte rote, eine gefüllte grüne und eine
+graue, jede eine Raute samt ihrem Anteil am Zwischenraum. `\dsaRauten` setzt sie aneinander, so
+viele gefüllte wie verlangt. Damit ist die Skala beliebig lang, und **nichts ist nachgezeichnet**;
+vorher zeichnete die Klasse die Rauten in TikZ nach, obwohl das Material vorliegt.
+
+Zwei Fallen dabei: `\dimen@` und `\@tempcnta` sind Kratzregister, die in einer `tabular` schon
+belegt sind. Damit kamen die Kacheln mit 0,35 statt 3,75 mm heraus, und die Tabellenzeilen landeten
+bei y 346 bis 624 mm — weit unter dem Papier. Die Skala nimmt deshalb eigene Register.
+
 ## Der Zierrahmen des Kapitelanfangs
 
 Aus dem Baukasten kommt an dieser Stelle nur die Ebene „Pergament für Bild" — eine vollflächige

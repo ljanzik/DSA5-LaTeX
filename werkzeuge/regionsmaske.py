@@ -18,6 +18,20 @@ ergeben mehrere Regionen in einer Maske.
     python3 werkzeuge/regionsmaske.py "/pfad/zum/Paket" zwei-regionen \\
         148.4,105.0 130,150
 
+Die zweite Betriebsart nimmt die Flaeche aus einer vorliegenden Fassung,
+statt sie zu fluten:
+
+    python3 werkzeuge/regionsmaske.py "/pfad/zum/Paket" kosch \\
+        --aus-fassung "/pfad/DSA5-Aventurienkarte_Kosch.png" \\
+                      "/pfad/DSA5-Aventurienkarte_verdunkelt.png"
+
+Das ist der Weg fuer Karten, die schon eine Region hervorheben, aber auf dem
+falschen Grund sitzen. Gemessen im Kartenbereich hat
+DSA5-Aventurienkarte_Kosch.png eine mittlere Helligkeit von 76,1 -- so viel
+wie die verdunkelte Karte selbst (75,1), waehrend die helle Karte des
+Kartenpakets 116,7 hat. Die Region ist darin also nur schwach aufgehellt.
+Brauchbar ist die Flaeche; die Farben kommen aus dem Kartenpaket.
+
 Die Koordinaten sind Millimeter auf der A4-Seite, von der linken oberen
 Ecke. Wer sie nicht kennt: die Karte liegt zwischen 104 und 207 mm
 waagerecht und 30 und 187 mm senkrecht.
@@ -59,6 +73,9 @@ GRENZEN = "Grenzen.png"
 # Ab dieser Deckung gilt ein Pixel der Grenzebene als Linie und haelt die
 # Flutfuellung auf.
 GRENZSCHWELLE = 40
+# Ab diesem Unterschied gilt ein Pixel als hervorgehoben, wenn die Flaeche
+# aus zwei Fassungen kommt.
+FASSUNGSSCHWELLE = 12
 JPEG_QUALITAET = 88
 
 
@@ -87,9 +104,33 @@ def flaeche_fluten(grenzen, saaten):
     return karte.point(lambda v: 255 if v == grau else 0)
 
 
+def flaeche_aus_fassungen(hervorgehoben, grund):
+    """Gibt die Flaeche, in der sich die beiden Fassungen unterscheiden.
+
+    Fuer Karten, die eine Region schon hervorheben, aber auf dem falschen
+    Grund sitzen: die Geometrie ist brauchbar, die Farben nicht.
+    """
+    from PIL import ImageChops
+    a = hervorgehoben.convert("RGB")
+    b = grund.convert("RGB")
+    if a.size != b.size:
+        sys.exit("Die beiden Fassungen haben verschiedene Groessen: %s %s"
+                 % (a.size, b.size))
+    d = ImageChops.difference(a, b).convert("L")
+    return d.point(lambda v: 255 if v > FASSUNGSSCHWELLE else 0)
+
+
 def main():
     argumente = [a for a in sys.argv[1:] if not a.startswith("--")]
-    if len(argumente) < 3:
+    aus_fassung = None
+    if "--aus-fassung" in sys.argv:
+        i = sys.argv.index("--aus-fassung")
+        if i + 2 >= len(sys.argv):
+            sys.exit("--aus-fassung braucht zwei Dateien: hervorgehoben, Grund")
+        aus_fassung = (sys.argv[i + 1], sys.argv[i + 2])
+        argumente = [a for a in argumente if a not in aus_fassung]
+
+    if len(argumente) < 2 or (aus_fassung is None and len(argumente) < 3):
         print(__doc__)
         return 2
 
@@ -114,7 +155,14 @@ def main():
         sys.exit("Die drei Ebenen haben verschiedene Groessen: %s %s %s"
                  % (neutral.size, verdunkelt.size, grenzen.size))
 
-    flaeche = flaeche_fluten(grenzen, saaten)
+    if aus_fassung is not None:
+        for pfad in aus_fassung:
+            if not os.path.exists(pfad):
+                sys.exit("Datei fehlt: %s" % pfad)
+        flaeche = flaeche_aus_fassungen(Image.open(aus_fassung[0]),
+                                        Image.open(aus_fassung[1]))
+    else:
+        flaeche = flaeche_fluten(grenzen, saaten)
     anteil = 100.0 * sum(flaeche.histogram()[255:]) / (flaeche.width * flaeche.height)
     print("Geflutete Flaeche: %.2f Prozent der Seite" % anteil)
     if anteil > 25:

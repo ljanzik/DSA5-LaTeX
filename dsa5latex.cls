@@ -726,50 +726,64 @@
 %   rechter Schenkel  93,13 .. 97,03 mm
 %   Kante oben         0,00 .. 0,17 mm
 %   Ornament unten   267,80 .. 286,51 mm
+%   Deckung insgesamt  0,51 .. 97,11 mm waagerecht, 0 .. 286,60 senkrecht
 %
-% Das Innenfenster ist damit 86,53 mm breit und 267,63 mm hoch. Dort kommt
-% das Bild hinein, der Rahmen darueber: seine Kante verdeckt die Bildkante,
-% und es bleibt keine Fuge.
-\newlength{\dsakapitelfensterx} \setlength{\dsakapitelfensterx}{6.60mm}
-\newlength{\dsakapitelfenstery} \setlength{\dsakapitelfenstery}{0.17mm}
-\newlength{\dsakapitelfensterb} \setlength{\dsakapitelfensterb}{86.53mm}
-\newlength{\dsakapitelfensterh} \setlength{\dsakapitelfensterh}{267.63mm}
+% Der Rahmen liegt ganz auf der Seite und laesst den Seitenhintergrund in
+% Ruhe: er sitzt im Satzspiegel der Aussenhaelfte, waagerecht eine
+% Spaltenbreite (80,5 mm), senkrecht von der Satzspiegeloberkante an.
+%
+% Dafuer ist die Datei auf 80,50 / 96,60 = 0,8333 verkleinert, also auf
+% 91,02 x 249,97 mm. Ihre Deckung ist dann 80,50 x 238,83 mm und passt in
+% die 249,80 mm Satzspiegelhoehe. Alle Fenstermasse sind mitverkleinert.
+\newlength{\dsakapitelrahmenb} \setlength{\dsakapitelrahmenb}{91.02mm}
+\newlength{\dsakapitelrahmenh} \setlength{\dsakapitelrahmenh}{249.97mm}
+\newlength{\dsakapitelfensterx} \setlength{\dsakapitelfensterx}{5.50mm}
+\newlength{\dsakapitelfenstery} \setlength{\dsakapitelfenstery}{0.14mm}
+\newlength{\dsakapitelfensterb} \setlength{\dsakapitelfensterb}{72.11mm}
+\newlength{\dsakapitelfensterh} \setlength{\dsakapitelfensterh}{223.03mm}
 
-% Die Datei ist breiter als ihre Deckung. Damit der aeussere Schenkel im
-% Anschnitt liegt und der innere sichtbar bleibt, wird sie nach aussen
-% versetzt: rechts um 109,22 - 97,03 = 12,19 mm, links um 3,13 mm.
-\newlength{\dsakapitelversatzrechts}
-\setlength{\dsakapitelversatzrechts}{12.19mm}
-\newlength{\dsakapitelversatzlinks}
-\setlength{\dsakapitelversatzlinks}{3.13mm}
+% Die Lage der Datei: auf rechten Seiten beginnt ihre Deckung an der zweiten
+% Spalte, auf linken endet sie an der inneren Kante der ersten.
+\newlength{\dsakapitelrahmenlinks}
+\setlength{\dsakapitelrahmenlinks}{105.07mm}
+\newlength{\dsakapitelrahmenrechts}
+\setlength{\dsakapitelrahmenrechts}{95.41mm}
+\newlength{\dsakapitelrahmenoben}
+\setlength{\dsakapitelrahmenoben}{24mm}
 
 \newcommand{\dsa@rahmenknoten}[1]{%
     \ifodd\value{page}
-      \def\dsa@kbanker{north east}%
-      \def\dsa@kbversatz{\dimexpr\dsabeschnitt+\dsakapitelversatzrechts\relax}%
-    \else
       \def\dsa@kbanker{north west}%
-      \def\dsa@kbversatz{-\dimexpr\dsabeschnitt+\dsakapitelversatzlinks\relax}%
+      \def\dsa@kbversatz{\dsakapitelrahmenlinks}%
+    \else
+      \def\dsa@kbanker{north east}%
+      \def\dsa@kbversatz{-\dsakapitelrahmenrechts}%
     \fi
-    % Der Rahmenknoten, an der Aussenkante aufgehaengt.
+    % Der Rahmenknoten, an der Papierecke aufgehaengt und in den
+    % Satzspiegel gesetzt. Als Phantom, damit die Ecke fuer das Bild da ist.
     \node[anchor=\dsa@kbanker, inner sep=0] (dsakb)
-      at ([shift={(\dsa@kbversatz,\dsabeschnitt)}]current page.\dsa@kbanker)
-      {\phantom{\includegraphics[width=109.22mm,height=299.97mm]%
-        {\dsagrafik{kapitelstart-rahmen}}}};
+      at ([shift={(\dsa@kbversatz,-\dsakapitelrahmenoben)}]%
+          current page.north \ifodd\value{page}west\else east\fi)
+      {\phantom{\includegraphics[width=\dsakapitelrahmenb,%
+         height=\dsakapitelrahmenh]{\dsagrafik{kapitelstart-rahmen}}}};
     % Erst das Bild in das Fenster, dann der Rahmen darueber. Ohne Bild
-    % bleibt das Fenster leer -- der Rahmen allein ist der Platzhalter.
-    \if\relax\detokenize{#1}\relax\else
+    % kommt die Pergamenttextur hinein: ein weisses Fenster sieht wie ein
+    % Loch aus, die Textur wie ein Platzhalter.
+    \if\relax\detokenize{#1}\relax
       \node[anchor=north west, inner sep=0]
-        % dsakb.north west ist die linke obere Ecke der Datei, gleich
-        % welcher Anker sie aufhaengt -- das Fenster liegt immer
-        % \dsakapitelfensterx dahinter.
+        at ([shift={(\dsakapitelfensterx,-\dsakapitelfenstery)}]dsakb.north west)
+        {\dsaBildDeckend{\dsakapitelfensterb}{\dsakapitelfensterh}%
+          {\dsagrafik{kapitelstart-pergament}}};
+    \else
+      \node[anchor=north west, inner sep=0]
         at ([shift={(\dsakapitelfensterx,-\dsakapitelfenstery)}]dsakb.north west)
         {\dsaBildDeckend{\dsakapitelfensterb}{\dsakapitelfensterh}{#1}};
     \fi
     \node[anchor=\dsa@kbanker, inner sep=0]
-      at ([shift={(\dsa@kbversatz,\dsabeschnitt)}]current page.\dsa@kbanker)
-      {\includegraphics[width=109.22mm,height=299.97mm]%
-        {\dsagrafik{kapitelstart-rahmen}}};}
+      at ([shift={(\dsa@kbversatz,-\dsakapitelrahmenoben)}]%
+          current page.north \ifodd\value{page}west\else east\fi)
+      {\includegraphics[width=\dsakapitelrahmenb,%
+        height=\dsakapitelrahmenh]{\dsagrafik{kapitelstart-rahmen}}};}
 
 % Der Rahmen in eigenem Bild -- fuer den alten Namen und fuer den Fall,
 % dass ihn jemand einzeln setzen will.
@@ -1115,7 +1129,10 @@
       \node[anchor=north, inner sep=0] at (frame.north)
         {\includegraphics[width=55.8mm,height=10.37mm]{\dsagrafik{trenner-oben}}};
       \node[anchor=south, inner sep=0] at (frame.south)
-        {\includegraphics[width=55.8mm,height=10.37mm]{\dsagrafik{trenner-unten}}};},
+        {\includegraphics[width=55.8mm,height=10.37mm]{\dsagrafik{trenner-unten}}};},%
+      % trenner-unten traegt das Auge -- der allgemeine Abschluss. Die
+      % Maskenleiste (trenner-maske) gehoert an einen Meisterhinweis, die
+      % Buchleiste (trenner-buch) an einen Vorlesetext.
     #1]%
 }{\end{tcolorbox}}
 % Die Pergamentflaeche wird beschnitten statt gestreckt, und
@@ -1162,14 +1179,25 @@
         {\dsagrafik{#2}}}}%
   \par\dsaRasterluft{#1}}
 
-% Zwei Leisten, oben und unten. Das Gegenstueck zu „Text zum Nachlesen" ist
-% Absatztrenner_unten -- gleiche Pixelmasse, gleiche Skalierung, gleiche
-% Zahl von Rastereinheiten.
+% Zwei Leisten, oben und unten. Oben steht immer dieselbe Leiste
+% (trenner-oben); das Motiv der unteren sagt, um welche Art Block es sich
+% handelt -- Buch beim Vorlesetext, Maske beim Meisterhinweis, Auge sonst.
+%
+% Vorher stand die Buchleiste oben und der allgemeine Trenner unten: beides
+% untere Leisten, und das Motiv am falschen Ende.
 \newcommand{\dsaVorlesetext}[2][5]{%
   \par\dsaRasterluft{1}%
-  \dsa@vorleseleiste{#1}{vorlesetext}%
+  \dsa@vorleseleiste{#1}{trenner-oben}%
   \nobreak #2\par
-  \dsa@vorleseleiste{#1}{trenner-unten-breit}%
+  \dsa@vorleseleiste{#1}{trenner-buch}%
+  \dsaRasterluft{1}}
+
+% Der Meisterhinweis: derselbe Aufbau, unten die Maskenleiste.
+\newcommand{\dsaMeisterhinweis}[2][5]{%
+  \par\dsaRasterluft{1}%
+  \dsa@vorleseleiste{#1}{trenner-oben}%
+  \nobreak #2\par
+  \dsa@vorleseleiste{#1}{trenner-maske}%
   \dsaRasterluft{1}}
 % PRUEFEN: Ob der Vorlesetext kursiv gesetzt wird, sagt der Baukasten nicht —
 % hier aufrecht.
@@ -1241,27 +1269,43 @@
 \newcommand*{\dsaTurm}{\dsa@figur{icon-turm}{3.27mm}}
 \newcommand*{\dsaKoenig}{\dsa@figur{icon-koenig}{3.21mm}}
 
-% Rautenskalen, selbst gezeichnet. Der Baukasten hat sie nicht als Grafik.
-\newcommand*{\dsa@rauten}[3]{%
-  \begin{tikzpicture}[baseline=-0.6ex]
-    \pgfmathsetlengthmacro{\dsa@rautekante}{#3/4.6}%
-    \foreach \i in {1,...,4}{%
-      \ifnum\i>#2
-        \draw[#1, line width=0.4pt] ({(\i-1)*1.15*\dsa@rautekante},0)
-          -- ++({0.5*\dsa@rautekante},{0.5*\dsa@rautekante})
-          -- ++({0.5*\dsa@rautekante},{-0.5*\dsa@rautekante})
-          -- ++({-0.5*\dsa@rautekante},{-0.5*\dsa@rautekante}) -- cycle;
-      \else
-        \fill[#1] ({(\i-1)*1.15*\dsa@rautekante},0)
-          -- ++({0.5*\dsa@rautekante},{0.5*\dsa@rautekante})
-          -- ++({0.5*\dsa@rautekante},{-0.5*\dsa@rautekante})
-          -- ++({-0.5*\dsa@rautekante},{-0.5*\dsa@rautekante}) -- cycle;
-      \fi}
-  \end{tikzpicture}}
-\newcommand*{\dsaRautenRot}[2]{\dsa@rauten{dsadunkelrot}{#1}{#2}}
-\newcommand*{\dsaRautenGruen}[2]{\dsa@rauten{dsagruenverlauf}{#1}{#2}}
-% PRUEFEN: Kantenlaenge ist die Breite geteilt durch 4,6 — vier Rauten plus
-% drei Luecken von je 15 Prozent. Mit den offiziellen vergleichen.
+% Die Rautenskala kommt aus der Vorlage, nicht aus TikZ.
+%
+% Der Baukasten hat sie doch als Grafik: acht fertige Skalen, je 860 x 259
+% Pixel und damit 72,81 x 21,93 mm bei 300 ppi. Gemessen liegen ihre vier
+% Rauten bei x 1..204, 216..419, 431..634 und 647..850 Pixel; die Teilung
+% ist 215. aufbereiten.py schneidet daraus drei Kacheln: eine gefuellte
+% rote, eine gefuellte gruene und eine graue, jede eine Raute samt ihrem
+% Anteil am Zwischenraum.
+%
+% Hier werden sie aneinandergesetzt: so viele gefuellte wie verlangt, der
+% Rest grau. Die Skala ist damit beliebig lang, und nichts ist
+% nachgezeichnet.
+%
+% \dsaRauten{<gefuellt>}{<gesamt>}{<rot|gruen>}{<Breite>}
+% Eigene Register, keine Kratzregister: \dimen@ und \@tempcnta sind in
+% einer tabular schon belegt. Damit kamen die Kacheln mit 0,35 statt
+% 3,75 mm heraus, und die Tabellenzeilen landeten bei y 346 bis 624 mm.
+\newlength{\dsa@rautebreite}
+\newcount\dsa@rautezahl
+\newcommand{\dsaRauten}[4]{%
+  \begingroup
+    % Die Breite einer Kachel: die Gesamtbreite durch die Zahl der Rauten.
+    \setlength{\dsa@rautebreite}{\dimexpr#4/#2\relax}%
+    \dsa@rautezahl=0
+    \loop\ifnum\dsa@rautezahl<#1\relax
+      \includegraphics[width=\dsa@rautebreite]{\dsagrafik{raute-#3}}%
+      \advance\dsa@rautezahl by 1
+    \repeat
+    \loop\ifnum\dsa@rautezahl<#2\relax
+      \includegraphics[width=\dsa@rautebreite]{\dsagrafik{raute-grau}}%
+      \advance\dsa@rautezahl by 1
+    \repeat
+  \endgroup}
+
+% Die beiden gewohnten Aufrufe: vier Rauten, davon #1 gefuellt.
+\newcommand{\dsaRautenRot}[2]{\dsaRauten{#1}{4}{rot}{#2}}
+\newcommand{\dsaRautenGruen}[2]{\dsaRauten{#1}{4}{gruen}{#2}}
 
 \newcommand*{\dsaBand}[2]{\textsuperscript{#1\,#2}}
 
@@ -2057,7 +2101,16 @@
   {\fontsize{\dsaimpressumrubrik bp}{\dsaimpressumabrubrik bp}\selectfont
    \bfseries #1\par}%
   \nobreak
-  {\fontsize{\dsaimpressumwert bp}{\dsaimpressumabwert bp}\selectfont #2\par}}
+  % Im Wert bedeutet \\ einen Absatzwechsel, keinen Zeilenumbruch.
+  %
+  % Zentriert wird hier ueber \leftskip und \rightskip mit je einem
+  % fil-Anteil und \parfillskip auf null; so stehen einzeilige Werte mittig.
+  % Ein \\ bricht die Zeile aber mit einem \hfil ab -- dann stehen rechts
+  % zwei dehnbare Anteile gegen einen links, und die Zeile rutscht nach
+  % links. Gemessen lag „Ulisses Spiele (Layout-Baukasten ...)" mit ihrer
+  % Mitte bei 91,65 statt 105 mm.
+  {\fontsize{\dsaimpressumwert bp}{\dsaimpressumabwert bp}\selectfont
+   \let\\\par #2\par}}
 
 % \dsaRechtevermerk{<Jahr>}{<Name oder Firma>}
 %

@@ -96,13 +96,15 @@ KOPIEREN = {
     'meistermaske-3.png':         ['PNG innen/FertigeMeistermaske-3.png'],
     'maske.png':                  ['PNG innen/Maske.png'],
     # Zierleisten und Kopfleisten
+    # Vier Leisten, alle mit Mittelornament. Oben steht immer dieselbe; das
+    # Motiv unten sagt, um welche Art Block es sich handelt.
     'trenner-oben.png':           ['PNG innen/Absatztrenner_oben Kopie.png',
                                    'PNG innen/Absatztrenner_oben.png'],
-    'trenner-unten.png':          ['PNG innen/Absatztrenner_unten_Maske Kopie.png',
-                                   'PNG innen/Absatztrenner_unten_Maske.png'],
-    'trenner-unten-breit.png':    ['PNG innen/Absatztrenner_unten Kopie.png',
+    'trenner-unten.png':          ['PNG innen/Absatztrenner_unten Kopie.png',
                                    'PNG innen/Absatztrenner_unten.png'],
-    'vorlesetext.png':            ['PNG innen/Text zum NachlesenV3.png'],
+    'trenner-maske.png':          ['PNG innen/Absatztrenner_unten_Maske Kopie.png',
+                                   'PNG innen/Absatztrenner_unten_Maske.png'],
+    'trenner-buch.png':           ['PNG innen/Text zum NachlesenV3.png'],
     'nsc-kopf.png':               ['PNG innen/NPC_Kasten_Oben Kopie.png',
                                    'PNG innen/NPC_Kasten_Oben.png'],
     # Marken im Text
@@ -537,6 +539,30 @@ def main():
                 shutil.copyfile(q, os.path.join(zg, ziel))
             zus += 1
         print('Zusatzgrafiken     : %d von %d' % (zus, len(ZUSATZ)))
+
+        # Die Rautenskala als Kachel. Gemessen liegen die vier Rauten einer
+        # Vorlage bei x 1..204, 216..419, 431..634 und 647..850 Pixel; die
+        # Teilung ist damit 215. Eine Kachel ist eine Raute samt ihrem
+        # Anteil am Zwischenraum, also 215 Pixel breit und so hoch wie die
+        # Vorlage.
+        kacheln = {
+            'raute-rot.png':   ('DSA5_Rauten_rot_4.png', 0),
+            'raute-grau.png':  ('DSA5_Rauten_rot_1.png', 1),
+            'raute-gruen.png': ('DSA5_Rauten_gruen_4.png', 0),
+        }
+        kach = 0
+        for ziel, (quelle, spalte) in sorted(kacheln.items()):
+            pfad = os.path.join(ordner, quelle)
+            if not os.path.exists(pfad):
+                fehlt.append('%s (gesucht: %s)' % (ziel, quelle))
+                continue
+            bild = Image.open(pfad).convert('RGBA')
+            teilung = bild.width // 4
+            links = spalte * teilung
+            speichern(bild.crop((links, 0, links + teilung, bild.height)),
+                      zg, ziel, nur_png, ppi)
+            kach += 1
+        print('Rautenkacheln      : %d von %d' % (kach, len(kacheln)))
 
     sch = 0
     for name in SCHRIFTEN:

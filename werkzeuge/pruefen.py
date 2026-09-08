@@ -45,9 +45,9 @@ SOLL = {
     'maske.png':                    (236, 143),
     # Zierleisten und Kopfleisten
     'trenner-oben.png':             (624, 116),
-    'trenner-unten.png':            (624, 116),
-    'trenner-unten-breit.png':      (1872, 348),
-    'vorlesetext.png':              (1872, 348),
+    'trenner-maske.png':            (624, 116),
+    'trenner-unten.png':      (1872, 348),
+    'trenner-buch.png':              (1872, 348),
     'nsc-kopf.png':                 (1872, 348),
     # Marken
     'aufzaehlung.png':              (257, 139),
