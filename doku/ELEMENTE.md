@@ -116,6 +116,10 @@ Tiefe null, verschiebt ihn nach unten und lässt den Raum von `\dsaRasterluft` k
 Nicht gebaut: der **Buchrücken**. Die Grafik dafür (`Cover_Buchtitel`, 184,3 mm breit — genau der
 Grafikbereich) liegt im Baukasten, das Element fehlt.
 
+**Seiten ohne Seitenzahl** nehmen den Hintergrund ohne Feld dafür: Impressum,
+Inhaltsverzeichnis, `dsaSeiteOhneZahl` und `\dsaGanzseite` rufen `\dsaHintergrundOhneFeld` selbst
+auf. Sonst bliebe die Kartusche in der unteren Außenecke leer.
+
 **Der Seitenhintergrund** rotiert über **drei** der vier Doppelseiten des Baukastens, je zwei
 Seiten eine Variante. Die vierte hat in der unteren Außenecke kein Feld für die Seitenzahl und ist
 deshalb den Seiten vorbehalten, die keine tragen: `\dsaHintergrundOhneFeld` wählt sie für die
@@ -171,8 +175,31 @@ Drachenornament unten, innen offen. Das Bild kommt **in** das Fenster, der Rahme
 so verdeckt seine Kante die Bildkante, und es bleibt keine Fuge. Ohne Bild bleibt das Fenster leer;
 der Rahmen allein ist dann der Platzhalter.
 
-Der äußere Schenkel liegt im Anschnitt, der innere bleibt sichtbar. Damit läuft das Bild zur
-Außenseite randabfallend, wie im Vorbild. Die Maße stehen in `MASSE.md`.
+Der Rahmen liegt **ganz auf der Seite**: er sitzt im Satzspiegel der Außenhälfte, eine
+Spaltenbreite (80,5 mm) breit, von der Satzspiegeloberkante an. Gemessen von x 105,14 bis 196,16 mm
+und y 24,07 bis 274,05 mm — beide Zierkanten sichtbar, die Fußzeile frei. Die Maße stehen in
+`MASSE.md`.
+
+Ohne Bild füllt eine Pergamenttextur das Fenster. **Nicht** `kapitelstart-pergament` selbst: das
+ist ein freigestelltes Blatt mit gerissenen Kanten, und dessen untere schwankt über 17,78 mm — im
+Rechteckfenster endet es dann sichtbar vor dem Rand. `aufbereiten.py` schneidet daraus
+`kapitelstart-flaeche`, den Bereich innerhalb aller Kanten.
+
+### Bilder mit einer Vorlagenkante freistellen
+
+Mehrere Grafiken haben eine gezeichnete Kante, die sich als Maske benutzen lässt. Wer ein eigenes
+Bild in derselben Form braucht, muss sie nicht nachzeichnen:
+
+```sh
+python3 werkzeuge/freistellen.py bilder/hof.jpg kapitelstart-pergament \
+    grafiken/hof-pergament.png
+```
+
+Das Bild wird auf die Vorlage deckend skaliert, mittig beschnitten und mit ihrem Alphakanal
+maskiert. Vorlagen im Bestand: `kapitelstart-pergament` (gerissenes Blatt, 109,2 × 300 mm), die
+vier `pergament-*` (Kästen mit Zierrand), `maske` (Meistermaske) und `portraitrahmen`
+(Medaillonring). `--weich <n>` zeichnet die Kante weicher, `--hart` rundet sie auf voll oder
+durchsichtig.
 
 Gezeichnet wird in dieser Reihenfolge: Seitenhintergrund, Rahmen, Banner, Text. Beides steht in
 **einem** TikZ-Bild; zwei Bilder mit `remember picture` im selben `\twocolumn`-Vorspann setzen die

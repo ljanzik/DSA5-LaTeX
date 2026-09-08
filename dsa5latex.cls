@@ -737,10 +737,19 @@
 % die 249,80 mm Satzspiegelhoehe. Alle Fenstermasse sind mitverkleinert.
 \newlength{\dsakapitelrahmenb} \setlength{\dsakapitelrahmenb}{91.02mm}
 \newlength{\dsakapitelrahmenh} \setlength{\dsakapitelrahmenh}{249.97mm}
-\newlength{\dsakapitelfensterx} \setlength{\dsakapitelfensterx}{5.50mm}
-\newlength{\dsakapitelfenstery} \setlength{\dsakapitelfenstery}{0.14mm}
-\newlength{\dsakapitelfensterb} \setlength{\dsakapitelfensterb}{72.11mm}
-\newlength{\dsakapitelfensterh} \setlength{\dsakapitelfensterh}{223.03mm}
+% Das Fenster endet am hoechsten Punkt jeder Kante, nicht am tiefsten: die
+% Kanten sind gezeichnet und schwanken. Gemessen ueber den Fensterbereich
+% liegt die untere zwischen 259,76 und 267,80 mm -- 8,04 mm Streuung --, die
+% innere linke zwischen 6,10 und 7,03, die rechte zwischen 92,88 und 93,47,
+% die obere zwischen 0,00 und 0,17 mm.
+%
+% Mit dem tiefsten Punkt als Mass schaute das Bild acht Millimeter unter der
+% Zierkante hervor. Also der hoechste Punkt plus drei Zehntel Sicherheit:
+% x 7,33 bis 92,58 mm und y 0,47 bis 259,46 mm, verkleinert mit 0,8333.
+\newlength{\dsakapitelfensterx} \setlength{\dsakapitelfensterx}{6.11mm}
+\newlength{\dsakapitelfenstery} \setlength{\dsakapitelfenstery}{0.39mm}
+\newlength{\dsakapitelfensterb} \setlength{\dsakapitelfensterb}{71.04mm}
+\newlength{\dsakapitelfensterh} \setlength{\dsakapitelfensterh}{215.82mm}
 
 % Die Lage der Datei: auf rechten Seiten beginnt ihre Deckung an der zweiten
 % Spalte, auf linken endet sie an der inneren Kante der ersten.
@@ -767,13 +776,18 @@
       {\phantom{\includegraphics[width=\dsakapitelrahmenb,%
          height=\dsakapitelrahmenh]{\dsagrafik{kapitelstart-rahmen}}}};
     % Erst das Bild in das Fenster, dann der Rahmen darueber. Ohne Bild
-    % kommt die Pergamenttextur hinein: ein weisses Fenster sieht wie ein
+    % kommt eine Pergamenttextur hinein: ein weisses Fenster sieht wie ein
     % Loch aus, die Textur wie ein Platzhalter.
+    %
+    % Nicht kapitelstart-pergament selbst -- das ist ein freigestelltes
+    % Blatt mit gerissenen Kanten, seine untere schwankt ueber 17,78 mm.
+    % aufbereiten.py schneidet daraus kapitelstart-flaeche, den Bereich
+    % innerhalb aller Kanten.
     \if\relax\detokenize{#1}\relax
       \node[anchor=north west, inner sep=0]
         at ([shift={(\dsakapitelfensterx,-\dsakapitelfenstery)}]dsakb.north west)
         {\dsaBildDeckend{\dsakapitelfensterb}{\dsakapitelfensterh}%
-          {\dsagrafik{kapitelstart-pergament}}};
+          {\dsagrafik{kapitelstart-flaeche}}};
     \else
       \node[anchor=north west, inner sep=0]
         at ([shift={(\dsakapitelfensterx,-\dsakapitelfenstery)}]dsakb.north west)
@@ -2218,13 +2232,17 @@
   \clearpage\twocolumn}
 
 % ---- Seite ohne Seitenzahl ----
+%
+% Ohne Zahl gehoert auch der Hintergrund ohne Feld dafuer -- sonst bleibt
+% die Kartusche in der unteren Aussenecke leer.
 \newenvironment{dsaSeiteOhneZahl}{%
-  \clearpage\thispagestyle{empty}%
+  \clearpage\dsaHintergrundOhneFeld
 }{\clearpage}
 
 % ---- Ganzseitige Grafik im Grafikbereich ----
 \newcommand{\dsaGanzseite}[1]{%
-  \clearpage\thispagestyle{empty}%
+  % Auch hier keine Zahl, also der Hintergrund ohne Feld dafuer.
+  \clearpage\dsaHintergrundOhneFeld
   \begin{tikzpicture}[remember picture, overlay]
     \node[anchor=north, inner sep=0]
       at ([shift={(0pt,-\dsagrafikoben)}]current page.north)

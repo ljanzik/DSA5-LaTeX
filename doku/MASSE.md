@@ -254,9 +254,29 @@ Das Fenster ist damit 86,53 × 267,63 mm. Die Datei ist breiter als ihre Deckung
 nach außen versetzt — rechts um 109,22 − 97,03 = 12,19 mm, links um 3,13 mm. So liegt der äußere
 Schenkel im Anschnitt und der innere bleibt sichtbar.
 
-Zum Vergleich das Vorbild: dort ist das Kapitelbild 103,33 × 283,62 mm und reicht bis 0,2 mm an die
-Papierkante; unten endet es 14,9 mm über der Kante, damit die Fußzeile frei bleibt. Unsere Grafiken
-tun das von selbst.
+Der Rahmen liegt ganz auf der Seite: die Datei ist auf 80,50 / 96,60 = 0,8333 verkleinert, also auf
+91,02 × 249,97 mm, ihre Deckung damit 80,50 × 238,83 mm. Gemessen sitzt er von x 105,14 bis
+196,16 mm und y 24,07 bis 274,05 mm. Das Vorbild setzt sein Kapitelbild dagegen randabfallend —
+103,33 × 283,62 mm bis 0,2 mm an die Papierkante.
+
+### Die Freistellung des Pergaments
+
+`kapitelstart-pergament` ist ein freigestelltes Blatt. Im Alphakanal gemessen, bei 109,22 ×
+299,97 mm:
+
+| Kante | Lage |
+|---|---|
+| unten | schwankt von 262,97 bis 280,75 mm — 17,78 mm Streuung |
+| oben | 0,25 bis 6,69 mm |
+| seitlich | 3,56 bis 95,59 mm in der Bildmitte |
+
+Als Füllung eines Rechteckfensters taugt das nicht: `\dsaBildDeckend` rechnet mit der Dateigröße,
+nicht mit der Deckung, und dann endet das Blatt sichtbar vor dem Fensterrand. `aufbereiten.py`
+schneidet deshalb `kapitelstart-flaeche` heraus — x 5 bis 94 mm, y 8 bis 261 mm, also 88,98 ×
+252,98 mm reine Textur, voll deckend.
+
+Dieselbe Kante lässt sich umgekehrt als Maske benutzen: `werkzeuge/freistellen.py` überträgt den
+Alphakanal einer Vorlage auf ein eigenes Bild.
 
 ## Die Rückseite
 

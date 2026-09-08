@@ -564,6 +564,25 @@ def main():
             kach += 1
         print('Rautenkacheln      : %d von %d' % (kach, len(kacheln)))
 
+        # Eine reine Pergamenttextur fuer das Fenster des Kapitelrahmens.
+        #
+        # kapitelstart-pergament ist ein freigestelltes Blatt mit gerissenen
+        # Kanten: die untere schwankt von 262,97 bis 280,75 mm, die obere von
+        # 0,25 bis 6,69, seitlich deckt es 3,56 bis 95,59 mm. Als Fuellung
+        # eines Rechteckfensters taugt das nicht -- geschnitten wird der
+        # Bereich, der sicher innerhalb aller Kanten liegt.
+        quelle_pg = os.path.join(zg, 'kapitelstart-pergament.png')
+        if os.path.exists(quelle_pg):
+            blatt = Image.open(quelle_pg)
+            je_mm = blatt.width / 109.22
+            kasten = (int(5 * je_mm), int(8 * je_mm),
+                      int(94 * je_mm), int(261 * je_mm))
+            speichern(blatt.crop(kasten), zg, 'kapitelstart-flaeche.png',
+                      nur_png, ppi)
+            print('Pergamentflaeche   : geschnitten')
+        else:
+            fehlt.append('kapitelstart-flaeche (braucht kapitelstart-pergament)')
+
     sch = 0
     for name in SCHRIFTEN:
         q = finde(wurzel, ['Document fonts/%s' % name])
