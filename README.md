@@ -56,6 +56,15 @@ Der bequeme Weg. Das Werkzeug legt alles an, was die Klasse braucht, und benennt
 python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
 ```
 
+Für die Rückseite gibt es ein zweites Paket, das **Rückseiten-Karten-Paket**. Es bringt eine
+fertige Rückseite mit Zierrahmen und 28 Fassungen davon, in denen je eine Region Aventuriens
+hervorgehoben ist:
+
+```sh
+python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4" \
+    --rueckseiten "/pfad/zum/Rueckseiten_Karten_Paket"
+```
+
 Es braucht `Pillow` und `psd-tools`:
 
 ```sh
@@ -67,7 +76,7 @@ Was es tut:
 - kopiert die benötigten PNG aus `PNG innen/` und `PNG aussen/` nach `grafiken/` und benennt sie
   auf Namen ohne Leerzeichen und Umlaute um
 - **schneidet** die vier Doppelseiten aus `Links/` in je eine linke und eine rechte Einzelseite
-  (`seite-links-0` bis `-3`, `seite-rechts-0` bis `-3`) — die Klasse rotiert über diese vier
+  (`seite-links-0` bis `-3`, `seite-rechts-0` bis `-3`) — die Klasse rotiert über die ersten drei
 - **extrahiert** aus `Links/DSA5-Kapitelstart-Beispielgrafik.psd` die Pergamentfläche und das
   Drachenornament für den Kapitelanfang
 - kopiert die fünf Schriftdateien nach `schriften/`

@@ -305,6 +305,23 @@ Dazu neu: `\dsaKastentitel` für die Kastenüberschrift mit den 12 bp des Muster
 genannte Titelgrundlinie von 5,16 mm unter der Oberkante gilt für die gezeichneten Kästen ohne
 Zierrand; in den Grafikkästen beginnt der Inhalt bei `\dsakastenoben`.
 
+### Was die Sichtprüfung am Abzug ergeben hat
+
+Gemessene Zahlen finden nicht alles. Diese Fehler waren erst am gerenderten Abzug zu sehen:
+
+| Befund | Ursache | Behoben |
+|---|---|---|
+| Kolumnentitel links 20 mm von der Zahl weg, rechts 4 mm | Vorbildlage übernommen, die zu unserem Satzspiegel nicht passt | bündig am Satzspiegel, beidseitig 24 mm von außen |
+| Text im Porträtkasten lag in der oberen Zierleiste | 6 mm oberer Innenabstand für alle Kästen, gemessen brauchen die Wertekästen 6,2 bis 9,3 mm | je Kasten die gemessene Innenkante |
+| Umfluss um das Medaillon rechteckig | `\parshape` mit gleichem Einzug für alle Zeilen | Einzug je Zeile nach dem Kreis |
+| Breite Zeilen liefen rechts über das Pergament | die Zeilen nutzten die Kastenbreite, nicht den Kastenkörper | Textende an der Innenkante, 81,82 mm |
+| Vorlesetext nur oben mit Zierleiste | das Gegenstück lag als `trenner-unten-breit` im Ordner, ungenutzt | beide Leisten |
+| Seitenzahl auf blankem Pergament | die vierte Hintergrundvariante hat kein Feld dafür | Rotation über drei Varianten |
+| Impressum und Inhalt mit Zahl und Titel | beides gehört dort nicht hin | `\dsaHintergrundOhneFeld`, Fußzeile leer |
+| Inhaltsverzeichnis einspaltig | 166 mm Zeilen mit Punktführung | zweispaltig über `multicol` |
+| Kapitelseiten ohne Bildrahmen | die Klasse konnte ihn nur mit Bild setzen | `\dsakapitelbild`, mit Bild oder als Platzhalter |
+| Rückseite: Karte ganzseitig, Text dunkel darauf | es fehlte die Vorlage | Rückseiten-Karten-Paket, Aufbau am Vorbild vermessen |
+
 ## Elemente mit eigenem Raster
 
 Nicht jede Zeile gehört auf das Grundlinienraster der Seite. Diese Elemente weichen bewusst ab —

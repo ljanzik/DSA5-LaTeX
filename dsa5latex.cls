@@ -71,6 +71,10 @@
 \RequirePackage{wrapfig}
 \RequirePackage[auto]{contour}
 \RequirePackage{changepage}
+% Fuer das zweispaltige Inhaltsverzeichnis. \twocolumn taugt dafuer nicht:
+% es braeuchte einen Seitenwechsel, und die Ueberschrift soll ueber beiden
+% Spalten stehen.
+\RequirePackage{multicol}
 \RequirePackage{intcalc}
 \RequirePackage{array}
 \RequirePackage{etoolbox}
@@ -441,12 +445,32 @@
 % Register, das TeX beim Ausschiessen fuehrt. Mit \value{page} war die
 % Variante auf jeder Seite 0 und die Lage immer die linke.
 \newcommand*{\dsa@bgseite}{\the\count0}
-% Die Folge soll 0,0,1,1,2,2,3,3 sein: je zwei Seiten eine Variante,
-% beginnend mit der ersten. Deshalb wird (Seite - 1) geteilt — mit der Seite
-% selbst waere die Folge 0,1,1,2,2,3,3,0 und die erste Variante kaeme nur
-% einmal vor.
+% Die Folge ist 0,0,1,1,2,2 und dann wieder von vorn: je zwei Seiten eine
+% Variante, beginnend mit der ersten. Deshalb wird (Seite - 1) geteilt — mit
+% der Seite selbst waere die Folge 0,1,1,2,2,0 und die erste Variante kaeme
+% nur einmal vor.
+%
+% Drei Varianten, nicht vier: die vierte des Baukastens hat in der unteren
+% Aussenecke kein Feld fuer die Seitenzahl. Dort steht sie auf blankem
+% Pergament, waehrend sie in den ersten drei in einer dunklen Kartusche
+% sitzt. Wer sie doch verwenden will, setzt die 3 hier auf 4.
+\newcommand*{\dsa@bgvarianten}{3}
+% Die vierte Variante hat kein Feld fuer die Zahl. Sie ist die richtige fuer
+% Seiten, die keine tragen -- Impressum und Inhalt. \dsaHintergrundOhneFeld
+% waehlt sie fuer die laufende Seite; \dsa@bgfest ist leer, solange die
+% Folge gilt.
+\newcommand*{\dsa@bgfest}{}
+\newcommand*{\dsaHintergrundOhneFeld}{%
+  \gdef\dsa@bgfest{3}%
+  \thispagestyle{empty}%
+  % Nach der Seite gilt wieder die Folge.
+  \AddToHookNext{shipout/after}{\gdef\dsa@bgfest{}}}
 \newcommand*{\dsa@bgvariante}{%
-  \intcalcMod{\intcalcDiv{\numexpr\dsa@bgseite-1\relax}{2}}{4}}
+  \ifx\dsa@bgfest\@empty
+    \intcalcMod{\intcalcDiv{\numexpr\dsa@bgseite-1\relax}{2}}{\dsa@bgvarianten}%
+  \else
+    \dsa@bgfest
+  \fi}
 
 \AddToShipoutPictureBG{%
   \ifdsa@ohnehintergrund\else
@@ -463,9 +487,8 @@
       \fi
     \end{tikzpicture}%
   \fi\fi}
-% PRUEFEN: Ob der Anker an der Aussenkante die Zierleisten richtig trifft,
-% zeigt der erste Abzug. Bleibt ein weisser Streifen, ist der Anker falsch
-% gewaehlt, nicht das Mass. Und: die Folge muss 0,0,1,1,2,2,3,3 sein.
+% Am Abzug geprueft: der Anker an der Aussenkante trifft die Zierleisten,
+% und die Folge ist 0,0,1,1,2,2 und wieder von vorn.
 
 %%% ==================================================================
 %%% 11  Fusszeile
@@ -510,15 +533,20 @@
 % derselben Grundlinie wie die Zahl. Der Text ist der Abenteuertitel, ein
 % Gedankenstrich und der Kapitelname.
 %
-% Die Lage ist im Vorbild nicht spiegelbildlich, und zwar stabil: zwei
-% rechte Seiten enden beide 24,29 mm von der Aussenkante, unmittelbar an der
-% Zahl; zwei linke beginnen beide 40,35 mm von der Aussenkante, also mit
-% 12,8 mm Abstand zu ihr. Das ist uebernommen, nicht geglaettet -- wer es
-% anders will, aendert die zwei Laengen.
+% Die Lage: der Titel schliesst mit dem Satzspiegel ab, auf beiden Seiten
+% 24 mm von der Aussenkante -- rechts rechtsbuendig bei 186 mm, links
+% linksbuendig bei 24 mm. Damit steht er bündig unter dem Textblock, und der
+% Abstand zur Zahl ist auf beiden Seiten gleich: ihre Mitte sitzt 18,4 mm
+% von der Kante, ihr innerer Rand also rund 4 mm vor dem Titel.
+%
+% Im Vorbild ist die Lage nicht spiegelbildlich -- rechts 24,29 mm, links
+% 40,35 mm, beides stabil ueber mehrere Seiten. Am Abzug gesehen ist das
+% schief, und der dortige Satzspiegel ist ohnehin ein anderer als unserer.
+% Wer die Vorbildlage haben will, setzt die linke Laenge auf 40,35 mm.
 \newlength{\dsakolumneaussenrechts}
-\setlength{\dsakolumneaussenrechts}{24.29mm}
+\setlength{\dsakolumneaussenrechts}{24mm}
 \newlength{\dsakolumneaussenlinks}
-\setlength{\dsakolumneaussenlinks}{40.35mm}
+\setlength{\dsakolumneaussenlinks}{24mm}
 \newcommand*{\dsakolumnegrad}{14}
 
 % Der Abenteuertitel, in der Praeambel zu setzen. Ohne ihn bleibt der
@@ -597,20 +625,36 @@
 % 20,53 mm von links eingesetzt — also genau der Satzspiegel.
 \newlength{\dsabannertitelunten}\setlength{\dsabannertitelunten}{33.41mm}
 
+% Nur die Knoten, ohne eigene tikzpicture: der Vorspann einer Kapitelseite
+% zeichnet Rahmen und Banner in EINEM Bild. Zwei Bilder mit „remember
+% picture" im selben \twocolumn-Vorspann vertragen sich nicht -- gemessen
+% landete der Bannertitel dann bei -239,61 mm, weit ueber der Seite.
+\newcommand*{\dsa@bannerknoten}[1]{%
+  \node[anchor=north, inner sep=0]
+    at ([shift={(0pt,-\dsabannerversatz)}]current page.north)
+    {\includegraphics[width=210.1mm]{\dsagrafik{kapitelbanner}}};
+  % anchor=base west: die Grundlinie sitzt auf dem gemessenen Mass, der
+  % Anfang der Zeile am inneren Rand. Kein text width und kein align —
+  % der Titel ist linksbuendig.
+  \node[anchor=base west, inner sep=0]
+    at ([shift={(\dsa@linkerrand,-\dsabannertitelunten)}]%
+        current page.north west)
+    {\dsaandalus\fontsize{23.5bp}{28.2bp}\selectfont
+     \MakeUppercase{Kapitel \thedsakapitel: #1}};}
+
 \newcommand*{\dsa@bannerblock}[1]{%
   \dsa@linkerrandsetzen
   \begin{tikzpicture}[remember picture, overlay]
-    \node[anchor=north, inner sep=0]
-      at ([shift={(0pt,-\dsabannerversatz)}]current page.north)
-      {\includegraphics[width=210.1mm]{\dsagrafik{kapitelbanner}}};
-    % anchor=base west: die Grundlinie sitzt auf dem gemessenen Mass, der
-    % Anfang der Zeile am inneren Rand. Kein text width und kein align —
-    % der Titel ist linksbuendig.
-    \node[anchor=base west, inner sep=0]
-      at ([shift={(\dsa@linkerrand,-\dsabannertitelunten)}]%
-          current page.north west)
-      {\dsaandalus\fontsize{23.5bp}{28.2bp}\selectfont
-       \MakeUppercase{Kapitel \thedsakapitel: #1}};
+    \dsa@bannerknoten{#1}%
+  \end{tikzpicture}%
+  \dsaRasterluft{10}}
+
+% Der Vorspann mit Rahmen: erst der Rahmen, dann das Banner darueber.
+\newcommand*{\dsa@bannerblockmitrahmen}[2]{%
+  \dsa@linkerrandsetzen
+  \begin{tikzpicture}[remember picture, overlay]
+    \dsa@rahmenknoten{#1}%
+    \dsa@bannerknoten{#2}%
   \end{tikzpicture}%
   \dsaRasterluft{10}}
 % PRUEFEN: pdfplumber liest fuer die Titelzeilen des Musterbogens 31,7 pt,
@@ -623,14 +667,35 @@
 % \dsakapitel[<Bild>]{<Titel>}
 % Reihenfolge: erst \twocolumn, also neue Seite plus Banner, dann das
 % Kapitelbild — sonst landet das Bild auf der Vorseite.
+% Zwei Arten von Kapitelseiten:
+%
+%   \dsakapitel{Titel}              ohne Rahmen, Text ueber beide Spalten
+%   \dsakapitelbild[<Bild>]{Titel}  mit Bildrahmen zur Aussenseite; ohne
+%                                   Argument bleibt die Pergamentflaeche als
+%                                   Platzhalter stehen
+%
+% Auf der Rahmenseite ist die Aussenhaelfte belegt. Der Text muss deshalb in
+% die innere Spalte passen und die Seite mit \dsaKapitelseiteEnde beendet
+% werden, sonst laeuft er hinter den Rahmen -- eine Grenze von LaTeX, nicht
+% der Klasse.
+\newcommand*{\dsa@kapitelmarken}[1]{%
+  % In die Marken, damit der Kolumnentitel in der Fusszeile den Namen des
+  % Kapitels kennt, auf dessen Seite er steht.
+  \markboth{#1}{#1}%
+  \addcontentsline{toc}{section}{\thedsakapitel\quad #1}}
+
 \newcommand{\dsakapitel}[2][]{%
   \stepcounter{dsakapitel}%
   \twocolumn[\dsa@bannerblock{#2}]%
-  % In die Marken, damit der Kolumnentitel in der Fusszeile den Namen des
-  % Kapitels kennt, auf dessen Seite er steht.
-  \markboth{#2}{#2}%
-  \addcontentsline{toc}{section}{\thedsakapitel\quad #2}%
-  \if\relax\detokenize{#1}\relax\else\dsaKapitelbild{#1}\fi}
+  \dsa@kapitelmarken{#2}%
+  % Ein Bild als optionales Argument gilt weiter, damit bestehende
+  % Dokumente laufen.
+  \if\relax\detokenize{#1}\relax\else\dsa@kapitelrahmen{#1}\fi}
+
+\newcommand{\dsakapitelbild}[2][]{%
+  \stepcounter{dsakapitel}%
+  \twocolumn[\dsa@bannerblockmitrahmen{#1}{#2}]%
+  \dsa@kapitelmarken{#2}}
 
 % Kapitelbild in der Bauweise des Verlags: Pergamentflaeche, darauf das Bild
 % leicht eingerueckt, sodass der Pergamentrand als Rahmen stehen bleibt, und
@@ -645,24 +710,46 @@
 % PRUEFEN: geschaetzt. Am Pergament nachmessen, wie breit der sichtbare Rand
 % sein soll.
 
-\newcommand{\dsaKapitelbild}[1]{%
-  \begin{tikzpicture}[remember picture, overlay]
+% Der Zeichner fuer beide Wege. #1 ist der Bildpfad oder leer -- ohne Bild
+% bleibt die Pergamentflaeche als Platzhalter stehen.
+%
+% Gezeichnet wird im Vorspann der Seite, vor dem Banner: im Verlagslayout
+% liegt das Banner ueber dem Bild. Der Umweg ueber den Seitenhintergrund von
+% eso-pic hat die Fusszeile verschluckt.
+% Die Pergamentflaeche deckt in der Datei nur x 3,3 bis 95,8 mm der
+% 109,2 mm Leinwand. Ohne Ausgleich blieb aussen ein Streifen frei;
+% dieser Versatz schiebt die Flaeche an den Anschnitt.
+\newlength{\dsakapitelrahmenversatz}
+\setlength{\dsakapitelrahmenversatz}{13.4mm}
+
+\newcommand{\dsa@rahmenknoten}[1]{%
     \ifodd\value{page}
       \def\dsa@kbanker{north east}%
-      \def\dsa@kbversatz{\dsabeschnitt}%
+      \def\dsa@kbversatz{\dimexpr\dsabeschnitt+\dsakapitelrahmenversatz\relax}%
     \else
       \def\dsa@kbanker{north west}%
-      \def\dsa@kbversatz{-\dsabeschnitt}%
+      \def\dsa@kbversatz{-\dimexpr\dsabeschnitt+\dsakapitelrahmenversatz\relax}%
     \fi
     \node[anchor=\dsa@kbanker, inner sep=0] (dsakb)
       at ([shift={(\dsa@kbversatz,\dsabeschnitt)}]current page.\dsa@kbanker)
       {\includegraphics[width=109.2mm,height=300mm]{\dsagrafik{kapitelstart-pergament}}};
+    \if\relax\detokenize{#1}\relax\else
+      \node[anchor=center, inner sep=0] at (dsakb.center)
+        {\dsaBildDeckend{\dimexpr109.2mm-2\dsakapitelbildrand\relax}%
+                        {\dimexpr300mm-2\dsakapitelbildrand\relax}{#1}};
+    \fi
     \node[anchor=center, inner sep=0] at (dsakb.center)
-      {\dsaBildDeckend{\dimexpr109.2mm-2\dsakapitelbildrand\relax}%
-                      {\dimexpr300mm-2\dsakapitelbildrand\relax}{#1}};
-    \node[anchor=center, inner sep=0] at (dsakb.center)
-      {\includegraphics[width=109.2mm,height=300mm]{\dsagrafik{kapitelstart-ornament}}};
+      {\includegraphics[width=109.2mm,height=300mm]{\dsagrafik{kapitelstart-ornament}}};}
+
+% Der Rahmen allein, in eigenem Bild -- fuer den alten Weg, bei dem er nach
+% dem Banner kommt.
+\newcommand{\dsa@kapitelrahmen}[1]{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \dsa@rahmenknoten{#1}%
   \end{tikzpicture}}
+
+% Der alte Name, damit bestehende Dokumente weiterlaufen.
+\newcommand{\dsaKapitelbild}[1]{\dsa@kapitelrahmen{#1}}
 % Pergament und Ornament sind native 109,2 x 300,0 mm — beide Masse zu
 % erzwingen ist hier exakt, nicht Streckung.
 % Steht ein Kapitelbild, muss die Anfangsseite mit \dsaKapitelseiteEnde
@@ -769,6 +856,9 @@
 \newcommand*{\dsakastengrad}{9.5}
 \newcommand*{\dsakastendurchschuss}{11.4}
 
+% Die Voreinstellung gilt fuer die Pergamentkaesten, deren Zierrand nur
+% 2,9 bis 4,2 mm breit ist. Die Wertekaesten haben breitere Raender und
+% setzen top und bottom selbst -- gemessen mit werkzeuge/innenraum.py.
 \tcbset{dsa@grundkasten/.style={
   enhanced, breakable=false, blankest, nobeforeafter, valign=top,
   left=\dsakasteninnen, right=\dsakasteninnen,
@@ -804,38 +894,39 @@
 % darunter gibt \dsaPortraitfluss zurueck, gleich hier darunter.
 \newlength{\dsaportraitfrei}\setlength{\dsaportraitfrei}{34mm}
 
-% \dsaPortraitfluss am Anfang des Kasteninhalts: die ersten acht Zeilen
-% bleiben schmal, die folgenden laufen auf die volle Kastenbreite. Gilt fuer
-% den Absatz, der folgt — bei mehreren Absaetzen also den ersten. Wer den
-% Fluss ueber einen ganzen Kasten braucht, setzt den Text als einen Absatz.
+% \dsaPortraitfluss am Anfang des Kasteninhalts: der Text umfliesst das
+% Medaillon. Gilt fuer den Absatz, der folgt — bei mehreren Absaetzen also
+% den ersten. Wer den Fluss ueber einen ganzen Kasten braucht, setzt den
+% Text als einen Absatz.
 %
-% Acht Zeilen, und zwar so gerechnet: der Kranz des Ornaments reicht 34,9 mm
-% unter die Kastenoberkante, der Text beginnt 6 mm darunter, eine Zeile ist
-% 11,4 bp = 4,02 mm hoch. Nicht die Grundlinie der ersten breiten Zeile muss
-% unter dem Kranz liegen, sondern ihre Oberkante -- also die Grundlinie
-% mindestens eine Versalhoehe von 2,4 mm tiefer, unter 37,3 mm. Mit 6 mm
-% Vorlauf sind das acht schmale Zeilen; die neunte beginnt bei 38,2 mm.
+% Der Kranz ist ein Kreis, also ist der Einzug je Zeile ein anderer. Ein
+% rechteckiger Einzug -- wie hier zuvor -- laesst links Platz liegen und
+% stoesst rechts trotzdem an.
 %
-% Mit sieben Zeilen lief die erste breite Zeile noch in den Kranz. Das war
-% an der gerenderten Datei nur zu sehen, wenn man nicht bloss das rechte
-% Zeilenende, sondern auch die Hoehe mitmisst.
+% Gerechnet mit dem Kranz des kleinen Kastens, weil er am tiefsten und am
+% weitesten innen sitzt; damit reicht eine Liste fuer alle drei. Mitte
+% 76,94 mm von der linken Kastenkante und 17,97 mm unter der Oberkante,
+% Radius 15,62 mm plus 0,8 mm Luft. Der Textbereich beginnt 7 mm von der
+% Kante und endet 81,82 mm davon -- das ist die Innenkante des Zierrands
+% rechts (11,18 mm) plus ein Millimeter Luft.
+%
+% Je Zeile ist der weiteste Vorstoss des Kreises innerhalb der Zeilenhoehe
+% maßgeblich, nicht der auf der Grundlinie: bei 9,5 bp reicht die Zeile
+% 2,35 mm ueber die Grundlinie und 1,01 mm darunter.
 %
 % \parshape verlangt seine Zeilen ausgeschrieben, eine Wiederholung kennt es
-% nicht. Wer die Zahl aendert, aendert die Liste — und die 9 davor.
-%
-% Ohne den Befehl bleibt der Satz durchgehend schmal. Das ist sicher, aber
-% enger als noetig.
+% nicht. Wer die Masse aendert, rechnet die Liste neu -- und aendert die 8
+% davor.
 \newcommand*{\dsaPortraitfluss}{%
-  \parshape 9
-    0pt \linewidth
-    0pt \linewidth
-    0pt \linewidth
-    0pt \linewidth
-    0pt \linewidth
-    0pt \linewidth
-    0pt \linewidth
-    0pt \linewidth
-    0pt \dimexpr\linewidth+\dsaportraitfrei-\dsakasteninnen\relax}
+  \parshape 8
+    0pt 54.57mm
+    0pt 53.61mm
+    0pt 53.52mm
+    0pt 53.80mm
+    0pt 55.09mm
+    0pt 57.78mm
+    0pt 63.40mm
+    0pt 74.82mm}
 
 \newlength{\dsaportraitinnen}\setlength{\dsaportraitinnen}{5.1mm}
 \newlength{\dsaportraitaussen}\setlength{\dsaportraitaussen}{8.4mm}
@@ -873,9 +964,9 @@
 \dsaKastenNeu{dsaPergamentSchmal}{48.9mm} {192.4mm}{46}{pergament-schmal}{left=6mm,right=6mm}
 
 % ---- Wertekaesten ----
-\dsaKastenNeu{dsaWerteKlein} {84.4mm}{54.8mm} {13}{werte-klein} {dsaueberhang=1.95mm,left=7mm,right=7mm}
-\dsaKastenNeu{dsaWerteMittel}{86.9mm}{103.8mm}{25}{werte-mittel}{dsaueberhang=3.2mm,left=7mm,right=7mm}
-\dsaKastenNeu{dsaWerteGross} {85.0mm}{197.1mm}{47}{werte-gross} {dsaueberhang=2.25mm,left=7mm,right=7mm}
+\dsaKastenNeu{dsaWerteKlein} {84.4mm}{54.8mm} {13}{werte-klein} {dsaueberhang=1.95mm,left=7mm,right=7mm,top=6.7mm,bottom=6.1mm}
+\dsaKastenNeu{dsaWerteMittel}{86.9mm}{103.8mm}{25}{werte-mittel}{dsaueberhang=3.2mm,left=7mm,right=7mm,top=7.8mm,bottom=5.2mm}
+\dsaKastenNeu{dsaWerteGross} {85.0mm}{197.1mm}{47}{werte-gross} {dsaueberhang=2.25mm,left=7mm,right=7mm,top=6.8mm,bottom=4.1mm}
 
 % ---- Wertekaesten mit Portrait ----
 %
@@ -952,9 +1043,9 @@
                  -\dsaportraity)}]frame.north west)
     {\includegraphics[width=\dsaportraitring]{\dsagrafik{portraitrahmen}}};}}}
 
-\dsaKastenNeu{dsaWerteKleinPortrait} {94.0mm}{59.2mm} {14}{werte-klein-portrait} {dsaportraitlage,dsaportraitlagen={17.06mm}{17.97mm},left=7mm,right=\dsaportraitfrei}
-\dsaKastenNeu{dsaWerteMittelPortrait}{94.0mm}{104.0mm}{25}{werte-mittel-portrait}{dsaportraitlage,dsaportraitlagen={17.91mm}{16.87mm},left=7mm,right=\dsaportraitfrei}
-\dsaKastenNeu{dsaWerteGrossPortrait} {94.0mm}{199.1mm}{47}{werte-gross-portrait} {dsaportraitlage,dsaportraitlagen={17.57mm}{16.62mm},left=7mm,right=\dsaportraitfrei}
+\dsaKastenNeu{dsaWerteKleinPortrait} {94.0mm}{59.2mm} {14}{werte-klein-portrait} {dsaportraitlage,dsaportraitlagen={17.06mm}{17.97mm},left=7mm,right=\dsaportraitfrei,top=9.8mm,bottom=10.1mm}
+\dsaKastenNeu{dsaWerteMittelPortrait}{94.0mm}{104.0mm}{25}{werte-mittel-portrait}{dsaportraitlage,dsaportraitlagen={17.91mm}{16.87mm},left=7mm,right=\dsaportraitfrei,top=8.9mm,bottom=9.6mm}
+\dsaKastenNeu{dsaWerteGrossPortrait} {94.0mm}{199.1mm}{47}{werte-gross-portrait} {dsaportraitlage,dsaportraitlagen={17.57mm}{16.62mm},left=7mm,right=\dsaportraitfrei,top=8.6mm,bottom=4.8mm}
 
 % ---- Graue Kaesten ----
 %
@@ -1006,9 +1097,9 @@
 
 % Die Zierleiste ist 158,5 x 29,5 mm gross, wird im Baukasten aber auf
 % 95,89 x 17,83 mm platziert — 496 gegen 300 ppi, also auf 60 Prozent
-% verkleinert. 95,89 mm sind breiter als eine Spalte (80,5 mm); die Leiste
-% laeuft dort also ueber den Satz hinaus oder wird schmaler gesetzt. Bis das
-% an einem Abzug entschieden ist, bleibt sie auf Spaltenbreite.
+% verkleinert. 95,89 mm sind breiter als eine Spalte (80,5 mm): die Leiste
+% laeuft ueber den Satz hinaus, und am Abzug ist entschieden, dass sie das
+% auch soll.
 % \dsaVorlesetext[<Rastereinheiten>]{<Text>}
 %
 % Die Zierleiste darueber wird auf Spaltenbreite gesetzt, und ihre Hoehe folgt
@@ -1027,21 +1118,27 @@
 \newlength{\dsavorleseueberhang}
 \setlength{\dsavorleseueberhang}{15.39mm}
 
-\newcommand{\dsaVorlesetext}[2][5]{%
-  \par\dsaRasterluft{1}%
-  % Die Grafik hat keine eigene Hoehe (\raisebox mit Null fuer Hoehe und
-  % Tiefe) und wird um #1 Rastereinheiten nach unten gesetzt. Den Raum gibt
-  % danach \dsaRasterluft, und der ist ein Vielfaches der Rastereinheit.
-  %
-  % Fuenf Einheiten fuer eine Spalte: 95,89 mm Breite ergeben 17,83 mm Hoehe,
-  % also 50,5 bp, und das sprengt vier Einheiten. Einspaltig braucht die
-  % Leiste neun.
+% Eine Leiste, gesetzt wie ein Bild auf dem Raster: keine eigene Hoehe,
+% um #1 Rastereinheiten nach unten geschoben, den Raum gibt \dsaRasterluft.
+%
+% Fuenf Einheiten fuer eine Spalte: 95,89 mm Breite ergeben 17,83 mm Hoehe,
+% also 50,5 bp, und das sprengt vier Einheiten. Einspaltig braucht die
+% Leiste neun.
+\newcommand{\dsa@vorleseleiste}[2]{%
   \noindent\makebox[\linewidth][c]{%
     \raisebox{-\dsaRaster{#1}}[0pt][0pt]{%
       \includegraphics[width=\dimexpr\linewidth+\dsavorleseueberhang\relax]%
-        {\dsagrafik{vorlesetext}}}}%
-  \par\dsaRasterluft{#1}%
+        {\dsagrafik{#2}}}}%
+  \par\dsaRasterluft{#1}}
+
+% Zwei Leisten, oben und unten. Das Gegenstueck zu „Text zum Nachlesen" ist
+% Absatztrenner_unten -- gleiche Pixelmasse, gleiche Skalierung, gleiche
+% Zahl von Rastereinheiten.
+\newcommand{\dsaVorlesetext}[2][5]{%
+  \par\dsaRasterluft{1}%
+  \dsa@vorleseleiste{#1}{vorlesetext}%
   \nobreak #2\par
+  \dsa@vorleseleiste{#1}{trenner-unten-breit}%
   \dsaRasterluft{1}}
 % PRUEFEN: Ob der Vorlesetext kursiv gesetzt wird, sagt der Baukasten nicht —
 % hier aufrecht.
@@ -1738,6 +1835,96 @@
   \mbox{}%
   \clearpage\dsaHintergrundAn}
 
+% ---- Rueckseite nach dem Rueckseiten-Paket ----
+%
+% Das Paket bringt eine fertige Rueckseite mit Zierrahmen, Banner und
+% kleiner Aventurienkarte, dazu 28 Fassungen mit je einer hervorgehobenen
+% Region. werkzeuge/aufbereiten.py legt sie als ruecken-neutral und
+% ruecken-<region> ab -- etwa ruecken-mittelreich.
+%
+% Alle Masse sind an der Rueckseite einer gesetzten Veroeffentlichung
+% vermessen. Sie sind Laengen, damit sich jede Zeile einzeln verschieben
+% laesst.
+\newlength{\dsarueckelinks}   \setlength{\dsarueckelinks}{27.7mm}
+\newlength{\dsarueckebreite}  \setlength{\dsarueckebreite}{81.7mm}
+\newlength{\dsarueckentitel}  \setlength{\dsarueckentitel}{57.6mm}
+\newlength{\dsarueckenautor}  \setlength{\dsarueckenautor}{62.0mm}
+\newlength{\dsarueckenstrich} \setlength{\dsarueckenstrich}{67.5mm}
+\newlength{\dsarueckestrichbreite}\setlength{\dsarueckestrichbreite}{65mm}
+\newlength{\dsarueckentext}   \setlength{\dsarueckentext}{95.5mm}
+\newcommand*{\dsarueckentitelgrad}{18}
+
+% Der graue Kasten unten. Im Vorbild sitzt sein Text ab 76,3 mm, der Kasten
+% selbst reicht etwas darueber hinaus.
+\newlength{\dsarueckekastenx}  \setlength{\dsarueckekastenx}{72.5mm}
+\newlength{\dsarueckekasteny}  \setlength{\dsarueckekasteny}{202.0mm}
+\newlength{\dsarueckekastenb}  \setlength{\dsarueckekastenb}{63.0mm}
+% Am gerenderten Vorbild abgelesen: rund (160, 157, 154).
+\definecolor{dsarueckegrau}{HTML}{A09D9A}
+
+% Ein Feld im grauen Kasten: Rubrik fett, Wert dahinter.
+\newcommand{\dsaRueckFeld}[2]{{\bfseries #1:} #2\par}
+% Die Kopfzeilen des Kastens, fett und zentriert, mit der Linie darunter,
+% die das Vorbild zeigt.
+\newcommand{\dsaRueckKopf}[1]{%
+  {\centering\bfseries\fontsize{12bp}{13.8bp}\selectfont #1\par}%
+  \dsaRueckStrich}
+% Ein Strich ueber die Kastenbreite.
+\newcommand*{\dsaRueckStrich}{%
+  \par\nobreak\vspace{2bp}%
+  \noindent\rule{\linewidth}{0.4bp}\par
+  \vspace{2bp}\nobreak}
+
+% \dsaRueckseite{<Grafik>}{<Titel>}{<Autorzeile>}{<Klappentext>}{<Kasten>}
+%
+% Die Grafik ist eine der Rueckseiten aus dem Paket, ohne Endung und ohne
+% Ordner: „ruecken-mittelreich" oder „ruecken-neutral".
+\newcommand{\dsaRueckseite}[5]{%
+  \clearpage\dsaHintergrundAus\onecolumn
+  \thispagestyle{empty}%
+  \begin{tikzpicture}[remember picture, overlay]
+    % Randabfallend: die Vorlage ist A4 ohne Anschnitt, hier auf 216 x 303 mm
+    % gebracht und dabei beschnitten, damit kein weisser Streifen bleibt.
+    \node[anchor=center, inner sep=0] at (current page.center)
+      {\dsaBildDeckend{216mm}{303mm}{\dsagrafik{#1}}};
+    % Titel und Autorzeile
+    \node[anchor=base west, inner sep=0]
+      at ([shift={(\dsarueckelinks,-\dsarueckentitel)}]current page.north west)
+      {\dsaandalus\fontsize{\dsarueckentitelgrad bp}%
+        {\dsarueckentitelgrad bp}\selectfont #2};
+    \node[anchor=base west, inner sep=0]
+      at ([shift={(\dsarueckelinks,-\dsarueckenautor)}]current page.north west)
+      {\fontsize{12bp}{14.4bp}\selectfont #3};
+    \node[anchor=north west, inner sep=0]
+      at ([shift={(\dsarueckelinks,-\dsarueckenstrich)}]current page.north west)
+      {\rule{\dsarueckestrichbreite}{0.6bp}};
+    % Klappentext, Blocksatz in der gemessenen Breite
+    \node[anchor=north west, inner sep=0, align=justify,
+          text width=\dsarueckebreite]
+      at ([shift={(\dsarueckelinks,-\dsarueckentext)}]current page.north west)
+      % \parskip steht im Heft auf null; der Klappentext braucht seine
+      % Absatzabstaende. Im Vorbild sind es 2,83 mm zwischen den Absaetzen.
+      {\fontsize{12bp}{15bp}\selectfont
+       \setlength{\parskip}{2.83mm}\setlength{\parindent}{0pt}#4\par};
+    % Der graue Kasten
+    \node[anchor=north west, inner sep=0]
+      at ([shift={(\dsarueckekastenx,-\dsarueckekasteny)}]current page.north west)
+      {\begin{tcolorbox}[enhanced, nobeforeafter, sharp corners,
+          boxrule=0pt, frame hidden,
+          width=\dsarueckekastenb, colback=dsarueckegrau,
+          left=3.8mm, right=3.8mm, top=4mm, bottom=4mm,
+          % „blankest" schaltet die Fuellung ab; sie kommt ueber
+          % „interior style" zurueck.
+          interior style={fill=dsarueckegrau},
+          % 55 mm sind fuer Blocksatz zu schmal: „Komplexitaet
+          % (Spieler/Meister)" wurde gesperrt und trotzdem getrennt.
+          fontupper=\raggedright\fontsize{9bp}{10.4bp}\selectfont]
+        #5
+      \end{tcolorbox}};
+  \end{tikzpicture}%
+  \mbox{}%
+  \clearpage\dsaHintergrundAn}
+
 % ---- Impressum ----
 %
 % Im deutschen Buchhandel heisst diese Seite Impressum; sie sitzt in der
@@ -1802,6 +1989,9 @@
 
 \newenvironment{dsaImpressumseite}{%
   \clearpage\onecolumn
+  % Keine Seitenzahl, kein Kolumnentitel -- und deshalb der Hintergrund
+  % ohne Feld dafuer.
+  \dsaHintergrundOhneFeld
   % Die Ueberschrift steht als Knoten am Papier, nicht im Fluss: nur so
   % sitzt ihre Grundlinie auf dem gemessenen Mass, unabhaengig davon, was
   % \topskip mit der ersten Zeile macht.
@@ -1918,7 +2108,9 @@
 
 \newcommand{\dsaInhalt}{%
   \clearpage\onecolumn
-  \thispagestyle{empty}%
+  % Keine Seitenzahl, kein Kolumnentitel -- und deshalb der Hintergrund
+  % ohne Feld dafuer.
+  \dsaHintergrundOhneFeld
   \dsa@linkerrandsetzen
   \begin{tikzpicture}[remember picture, overlay]
     \node[anchor=base west, inner sep=0]
@@ -1930,7 +2122,11 @@
   % als Abstand. Die erste Eintragszeile sitzt damit auf der dritten
   % Rasterlinie.
   \dsaRasterluft{2}%
-  \@starttoc{toc}%
+  % Zweispaltig, mit demselben Steg wie der Fliesstext.
+  \setlength{\columnsep}{5mm}%
+  \begin{multicols}{2}%
+    \@starttoc{toc}%
+  \end{multicols}%
   \clearpage\twocolumn}
 
 % ---- Seite ohne Seitenzahl ----

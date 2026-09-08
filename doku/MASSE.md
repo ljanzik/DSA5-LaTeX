@@ -215,6 +215,62 @@ Aus `Resources/Graphic.xml` des IDML, unverändert.
 | `dsagruenverlauf` | Grün für gradient | CMYK 70 53 91 17 |
 | `dsapergamentgelb` | Für Gelb | CMYK 9 26 56 9 |
 
+## Die Rückseite
+
+Gemessen an der Rückseite einer gesetzten Veröffentlichung:
+
+| Maß | Wert |
+|---|---|
+| Titel | Andalus 18 bp, x 27,65 mm, Grundlinie 57,6 mm |
+| Autorzeile | Gentium 12 bp, Grundlinie 62,0 mm |
+| Strich darunter | 65 mm lang, 0,53 mm stark |
+| Klappentext | Gentium 12 bp auf 15 bp, Blocksatz, 81,7 mm breit, erste Grundlinie 97,9 mm |
+| Absatzabstand im Klappentext | 2,83 mm |
+| grauer Kasten, Text | ab x 76,3 mm |
+| Kopfzeilen | Gentium fett 12 bp, zentriert, Grundlinien 208,8 und 213,6 mm |
+| Rubriken | 9 bp, Grundlinien ab 220,4 mm im Abstand von 3,67 mm |
+| Fertigkeiten | 9 bp, ab 258,1 mm |
+| Kastenfarbe | rund (160, 157, 154), also A09D9A |
+
+Der Kasten ist im PDF des Vorbilds kein Rechteck, sondern gerastert — die Farbe ist deshalb am
+gerenderten Bild abgelesen. Blocksatz verträgt die Breite nicht: bei 55 mm wurde
+„Komplexität (Spieler/Meister)" gesperrt und trotzdem getrennt, deshalb linksbündig.
+
+Die Grafiken kommen aus dem Rückseiten-Karten-Paket, einem zweiten Paket neben dem Baukasten. Jede
+der 28 Regionalfassungen ist eine vollständige A4-Seite bei 300 ppi, in der genau eine Region
+ausgeschnitten ist, damit die helle Fläche der Vorlage durchscheint — bei
+`Aventurien_Mittelreich.png` sind das 2,3 Prozent der Fläche, mitten in der Karte.
+`werkzeuge/aufbereiten.py` legt sie auf weiß und speichert sie als JPEG: 1,8 statt 11 MB je Datei,
+ohne sichtbaren Unterschied.
+
+## Der Innenraum der Kästen
+
+Ein Kasten des Baukastens ist eine Grafik mit gezeichnetem Zierrand. Wie breit dieser Rand ist,
+steht nirgends — und wer den Text zu weit nach oben setzt, schreibt in das Ornament. Genau das war
+am Abzug zu sehen: im Porträtkasten lag die erste Zeile mitten in der oberen Zierleiste.
+
+`werkzeuge/innenraum.py` sucht die Innenkante: der Zierrand ist unruhig, die Fläche gleichmäßig,
+also liegt die Kante dort, wo die Helligkeit über zwei Millimeter ruhig wird.
+
+| Kasten | oben | unten | links | rechts |
+|---|---|---|---|---|
+| `pergament-klein` | 3,13 | 3,30 | 4,06 | 3,64 |
+| `pergament-mittel` | 3,64 | 3,30 | 3,13 | 4,06 |
+| `pergament-lang` | 2,96 | 3,30 | 3,73 | 4,15 |
+| `pergament-breit` | 3,56 | 3,05 | 3,73 | 3,73 |
+| `pergament-schmal` | 2,88 | 3,81 | 3,73 | 3,81 |
+| `werte-klein` | 6,18 | 5,59 | 2,62 | 3,22 |
+| `werte-mittel` | 7,28 | 4,74 | 3,89 | 4,23 |
+| `werte-gross` | 6,27 | 3,56 | 3,47 | 3,30 |
+| `werte-klein-portrait` | 9,31 | 9,57 | 6,77 | 9,31 |
+| `werte-mittel-portrait` | 8,38 | 9,06 | 4,66 | 11,18 |
+| `werte-gross-portrait` | 8,13 | 4,32 | 4,57 | 11,43 |
+
+Alle Werte in mm, Abstand der Innenkante vom Rand der Grafik. Die 6 mm, die vorher für alle galten,
+reichen bei keinem Wertekasten. Jeder setzt jetzt seine eigenen `top` und `bottom`, die
+Pergamentkästen behalten die Voreinstellung. Das große Maß rechts bei den Porträtkästen ist der
+Überhang des Medaillons — dort endet der Kastenkörper.
+
 ## Die Probenzeile
 
 Gemessen an einer gesetzten Veröffentlichung, drei Vorkommen auf zwei Seiten:

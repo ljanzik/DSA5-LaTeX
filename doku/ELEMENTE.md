@@ -49,7 +49,9 @@ diese Aufteilung.
 | Feld auf der Rückseite | `\dsaRueckenfeld{Inhalt}` | — | nein | nein |
 | Impressum | `\begin{dsaImpressumseite}` | 1 | nein | ja |
 | Inhaltsverzeichnis | `\dsaInhalt` | 1 | nein | ja |
-| Kapitelanfang | `\dsakapitel[Bild]{Titel}` | 2 | ja | ja |
+| Kapitelanfang ohne Rahmen | `\dsakapitel{Titel}` | 2 | ja | ja |
+| Kapitelanfang mit Rahmen | `\dsakapitelbild[Bild]{Titel}` | 2 | ja | ja |
+| Rückseite | `\dsaRueckseite{Grafik}{Titel}{Autor}{Text}{Kasten}` | — | nein | nein |
 | Normalseite | — (Regelfall) | 2 | ja | ja |
 | Seite ohne Seitenzahl | `\begin{dsaSeiteOhneZahl}` | 2 | nein | ja |
 | Ganzseitige Grafik | `\dsaGanzseite{Bild}` | — | nein | nein |
@@ -114,8 +116,12 @@ Tiefe null, verschiebt ihn nach unten und lässt den Raum von `\dsaRasterluft` k
 Nicht gebaut: der **Buchrücken**. Die Grafik dafür (`Cover_Buchtitel`, 184,3 mm breit — genau der
 Grafikbereich) liegt im Baukasten, das Element fehlt.
 
-**Der Seitenhintergrund** rotiert über **alle vier** Doppelseiten des Baukastens; `\dsaHintergrundAus`
-und `\dsaHintergrundAn` schalten ihn für einzelne Seiten ab und wieder ein.
+**Der Seitenhintergrund** rotiert über **drei** der vier Doppelseiten des Baukastens, je zwei
+Seiten eine Variante. Die vierte hat in der unteren Außenecke kein Feld für die Seitenzahl und ist
+deshalb den Seiten vorbehalten, die keine tragen: `\dsaHintergrundOhneFeld` wählt sie für die
+laufende Seite und macht die Fußzeile leer. Impressum und Inhaltsverzeichnis rufen das selbst auf.
+`\dsaHintergrundAus` und `\dsaHintergrundAn` schalten den Hintergrund für einzelne Seiten ab und
+wieder ein.
 
 **Kapitelanfang.** Banner 210,1 × 43,2 mm am oberen Papierrand, Titel als Versalien darin, dann
 beide Spalten darunter. Mit Kapitelbild wird die Außenhälfte belegt; dann muss die Anfangsseite mit
@@ -126,6 +132,47 @@ Das Kapitelbild ist nach der Bauweise des Verlags gesetzt: Pergamentfläche, dar
 eingerückt, sodass der Pergamentrand als Rahmen stehen bleibt, darüber das Drachenornament. Keine
 Maske. Die Randbreite ist `\dsakapitelbildrand`, der Bannerversatz von der Papierkante
 `\dsabannerversatz`.
+
+### Zwei Arten von Kapitelseiten
+
+```latex
+\dsakapitel{Titel}                  % ohne Rahmen, Text über beide Spalten
+\dsakapitelbild{Titel}              % mit Rahmen, ohne Bild: Platzhalter
+\dsakapitelbild[bilder/hof]{Titel}  % mit Rahmen und Bild
+```
+
+Der Rahmen belegt die Außenhälfte der Seite. Der Text muss deshalb in die innere Spalte passen und
+die Seite mit `\dsaKapitelseiteEnde` beendet werden, sonst läuft er dahinter — eine Grenze von
+LaTeX, nicht der Klasse.
+
+Gezeichnet wird in dieser Reihenfolge: Seitenhintergrund, Rahmen, Banner, Text. Beides steht in
+**einem** TikZ-Bild; zwei Bilder mit `remember picture` im selben `\twocolumn`-Vorspann setzen die
+Positionen von `current page` durcheinander. Die Grafiken lassen die Fußzeile von selbst frei — das
+Pergament deckt bis 280,8 mm der 300 mm, das Ornament sitzt zwischen 236,1 und 286,7 mm.
+`\dsakapitelrahmenversatz` (13,4 mm) schiebt die Fläche an den Anschnitt, weil sie in der Datei
+nicht bis zum Rand deckt.
+
+### Die Rückseite
+
+```latex
+\dsaRueckseite{ruecken-mittelreich}{Der falsche Ganter}{von Leif Janzik}{%
+  Klappentext, Absätze durch Leerzeilen getrennt.
+}{%
+  \dsaRueckKopf{Ein DSA-Gruppenabenteuer\\für 3 bis 5 Helden}
+  \dsaRueckFeld{Genre}{Ermittlung}
+  \dsaRueckStrich
+  \dsaAnforderungen{1}{4}{2}{1}
+}
+```
+
+Die Grafik kommt aus dem **Rückseiten-Karten-Paket** von Ulisses, einem zweiten Paket neben dem
+Baukasten. Es bringt eine fertige Rückseite mit Zierrahmen (`ruecken-neutral`) und 28 Fassungen, in
+denen je eine Region Aventuriens hervorgehoben ist (`ruecken-mittelreich` und so weiter).
+`werkzeuge/aufbereiten.py --rueckseiten <pfad>` holt sie.
+
+Der Aufbau ist an der Rückseite einer gesetzten Veröffentlichung vermessen: Titel in Andalus 18 bp,
+Autorzeile 12 bp, ein Strich darunter, der Klappentext 81,7 mm breit im Blocksatz, und der graue
+Kasten unten rechts mit Kopfzeile, Rubriken und Fertigkeiten. Die Maße stehen in `MASSE.md`.
 
 ### Die Probenzeile
 
@@ -152,7 +199,7 @@ Anschnitt wissen.
 | Element | Schrift | Lage |
 |---|---|---|
 | Seitenzahl | Andalus 13 bp, weiß mit Kontur | Mitte 18,4 mm von der Außenkante |
-| Kolumnentitel | Andalus 14 bp, schwarz | rechte Seiten rechtsbündig 24,29 mm, linke linksbündig 40,35 mm von der Außenkante |
+| Kolumnentitel | Andalus 14 bp, schwarz | bündig am Satzspiegel, also 24 mm von der Außenkante |
 
 Der Kolumnentitel ist `Abenteuertitel – Kapitelname`. Den Titel setzt die Präambel, der Kapitelname
 kommt über die Marken von LaTeX aus `\dsakapitel`:
@@ -162,9 +209,14 @@ kommt über die Marken von LaTeX aus `\dsakapitel`:
 ```
 
 Ohne diesen Befehl bleibt der Kapitelname allein stehen, vor dem ersten Kapitel bleibt die Zeile
-leer. Die Lage ist im Vorbild **nicht** spiegelbildlich, und zwar stabil über mehrere Seiten; das
-ist so übernommen. Wer es symmetrisch will, setzt `\dsakolumneaussenlinks` gleich
-`\dsakolumneaussenrechts`.
+leer.
+
+Er schließt mit dem Satzspiegel ab, auf beiden Seiten 24 mm von der Außenkante — rechts
+rechtsbündig bei 186 mm, links linksbündig bei 24 mm. Damit steht er bündig unter dem Textblock,
+und der Abstand zur Zahl ist auf beiden Seiten gleich. Im Vorbild ist die Lage **nicht**
+spiegelbildlich (rechts 24,29 mm, links 40,35 mm, beides stabil über mehrere Seiten), aber dessen
+Satzspiegel ist ein anderer, und am Abzug sieht die Asymmetrie schief aus. Wer sie haben will,
+setzt `\dsakolumneaussenlinks` auf 40,35 mm.
 
 ---
 
@@ -187,7 +239,7 @@ ist so übernommen. Wer es symmetrisch will, setzt `\dsakolumneaussenlinks` glei
 | `\dsaEinfuehrung{Text}` | kursiv, Laufweite +10 |
 | `\dsaStimmung{Text}{Quelle}` | Pfeile aufrecht, Text kursiv, Quelle mit Bindestrich, ohne Punkt |
 | `\dsaZitat{Text}` | `#404040`, kursiv, zentriert |
-| `\dsaVorlesetext[Einheiten]{Text}` | Zierleiste darüber, 15,39 mm breiter als die Spalte |
+| `\dsaVorlesetext[Einheiten]{Text}` | Zierleisten darüber **und** darunter, 15,39 mm breiter als die Spalte |
 | `\dsaKastentitel{Titel}` | Überschrift im Kasten, 12 bp fett |
 | `\begin{dsaWerteabsatz}` | hängender Einzug 8,504 pt |
 | `\dsaBand{ABE}{8}` | hochgestelltes Bandkürzel |

@@ -7,6 +7,8 @@ Scriptorium-Baukasten auf.
     python3 werkzeuge/aufbereiten.py --liste
     python3 werkzeuge/aufbereiten.py "/pfad/zum/Baukasten" --png
     python3 werkzeuge/aufbereiten.py "/pfad/zum/Baukasten" --ppi 200
+    python3 werkzeuge/aufbereiten.py "/pfad/zum/Baukasten" \
+        --rueckseiten "/pfad/zum/Rueckseiten_Karten_Paket"
 
 Mit --ziel schreibt es grafiken/ und schriften/ in ein anderes Projekt,
 das diese Klasse benutzt. Ohne --ziel in dieses hier.
@@ -28,6 +30,10 @@ Gemeinschaftsinhalte fuer SCRIPTORIUM AVENTURIS, die mit Apache 2.0 nicht
 vereinbar ist. Dieses Werkzeug holt es aus dem Paket, das jeder selbst
 herunterlaedt, und benennt es auf Namen ohne Leerzeichen und Umlaute um,
 weil LaTeX mit beidem schlecht umgeht.
+
+Mit --rueckseiten kommt das zweite Paket dazu: eine fertige Rueckseite mit
+Zierrahmen und 28 Fassungen davon, in denen je eine Region Aventuriens
+hervorgehoben ist. Sie werden zu ruecken-neutral und ruecken-<region>.
 
 Der Baukasten, kostenlos bei Ulisses:
 https://www.ulisses-ebooks.de/de/product/197880/scriptorium-aventuris-layout-baukasten
@@ -153,6 +159,7 @@ KAPITELSTART_EBENEN = {
 # Der Coverrahmen ist NICHT dabei: er hat echte Transparenz.
 ALS_JPEG = {
     'umschlag-hinten',
+    'ruecken-neutral',
     'seite-links-0', 'seite-links-1', 'seite-links-2', 'seite-links-3',
     'seite-rechts-0', 'seite-rechts-1', 'seite-rechts-2', 'seite-rechts-3',
 }
@@ -160,6 +167,34 @@ JPEG_QUALITAET = 88
 
 SCHRIFTEN = ['andlso.ttf', 'GenBasR.ttf', 'GenBasB.ttf',
              'GenBasI.ttf', 'GenBasBI.ttf']
+
+# Aus dem Rueckseiten-Paket. Der Dateiname wird zum Kuerzel: Umlaute
+# ausgeschrieben, Grossbuchstaben klein, Wortgrenzen zu Bindestrichen.
+RUECKEN_NEUTRAL = 'ScriptoriumAventuris-hinten.png'
+RUECKEN_PRAEFIX = 'Aventurien_'
+
+
+def kuerzel(name):
+    """Aventurien_TieferSueden.png -> tiefer-sueden"""
+    stamm = os.path.splitext(name)[0]
+    if stamm.startswith(RUECKEN_PRAEFIX):
+        stamm = stamm[len(RUECKEN_PRAEFIX):]
+    ersatz = {'\u00e4': 'ae', '\u00f6': 'oe', '\u00fc': 'ue',
+              '\u00c4': 'Ae', '\u00d6': 'Oe', '\u00dc': 'Ue',
+              '\u00df': 'ss'}
+    for a, b in ersatz.items():
+        stamm = stamm.replace(a, b)
+    # Wortgrenzen: vor jedem Grossbuchstaben, der auf einen Kleinbuchstaben
+    # folgt, ein Bindestrich. Unterstriche werden ebenfalls Bindestriche.
+    aus = []
+    for i, z in enumerate(stamm):
+        if z == '_':
+            aus.append('-')
+            continue
+        if i > 0 and z.isupper() and stamm[i - 1].islower():
+            aus.append('-')
+        aus.append(z.lower())
+    return ''.join(aus)
 
 
 # ---------------------------------------------------------------- Helfer
@@ -197,7 +232,8 @@ def speichern(bild, ordner, name, nur_png=False, ppi=300):
     """
     stamm = os.path.splitext(name)[0]
     bild = verkleinern(bild, ppi)
-    if not nur_png and stamm in ALS_JPEG and not hat_alpha(bild):
+    if not nur_png and (stamm in ALS_JPEG
+                        or stamm.startswith('ruecken-')) and not hat_alpha(bild):
         ziel = os.path.join(ordner, stamm + '.jpg')
         bild.convert('RGB').save(ziel, 'JPEG',
                                  quality=JPEG_QUALITAET, optimize=True,
@@ -412,6 +448,38 @@ def main():
     print('Kapitelanfang      : %d von %d' % (kapitel, len(KAPITELSTART_EBENEN)))
 
     # 5 -- Schriften
+    # 5 -- Rueckseiten aus dem zweiten Paket
+    if '--rueckseiten' in sys.argv:
+        i = sys.argv.index('--rueckseiten')
+        if i + 1 >= len(sys.argv):
+            print('--rueckseiten braucht einen Pfad.')
+            return 2
+        paket = sys.argv[i + 1].rstrip('/\\')
+        if not os.path.isdir(paket):
+            print('Kein Ordner: %s' % paket)
+            return 2
+        rueck = 0
+        quelle = os.path.join(paket, RUECKEN_NEUTRAL)
+        if os.path.exists(quelle):
+            speichern(Image.open(quelle), zg, 'ruecken-neutral.png',
+                      nur_png, ppi)
+            rueck += 1
+        else:
+            fehlt.append('ruecken-neutral (gesucht: %s)' % RUECKEN_NEUTRAL)
+        for name in sorted(os.listdir(paket)):
+            if not name.startswith(RUECKEN_PRAEFIX) or not name.endswith('.png'):
+                continue
+            # In jeder Fassung ist eine Region ausgeschnitten, damit die
+            # helle Flaeche der Vorlage durchscheint. Auf weiss flachgelegt
+            # sieht sie genauso aus und wird als JPEG ein Zehntel so gross.
+            bild = Image.open(os.path.join(paket, name)).convert('RGBA')
+            grund = Image.new('RGBA', bild.size, (255, 255, 255, 255))
+            flach = Image.alpha_composite(grund, bild).convert('RGB')
+            speichern(flach, zg, 'ruecken-%s.png' % kuerzel(name),
+                      nur_png, ppi)
+            rueck += 1
+        print('Rueckseiten        : %d aus dem Kartenpaket' % rueck)
+
     sch = 0
     for name in SCHRIFTEN:
         q = finde(wurzel, ['Document fonts/%s' % name])
