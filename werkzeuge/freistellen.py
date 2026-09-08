@@ -31,6 +31,18 @@ Mit --weich <n> wird die Kante um n Pixel weicher gezeichnet, mit --hart
 wird sie auf voll oder durchsichtig gerundet. Ohne beides bleibt der
 Alphakanal der Vorlage, wie er ist.
 
+WELCHER TEIL WEGFAELLT. Passt das Verhaeltnis des Bildes nicht genau zur
+Maske, bleibt ein Ueberschuss, und der wird abgeschnitten. --y sagt, wie
+viel davon oben wegfaellt, --x wie viel links: 0 behaelt oben
+beziehungsweise links, 100 behaelt unten beziehungsweise rechts, 50 ist die
+Mitte und die Voreinstellung.
+
+    python3 werkzeuge/freistellen.py gaense.jpg kapitelstart-fenster \\
+        grafiken/gaense.png --y 100
+
+So bleibt unten alles stehen -- etwa ein Kopf im Vordergrund -- und der
+Ueberschuss fehlt oben.
+
 Das Bildmaterial ist NICHT Teil dieses Projekts. Es gehoert Ulisses Spiele
 und steht unter der Vereinbarung ueber Gemeinschaftsinhalte fuer
 SCRIPTORIUM AVENTURIS.
@@ -60,18 +72,20 @@ def finde_vorlage(name):
     sys.exit("Vorlage nicht gefunden: %s" % name)
 
 
-def deckend_zuschneiden(bild, breite, hoehe):
-    """Skaliert das Bild deckend und schneidet mittig zu.
+def deckend_zuschneiden(bild, breite, hoehe, anteil_x=50.0, anteil_y=50.0):
+    """Skaliert das Bild deckend und schneidet den Ueberschuss ab.
 
     Dasselbe Verfahren wie \\dsaBildDeckend in der Klasse: nach dem
     groesseren der beiden Faktoren skalieren, den Ueberschuss abschneiden.
+    Wo er wegfaellt, sagen die beiden Anteile -- 0 behaelt oben und links,
+    100 behaelt unten und rechts, 50 ist die Mitte.
     """
     faktor = max(breite / bild.width, hoehe / bild.height)
     neu = (max(1, int(round(bild.width * faktor))),
            max(1, int(round(bild.height * faktor))))
     bild = bild.resize(neu, Image.LANCZOS)
-    links = (bild.width - breite) // 2
-    oben = (bild.height - hoehe) // 2
+    links = int(round((bild.width - breite) * anteil_x / 100.0))
+    oben = int(round((bild.height - hoehe) * anteil_y / 100.0))
     return bild.crop((links, oben, links + breite, oben + hoehe))
 
 
@@ -90,6 +104,20 @@ def main():
         argumente = [a for a in argumente if a != sys.argv[i + 1]]
     hart = "--hart" in sys.argv
 
+    anteil = {"--x": 50.0, "--y": 50.0}
+    for schalter in ("--x", "--y"):
+        if schalter in sys.argv:
+            i = sys.argv.index(schalter)
+            if i + 1 >= len(sys.argv):
+                sys.exit("%s braucht eine Zahl von 0 bis 100" % schalter)
+            wert = sys.argv[i + 1]
+            argumente = [a for a in argumente if a != wert]
+            try:
+                anteil[schalter] = max(0.0, min(100.0, float(wert)))
+            except ValueError:
+                sys.exit("%s braucht eine Zahl von 0 bis 100: %s"
+                         % (schalter, wert))
+
     quelle, vorlage, ziel = argumente[0], argumente[1], argumente[2]
     if not os.path.exists(quelle):
         sys.exit("Bild nicht gefunden: %s" % quelle)
@@ -106,7 +134,8 @@ def main():
         alpha = alpha.point(lambda v: 255 if v > 127 else 0)
 
     bild = Image.open(quelle).convert("RGBA")
-    bild = deckend_zuschneiden(bild, maske.width, maske.height)
+    bild = deckend_zuschneiden(bild, maske.width, maske.height,
+                               anteil["--x"], anteil["--y"])
     bild.putalpha(alpha)
 
     ordner = os.path.dirname(os.path.abspath(ziel))

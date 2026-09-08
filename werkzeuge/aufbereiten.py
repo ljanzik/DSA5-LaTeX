@@ -591,6 +591,33 @@ def main():
             else:
                 ImageDraw.floodfill(karte, saat, 128, thresh=0)
                 oeffnung = karte.point(lambda v: 255 if v == 128 else 0)
+                # Die Oeffnung muss unter den Rahmen reichen, sonst
+                # bleibt eine helle Linie: die Kanten der Grafik sind
+                # weichgezeichnet, und die Flutfuellung stoppt bei einer
+                # Deckung von 40 von 255 -- dort deckt der Rahmen noch
+                # kaum, und der Seitenhintergrund scheint durch. Gemessen
+                # waren das 0,28 bis 0,71 mm heller Streifen.
+                #
+                # Die Schwelle hochzusetzen hilft nicht: ab 128 entweicht
+                # die Fuellung nach draussen, der Rahmen ist nicht
+                # ueberall dicht.
+                #
+                # Also eine zweite Flutfuellung, von der Ecke aus: die
+                # gibt das Aussen. Was weder Oeffnung noch Aussen ist, ist
+                # der Rahmenkoerper. Die Oeffnung wird um 1,5 mm
+                # ausgedehnt und darauf beschnitten -- sie kriecht unter
+                # den Rahmen und bleibt innerhalb seiner Silhouette.
+                from PIL import ImageChops, ImageFilter
+                rand = karte.copy()
+                ImageDraw.floodfill(rand, (0, 0), 64, thresh=0)
+                innen = ImageChops.invert(
+                    rand.point(lambda v: 255 if v == 64 else 0))
+                weite = max(3, int(round(1.5 * je_mm)))
+                oeffnung = ImageChops.lighter(
+                    oeffnung,
+                    ImageChops.multiply(
+                        oeffnung.filter(ImageFilter.MaxFilter(2 * weite + 1)),
+                        innen))
                 # Die Maske: weisse Flaeche mit der Oeffnung als Alphakanal.
                 maske = Image.new('RGBA', rahmen.size, (255, 255, 255, 0))
                 maske.putalpha(oeffnung)

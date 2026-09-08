@@ -262,9 +262,21 @@ Der Rahmen liegt ganz auf der Seite: die Datei ist auf 80,50 / 96,60 = 0,8333 ve
 ### Die Öffnung des Rahmens
 
 Von der Fenstermitte aus im transparenten Bereich geflutet, begrenzt durch die Deckung des Rahmens:
-die Öffnung nimmt **69,5 Prozent** der Datei ein und reicht von 6,01 bis 93,73 mm waagerecht und
-0,00 bis 267,97 mm senkrecht. Ihre Form folgt der gerissenen Unterkante und umschließt das
-Drachenornament.
+die Öffnung reicht von 6,01 bis 93,73 mm waagerecht und 0,00 bis 267,97 mm senkrecht. Ihre Form
+folgt der gerissenen Unterkante und umschließt das Drachenornament.
+
+**So allein bleibt links eine helle Linie.** Die Kanten der Rahmengrafik sind weichgezeichnet, und
+die Flutfüllung stoppt bei einer Deckung von 40 von 255 — dort deckt der Rahmen noch kaum, und der
+Seitenhintergrund scheint durch. Gemessen waren das 0,28 bis 0,71 mm heller Streifen in **allen**
+247 geprüften Zeilen. Die Schwelle höher zu setzen hilft nicht: ab 128 entweicht die Füllung nach
+draußen, weil der Rahmen nicht überall dicht wird (Flächenanteil springt von 69,5 auf 93,3
+Prozent).
+
+`aufbereiten.py` flutet deshalb ein zweites Mal, von der Ecke aus. Das ergibt das Außen; was weder
+Öffnung noch Außen ist, ist der Rahmenkörper. Die Öffnung wird um 1,5 mm ausgedehnt und darauf
+beschnitten: Sie kriecht unter den Rahmen und bleibt innerhalb seiner Silhouette. Danach nimmt sie
+**72,8 Prozent** der Datei ein, reicht von 3,74 bis 79,38 mm auf der Seite, und der Spalt ist in
+allen 247 Zeilen negativ, also überdeckt: 0,14 bis 0,56 mm Überlappung.
 
 Die Kanten im Einzelnen, über den Fensterbereich gemessen:
 
