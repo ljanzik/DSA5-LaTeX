@@ -183,6 +183,18 @@
   \abovedisplayshortskip\z@ \belowdisplayshortskip\z@}
 \AtBeginDocument{\normalsize}
 
+% Die Klasse laedt kein Mathematik-Schriftpaket (siehe \dsaFormel). LaTeX
+% richtet trotzdem bei jedem \selectfont die drei Mathematik-Groessen ein
+% und leitet sie mit 0,7 und 0,5 aus der Grundgroesse ab. Aus 9 bp werden
+% so 6,32 und 4,52 pt, und die gibt es in Computer Modern nicht: "Font
+% shape OT1/cmr/m/n in size <4.51686> not available", dreimal je Groesse.
+% Am Satz aendert das nichts, weil im Heft keine Formel steht. Die Stufen
+% werden deshalb ausdruecklich auf vorhandene gelegt.
+\DeclareMathSizes{9bp}{9bp}{7bp}{5bp}
+\DeclareMathSizes{10bp}{10bp}{7bp}{5bp}
+\DeclareMathSizes{12bp}{12bp}{9bp}{7bp}
+\DeclareMathSizes{14bp}{14bp}{10bp}{7bp}
+
 % Andalus hat nur einen Schnitt. Ohne AutoFakeBold meldet der Lauf
 % „Font shape TU/andlso(0)/b/n undefined" und faellt still auf den normalen
 % zurueck — der Baukasten verlangt fuer Kapitel und Covertitel aber fett.
@@ -346,7 +358,14 @@
   %
   % Die Regel gilt deshalb nur dort, wo sie gebraucht wird: in den
   % Ueberschriften, ueber \dsa@lineskipraster in einer Gruppe.
-  \flushbottom
+  % \raggedbottom und nicht \flushbottom. Das Raster hat keine dehnbare
+  % Glue zwischen den Zeilen -- \flushbottom findet nichts zum Strecken
+  % und meldet stattdessen jede Seite, die nicht randvoll ist: 32 mal
+  % "Underfull \vbox has occurred while \output is active". Am Satz
+  % aendert sich nichts, die Zeilen liegen in beiden Faellen auf dem
+  % Raster; \raggedbottom sagt nur ausdruecklich, dass der Rest der Seite
+  % unten bleibt.
+  \raggedbottom
 \fi
 
 \ifdsa@rasterzeigen
@@ -682,12 +701,42 @@
   % In die Marken, damit der Kolumnentitel in der Fusszeile den Namen des
   % Kapitels kennt, auf dessen Seite er steht.
   \markboth{#1}{#1}%
-  \addcontentsline{toc}{section}{\thedsakapitel\quad #1}}
+  % \quad ist im PDF-Gliederungseintrag nicht erlaubt: hyperref meldet
+  % "Token not allowed in a PDF string" und ersetzt es durch ein
+  % Leerzeichen. Also gleich beides sagen -- Abstand fuers Verzeichnis,
+  % Leerzeichen fuer die Gliederung.
+  % Ohne eigenen Anker zeigen Kapitel und Unterkapitel auf dieselbe
+  % Stelle, und hyperref meldet "The anchor of a bookmark and its parent's
+  % must not be the same".
+  \phantomsection
+  \addcontentsline{toc}{section}{%
+    \texorpdfstring{\thedsakapitel\quad}{\thedsakapitel\space}#1}}
+
+% Ein Kapitel faengt immer auf einer rechten Seite an, wie im gedruckten
+% Heft. Steht die naechste Seite links, kommt eine Leerseite davor: mit
+% Hintergrund, aber ohne Seitenzahlfeld und ohne Kolumnentitel.
+%
+% Das ist nicht nur Buchbindersitte, sondern Bedingung fuer den
+% Kapitelrahmen. Er sitzt auf der AUSSENhaelfte der Seite -- rechts auf
+% einer rechten, links auf einer linken. Faengt ein Kapitel links an,
+% wandert er in den Bund.
+%
+% Nach \clearpage traegt der Seitenzaehler schon die Nummer der
+% kommenden Seite; die Parittaetspruefung gilt also ihr und nicht der
+% eben ausgegebenen.
+\newcommand*{\dsa@aufrechteSeite}{%
+  \clearpage
+  \ifodd\value{page}\else
+    \dsaHintergrundOhneFeld
+    \null
+    \clearpage
+  \fi}
 
 \newcommand{\dsakapitel}[2][]{%
   % Ein Bild als optionales Argument gilt weiter, damit bestehende
   % Dokumente laufen -- es fuehrt auf die zweite Art.
   \if\relax\detokenize{#1}\relax
+    \dsa@aufrechteSeite
     \stepcounter{dsakapitel}%
     \twocolumn[\dsa@bannerblock{#2}]%
     \dsa@kapitelmarken{#2}%
@@ -696,6 +745,7 @@
   \fi}
 
 \newcommand{\dsakapitelbild}[2][]{%
+  \dsa@aufrechteSeite
   \stepcounter{dsakapitel}%
   \twocolumn[\dsa@bannerblockmitrahmen{#1}{#2}]%
   \dsa@kapitelmarken{#2}}
@@ -839,6 +889,10 @@
 % „Absatzueberschrift" des Baukastens.
 \newcommand{\dsaunterkapitel}[1]{%
   \par\dsaRasterluft{1}%
+  % Ohne eigenen Anker zeigen alle Unterkapitel eines Kapitels auf den
+  % Anker des Kapitels, und hyperref meldet "The anchor of a bookmark and
+  % its parent's must not be the same".
+  \phantomsection
   \addcontentsline{toc}{subsection}{#1}%
   % Zwei Rastereinheiten: eine fuer die Zeile, eine fuer den Abstand danach,
   % den die IDML als SpaceAfter 12 pt nennt. \dsa@lineskipraster haelt den
@@ -952,6 +1006,20 @@
 % Wert verschiebt die Box nach links und laesst ihre Breite, weil die mit
 % „width" gesetzt ist.
 \tcbset{dsaueberhang/.style={enlarge left by=-#1}}
+
+% ACHTUNG, planmaessige Meldung. Der Kasten ist breiter als die Spalte und
+% wird nur nach links verschoben, nicht verschmaelert. Rechts steht er
+% deshalb ueber, und TeX meldet fuer den Absatz, der ihn traegt, genau
+% diesen Ueberhang:
+%
+%   dsaPergament*    2,5 mm   ->  7,11 pt Overfull \hbox
+%   dsaWerteKlein    1,95 mm  ->  5,55 pt
+%   dsaWerteGross    2,25 mm  ->  6,40 pt
+%   dsaWerteMittel   3,2 mm   ->  9,10 pt
+%
+% Das ist kein Fehler, sondern der Zierrand, der ausserhalb des
+% Textbereichs liegen soll. Wer im Log nach echten Overfulls sucht, zieht
+% diese Werte ab.
 
 % Die Lage der Portraitkaesten: sie sind 13,5 mm breiter als eine Spalte, und
 % der Musterbogen verteilt das ungleich — 5,1 mm nach innen, 8,4 mm nach
@@ -1469,6 +1537,20 @@
 % von selbst. Den Raum liefert \dsaRasterluft, aufgerundet auf ganze
 % Rastereinheiten -- deshalb vertraegt die Umgebung auch Linien und
 % mehrzeilige Zellen.
+% L{<breite>} ist p{<breite>} mit Flattersatz.
+%
+% Blocksatz in einer schmalen Spalte zieht die Wortabstaende auf: in eine
+% p{20mm} passen zwei Woerter je Zeile, und TeX meldet reihenweise
+% "Underfull \hbox" -- im Abzug sind das loechrige Zeilen. In so schmalen
+% Spalten ist Flattersatz nicht Notloesung, sondern das Richtige.
+%
+% Ein \raggedright vor dem tabular hilft nicht: eine p-Spalte ist eine
+% parbox, und die ruft \@parboxrestore, das \rightskip und \parfillskip
+% zurueckdreht. Der Flattersatz muss deshalb in die Spaltenvorschrift.
+% \arraybackslash gibt \\ seine Tabellenbedeutung zurueck, die
+% \raggedright ueberschreibt.
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
 \newsavebox{\dsa@tabelle}
 \newenvironment{dsaTabelle}[1]
   {\begin{lrbox}{\dsa@tabelle}\begin{tabular}[t]{#1}}
@@ -2031,7 +2113,7 @@
           % Der Kasten ist schmal: die Rubrikspalte und die Rautenskala
           % muessen zusammen unter 55,4 mm bleiben.
           fontupper=\raggedright\fontsize{9bp}{10.4bp}\selectfont
-            \setlength{\dsaanforderungrubrik}{38mm}%
+            \setlength{\dsaanforderungrubrik}{36mm}%
             \setlength{\dsaanforderungskala}{15mm}]
         #5
       \end{tcolorbox}};
@@ -2391,7 +2473,10 @@
 
 \newcommand{\dsaAnforderungen}[4]{%
   \par\noindent\textbf{Anforderungen:}\par
-  \noindent\begin{tabular}{@{}p{\dsaanforderungrubrik}l@{}}
+  % Zwischen den Spalten liegt sonst zweimal \tabcolsep, also 4,23 mm.
+  % Mit 38 mm Rubrik und 15 mm Skala sprengt das die 55,4 mm des grauen
+  % Kastens um 10,86 pt. Der Abstand steht deshalb ausdruecklich auf 2 mm.
+  \noindent\begin{tabular}{@{}p{\dsaanforderungrubrik}@{\hspace{2mm}}l@{}}
     Kampftalente                  & \dsaRautenRot{#1}{\dsaanforderungskala}\\
     Gesellschaftstalente          & \dsaRautenRot{#2}{\dsaanforderungskala}\\
     Handwerkstalente              & \dsaRautenRot{#3}{\dsaanforderungskala}\\

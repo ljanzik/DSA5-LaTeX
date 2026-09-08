@@ -165,8 +165,14 @@ Meisterinformation, im Text ebenso das Auge (`\dsaAugeSchwarz` öffnet, `\dsaAug
 \dsakapitelbild[bilder/hof]{Titel}  % mit Rahmen und Bild
 ```
 
+**Ein Kapitel fängt immer auf einer rechten Seite an.** Beide Befehle prüfen die Parität und
+schieben notfalls eine Leerseite ein: mit Hintergrund, aber ohne Seitenzahlfeld und ohne
+Kolumnentitel. Das ist nicht nur Buchbindersitte. Der Rahmen sitzt auf der **Außen**hälfte, und die
+liegt auf einer linken Seite links — ein Kapitel, das links anfängt, hat seinen Rahmen im Bund.
+Genau so war es im ersten Abzug des Ganter-Hefts zu sehen, als die Einleitung auf Seite 4 lag.
+
 Der Rahmen belegt die Außenhälfte der Seite. Der Text muss deshalb in die innere Spalte passen und
-die Seite mit `\dsaKapitelseiteEnde` beendet werden, sonst läuft er dahinter — eine Grenze von
+die Seite mit `\dsaKapitelseiteEnde` beendet werden, sonst läuft er dahinter: eine Grenze von
 LaTeX, nicht der Klasse.
 
 **Der Rahmen ist ein Zierrahmen, keine Pergamentfläche.** Er kommt als `kapitelstart-rahmen` aus
@@ -217,11 +223,23 @@ python3 werkzeuge/freistellen.py bilder/hof.jpg kapitelstart-pergament \
     grafiken/hof-pergament.png
 ```
 
-Das Bild wird auf die Vorlage deckend skaliert, mittig beschnitten und mit ihrem Alphakanal
-maskiert. Vorlagen im Bestand: `kapitelstart-pergament` (gerissenes Blatt, 109,2 × 300 mm), die
-vier `pergament-*` (Kästen mit Zierrand), `maske` (Meistermaske) und `portraitrahmen`
-(Medaillonring). `--weich <n>` zeichnet die Kante weicher, `--hart` rundet sie auf voll oder
-durchsichtig.
+Das Bild wird auf die Vorlage deckend skaliert, beschnitten und mit ihrem Alphakanal maskiert.
+Vorlagen im Bestand: `kapitelstart-fenster` (die Rahmenöffnung), `kapitelstart-pergament`
+(gerissenes Blatt, 109,2 × 300 mm), die vier `pergament-*` (Kästen mit Zierrand), `maske`
+(Meistermaske) und `portraitrahmen` (Medaillonring). `--weich <n>` zeichnet die Kante weicher,
+`--hart` rundet sie auf voll oder durchsichtig.
+
+**Wo der Überschuss wegfällt, sagen `--x` und `--y`.** Passt das Seitenverhältnis des Bildes nicht
+zur Maske, bleibt ein Rest, und der wird abgeschnitten. `0` behält oben beziehungsweise links,
+`100` behält unten beziehungsweise rechts, `50` ist die Mitte und die Voreinstellung:
+
+```sh
+python3 werkzeuge/freistellen.py gaense.jpg kapitelstart-fenster \
+    grafiken/gaense.png --y 100
+```
+
+Das Gänsebild des Ganter-Hefts brauchte genau das. Mittig beschnitten fielen oben und unten je 62
+von 124 überzähligen Pixeln weg, und der vordere Gänsekopf stand ganz unten.
 
 Gezeichnet wird in dieser Reihenfolge: Seitenhintergrund, Rahmen, Banner, Text. Beides steht in
 **einem** TikZ-Bild; zwei Bilder mit `remember picture` im selben `\twocolumn`-Vorspann setzen die
@@ -522,6 +540,23 @@ leistet, nur nimmt ihm dort der Freistellpfad die Zahlen ab.
 `\dsaTabellenkopf{Text}` setzt die Kopfleiste mit Verlauf von `Tabellenrot` nach Weiß,
 `\dsaTabellenlinie` die Linienfarbe auf `#BFBFBF`.
 
+**Schmale Spalten nehmen `L{}` statt `p{}`.** `L` ist `p` mit Flattersatz. Blocksatz in einer
+`p{20mm}` bringt zwei Wörter je Zeile unter und zieht die Wortabstände auf: im Ganter-Heft waren
+das 59 von 79 `Underfull \hbox`-Meldungen und im Abzug löchrige Zeilen. Ein `\raggedright` vor
+dem `tabular` hilft nicht, weil eine `p`-Spalte eine `parbox` ist und `\@parboxrestore` den
+`\rightskip` zurückdreht.
+
+**Die Spaltenbreiten müssen in die Spalte passen**, und zwischen zwei Spalten liegt zweimal
+`\tabcolsep`, also 12 pt oder 4,23 mm. `@{}` am Anfang und Ende nimmt nur die äußeren Abstände
+weg. Für die Summe der Breiten bleiben damit bei *n* Spalten:
+
+| | zweispaltig im Heft | Querformat mit 15 mm Rand |
+|---|---|---|
+| 2 Spalten | 76,27 mm | 262,77 mm |
+| 3 Spalten | 72,05 mm | 258,55 mm |
+| 4 Spalten | 67,82 mm | 254,32 mm |
+| 5 Spalten | 63,59 mm | 250,09 mm |
+
 **Tabellen kommen in `dsaTabelle`, nicht in `tabular`.** Die Umgebung nimmt dasselbe
 Spaltenformat:
 
@@ -628,3 +663,22 @@ Punkte als `% PRUEFEN:`. Nach Bruchwahrscheinlichkeit sortiert.
 23. **Nach `\dsaQuerEnde`** prüfen, ob die Grundlinien wieder sitzen.
 24. **`\dsaBildUmflossen`** — `wrapfig` rundet die Zeilenzahl selbst.
 25. **`\dsaBildBund`** — Vorzeichen und Bezugspunkt am Abzug nachsehen.
+
+### Warnungen, die planmäßig kommen
+
+Zwei Arten stehen in jedem Lauf und sind kein Fehler. Wer im Log nach echten Problemen sucht, zieht
+sie ab.
+
+**`Overfull \hbox`, je Kasten einmal.** Der Kasten ist breiter als die Spalte und wird nur nach
+links verschoben, nicht verschmälert; rechts steht er über, und TeX meldet genau diesen Überhang.
+`dsaPergament*` 2,5 mm ergibt 7,11 pt, `dsaWerteKlein` 1,95 mm ergibt 5,55 pt, `dsaWerteGross`
+2,25 mm ergibt 6,40 pt, `dsaWerteMittel` 3,2 mm ergibt 9,10 pt. Das ist der Zierrand, der außerhalb
+des Textbereichs liegen soll.
+
+**`microtype Warning: Unknown slot number of character`, zwölfmal.** microtypes Vorschubliste nennt
+Zeichen wie `Ą` und `ď`, die Gentium Basic nicht hat. Reine Konfigurationssache, im Satz nicht
+sichtbar.
+
+Alles andere ist echt. Ein `Underfull \hbox` in laufendem Text heißt: die Zeile ist zu locker, und
+zu ändern ist sie nur redaktionell — `\emergencystretch`, `\hyphenpenalty` und `\hbadness`
+wurden über das Ganter-Heft durchgemessen und bewegen die Zahl nicht.
