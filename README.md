@@ -58,11 +58,13 @@ python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
 
 Für die Rückseite gibt es ein zweites Paket, das **Rückseiten-Karten-Paket**. Es bringt eine
 fertige Rückseite mit Zierrahmen und 28 Fassungen davon, in denen je eine Region Aventuriens
-hervorgehoben ist:
+hervorgehoben ist. Und mit `--zusatz` kommt ein Ordner mit einzelnen Grafikdateien dazu — daraus
+stammt der Zierrahmen des Kapitelanfangs, den der Baukasten nicht als fertige Datei enthält:
 
 ```sh
 python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4" \
-    --rueckseiten "/pfad/zum/Rueckseiten_Karten_Paket"
+    --rueckseiten "/pfad/zum/Rueckseiten_Karten_Paket" \
+    --zusatz "/pfad/zu/einzelnen/Grafikdateien"
 ```
 
 Es braucht `Pillow` und `psd-tools`:

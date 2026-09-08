@@ -73,6 +73,9 @@ SOLL = {
     'umschlag-hinten.png':          (2480, 3508),
     'aventurienkarte.png':          (1417, 2008),
     # Abgeleitet: Kapitelanfang, deckungsgleich auf voller Leinwand
+    # Der Kapitelanfang nutzt jetzt den Zierrahmen aus dem Zusatzordner;
+    # Pergament und Ornament aus dem PSD bleiben als Reserve.
+    'kapitelstart-rahmen.png':      (1290, 3543),
     'kapitelstart-pergament.png':   (1290, 3543),
     'kapitelstart-ornament.png':    (1290, 3543),
 }

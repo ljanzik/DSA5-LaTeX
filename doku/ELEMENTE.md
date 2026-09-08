@@ -145,6 +145,15 @@ Der Rahmen belegt die Außenhälfte der Seite. Der Text muss deshalb in die inne
 die Seite mit `\dsaKapitelseiteEnde` beendet werden, sonst läuft er dahinter — eine Grenze von
 LaTeX, nicht der Klasse.
 
+**Der Rahmen ist ein Zierrahmen, keine Pergamentfläche.** Er kommt als `kapitelstart-rahmen` aus
+dem Zusatzordner (`DSA5-Kapitelstart.png`): Pergamentschenkel links und rechts, dünne Kante oben,
+Drachenornament unten, innen offen. Das Bild kommt **in** das Fenster, der Rahmen liegt darüber —
+so verdeckt seine Kante die Bildkante, und es bleibt keine Fuge. Ohne Bild bleibt das Fenster leer;
+der Rahmen allein ist dann der Platzhalter.
+
+Der äußere Schenkel liegt im Anschnitt, der innere bleibt sichtbar. Damit läuft das Bild zur
+Außenseite randabfallend, wie im Vorbild. Die Maße stehen in `MASSE.md`.
+
 Gezeichnet wird in dieser Reihenfolge: Seitenhintergrund, Rahmen, Banner, Text. Beides steht in
 **einem** TikZ-Bild; zwei Bilder mit `remember picture` im selben `\twocolumn`-Vorspann setzen die
 Positionen von `current page` durcheinander. Die Grafiken lassen die Fußzeile von selbst frei — das

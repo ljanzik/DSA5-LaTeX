@@ -9,6 +9,8 @@ Scriptorium-Baukasten auf.
     python3 werkzeuge/aufbereiten.py "/pfad/zum/Baukasten" --ppi 200
     python3 werkzeuge/aufbereiten.py "/pfad/zum/Baukasten" \
         --rueckseiten "/pfad/zum/Rueckseiten_Karten_Paket"
+    python3 werkzeuge/aufbereiten.py "/pfad/zum/Baukasten" \
+        --zusatz "/pfad/zu/einzelnen/Grafikdateien"
 
 Mit --ziel schreibt es grafiken/ und schriften/ in ein anderes Projekt,
 das diese Klasse benutzt. Ohne --ziel in dieses hier.
@@ -34,6 +36,11 @@ weil LaTeX mit beidem schlecht umgeht.
 Mit --rueckseiten kommt das zweite Paket dazu: eine fertige Rueckseite mit
 Zierrahmen und 28 Fassungen davon, in denen je eine Region Aventuriens
 hervorgehoben ist. Sie werden zu ruecken-neutral und ruecken-<region>.
+
+Mit --zusatz kommt ein Ordner mit einzelnen Grafikdateien dazu. Daraus
+stammt der Zierrahmen des Kapitelanfangs (DSA5-Kapitelstart.png): ein
+Rahmen mit Pergamentschenkeln und Drachenornament, innen offen fuer das
+Bild. Der Baukasten liefert an dieser Stelle nur eine Pergamentflaeche.
 
 Der Baukasten, kostenlos bei Ulisses:
 https://www.ulisses-ebooks.de/de/product/197880/scriptorium-aventuris-layout-baukasten
@@ -172,6 +179,13 @@ SCHRIFTEN = ['andlso.ttf', 'GenBasR.ttf', 'GenBasB.ttf',
 # ausgeschrieben, Grossbuchstaben klein, Wortgrenzen zu Bindestrichen.
 RUECKEN_NEUTRAL = 'ScriptoriumAventuris-hinten.png'
 RUECKEN_PRAEFIX = 'Aventurien_'
+
+# Aus einem Ordner mit einzelnen Grafikdateien, ueber --zusatz.
+# Zielname -> moegliche Quellnamen.
+ZUSATZ = {
+    'kapitelstart-rahmen.png': ['DSA5-Kapitelstart.png'],
+    'aventurienkarte-kosch.png': ['DSA5-Aventurienkarte_Kosch.png'],
+}
 
 
 def kuerzel(name):
@@ -479,6 +493,34 @@ def main():
                       nur_png, ppi)
             rueck += 1
         print('Rueckseiten        : %d aus dem Kartenpaket' % rueck)
+
+    # 6 -- einzelne Grafikdateien aus einem Zusatzordner
+    if '--zusatz' in sys.argv:
+        i = sys.argv.index('--zusatz')
+        if i + 1 >= len(sys.argv):
+            print('--zusatz braucht einen Pfad.')
+            return 2
+        ordner = sys.argv[i + 1].rstrip('/\\')
+        if not os.path.isdir(ordner):
+            print('Kein Ordner: %s' % ordner)
+            return 2
+        zus = 0
+        for ziel, quellen in sorted(ZUSATZ.items()):
+            q = None
+            for kandidat in quellen:
+                pfad = os.path.join(ordner, kandidat)
+                if os.path.exists(pfad):
+                    q = pfad
+                    break
+            if q is None:
+                fehlt.append('%s (gesucht: %s)' % (ziel, quellen[0]))
+                continue
+            if ppi < 300:
+                speichern(Image.open(q), zg, ziel, nur_png, ppi)
+            else:
+                shutil.copyfile(q, os.path.join(zg, ziel))
+            zus += 1
+        print('Zusatzgrafiken     : %d von %d' % (zus, len(ZUSATZ)))
 
     sch = 0
     for name in SCHRIFTEN:

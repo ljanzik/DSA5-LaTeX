@@ -215,6 +215,31 @@ Aus `Resources/Graphic.xml` des IDML, unverändert.
 | `dsagruenverlauf` | Grün für gradient | CMYK 70 53 91 17 |
 | `dsapergamentgelb` | Für Gelb | CMYK 9 26 56 9 |
 
+## Der Zierrahmen des Kapitelanfangs
+
+Aus dem Baukasten kommt an dieser Stelle nur die Ebene „Pergament für Bild" — eine vollflächige
+Textur, auf die das Bild eingerückt gelegt wird. Am Abzug ist das falsch: gesucht ist der
+Zierrahmen, in den das Bild hineinkommt. Den gibt es als fertige Datei `DSA5-Kapitelstart.png` im
+Zusatzordner.
+
+Gemessen bei 300 ppi, 109,22 × 299,97 mm:
+
+| Teil | Lage in der Datei |
+|---|---|
+| linker Schenkel | 3,13 bis 6,60 mm |
+| rechter Schenkel | 93,13 bis 97,03 mm |
+| Kante oben | 0,00 bis 0,17 mm |
+| Ornament unten | 267,80 bis 286,51 mm |
+| Innenfenster | 6,60 bis 93,13 mm waagerecht, 0,17 bis 267,80 mm senkrecht |
+
+Das Fenster ist damit 86,53 × 267,63 mm. Die Datei ist breiter als ihre Deckung, deshalb wird sie
+nach außen versetzt — rechts um 109,22 − 97,03 = 12,19 mm, links um 3,13 mm. So liegt der äußere
+Schenkel im Anschnitt und der innere bleibt sichtbar.
+
+Zum Vergleich das Vorbild: dort ist das Kapitelbild 103,33 × 283,62 mm und reicht bis 0,2 mm an die
+Papierkante; unten endet es 14,9 mm über der Kante, damit die Fußzeile frei bleibt. Unsere Grafiken
+tun das von selbst.
+
 ## Die Rückseite
 
 Gemessen an der Rückseite einer gesetzten Veröffentlichung:
@@ -266,7 +291,8 @@ also liegt die Kante dort, wo die Helligkeit über zwei Millimeter ruhig wird.
 | `werte-mittel-portrait` | 8,38 | 9,06 | 4,66 | 11,18 |
 | `werte-gross-portrait` | 8,13 | 4,32 | 4,57 | 11,43 |
 
-Alle Werte in mm, Abstand der Innenkante vom Rand der Grafik. Die 6 mm, die vorher für alle galten,
+Alle Werte in mm, Abstand der Innenkante vom Rand der Grafik. Der Umfluss um das Medaillon rechnet
+zusätzlich 2,5 mm Luft auf den Kranzradius — mit 0,8 mm stand der Text zu dicht daran. Die 6 mm, die vorher für alle galten,
 reichen bei keinem Wertekasten. Jeder setzt jetzt seine eigenen `top` und `bottom`, die
 Pergamentkästen behalten die Voreinstellung. Das große Maß rechts bei den Porträtkästen ist der
 Überhang des Medaillons — dort endet der Kastenkörper.

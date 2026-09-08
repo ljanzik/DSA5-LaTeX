@@ -685,12 +685,15 @@
   \addcontentsline{toc}{section}{\thedsakapitel\quad #1}}
 
 \newcommand{\dsakapitel}[2][]{%
-  \stepcounter{dsakapitel}%
-  \twocolumn[\dsa@bannerblock{#2}]%
-  \dsa@kapitelmarken{#2}%
   % Ein Bild als optionales Argument gilt weiter, damit bestehende
-  % Dokumente laufen.
-  \if\relax\detokenize{#1}\relax\else\dsa@kapitelrahmen{#1}\fi}
+  % Dokumente laufen -- es fuehrt auf die zweite Art.
+  \if\relax\detokenize{#1}\relax
+    \stepcounter{dsakapitel}%
+    \twocolumn[\dsa@bannerblock{#2}]%
+    \dsa@kapitelmarken{#2}%
+  \else
+    \dsakapitelbild[#1]{#2}%
+  \fi}
 
 \newcommand{\dsakapitelbild}[2][]{%
   \stepcounter{dsakapitel}%
@@ -716,33 +719,60 @@
 % Gezeichnet wird im Vorspann der Seite, vor dem Banner: im Verlagslayout
 % liegt das Banner ueber dem Bild. Der Umweg ueber den Seitenhintergrund von
 % eso-pic hat die Fusszeile verschluckt.
-% Die Pergamentflaeche deckt in der Datei nur x 3,3 bis 95,8 mm der
-% 109,2 mm Leinwand. Ohne Ausgleich blieb aussen ein Streifen frei;
-% dieser Versatz schiebt die Flaeche an den Anschnitt.
-\newlength{\dsakapitelrahmenversatz}
-\setlength{\dsakapitelrahmenversatz}{13.4mm}
+% Der Zierrahmen des Kapitelanfangs, gemessen bei 300 ppi an
+% kapitelstart-rahmen.png (109,22 x 299,97 mm):
+%
+%   linker Schenkel    3,13 .. 6,60 mm
+%   rechter Schenkel  93,13 .. 97,03 mm
+%   Kante oben         0,00 .. 0,17 mm
+%   Ornament unten   267,80 .. 286,51 mm
+%
+% Das Innenfenster ist damit 86,53 mm breit und 267,63 mm hoch. Dort kommt
+% das Bild hinein, der Rahmen darueber: seine Kante verdeckt die Bildkante,
+% und es bleibt keine Fuge.
+\newlength{\dsakapitelfensterx} \setlength{\dsakapitelfensterx}{6.60mm}
+\newlength{\dsakapitelfenstery} \setlength{\dsakapitelfenstery}{0.17mm}
+\newlength{\dsakapitelfensterb} \setlength{\dsakapitelfensterb}{86.53mm}
+\newlength{\dsakapitelfensterh} \setlength{\dsakapitelfensterh}{267.63mm}
+
+% Die Datei ist breiter als ihre Deckung. Damit der aeussere Schenkel im
+% Anschnitt liegt und der innere sichtbar bleibt, wird sie nach aussen
+% versetzt: rechts um 109,22 - 97,03 = 12,19 mm, links um 3,13 mm.
+\newlength{\dsakapitelversatzrechts}
+\setlength{\dsakapitelversatzrechts}{12.19mm}
+\newlength{\dsakapitelversatzlinks}
+\setlength{\dsakapitelversatzlinks}{3.13mm}
 
 \newcommand{\dsa@rahmenknoten}[1]{%
     \ifodd\value{page}
       \def\dsa@kbanker{north east}%
-      \def\dsa@kbversatz{\dimexpr\dsabeschnitt+\dsakapitelrahmenversatz\relax}%
+      \def\dsa@kbversatz{\dimexpr\dsabeschnitt+\dsakapitelversatzrechts\relax}%
     \else
       \def\dsa@kbanker{north west}%
-      \def\dsa@kbversatz{-\dimexpr\dsabeschnitt+\dsakapitelrahmenversatz\relax}%
+      \def\dsa@kbversatz{-\dimexpr\dsabeschnitt+\dsakapitelversatzlinks\relax}%
     \fi
+    % Der Rahmenknoten, an der Aussenkante aufgehaengt.
     \node[anchor=\dsa@kbanker, inner sep=0] (dsakb)
       at ([shift={(\dsa@kbversatz,\dsabeschnitt)}]current page.\dsa@kbanker)
-      {\includegraphics[width=109.2mm,height=300mm]{\dsagrafik{kapitelstart-pergament}}};
+      {\phantom{\includegraphics[width=109.22mm,height=299.97mm]%
+        {\dsagrafik{kapitelstart-rahmen}}}};
+    % Erst das Bild in das Fenster, dann der Rahmen darueber. Ohne Bild
+    % bleibt das Fenster leer -- der Rahmen allein ist der Platzhalter.
     \if\relax\detokenize{#1}\relax\else
-      \node[anchor=center, inner sep=0] at (dsakb.center)
-        {\dsaBildDeckend{\dimexpr109.2mm-2\dsakapitelbildrand\relax}%
-                        {\dimexpr300mm-2\dsakapitelbildrand\relax}{#1}};
+      \node[anchor=north west, inner sep=0]
+        % dsakb.north west ist die linke obere Ecke der Datei, gleich
+        % welcher Anker sie aufhaengt -- das Fenster liegt immer
+        % \dsakapitelfensterx dahinter.
+        at ([shift={(\dsakapitelfensterx,-\dsakapitelfenstery)}]dsakb.north west)
+        {\dsaBildDeckend{\dsakapitelfensterb}{\dsakapitelfensterh}{#1}};
     \fi
-    \node[anchor=center, inner sep=0] at (dsakb.center)
-      {\includegraphics[width=109.2mm,height=300mm]{\dsagrafik{kapitelstart-ornament}}};}
+    \node[anchor=\dsa@kbanker, inner sep=0]
+      at ([shift={(\dsa@kbversatz,\dsabeschnitt)}]current page.\dsa@kbanker)
+      {\includegraphics[width=109.22mm,height=299.97mm]%
+        {\dsagrafik{kapitelstart-rahmen}}};}
 
-% Der Rahmen allein, in eigenem Bild -- fuer den alten Weg, bei dem er nach
-% dem Banner kommt.
+% Der Rahmen in eigenem Bild -- fuer den alten Namen und fuer den Fall,
+% dass ihn jemand einzeln setzen will.
 \newcommand{\dsa@kapitelrahmen}[1]{%
   \begin{tikzpicture}[remember picture, overlay]
     \dsa@rahmenknoten{#1}%
@@ -906,7 +936,8 @@
 % Gerechnet mit dem Kranz des kleinen Kastens, weil er am tiefsten und am
 % weitesten innen sitzt; damit reicht eine Liste fuer alle drei. Mitte
 % 76,94 mm von der linken Kastenkante und 17,97 mm unter der Oberkante,
-% Radius 15,62 mm plus 0,8 mm Luft. Der Textbereich beginnt 7 mm von der
+% Radius 15,62 mm plus 2,5 mm Luft -- mit 0,8 mm stand der Text zu dicht am
+% Kranz. Der Textbereich beginnt 7 mm von der
 % Kante und endet 81,82 mm davon -- das ist die Innenkante des Zierrands
 % rechts (11,18 mm) plus ein Millimeter Luft.
 %
@@ -919,13 +950,13 @@
 % davor.
 \newcommand*{\dsaPortraitfluss}{%
   \parshape 8
-    0pt 54.57mm
-    0pt 53.61mm
-    0pt 53.52mm
-    0pt 53.80mm
-    0pt 55.09mm
-    0pt 57.78mm
-    0pt 63.40mm
+    0pt 52.76mm
+    0pt 51.90mm
+    0pt 51.82mm
+    0pt 52.07mm
+    0pt 53.23mm
+    0pt 55.57mm
+    0pt 59.86mm
     0pt 74.82mm}
 
 \newlength{\dsaportraitinnen}\setlength{\dsaportraitinnen}{5.1mm}
@@ -1918,7 +1949,11 @@
           interior style={fill=dsarueckegrau},
           % 55 mm sind fuer Blocksatz zu schmal: „Komplexitaet
           % (Spieler/Meister)" wurde gesperrt und trotzdem getrennt.
-          fontupper=\raggedright\fontsize{9bp}{10.4bp}\selectfont]
+          % Der Kasten ist schmal: die Rubrikspalte und die Rautenskala
+          % muessen zusammen unter 55,4 mm bleiben.
+          fontupper=\raggedright\fontsize{9bp}{10.4bp}\selectfont
+            \setlength{\dsaanforderungrubrik}{38mm}%
+            \setlength{\dsaanforderungskala}{15mm}]
         #5
       \end{tcolorbox}};
   \end{tikzpicture}%
@@ -2255,13 +2290,20 @@
   \end{dsaWerteblock}}
 
 % Die Rubriken sind der heutige Stand des Baukastens.
+%
+% Rubrikspalte und Skalenbreite sind Laengen: im grauen Kasten der
+% Rueckseite bleiben nur 55,4 mm, und mit 40 plus 18 mm liefen die Rauten
+% hinaus.
+\newlength{\dsaanforderungrubrik}\setlength{\dsaanforderungrubrik}{40mm}
+\newlength{\dsaanforderungskala} \setlength{\dsaanforderungskala}{18mm}
+
 \newcommand{\dsaAnforderungen}[4]{%
   \par\noindent\textbf{Anforderungen:}\par
-  \noindent\begin{tabular}{@{}p{40mm}l@{}}
-    Kampftalente                  & \dsaRautenRot{#1}{18mm}\\
-    Gesellschaftstalente          & \dsaRautenRot{#2}{18mm}\\
-    Handwerkstalente              & \dsaRautenRot{#3}{18mm}\\
-    \textbf{Lebendige Geschichte} & \dsaRautenGruen{#4}{18mm}\\
+  \noindent\begin{tabular}{@{}p{\dsaanforderungrubrik}l@{}}
+    Kampftalente                  & \dsaRautenRot{#1}{\dsaanforderungskala}\\
+    Gesellschaftstalente          & \dsaRautenRot{#2}{\dsaanforderungskala}\\
+    Handwerkstalente              & \dsaRautenRot{#3}{\dsaanforderungskala}\\
+    \textbf{Lebendige Geschichte} & \dsaRautenGruen{#4}{\dsaanforderungskala}\\
   \end{tabular}\par}
 
 %%% ==================================================================
