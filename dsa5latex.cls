@@ -760,6 +760,13 @@
 \newlength{\dsakapitelrahmenoben}
 \setlength{\dsakapitelrahmenoben}{24mm}
 
+% Ist das Kapitelbild schon in die Form der Rahmenoeffnung gebracht? Dann
+% wird es in Rahmengroesse gelegt statt in das Rechteck im Fenster.
+% \dsaKapitelbildform gilt fuer das naechste Kapitel und schaltet sich
+% danach ab.
+\newif\ifdsa@kbform
+\newcommand*{\dsaKapitelbildform}{\dsa@kbformtrue}
+
 \newcommand{\dsa@rahmenknoten}[1]{%
     \ifodd\value{page}
       \def\dsa@kbanker{north west}%
@@ -775,29 +782,43 @@
           current page.north \ifodd\value{page}west\else east\fi)
       {\phantom{\includegraphics[width=\dsakapitelrahmenb,%
          height=\dsakapitelrahmenh]{\dsagrafik{kapitelstart-rahmen}}}};
-    % Erst das Bild in das Fenster, dann der Rahmen darueber. Ohne Bild
-    % kommt eine Pergamenttextur hinein: ein weisses Fenster sieht wie ein
-    % Loch aus, die Textur wie ein Platzhalter.
+    % Erst das Bild, dann der Rahmen darueber.
     %
-    % Nicht kapitelstart-pergament selbst -- das ist ein freigestelltes
-    % Blatt mit gerissenen Kanten, seine untere schwankt ueber 17,78 mm.
-    % aufbereiten.py schneidet daraus kapitelstart-flaeche, den Bereich
-    % innerhalb aller Kanten.
+    % Ohne Bild kommt der Platzhalter: eine Pergamenttextur in der FORM der
+    % Rahmenoeffnung. Die ist kein Rechteck -- die untere Kante ist gerissen
+    % und schwankt ueber 8 mm, das Ornament sitzt mitten in der Flaeche.
+    % aufbereiten.py legt sie als kapitelstart-flaeche an, so gross wie der
+    % Rahmen; sie wird deckungsgleich darauf gelegt.
+    %
+    % Mit Bild gibt es zwei Wege. Ein Rohbild kommt in das Rechteck im
+    % Fenster: sicher, aber ohne die gerissene Kante. Ein Bild, das mit
+    % werkzeuge/freistellen.py in die Form gebracht ist, gehoert in
+    % Rahmengroesse -- dafuer steht \dsaKapitelbildform davor.
     \if\relax\detokenize{#1}\relax
-      \node[anchor=north west, inner sep=0]
-        at ([shift={(\dsakapitelfensterx,-\dsakapitelfenstery)}]dsakb.north west)
-        {\dsaBildDeckend{\dsakapitelfensterb}{\dsakapitelfensterh}%
-          {\dsagrafik{kapitelstart-flaeche}}};
+      \node[anchor=\dsa@kbanker, inner sep=0]
+        at ([shift={(\dsa@kbversatz,-\dsakapitelrahmenoben)}]%
+            current page.north \ifodd\value{page}west\else east\fi)
+        {\includegraphics[width=\dsakapitelrahmenb,%
+          height=\dsakapitelrahmenh]{\dsagrafik{kapitelstart-flaeche}}};
     \else
-      \node[anchor=north west, inner sep=0]
-        at ([shift={(\dsakapitelfensterx,-\dsakapitelfenstery)}]dsakb.north west)
-        {\dsaBildDeckend{\dsakapitelfensterb}{\dsakapitelfensterh}{#1}};
+      \ifdsa@kbform
+        \node[anchor=\dsa@kbanker, inner sep=0]
+          at ([shift={(\dsa@kbversatz,-\dsakapitelrahmenoben)}]%
+              current page.north \ifodd\value{page}west\else east\fi)
+          {\includegraphics[width=\dsakapitelrahmenb,%
+            height=\dsakapitelrahmenh]{#1}};
+      \else
+        \node[anchor=north west, inner sep=0]
+          at ([shift={(\dsakapitelfensterx,-\dsakapitelfenstery)}]dsakb.north west)
+          {\dsaBildDeckend{\dsakapitelfensterb}{\dsakapitelfensterh}{#1}};
+      \fi
     \fi
     \node[anchor=\dsa@kbanker, inner sep=0]
       at ([shift={(\dsa@kbversatz,-\dsakapitelrahmenoben)}]%
           current page.north \ifodd\value{page}west\else east\fi)
       {\includegraphics[width=\dsakapitelrahmenb,%
-        height=\dsakapitelrahmenh]{\dsagrafik{kapitelstart-rahmen}}};}
+        height=\dsakapitelrahmenh]{\dsagrafik{kapitelstart-rahmen}}};%
+    \global\dsa@kbformfalse}
 
 % Der Rahmen in eigenem Bild -- fuer den alten Namen und fuer den Fall,
 % dass ihn jemand einzeln setzen will.

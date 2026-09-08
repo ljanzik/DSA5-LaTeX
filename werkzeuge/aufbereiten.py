@@ -564,24 +564,65 @@ def main():
             kach += 1
         print('Rautenkacheln      : %d von %d' % (kach, len(kacheln)))
 
-        # Eine reine Pergamenttextur fuer das Fenster des Kapitelrahmens.
+        # Die Oeffnung des Kapitelrahmens als Maske, und ein Platzhalter
+        # darin.
         #
-        # kapitelstart-pergament ist ein freigestelltes Blatt mit gerissenen
-        # Kanten: die untere schwankt von 262,97 bis 280,75 mm, die obere von
-        # 0,25 bis 6,69, seitlich deckt es 3,56 bis 95,59 mm. Als Fuellung
-        # eines Rechteckfensters taugt das nicht -- geschnitten wird der
-        # Bereich, der sicher innerhalb aller Kanten liegt.
+        # Die Kanten des Rahmens sind gezeichnet: die untere schwankt ueber
+        # 8 mm, und unten sitzt das Drachenornament mitten in der Flaeche.
+        # Ein Rechteck muss deshalb entweder darunter enden -- dann bleibt
+        # Platz leer -- oder darunter hervorschauen.
+        #
+        # Also die Oeffnung selbst: von der Fenstermitte aus wird im
+        # transparenten Bereich geflutet, begrenzt durch die Deckung des
+        # Rahmens. Das sind 69,5 Prozent der Datei, von 6,01 bis 93,73 mm
+        # waagerecht und 0,00 bis 267,97 mm senkrecht -- die Form folgt der
+        # gerissenen Kante und umschliesst das Ornament.
+        quelle_ra = os.path.join(zg, 'kapitelstart-rahmen.png')
         quelle_pg = os.path.join(zg, 'kapitelstart-pergament.png')
-        if os.path.exists(quelle_pg):
-            blatt = Image.open(quelle_pg)
-            je_mm = blatt.width / 109.22
-            kasten = (int(5 * je_mm), int(8 * je_mm),
-                      int(94 * je_mm), int(261 * je_mm))
-            speichern(blatt.crop(kasten), zg, 'kapitelstart-flaeche.png',
-                      nur_png, ppi)
-            print('Pergamentflaeche   : geschnitten')
+        if os.path.exists(quelle_ra):
+            from PIL import ImageDraw
+            rahmen = Image.open(quelle_ra).convert('RGBA')
+            je_mm = rahmen.width / 109.22
+            karte = rahmen.getchannel('A').point(
+                lambda v: 0 if v > 40 else 255).convert('L')
+            saat = (int(50 * je_mm), int(120 * je_mm))
+            if karte.getpixel(saat) != 255:
+                fehlt.append('kapitelstart-fenster (Saatpunkt liegt im Rahmen)')
+            else:
+                ImageDraw.floodfill(karte, saat, 128, thresh=0)
+                oeffnung = karte.point(lambda v: 255 if v == 128 else 0)
+                # Die Maske: weisse Flaeche mit der Oeffnung als Alphakanal.
+                maske = Image.new('RGBA', rahmen.size, (255, 255, 255, 0))
+                maske.putalpha(oeffnung)
+                speichern(maske, zg, 'kapitelstart-fenster.png', nur_png, ppi)
+                # Der Platzhalter: Pergamenttextur in dieser Form.
+                if os.path.exists(quelle_pg):
+                    blatt = Image.open(quelle_pg).convert('RGBA')
+                    # Die Textur ohne ihre eigenen gerissenen Kanten: der
+                    # Bereich innerhalb aller Kanten, dann deckend auf die
+                    # Rahmengroesse gebracht.
+                    innen = blatt.crop((int(5 * je_mm), int(8 * je_mm),
+                                        int(94 * je_mm), int(261 * je_mm)))
+                    faktor = max(rahmen.width / innen.width,
+                                 rahmen.height / innen.height)
+                    innen = innen.resize(
+                        (max(1, int(round(innen.width * faktor))),
+                         max(1, int(round(innen.height * faktor)))),
+                        Image.LANCZOS)
+                    links = (innen.width - rahmen.width) // 2
+                    oben = (innen.height - rahmen.height) // 2
+                    innen = innen.crop((links, oben,
+                                        links + rahmen.width,
+                                        oben + rahmen.height))
+                    innen.putalpha(oeffnung)
+                    speichern(innen, zg, 'kapitelstart-flaeche.png',
+                              nur_png, ppi)
+                    print('Kapitelfenster     : Maske und Platzhalter')
+                else:
+                    fehlt.append('kapitelstart-flaeche (braucht '
+                                 'kapitelstart-pergament)')
         else:
-            fehlt.append('kapitelstart-flaeche (braucht kapitelstart-pergament)')
+            fehlt.append('kapitelstart-fenster (braucht kapitelstart-rahmen)')
 
     sch = 0
     for name in SCHRIFTEN:

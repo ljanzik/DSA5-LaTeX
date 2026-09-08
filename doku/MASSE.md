@@ -259,6 +259,26 @@ Der Rahmen liegt ganz auf der Seite: die Datei ist auf 80,50 / 96,60 = 0,8333 ve
 196,16 mm und y 24,07 bis 274,05 mm. Das Vorbild setzt sein Kapitelbild dagegen randabfallend —
 103,33 × 283,62 mm bis 0,2 mm an die Papierkante.
 
+### Die Öffnung des Rahmens
+
+Von der Fenstermitte aus im transparenten Bereich geflutet, begrenzt durch die Deckung des Rahmens:
+die Öffnung nimmt **69,5 Prozent** der Datei ein und reicht von 6,01 bis 93,73 mm waagerecht und
+0,00 bis 267,97 mm senkrecht. Ihre Form folgt der gerissenen Unterkante und umschließt das
+Drachenornament.
+
+Die Kanten im Einzelnen, über den Fensterbereich gemessen:
+
+| Kante | Lage | Streuung |
+|---|---|---|
+| unten | 259,76 bis 267,80 mm | 8,04 mm |
+| innen links | 6,10 bis 7,03 mm | 0,93 mm |
+| innen rechts | 92,88 bis 93,47 mm | 0,59 mm |
+| oben | 0,00 bis 0,17 mm | 0,17 mm |
+
+Wer ein Rechteck einpasst, muss sich zwischen leerem Platz und Überstand entscheiden. Die Maske
+löst das: `kapitelstart-fenster` trägt die Öffnung als Alphakanal, `kapitelstart-flaeche` eine
+Pergamenttextur darin, und `werkzeuge/freistellen.py` bringt eigene Bilder in dieselbe Form.
+
 ### Die Freistellung des Pergaments
 
 `kapitelstart-pergament` ist ein freigestelltes Blatt. Im Alphakanal gemessen, bei 109,22 ×

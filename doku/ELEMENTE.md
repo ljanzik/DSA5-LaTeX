@@ -180,10 +180,32 @@ Spaltenbreite (80,5 mm) breit, von der Satzspiegeloberkante an. Gemessen von x 1
 und y 24,07 bis 274,05 mm — beide Zierkanten sichtbar, die Fußzeile frei. Die Maße stehen in
 `MASSE.md`.
 
-Ohne Bild füllt eine Pergamenttextur das Fenster. **Nicht** `kapitelstart-pergament` selbst: das
-ist ein freigestelltes Blatt mit gerissenen Kanten, und dessen untere schwankt über 17,78 mm — im
-Rechteckfenster endet es dann sichtbar vor dem Rand. `aufbereiten.py` schneidet daraus
-`kapitelstart-flaeche`, den Bereich innerhalb aller Kanten.
+**Die Öffnung des Rahmens ist kein Rechteck.** Ihre untere Kante ist gerissen und schwankt über
+8 mm, und das Drachenornament sitzt mitten in der Fläche. Ein Rechteck lässt darunter Platz leer
+oder schaut hervor — beides war am Abzug zu sehen.
+
+`aufbereiten.py` legt deshalb zwei Dateien in der Form der Öffnung an, jede so groß wie der Rahmen:
+`kapitelstart-fenster` als Maske und `kapitelstart-flaeche` als Platzhalter — eine Pergamenttextur,
+die die Öffnung genau füllt und dem Ornament folgt. Ohne Bild wird sie deckungsgleich unter den
+Rahmen gelegt.
+
+Mit Bild gibt es zwei Wege:
+
+```latex
+\dsakapitelbild[bilder/hof]{Titel}      % Rohbild, Rechteck im Fenster
+\dsaKapitelbildform
+\dsakapitelbild[grafiken/hof]{Titel}    % freigestellt, in Rahmengröße
+```
+
+Das Rohbild sitzt sicher, aber ohne die gerissene Kante. Wer sie will, bringt das Bild vorher in
+die Form:
+
+```sh
+python3 werkzeuge/freistellen.py bilder/hof.jpg kapitelstart-fenster \
+    grafiken/hof.png
+```
+
+`\dsaKapitelbildform` gilt für das nächste Kapitel und schaltet sich danach ab.
 
 ### Bilder mit einer Vorlagenkante freistellen
 
