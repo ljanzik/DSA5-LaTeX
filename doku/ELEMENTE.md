@@ -5,6 +5,11 @@
 
 Vollständiges Beispiel: `beispiel/beispiel.tex`.
 
+**Für den Spielleiterschirm-Einleger gilt eine eigene Klasse und eine eigene Referenz:**
+`dsa5einleger.cls`, dokumentiert in [EINLEGER.md](EINLEGER.md). Sie lädt diese hier, setzt aber
+A4 quer in vier freien Spalten und **ohne Grundlinienraster**. Alles, was unten mit `\dsaRaster`
+zu tun hat, gilt dort nicht; Zahlen, Marken, Aufzählungen und Kästen dagegen schon.
+
 ---
 
 ## Klassenoptionen
@@ -700,7 +705,6 @@ Befehl dafür.
 **Die Klasse läuft.** `beispiel.tex` baut mit XeLaTeX aus TeX Live 2026 fehlerfrei durch,
 22 Seiten, ohne eine einzige LaTeX-Warnung; `raster.tex`, `kaesten.tex` und `rest.tex`
 ebenso.
-
 **Damit ist die alte Bruchliste erledigt.** Sie führte zehn Stellen, an denen der Lauf
 abbrechen könnte — `polyglossia` mit `spelling=new`, `\ifnum` in einer `\foreach`-Schleife,
 die selbstgebaute `\parshape`-Liste des Umflusses, `\f@size` in den Kapitälchen, die Zeichen

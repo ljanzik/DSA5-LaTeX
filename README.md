@@ -1,11 +1,17 @@
 # dsa5-latex
 
-Eine LaTeX-Dokumentklasse, die Abenteuer im Layout von **Das Schwarze Auge 5** setzt — nach den
-Maßen des offiziellen *Scriptorium Aventuris – Layout Baukastens* von Ulisses Spiele.
+Zwei LaTeX-Dokumentklassen im Layout von **Das Schwarze Auge 5** — nach den Maßen des offiziellen
+*Scriptorium Aventuris – Layout Baukastens* von Ulisses Spiele.
 
-Zweispaltiger Satz auf A4 mit Grundlinienraster, Pergament- und Wertekästen in ihren
-Produktionsgrößen, Kapitelbanner, Meistermasken, Seitenhintergründe und die Werkzeuge für
-freigestellte Grafiken mit Textumfluss.
+**`dsa5latex.cls` setzt Abenteuer.** Zweispaltiger Satz auf A4 mit Grundlinienraster, Pergament-
+und Wertekästen in ihren Produktionsgrößen, Kapitelbanner, Meistermasken, Seitenhintergründe und
+die Werkzeuge für freigestellte Grafiken mit Textumfluss.
+
+**`dsa5einleger.cls` setzt Einleger für den Spielleiterschirm.** DIN A4 quer, vier freie Spalten,
+über die ein Block beliebig laufen darf, Tabellen mit Quellenmarke und Verlaufskopf, Pergament mit
+Schuppenleiste oben und unten. Sie lädt `dsa5latex.cls` und ändert nur, was ein Einleger anders
+macht. Vorbild und Maßquelle ist der offizielle *Universal Spielleiterschirm Einleger, Auflage 5*;
+das Querformat ist die eine bewusste Abweichung davon. Anleitung: `doku/EINLEGER.md`.
 
 **Der Code steht unter Apache 2.0. Die Grafiken und Schriften sind nicht Teil dieses Projekts** und
 müssen selbst besorgt werden — siehe Abschnitt „Grafiken und Schriften besorgen". Ohne sie
@@ -151,7 +157,17 @@ TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 
 Fünf Beispieldokumente liegen in `beispiel/`: `beispiel.tex` zeigt jedes Element genau einmal
 (22 Seiten), `raster.tex` nur Text und Raster und baut in Sekunden, `kaesten.tex` alle fünfzehn
-Kästen, `rest.tex` die Seitentypen.
+Kästen, `rest.tex` die Seitentypen, `einleger.tex` jedes Element der Einlegerklasse.
+
+Der Einleger braucht einmalig zwei eigene Hintergrundgrafiken. Der Baukasten hat kein Querformat;
+`werkzeuge/einleger.py` erzeugt Pergamentfläche und Zierleiste aus den Buchseiten, indem es deren
+Schuppenkante am Bund um 90 Grad dreht — dasselbe Motiv, das auch der offizielle Einleger oben und
+unten legt:
+
+```sh
+python3 werkzeuge/einleger.py
+cd beispiel && TEXINPUTS="..;" xelatex einleger.tex
+```
 
 Gebraucht werden aus TeX Live oder MiKTeX: `geometry graphicx xcolor fontspec polyglossia tikz
 tcolorbox eso-pic fancyhdr enumitem wrapfig contour changepage intcalc array colortbl textcomp
@@ -166,7 +182,15 @@ microtype hyperref tabularx environ`.
 \documentclass[raster,entwurf]{dsa5latex}      % Bilder als Rahmen, schnelles Bauen
 ```
 
-Die Elementreferenz steht in `doku/ELEMENTE.md`. Wer mit
+Für den Einleger:
+
+```latex
+\documentclass{dsa5einleger}                    % A4 quer, vier Spalten
+\documentclass[spaltenzeigen]{dsa5einleger}     % Spaltenkanten mitdrucken
+\documentclass[ohnehintergrund]{dsa5einleger}   % ohne Pergament und Leisten
+```
+
+Die Elementreferenz steht in `doku/ELEMENTE.md`, die des Einlegers in `doku/EINLEGER.md`. Wer mit
 **Claude Code** an den Klassen arbeitet,
 findet die Hausregeln des Projekts in `CLAUDE.md` — Quellen der Maße, Rasterregel, Bauweg,
 Prüfweg, Schreibweise.
@@ -175,15 +199,20 @@ Prüfweg, Schreibweise.
 
 ## Stand
 
-**Die Klasse läuft.** Alle vier Beispieldokumente bauen mit XeLaTeX aus TeX Live 2026
+**Beide Klassen laufen.** Alle fünf Beispieldokumente bauen mit XeLaTeX aus TeX Live 2026
 fehlerfrei durch — `beispiel.tex` mit 22 Seiten, ohne eine einzige LaTeX-Warnung. Sechs
 `Overfull \hbox` sind der gewollte Überhang der Kästen, fünf `Underfull \hbox` sind lockere
-Umbrüche im 80,5-mm-Satz.
+Umbrüche im 80,5-mm-Satz. `einleger.tex` baut drei Seiten ohne Warnung.
 
-**Geprüft ist damit noch nicht alles.** Gebaut heißt nicht nachgemessen: fünfzehn Stellen
-tragen im Quelltext weiter `% PRUEFEN:`, weil ihr Ergebnis noch niemand am PDF nachgemessen
-hat. Die Liste steht in `doku/ELEMENTE.md` unter „Was noch nicht nachgemessen ist", der
-Stand jeder Messung in `doku/PRUEFPLAN.md`.
+**Der Einleger ist nachgemessen.** Über 322 waagerechte Tabellenkanten der drei Seiten liegt die
+größte Abweichung von der Sollspalte bei 0,20 bp, die meisten unter 0,005 bp; jede einzeilige
+Tabellenzeile misst 14,5600 bp gegen ein Sollmaß von 14,56 bp. Ungeprüft sind dort noch die
+Kästen der Abenteuerklasse im Querformat — siehe `doku/PRUEFPLAN.md`.
+
+**Geprüft ist damit noch nicht alles.** Gebaut heißt nicht nachgemessen: 17 Stellen tragen im
+Quelltext weiter `% PRUEFEN:` — 15 in `dsa5latex.cls`, 2 in `dsa5einleger.cls` —, weil ihr
+Ergebnis noch niemand am PDF nachgemessen hat. Die Liste steht in `doku/ELEMENTE.md` unter
+„Was noch nicht nachgemessen ist", der Stand jeder Messung in `doku/PRUEFPLAN.md`.
 
 ---
 
