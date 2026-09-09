@@ -607,14 +607,25 @@
       +\numexpr\dsa@ein@bandzeilen-1\relax
        \dimexpr\dsagrunddurchschuss bp\relax\relax}}
 
-% Die Fuellung. Der Verlauf geht von Tabellenrot nach durchsichtig, nicht
-% nach Weiss wie im Buch. Im Original ist es ein Verlauf auf
+% Die Fuellung. Sie ist Tabellenrot, das nach durchsichtig ausblendet, nicht
+% ein Verlauf nach Weiss wie im Buch. Im Original ist es ein Verlauf auf
 % „Multiplizieren" ueber dem Pergament: gemessen ist die Flaeche links
 % #B47D62, und Tabellenrot #C1907B multipliziert mit dem Pergament #F8F1E9
 % ergibt #BB8872 — dieselbe Farbe bis auf die Rundung des Farbprofils. Nach
-% Weiss verlaufen wuerde einen hellen Streifen auf das Pergament legen;
-% „path fading=east" laesst das Pergament durchscheinen und braucht keinen
-% Mischmodus, den der Treiber koennen muesste.
+% Weiss verlaufen wuerde einen hellen Streifen auf das Pergament legen.
+%
+% Der Mischmodus kommt trotzdem, und er kommt aus dsa5latex: \dsa@tabellenband
+% zeichnet seit dem Nachweis am Musterbogen alles unter „blend mode=multiply".
+% Beides zusammen ist kein doppelter Effekt, sondern derselbe. Multiplizieren
+% ist in der Quellfarbe linear, deshalb gilt
+%
+%   lerp(Grund, Rot*Grund, a) = Grund * lerp(Weiss, Rot, a)
+%
+% — links deckendes Rot mal Pergament, rechts unveraendertes Pergament, und
+% dazwischen genau der Verlauf, den das Buch mit „shade nach Weiss" plus
+% Multiplizieren erzeugt. Die beiden Klassen setzen also dieselbe Flaeche,
+% nur anders geschrieben. Nachgemessen am linken Bandende: (191,141,117)
+% gegen die Rechnung Tabellenrot mal Pergament (189,139,117).
 %
 % Sie steht unmittelbar im Aufruf unten und nicht in einem Makro. TikZ liest
 % das Argument als Schluesselliste; ein Makro darin kommt bei pgfkeys als
