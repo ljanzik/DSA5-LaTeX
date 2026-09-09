@@ -76,19 +76,11 @@ Für eine eigene Aufteilung gibt es `werkzeuge/regionsmaske.py`: es flutet von e
 innerhalb der Grenzlinien und schneidet die gefundene Fläche aus der Verdunkelung. Das Grenznetz
 kennt allerdings nur die großen Regionen — eine Saat im Kosch flutet das ganze Mittelreich.
 
-### Schritt 1c — einzelne Grafikdateien (nicht zwingend)
-
-Zwei Elemente fehlen in beiden Paketen und kommen aus einem Ordner mit einzelnen Grafikdateien,
-wie ihn die ältere LaTeX-Vorlage DSaTeX mitbringt:
-
-| Datei | wofür |
-|---|---|
-| `DSA5-Kapitelstart.png` | der Zierrahmen des Kapitelanfangs, innen offen für das Bild |
-| `DSA5-Aventurienkarte_Kosch.png` | eine fertige Rückseite mit hervorgehobenem Kosch |
-
-Der Baukasten liefert am Kapitelanfang nur eine Pergamentfläche, auf die das Bild eingerückt gelegt
-wird — nicht den Rahmen. Und der Kosch ist im Grenznetz des Kartenpakets nicht abgegrenzt. Ohne
-`--zusatz` bleiben beide Elemente aus; alles andere läuft.
+**Mehr braucht es nicht.** Der Zierrahmen des Kapitelanfangs und die drei Rautenkacheln kamen
+früher aus einer dritten, fremden Sammlung; beide stecken im Baukasten selbst und werden daraus
+erzeugt — der Rahmen aus der Pergamentebene von `DSA5-Kapitelstart-Beispielgrafik.psd`, die
+Rauten aus `AufzaehlerDSA5_Rueckseite_rot/blau/schwarz.psd`. Die Option `--zusatz` gibt es nicht
+mehr.
 
 ### Schritt 2 — aufbereiten
 
@@ -99,15 +91,11 @@ python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
 ```
 
 Für die Rückseite gibt es ein zweites Paket, das **Rückseiten-Karten-Paket**. Es bringt eine
-fertige Rückseite mit Zierrahmen und 28 Masken, die je eine Region Aventuriens
-hervorheben. Und mit `--zusatz` kommt ein Ordner mit einzelnen Grafikdateien dazu — daraus stammen
-der Zierrahmen des Kapitelanfangs und die Kosch-Fassung der Rückseite, die der Baukasten nicht
-enthält:
+fertige Rückseite mit Zierrahmen und 28 Masken, die je eine Region Aventuriens hervorheben:
 
 ```sh
 python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4" \
-    --rueckseiten "/pfad/zum/Rueckseiten_Karten_Paket" \
-    --zusatz "/pfad/zu/einzelnen/Grafikdateien"
+    --rueckseiten "/pfad/zum/Rueckseiten_Karten_Paket"
 ```
 
 Es braucht `Pillow` und `psd-tools`:

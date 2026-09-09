@@ -271,7 +271,7 @@ Rückseite gelegt bleibt die Region hell und der Rest tritt zurück.
 Für eine eigene Aufteilung gibt es `werkzeuge/regionsmaske.py`: es flutet von einem Saatpunkt aus
 innerhalb der Grenzlinien und schneidet die gefundene Fläche aus der Verdunkelung. Das Grenznetz
 des Pakets kennt allerdings nur die großen Regionen — eine Saat im Kosch flutet das ganze
-Mittelreich. Für den Kosch selbst liegt eine fertige Fassung als `ruecken-kosch` bereit.
+Mittelreich, und eine fertige Kosch-Fassung gibt es nicht mehr: sie kam aus einer fremden Sammlung.
 
 Der Aufbau ist an der Rückseite einer gesetzten Veröffentlichung vermessen: Titel in Andalus 18 bp,
 Autorzeile 12 bp, ein Strich darunter, der Klappentext 81,7 mm breit im Blocksatz, und der graue

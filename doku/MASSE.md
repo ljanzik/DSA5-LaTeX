@@ -217,17 +217,23 @@ Aus `Resources/Graphic.xml` des IDML, unverändert.
 
 ## Die Rautenskala
 
-Der Baukasten liefert acht fertige Skalen — `DSA5_Rauten_rot_1` bis `_4` und `DSA5_Rauten_gruen_1`
-bis `_4`, je 860 × 259 Pixel und damit 72,81 × 21,93 mm bei 300 ppi. Jede zeigt vier Rauten in
-einer Reihe, davon n gefüllt und der Rest grau.
+Die drei Kacheln stehen im Baukasten, als Masterdateien: `AufzaehlerDSA5_Rueckseite_rot.psd`,
+`_blau.psd` und `_schwarz.psd` sind die rote, die türkise und die graue Raute. Alle drei sind
+**204 × 236 Pixel deckend** — Pixel für Pixel dieselbe Zeichnung, nur auf verschieden großer
+Leinwand (238 × 264, 235 × 259 und 244 × 272).
 
-Gemessen liegen die vier Rauten bei x 1–204, 216–419, 431–634 und 647–850 Pixel, jede 204 Pixel
-breit, senkrecht von 12 bis 247. Die Teilung ist damit 215 Pixel.
+Was der Baukasten „blau" nennt, heißt in der Skala „grün"; der Stein ist türkis. In der Klasse
+gilt der Name, unter dem sie ihn aufruft — `raute-gruen`.
 
-`aufbereiten.py` schneidet daraus drei Kacheln — eine gefüllte rote, eine gefüllte grüne und eine
-graue, jede eine Raute samt ihrem Anteil am Zwischenraum. `\dsaRauten` setzt sie aneinander, so
-viele gefüllte wie verlangt. Damit ist die Skala beliebig lang, und **nichts ist nachgezeichnet**;
-vorher zeichnete die Klasse die Rauten in TikZ nach, obwohl das Material vorliegt.
+**Die Teilung ist an einer fertigen Viererskala gemessen**, wie sie fremde Sammlungen als
+`DSA5_Rauten_rot_4.png` führen: 860 × 259 Pixel, die vier Rauten bei x 1–204, 216–419, 431–634
+und 647–850, senkrecht 12 bis 247. Teilung also **215 × 259 Pixel** bei einer Raute von
+204 × 236 — 11 Pixel Luft waagerecht, 23 senkrecht.
+
+`aufbereiten.py` schneidet jede der drei PSD auf ihre deckende Fläche und zentriert sie auf
+dieses Maß. `\dsaRauten` setzt die Kacheln aneinander, so viele gefüllte wie verlangt. Damit ist
+die Skala beliebig lang, und **nichts ist nachgezeichnet**; vorher zeichnete die Klasse die
+Rauten in TikZ nach, obwohl das Material vorliegt.
 
 Zwei Fallen dabei: `\dimen@` und `\@tempcnta` sind Kratzregister, die in einer `tabular` schon
 belegt sind. Damit kamen die Kacheln mit 0,35 statt 3,75 mm heraus, und die Tabellenzeilen landeten
@@ -237,8 +243,16 @@ bei y 346 bis 624 mm — weit unter dem Papier. Die Skala nimmt deshalb eigene R
 
 Aus dem Baukasten kommt an dieser Stelle nur die Ebene „Pergament für Bild" — eine vollflächige
 Textur, auf die das Bild eingerückt gelegt wird. Am Abzug ist das falsch: gesucht ist der
-Zierrahmen, in den das Bild hineinkommt. Den gibt es als fertige Datei `DSA5-Kapitelstart.png` im
-Zusatzordner.
+Zierrahmen, in den das Bild hineinkommt.
+
+**Der Rahmen steckt in derselben Ebene.** Er ist das Pergamentblatt mit ausgeschnittener Mitte:
+was stehen bleibt, ist ein Rand in der Breite des Schnitts, und der behält die gerissene
+Außenkante. `aufbereiten.py` erodiert dafür den Alphakanal um **20 Pixel** und legt das
+Drachenornament („Ebene 10") davor.
+
+Die 20 Pixel sind gemessen: gegen die fertige Fassung, die früher aus einer fremden Sammlung kam,
+unterscheiden sich die beiden Umrisse bei dieser Breite in **1,71 Prozent** der Pixel, und die
+liegen sämtlich auf der weichen Innenkante. 10 Pixel ergeben 2,71 Prozent, 32 Pixel 3,00.
 
 Gemessen bei 300 ppi, 109,22 × 299,97 mm:
 
@@ -352,10 +366,85 @@ als `KarteVerdunkelt.png` und `Grenzen.png` daneben. Daraus lässt sich eine eig
 `werkzeuge/regionsmaske.py` tut das per Flutfüllung.
 
 Die Grenze des Verfahrens ist die Grenzebene selbst: sie kennt die großen Regionen, nicht die
-Provinzen darin. Eine Saat im Kosch flutet das ganze Mittelreich (128 bis 193 mm waagerecht, 80 bis
-124 mm senkrecht), unabhängig davon, ab welcher Deckung man eine Linie als Linie zählt. Der Kosch
-liegt im Vorbild bei 143 bis 153 mm und 96 bis 112 mm — ein Zehntel davon. Er ist dort von Hand
-geschnitten, und die fertige Datei `DSA5-Aventurienkarte_Kosch.png` liegt im Zusatzordner.
+Provinzen darin. Ausgezählt hat das Netz **30 geschlossene Flächen über 200 Pixel** — die 28
+Regionen und zwei Binnengewässer. Eine Saat im Kosch flutet deshalb das ganze Mittelreich (128 bis
+193 mm waagerecht, 80 bis 124 mm senkrecht), unabhängig davon, ab welcher Deckung man eine Linie
+als Linie zählt. Der Kosch liegt im Vorbild bei 143 bis 153 mm und 96 bis 112 mm — ein Zehntel
+davon.
+
+**Für den Kosch gibt es deshalb keine Fassung.** Er ist in keinem der beiden Pakete abgegrenzt,
+und die fertige Datei, die es dafür gab, stammte aus einer fremden Sammlung. Wer ihn braucht,
+schneidet die Maske von Hand und gibt sie `regionsmaske.py --aus-fassung` mit.
+
+## Die Sepiakarte der Rückseite
+
+Die offiziellen Hefte zeigen die Rückseite nicht mit verdunkelter Karte, sondern **in Sepia,
+nur die aktive Region in Farbe**, mit einem weichen Schlagschatten darum. Nachgemessen an zwei
+Rücktiteln: *Ketten für die Ewigkeit* (US25324, Karte als eingebettetes Bild, 1249 × 2008 px)
+und *Schrecken aus der Tiefe* (US25326, aus der gesetzten Seite bei 300 ppi).
+
+### Die Rampe
+
+Es ist kein Farbfilter, sondern eine Funktion allein der Helligkeit — die Streuung um die
+Gerade liegt bei fünf von 255 Stufen. Über 886 000 beziehungsweise 444 000 Pixel angepasst:
+
+| | R | G | B |
+|---|---|---|---|
+| Ketten | 1,023 L + 14,6 | 0,999 L − 3,8 | 0,948 L − 18,6 |
+| Schrecken | 0,994 L + 16,6 | 1,002 L − 4,4 | 1,006 L − 21,3 |
+
+Alle Steigungen sind eins. Es bleibt ein **fester Farbversatz auf das Grau**:
+
+```
+Grau  = 0,299 R + 0,587 G + 0,114 B
+Sepia = (Grau + 15,  Grau − 4,  Grau − 20)
+```
+
+Und der ist helligkeitserhaltend: 0,299·15 + 0,587·(−4) + 0,114·(−20) = −0,14. Die Karte behält
+ihre Zeichnung und wechselt nur den Farbort. Restfehler gegen beide Hefte: im Mittel 0,4 bis
+3,7 Stufen, 95 Prozent unter 10. Endpunkte der Rampe: Grau 0 → (15, 0, 0), Grau 255 →
+(255, 251, 235).
+
+**Nicht zu verwechseln mit der Ebene `Lankarte_Hintergrund`** aus
+`Aventurienkarte-Komplett.psd`. Die ist auch sepia, aber eine andere: ihre Helligkeit ist
+gestaucht (Steigung 0,815, Achsenabschnitt 36,9) und ihr Farbstich halb so stark (R−L steigt
+nur bis +19,5 und fällt wieder). Sie ist die Multiplizieren-Unterlage der Farbkarte, nicht die
+Sepiafassung der Rückseite.
+
+### Die Kartenfläche
+
+Sepia darf nur auf die Karte, nicht auf den Zierrahmen. Die Fläche liefert das Kartenpaket
+selbst: `KarteVerdunkelt.png` halbiert **genau die Karte** und lässt alles andere unberührt —
+gemessen liegt das Verhältnis der beiden Fassungen bei **0,507**, und die Differenz zur hellen
+Fassung deckt **13,2 Prozent der Seite**. Das ist die Kartenfläche, punktgenau und ohne
+Freistellen von Hand.
+
+### Der Schlagschatten
+
+In Ringen um die farbige Region gemessen, *Ketten für die Ewigkeit*:
+
+| Abstand | 3 px | 7 px | 11 px | 15 px | 21 px | 31 px | 45 px | fern |
+|---|---|---|---|---|---|---|---|---|
+| Helligkeit | 94,1 | 107,5 | 105,8 | 112,0 | 117,0 | 119,0 | 119,5 | 115,0 |
+
+Also rund 25 Stufen Abdunklung unmittelbar am Rand, ausklingend über etwa 20 Pixel.
+Nachgebildet als weichgezeichnete Silhouette der Region, multipliziert auf die Sepiafläche.
+Tiefe und Radius sind an diesem Verlauf angepasst, gemessen als Anteil der örtlichen
+Helligkeit, damit das Gelände herausfällt:
+
+| Tiefe / Radius | 3 px | 7 px | 11 px | 15 px | 21 px | Fehlersumme |
+|---|---|---|---|---|---|---|
+| Vorbild | 0,210 | 0,092 | 0,109 | 0,059 | 0,017 | — |
+| 0,55 / 9 | 0,165 | 0,080 | 0,034 | 0,014 | 0,000 | 0,193 |
+| 0,55 / 12 | 0,185 | 0,113 | 0,062 | 0,032 | 0,011 | 0,126 |
+| **0,55 / 15** | **0,196** | **0,135** | **0,087** | **0,053** | **0,024** | **0,093** |
+| 0,65 / 15 | 0,230 | 0,158 | 0,101 | 0,061 | 0,027 | 0,106 |
+| 0,55 / 18 | 0,201 | 0,149 | 0,105 | 0,071 | 0,037 | 0,102 |
+
+Dass der Vorbildwert bei 7 px unter dem bei 11 px liegt, ist Rauschen aus dem Gelände —
+gemessen wird auf der Karte, nicht auf einer leeren Fläche.
+
+---
 
 ## Der Innenraum der Kästen
 

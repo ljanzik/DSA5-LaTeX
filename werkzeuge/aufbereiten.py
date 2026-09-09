@@ -9,8 +9,6 @@ Scriptorium-Baukasten auf.
     python3 werkzeuge/aufbereiten.py "/pfad/zum/Baukasten" --ppi 200
     python3 werkzeuge/aufbereiten.py "/pfad/zum/Baukasten" \
         --rueckseiten "/pfad/zum/Rueckseiten_Karten_Paket"
-    python3 werkzeuge/aufbereiten.py "/pfad/zum/Baukasten" \
-        --zusatz "/pfad/zu/einzelnen/Grafikdateien"
 
 Mit --ziel schreibt es grafiken/ und schriften/ in ein anderes Projekt,
 das diese Klasse benutzt. Ohne --ziel in dieses hier.
@@ -35,14 +33,14 @@ weil LaTeX mit beidem schlecht umgeht.
 
 Mit --rueckseiten kommt das zweite Paket dazu: eine fertige Rueckseite mit
 Zierrahmen und 28 Masken, die je eine Region Aventuriens hervorheben. Eine
-Maske ist die verdunkelte Karte mit einem Loch an der Stelle der Region; das
-Werkzeug legt sie ueber die neutrale Rueckseite und speichert das Ergebnis
-als ruecken-<region>.
+Maske ist die verdunkelte Karte mit einem Loch an der Stelle der Region.
+Daraus baut das Werkzeug die Rueckseite so, wie die offiziellen Hefte sie
+zeigen: die Karte in Sepia, die Region in Farbe, ein weicher Schlagschatten
+darum. Ergebnis ist ruecken-<region>.
 
-Mit --zusatz kommt ein Ordner mit einzelnen Grafikdateien dazu. Daraus
-stammt der Zierrahmen des Kapitelanfangs (DSA5-Kapitelstart.png): ein
-Rahmen mit Pergamentschenkeln und Drachenornament, innen offen fuer das
-Bild. Der Baukasten liefert an dieser Stelle nur eine Pergamentflaeche.
+Andere Pakete braucht es nicht. Der Zierrahmen des Kapitelanfangs und die
+drei Rautenkacheln kamen frueher ueber ein --zusatz aus einer fremden
+Sammlung; beide stehen im Baukasten selbst und werden hier daraus erzeugt.
 
 Der Baukasten, kostenlos bei Ulisses:
 https://www.ulisses-ebooks.de/de/product/197880/scriptorium-aventuris-layout-baukasten
@@ -161,6 +159,27 @@ KAPITELSTART_EBENEN = {
     'kapitelstart-ornament.png':  'Ebene 10',
 }
 
+# Die Rautenskala. Eine Kachel ist eine Raute samt ihrem Anteil am
+# Zwischenraum. An der fertigen Viererskala gemessen sitzt die Raute mit
+# 204 x 236 px in einer Teilung von 215 x 259.
+RAUTE_KACHEL = (215, 259)
+RAUTEN = {
+    'raute-rot.png':   'AufzaehlerDSA5_Rueckseite_rot.psd',
+    'raute-gruen.png': 'AufzaehlerDSA5_Rueckseite_blau.psd',
+    'raute-grau.png':  'AufzaehlerDSA5_Rueckseite_schwarz.psd',
+}
+
+# Der Zierrahmen entsteht aus denselben zwei Ebenen: das Pergamentblatt,
+# innen ausgeschnitten, mit dem Drachenornament davor. Ausgeschnitten wird
+# durch Erosion des Alphakanals -- was uebrig bleibt, ist ein Rand in der
+# Breite der Erosion, und der behaelt die gerissene Aussenkante.
+#
+# 20 px sind an der Fassung gemessen, die frueher ueber --zusatz kam: bei
+# dieser Breite unterscheiden sich die beiden Umrisse in 1,71 Prozent der
+# Pixel, und die liegen samtlich auf der weichen Innenkante. 10 px ergeben
+# 2,71 Prozent, 32 px ergeben 3,00.
+KAPITELSTART_RAND = 20
+
 # Diese Grafiken werden als JPEG abgelegt, nicht als PNG. Es sind die
 # Vollseitengrafiken: 2516 x 3579 px in RGB, als PNG 7 bis 13 MB je Datei, als
 # JPEG in Qualitaet 88 unter 1,5 MB. Einen Alphakanal haben sie nicht, und
@@ -182,17 +201,57 @@ SCHRIFTEN = ['andlso.ttf', 'GenBasR.ttf', 'GenBasB.ttf',
 # Aus dem Rueckseiten-Paket. Der Dateiname wird zum Kuerzel: Umlaute
 # ausgeschrieben, Grossbuchstaben klein, Wortgrenzen zu Bindestrichen.
 RUECKEN_NEUTRAL = 'ScriptoriumAventuris-hinten.png'
+RUECKEN_VERDUNKELT = 'KarteVerdunkelt.png'
 RUECKEN_PRAEFIX = 'Aventurien_'
 
-# Aus einem Ordner mit einzelnen Grafikdateien, ueber --zusatz.
-# Zielname -> moegliche Quellnamen.
-ZUSATZ = {
-    'kapitelstart-rahmen.png': ['DSA5-Kapitelstart.png'],
-    # Eine fertige Rueckseite mit hervorgehobenem Kosch. Die Grenzebene des
-    # Kartenpakets kennt nur die grossen Regionen, der Kosch ist dort nicht
-    # abgegrenzt -- diese Datei schliesst die Luecke.
-    'ruecken-kosch.png': ['DSA5-Aventurienkarte_Kosch.png'],
-}
+# ---- Die Sepiarampe der Rueckseite ----
+#
+# Die offiziellen Hefte zeigen die Karte nicht verdunkelt, sondern in Sepia,
+# und nur die aktive Region in Farbe. Nachgemessen an zwei Ruecktiteln --
+# „Ketten fuer die Ewigkeit" (US25324, Karte als eingebettetes Bild) und
+# „Schrecken aus der Tiefe" (US25326) -- ist das kein Farbfilter, sondern
+# eine Funktion allein der Helligkeit: die Streuung um die Gerade liegt bei
+# fuenf von 255 Stufen.
+#
+#   Ketten     R = 1,023 L + 14,6   G = 0,999 L - 3,8   B = 0,948 L - 18,6
+#   Schrecken  R = 0,994 L + 16,6   G = 1,002 L - 4,4   B = 1,006 L - 21,3
+#
+# Alle Steigungen sind eins. Es bleibt ein fester Farbversatz auf das Grau,
+# und der ist helligkeitserhaltend: 0,299*15 + 0,587*(-4) + 0,114*(-20) =
+# -0,14. Die Karte behaelt also ihre Zeichnung und wechselt nur den Farbort.
+# Restfehler gegen beide Hefte: im Mittel 0,4 bis 3,7 Stufen, 95 Prozent
+# unter 10.
+SEPIA = (15, -4, -20)
+
+# ---- Der Schlagschatten um die Region ----
+#
+# Am selben Ruecktitel gemessen, in Ringen um die farbige Region:
+#
+#    3 px  94,1      21 px  117,0
+#    7 px 107,5      31 px  119,0
+#   11 px 105,8      45 px  119,5
+#   15 px 112,0      fern   115,0
+#
+# Also rund 25 Stufen Abdunklung unmittelbar am Rand, ausklingend ueber
+# etwa 20 px bei 319 ppi. Nachgebildet als weichgezeichnete Silhouette der
+# Region, multipliziert auf die Sepiaflaeche.
+#
+# Tiefe und Weichzeichnung sind an diesem Verlauf angepasst. Gemessen wird
+# als Anteil der oertlichen Helligkeit, damit das Gelaende herausfaellt:
+#
+#            3 px   7 px  11 px  15 px  21 px   Summe der Fehler
+#   Vorbild  0,210  0,092  0,109  0,059  0,017
+#   0,55/ 9  0,165  0,080  0,034  0,014  0,000       0,193
+#   0,55/12  0,185  0,113  0,062  0,032  0,011       0,126
+#   0,55/15  0,196  0,135  0,087  0,053  0,024       0,093   <-
+#   0,65/15  0,230  0,158  0,101  0,061  0,027       0,106
+#   0,55/18  0,201  0,149  0,105  0,071  0,037       0,102
+#
+# Dass der Vorbildwert bei 7 px unter dem bei 11 px liegt, ist Rauschen aus
+# dem Gelaende -- gemessen wird schliesslich auf der Karte, nicht auf einer
+# leeren Flaeche.
+SCHATTEN_TIEFE = 0.55     # Faktor auf die weichgezeichnete Silhouette
+SCHATTEN_WEICH = 15       # Radius der Weichzeichnung in Pixeln bei 300 ppi
 
 
 def kuerzel(name):
@@ -296,6 +355,16 @@ def liste_ausgeben():
     print('== aus %s einzeln gerendert ==' % KAPITELSTART_PSD[0])
     for ziel, ebene in sorted(KAPITELSTART_EBENEN.items()):
         print('  %-28s <- Ebene mit "%s" im Namen' % (ziel, ebene))
+    print('  %-28s <- Pergamentebene, innen um %d px erodiert, mit Ornament'
+          % ('kapitelstart-rahmen.png', KAPITELSTART_RAND))
+    print('  %-28s <- aus kapitelstart-rahmen geflutet'
+          % 'kapitelstart-fenster.png')
+    print('  %-28s <- kapitelstart-pergament in der Form des Fensters'
+          % 'kapitelstart-flaeche.png')
+    print()
+    print('== die Rautenskala, je eine Raute auf %d x %d px ==' % RAUTE_KACHEL)
+    for ziel, datei in sorted(RAUTEN.items()):
+        print('  %-28s <- Links/%s' % (ziel, datei))
     print()
     print('== Schriften nach %s/ ==' % ZIEL_SCHRIFT)
     for s in SCHRIFTEN:
@@ -353,7 +422,7 @@ def main():
     # Pillow braucht es fuer die Seitenhintergruende, den Kapitelanfang und
     # die JPEG-Wandlung des Rueckumschlags — also schon beim Kopieren.
     try:
-        from PIL import Image
+        from PIL import Image, ImageChops, ImageFilter
         Image.MAX_IMAGE_PIXELS = None
     except ImportError:
         print()
@@ -451,6 +520,7 @@ def main():
                     yield lage
 
         lagen = list(alle(psd))
+        teile = {}
         for ziel, teil in sorted(KAPITELSTART_EBENEN.items()):
             treffer = [l for l in lagen if teil.lower() in l.name.lower()]
             if not treffer:
@@ -464,9 +534,34 @@ def main():
             if bild is not None:
                 b = treffer[0].bbox
                 leinwand.alpha_composite(bild.convert('RGBA'), (b[0], b[1]))
+            teile[ziel] = leinwand
             speichern(leinwand, zg, ziel, nur_png, ppi)
             kapitel += 1
-    print('Kapitelanfang      : %d von %d' % (kapitel, len(KAPITELSTART_EBENEN)))
+
+        # Der Zierrahmen: dasselbe Pergamentblatt, innen ausgeschnitten,
+        # mit dem Ornament davor. Frueher kam er als fertige Datei ueber
+        # --zusatz aus einem fremden Paket; er steckt aber in derselben
+        # PSD wie seine beiden Teile.
+        perg = teile.get('kapitelstart-pergament.png')
+        orn = teile.get('kapitelstart-ornament.png')
+        if perg is None:
+            fehlt.append('kapitelstart-rahmen (braucht kapitelstart-pergament)')
+        else:
+            voll = perg.split()[3]
+            innen = voll
+            # Erosion in Schritten von einem Pixel. MinFilter(2r+1) auf einen
+            # Schlag waere r^2 Vergleiche je Pixel; r-mal MinFilter(3) sind
+            # neun, und das Ergebnis ist dasselbe Quadrat.
+            for _ in range(KAPITELSTART_RAND):
+                innen = innen.filter(ImageFilter.MinFilter(3))
+            rand = ImageChops.subtract(voll, innen)
+            rahmen = perg.copy()
+            rahmen.putalpha(rand)
+            if orn is not None:
+                rahmen = Image.alpha_composite(rahmen, orn)
+            speichern(rahmen, zg, 'kapitelstart-rahmen.png', nur_png, ppi)
+            kapitel += 1
+    print('Kapitelanfang      : %d von %d' % (kapitel, len(KAPITELSTART_EBENEN) + 1))
 
     # 5 -- Schriften
     # 5 -- Rueckseiten aus dem zweiten Paket
@@ -487,169 +582,199 @@ def main():
             rueck += 1
         else:
             fehlt.append('ruecken-neutral (gesucht: %s)' % RUECKEN_NEUTRAL)
-        # Die Regionalfassungen sind Masken: die verdunkelte Karte mit
-        # einem Loch an der Stelle der Region. Sie gehoeren UEBER die
-        # neutrale Rueckseite, in der die Karte hell und farbig ist -- dann
-        # bleibt die Region hell und der Rest tritt zurueck. Auf weiss
-        # flachgelegt waere die Region ein weisses Loch.
+        # ---- Sepia statt Verdunkelung ----
+        #
+        # Das Paket bietet die Regionalfassungen als Masken an: die um die
+        # Haelfte verdunkelte Karte mit einem Loch an der Stelle der Region,
+        # zum Auflegen auf die helle Rueckseite. So stand es hier bis zur
+        # Messung an zwei offiziellen Ruecktiteln -- und die machen es
+        # anders: die Karte steht in Sepia, nur die aktive Region in Farbe,
+        # und um sie liegt ein weicher Schlagschatten. Das hebt die Region
+        # ungleich deutlicher heraus; in einem ohnehin dunkelgruenen
+        # Waldgebiet war die halbierte Fassung kaum zu erkennen.
+        #
+        # Gebraucht werden dafuer drei Dinge, alle im Paket:
+        #
+        #   die Karte in Farbe   ScriptoriumAventuris-hinten.png
+        #   die Kartenflaeche    | hell - KarteVerdunkelt | > 8
+        #   die Region           der Alphakanal der Maske, wo er 0 ist
+        #
+        # Der zweite Punkt ist der Kniff. KarteVerdunkelt.png halbiert genau
+        # die Karte und laesst den Zierrahmen unberuehrt -- gemessen liegt
+        # das Verhaeltnis bei 0,507, und die Differenz zur hellen Fassung
+        # deckt 13,2 Prozent der Seite. Das ist die Kartenflaeche, punktgenau
+        # und ohne Freistellen von Hand.
+        unterlage = None
+        karte = None
         if os.path.exists(quelle):
-            unterlage = Image.open(quelle).convert('RGBA')
-        else:
-            unterlage = None
+            unterlage = Image.open(quelle).convert('RGB')
+            qv = os.path.join(paket, RUECKEN_VERDUNKELT)
+            if os.path.exists(qv):
+                dunkel = Image.open(qv).convert('RGB')
+                if dunkel.size == unterlage.size:
+                    karte = ImageChops.difference(unterlage, dunkel) \
+                        .convert('L').point(lambda v: 255 if v > 3 else 0)
+            if karte is None:
+                fehlt.append('Kartenflaeche (gesucht: %s) -- ohne sie bleiben '
+                             'die Rueckseiten ohne Sepia' % RUECKEN_VERDUNKELT)
+
+        sepia = None
+        if unterlage is not None and karte is not None:
+            grau = unterlage.convert('L')
+            sepia = Image.merge('RGB', [grau.point(
+                lambda v, s=s: max(0, min(255, v + s))) for s in SEPIA])
+
         for name in sorted(os.listdir(paket)):
             if not name.startswith(RUECKEN_PRAEFIX) or not name.endswith('.png'):
                 continue
             maske = Image.open(os.path.join(paket, name)).convert('RGBA')
-            if unterlage is not None and unterlage.size == maske.size:
-                fertig = Image.alpha_composite(unterlage, maske).convert('RGB')
-            else:
-                # Ohne Unterlage bleibt die Maske, was sie ist.
-                fertig = maske
+            if sepia is None or unterlage.size != maske.size:
+                # Ohne die beiden Grundlagen bleibt die Maske, was sie ist.
+                speichern(maske, zg, 'ruecken-%s.png' % kuerzel(name),
+                          nur_png, ppi)
+                rueck += 1
+                continue
+            # Das Loch der Maske ist die Region.
+            region = maske.split()[3].point(lambda v: 255 if v < 8 else 0)
+            # Der Schatten: die weichgezeichnete Silhouette der Region,
+            # multipliziert auf die Sepiaflaeche. Weichgezeichnet wird die
+            # Region selbst, nicht ihr Rand -- innerhalb liegt sie ohnehin
+            # unter der Farbfassung und faellt dort nicht auf.
+            weich = region.filter(ImageFilter.GaussianBlur(SCHATTEN_WEICH))
+            dunkler = Image.eval(weich, lambda v: 255 - int(v * SCHATTEN_TIEFE))
+            beschattet = ImageChops.multiply(
+                sepia, Image.merge('RGB', (dunkler, dunkler, dunkler)))
+            # Zusammensetzen: Sepia mit Schatten ueberall auf der Karte,
+            # die Farbfassung in der Region.
+            fertig = Image.composite(beschattet, unterlage, karte)
+            fertig = Image.composite(unterlage, fertig, region)
             speichern(fertig, zg, 'ruecken-%s.png' % kuerzel(name),
                       nur_png, ppi)
             rueck += 1
-        print('Rueckseiten        : %d aus dem Kartenpaket' % rueck)
+        print('Rueckseiten        : %d aus dem Kartenpaket%s'
+              % (rueck, '' if sepia is not None else ' (ohne Sepia)'))
 
-    # 6 -- einzelne Grafikdateien aus einem Zusatzordner
-    if '--zusatz' in sys.argv:
-        i = sys.argv.index('--zusatz')
-        if i + 1 >= len(sys.argv):
-            print('--zusatz braucht einen Pfad.')
-            return 2
-        ordner = sys.argv[i + 1].rstrip('/\\')
-        if not os.path.isdir(ordner):
-            print('Kein Ordner: %s' % ordner)
-            return 2
-        zus = 0
-        for ziel, quellen in sorted(ZUSATZ.items()):
-            q = None
-            for kandidat in quellen:
-                pfad = os.path.join(ordner, kandidat)
-                if os.path.exists(pfad):
-                    q = pfad
-                    break
-            if q is None:
-                fehlt.append('%s (gesucht: %s)' % (ziel, quellen[0]))
-                continue
-            # Die Rueckseiten sind flaechige Bilder und gehen als JPEG;
-            # der Zierrahmen braucht seine Transparenz und bleibt PNG.
-            if ppi < 300 or ziel.startswith('ruecken-'):
-                speichern(Image.open(q), zg, ziel, nur_png, ppi)
-            else:
-                shutil.copyfile(q, os.path.join(zg, ziel))
-            zus += 1
-        print('Zusatzgrafiken     : %d von %d' % (zus, len(ZUSATZ)))
+    # 6 -- die Rautenskala als Kachel
+    #
+    # Die drei Kacheln kamen frueher aus einem fremden Paket, ueber
+    # --zusatz. Sie stehen aber im Baukasten, und zwar als Masterdateien:
+    # AufzaehlerDSA5_Rueckseite_rot, _blau und _schwarz sind genau die
+    # rote, die tuerkise und die graue Raute, alle drei 204 x 236 px
+    # deckend -- Pixel fuer Pixel dieselbe Zeichnung wie in den fertigen
+    # Viererskalen, nur ohne deren Leinwandrand.
+    #
+    # Was der Baukasten „blau" nennt, heisst in der Skala „gruen"; der
+    # Stein ist tuerkis. Hier gilt der Name, unter dem die Klasse ihn
+    # aufruft.
+    #
+    # Eine Kachel ist eine Raute samt ihrem Anteil am Zwischenraum. An der
+    # Viererskala gemessen sitzt die Raute mit 204 x 236 px in einer
+    # Teilung von 215 x 259 -- also 11 px Luft waagerecht und 23 px
+    # senkrecht. Die Kachel wird deshalb auf dieses Mass zentriert.
+    kach = 0
+    for ziel, datei in sorted(RAUTEN.items()):
+        q = finde(wurzel, ['Links/%s' % datei])
+        if q is None:
+            fehlt.append('%s (gesucht: Links/%s)' % (ziel, datei))
+            continue
+        bild = PSDImage.open(q).composite().convert('RGBA')
+        kasten = bild.getchannel('A').point(
+            lambda v: 255 if v > 16 else 0).getbbox()
+        raute = bild.crop(kasten)
+        kachel = Image.new('RGBA', RAUTE_KACHEL, (0, 0, 0, 0))
+        kachel.alpha_composite(raute,
+                               ((RAUTE_KACHEL[0] - raute.width) // 2,
+                                (RAUTE_KACHEL[1] - raute.height) // 2))
+        speichern(kachel, zg, ziel, nur_png, ppi)
+        kach += 1
+    print('Rautenkacheln      : %d von %d' % (kach, len(RAUTEN)))
 
-        # Die Rautenskala als Kachel. Gemessen liegen die vier Rauten einer
-        # Vorlage bei x 1..204, 216..419, 431..634 und 647..850 Pixel; die
-        # Teilung ist damit 215. Eine Kachel ist eine Raute samt ihrem
-        # Anteil am Zwischenraum, also 215 Pixel breit und so hoch wie die
-        # Vorlage.
-        kacheln = {
-            'raute-rot.png':   ('DSA5_Rauten_rot_4.png', 0),
-            'raute-grau.png':  ('DSA5_Rauten_rot_1.png', 1),
-            'raute-gruen.png': ('DSA5_Rauten_gruen_4.png', 0),
-        }
-        kach = 0
-        for ziel, (quelle, spalte) in sorted(kacheln.items()):
-            pfad = os.path.join(ordner, quelle)
-            if not os.path.exists(pfad):
-                fehlt.append('%s (gesucht: %s)' % (ziel, quelle))
-                continue
-            bild = Image.open(pfad).convert('RGBA')
-            teilung = bild.width // 4
-            links = spalte * teilung
-            speichern(bild.crop((links, 0, links + teilung, bild.height)),
-                      zg, ziel, nur_png, ppi)
-            kach += 1
-        print('Rautenkacheln      : %d von %d' % (kach, len(kacheln)))
-
-        # Die Oeffnung des Kapitelrahmens als Maske, und ein Platzhalter
-        # darin.
-        #
-        # Die Kanten des Rahmens sind gezeichnet: die untere schwankt ueber
-        # 8 mm, und unten sitzt das Drachenornament mitten in der Flaeche.
-        # Ein Rechteck muss deshalb entweder darunter enden -- dann bleibt
-        # Platz leer -- oder darunter hervorschauen.
-        #
-        # Also die Oeffnung selbst: von der Fenstermitte aus wird im
-        # transparenten Bereich geflutet, begrenzt durch die Deckung des
-        # Rahmens. Das sind 69,5 Prozent der Datei, von 6,01 bis 93,73 mm
-        # waagerecht und 0,00 bis 267,97 mm senkrecht -- die Form folgt der
-        # gerissenen Kante und umschliesst das Ornament.
-        quelle_ra = os.path.join(zg, 'kapitelstart-rahmen.png')
-        quelle_pg = os.path.join(zg, 'kapitelstart-pergament.png')
-        if os.path.exists(quelle_ra):
-            from PIL import ImageDraw
-            rahmen = Image.open(quelle_ra).convert('RGBA')
-            je_mm = rahmen.width / 109.22
-            karte = rahmen.getchannel('A').point(
-                lambda v: 0 if v > 40 else 255).convert('L')
-            saat = (int(50 * je_mm), int(120 * je_mm))
-            if karte.getpixel(saat) != 255:
-                fehlt.append('kapitelstart-fenster (Saatpunkt liegt im Rahmen)')
-            else:
-                ImageDraw.floodfill(karte, saat, 128, thresh=0)
-                oeffnung = karte.point(lambda v: 255 if v == 128 else 0)
-                # Die Oeffnung muss unter den Rahmen reichen, sonst
-                # bleibt eine helle Linie: die Kanten der Grafik sind
-                # weichgezeichnet, und die Flutfuellung stoppt bei einer
-                # Deckung von 40 von 255 -- dort deckt der Rahmen noch
-                # kaum, und der Seitenhintergrund scheint durch. Gemessen
-                # waren das 0,28 bis 0,71 mm heller Streifen.
-                #
-                # Die Schwelle hochzusetzen hilft nicht: ab 128 entweicht
-                # die Fuellung nach draussen, der Rahmen ist nicht
-                # ueberall dicht.
-                #
-                # Also eine zweite Flutfuellung, von der Ecke aus: die
-                # gibt das Aussen. Was weder Oeffnung noch Aussen ist, ist
-                # der Rahmenkoerper. Die Oeffnung wird um 1,5 mm
-                # ausgedehnt und darauf beschnitten -- sie kriecht unter
-                # den Rahmen und bleibt innerhalb seiner Silhouette.
-                from PIL import ImageChops, ImageFilter
-                rand = karte.copy()
-                ImageDraw.floodfill(rand, (0, 0), 64, thresh=0)
-                innen = ImageChops.invert(
-                    rand.point(lambda v: 255 if v == 64 else 0))
-                weite = max(3, int(round(1.5 * je_mm)))
-                oeffnung = ImageChops.lighter(
-                    oeffnung,
-                    ImageChops.multiply(
-                        oeffnung.filter(ImageFilter.MaxFilter(2 * weite + 1)),
-                        innen))
-                # Die Maske: weisse Flaeche mit der Oeffnung als Alphakanal.
-                maske = Image.new('RGBA', rahmen.size, (255, 255, 255, 0))
-                maske.putalpha(oeffnung)
-                speichern(maske, zg, 'kapitelstart-fenster.png', nur_png, ppi)
-                # Der Platzhalter: Pergamenttextur in dieser Form.
-                if os.path.exists(quelle_pg):
-                    blatt = Image.open(quelle_pg).convert('RGBA')
-                    # Die Textur ohne ihre eigenen gerissenen Kanten: der
-                    # Bereich innerhalb aller Kanten, dann deckend auf die
-                    # Rahmengroesse gebracht.
-                    innen = blatt.crop((int(5 * je_mm), int(8 * je_mm),
-                                        int(94 * je_mm), int(261 * je_mm)))
-                    faktor = max(rahmen.width / innen.width,
-                                 rahmen.height / innen.height)
-                    innen = innen.resize(
-                        (max(1, int(round(innen.width * faktor))),
-                         max(1, int(round(innen.height * faktor)))),
-                        Image.LANCZOS)
-                    links = (innen.width - rahmen.width) // 2
-                    oben = (innen.height - rahmen.height) // 2
-                    innen = innen.crop((links, oben,
-                                        links + rahmen.width,
-                                        oben + rahmen.height))
-                    innen.putalpha(oeffnung)
-                    speichern(innen, zg, 'kapitelstart-flaeche.png',
-                              nur_png, ppi)
-                    print('Kapitelfenster     : Maske und Platzhalter')
-                else:
-                    fehlt.append('kapitelstart-flaeche (braucht '
-                                 'kapitelstart-pergament)')
+    # Die Oeffnung des Kapitelrahmens als Maske, und ein Platzhalter
+    # darin.
+    #
+    # Die Kanten des Rahmens sind gezeichnet: die untere schwankt ueber
+    # 8 mm, und unten sitzt das Drachenornament mitten in der Flaeche.
+    # Ein Rechteck muss deshalb entweder darunter enden -- dann bleibt
+    # Platz leer -- oder darunter hervorschauen.
+    #
+    # Also die Oeffnung selbst: von der Fenstermitte aus wird im
+    # transparenten Bereich geflutet, begrenzt durch die Deckung des
+    # Rahmens. Das sind 69,5 Prozent der Datei, von 6,01 bis 93,73 mm
+    # waagerecht und 0,00 bis 267,97 mm senkrecht -- die Form folgt der
+    # gerissenen Kante und umschliesst das Ornament.
+    quelle_ra = os.path.join(zg, 'kapitelstart-rahmen.png')
+    quelle_pg = os.path.join(zg, 'kapitelstart-pergament.png')
+    if os.path.exists(quelle_ra):
+        from PIL import ImageDraw
+        rahmen = Image.open(quelle_ra).convert('RGBA')
+        je_mm = rahmen.width / 109.22
+        karte = rahmen.getchannel('A').point(
+            lambda v: 0 if v > 40 else 255).convert('L')
+        saat = (int(50 * je_mm), int(120 * je_mm))
+        if karte.getpixel(saat) != 255:
+            fehlt.append('kapitelstart-fenster (Saatpunkt liegt im Rahmen)')
         else:
-            fehlt.append('kapitelstart-fenster (braucht kapitelstart-rahmen)')
+            ImageDraw.floodfill(karte, saat, 128, thresh=0)
+            oeffnung = karte.point(lambda v: 255 if v == 128 else 0)
+            # Die Oeffnung muss unter den Rahmen reichen, sonst
+            # bleibt eine helle Linie: die Kanten der Grafik sind
+            # weichgezeichnet, und die Flutfuellung stoppt bei einer
+            # Deckung von 40 von 255 -- dort deckt der Rahmen noch
+            # kaum, und der Seitenhintergrund scheint durch. Gemessen
+            # waren das 0,28 bis 0,71 mm heller Streifen.
+            #
+            # Die Schwelle hochzusetzen hilft nicht: ab 128 entweicht
+            # die Fuellung nach draussen, der Rahmen ist nicht
+            # ueberall dicht.
+            #
+            # Also eine zweite Flutfuellung, von der Ecke aus: die
+            # gibt das Aussen. Was weder Oeffnung noch Aussen ist, ist
+            # der Rahmenkoerper. Die Oeffnung wird um 1,5 mm
+            # ausgedehnt und darauf beschnitten -- sie kriecht unter
+            # den Rahmen und bleibt innerhalb seiner Silhouette.
+            from PIL import ImageChops, ImageFilter
+            rand = karte.copy()
+            ImageDraw.floodfill(rand, (0, 0), 64, thresh=0)
+            innen = ImageChops.invert(
+                rand.point(lambda v: 255 if v == 64 else 0))
+            weite = max(3, int(round(1.5 * je_mm)))
+            oeffnung = ImageChops.lighter(
+                oeffnung,
+                ImageChops.multiply(
+                    oeffnung.filter(ImageFilter.MaxFilter(2 * weite + 1)),
+                    innen))
+            # Die Maske: weisse Flaeche mit der Oeffnung als Alphakanal.
+            maske = Image.new('RGBA', rahmen.size, (255, 255, 255, 0))
+            maske.putalpha(oeffnung)
+            speichern(maske, zg, 'kapitelstart-fenster.png', nur_png, ppi)
+            # Der Platzhalter: Pergamenttextur in dieser Form.
+            if os.path.exists(quelle_pg):
+                blatt = Image.open(quelle_pg).convert('RGBA')
+                # Die Textur ohne ihre eigenen gerissenen Kanten: der
+                # Bereich innerhalb aller Kanten, dann deckend auf die
+                # Rahmengroesse gebracht.
+                innen = blatt.crop((int(5 * je_mm), int(8 * je_mm),
+                                    int(94 * je_mm), int(261 * je_mm)))
+                faktor = max(rahmen.width / innen.width,
+                             rahmen.height / innen.height)
+                innen = innen.resize(
+                    (max(1, int(round(innen.width * faktor))),
+                     max(1, int(round(innen.height * faktor)))),
+                    Image.LANCZOS)
+                links = (innen.width - rahmen.width) // 2
+                oben = (innen.height - rahmen.height) // 2
+                innen = innen.crop((links, oben,
+                                    links + rahmen.width,
+                                    oben + rahmen.height))
+                innen.putalpha(oeffnung)
+                speichern(innen, zg, 'kapitelstart-flaeche.png',
+                          nur_png, ppi)
+                print('Kapitelfenster     : Maske und Platzhalter')
+            else:
+                fehlt.append('kapitelstart-flaeche (braucht '
+                             'kapitelstart-pergament)')
+    else:
+        fehlt.append('kapitelstart-fenster (braucht kapitelstart-rahmen)')
 
     sch = 0
     for name in SCHRIFTEN:

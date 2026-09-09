@@ -40,8 +40,10 @@ WIE FEIN DAS NETZ IST. Die Grenzebene kennt die grossen Regionen, nicht die
 Provinzen darin. Eine Saat im Kosch flutet das ganze Mittelreich, von 128
 bis 193 mm waagerecht und 80 bis 124 mm senkrecht -- und zwar unabhaengig
 davon, ab welcher Deckung man eine Linie als Linie zaehlt. Wer eine Provinz
-braucht, findet sie also nicht in diesem Netz; fuer den Kosch gibt es eine
-fertige Fassung als eigene Datei.
+braucht, findet sie also nicht in diesem Netz. Ausgezaehlt hat das Netz 30
+geschlossene Flaechen ueber 200 Pixel -- die 28 Regionen und zwei
+Binnengewaesser. Wer den Kosch braucht, schneidet ihn von Hand und gibt ihn
+ueber --aus-fassung mit.
 
 Heraus kommt `grafiken/ruecken-<name>.jpg`, zu benutzen als
 
