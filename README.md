@@ -101,6 +101,33 @@ aus innerhalb der Grenzlinien und rechnet aus der gefundenen Fläche dieselbe Se
 `aufbereiten.py`. Das Grenznetz kennt allerdings nur die großen Regionen: eine Saat im Kosch
 flutet das ganze Mittelreich.
 
+### Schritt 1c — die Heldendokumente
+
+**<https://www.ulisses-ebooks.de/de/product/159699/dsa5-heldendokumente-pdf-als-download-kaufen>**
+
+Nur für `bogen/` nötig, nicht für die Klasse. Wer keine Heldenbögen setzt, überspringt diesen
+Schritt — alles andere baut ohne sie.
+
+Der Bogen legt diese PDF als Grund ein und setzt seine Formularfelder darüber. Erwartet werden
+zwei Fassungen, die sich **nicht** nur in der Farbe unterscheiden:
+
+| | Seiten | Format |
+|---|---|---|
+| `Heldendokument_druckerfreundlich.pdf` | 6 | A4, `MediaBox 595,276 × 841,89` |
+| `US25505PDF_Heldendokumente.pdf` | 10 | Druckdatei, `MediaBox 230,8 × 317,8 mm`, `TrimBox 208,8 × 295,8 mm` |
+
+Es sind unterschiedliche Auflagen: die Seitenreihenfolge weicht ab (Ausrüstung ist dort Seite 6,
+hier Seite 4), und die Beschriftungen ebenso („Talente" gegen „FERTIGKEITEN"). Deshalb hat jede
+Fassung ihre eigene Koordinatentabelle. Die Farbfassung wird außerdem vor dem Einlegen einmal auf
+ihre TrimBox beschnitten und unskaliert auf A4 gesetzt — sonst skalierte `pdfpages` sie um etwa
++0,6 Prozent, und keine gemessene Koordinate träfe mehr. Das erledigt
+`bogen/bau/quelle-vorbereiten.ps1` von selbst.
+
+**Die beiden PDF bleiben außerhalb des Projekts.** Sie sind Verlagsmaterial und stehen anders als
+der Baukasten nicht unter der Scriptorium-Vereinbarung. Ihre Pfade — und nur dort — stehen in
+`bogen/konfig.tex`; ab Werk zeigen sie nach `~/Downloads`. Näheres in
+[`doku/BOGEN.md`](doku/BOGEN.md), Abschnitt „Die zwei Quelldateien".
+
 ### Schritt 2 — aufbereiten
 
 Der bequeme Weg. Das Werkzeug legt alles an, was die Klasse braucht, und benennt es passend:
