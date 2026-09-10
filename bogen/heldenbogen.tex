@@ -1,0 +1,76 @@
+% ===========================================================================
+% heldenbogen.tex — ausfuellbarer DSA5-Heldenbogen
+%
+% Der Bogen wird NICHT nachgebaut, sondern ueberlagert: die Originalseite
+% kommt per pdfpages als Grund, die Formularfelder legt hyperref absolut
+% darueber, tikz liefert das Koordinatensystem.
+%
+% ZWINGEND pdflatex, nicht xelatex — hyperrefs Formularfelder sind dort weit
+% besser erprobt. ZWINGEND zweimal laufen lassen: "remember picture" braucht
+% zwei Durchgaenge, im ersten liegen alle Felder in der linken oberen Ecke.
+%
+% Steuerung von aussen (siehe bau/bauen.ps1):
+%   \def\Modus{ausfuellbar}   Formularfelder            (Vorgabe)
+%   \def\Modus{vorbefuellt}   Werte fest eingesetzt
+%   \def\Modus{liste}         nur Werte, OHNE Originalbogen (weitergebbar)
+%   \def\Quelle{df}           druckerfreundlich, 6 Seiten (Vorgabe)
+%   \def\Quelle{farbe}        Farbfassung, 10 Seiten (nur 6 genutzt)
+%   \def\Held{dorle}          Wertedatei helden/<name>.tex
+%   \def\Messen{1}            Messgitter einblenden
+% ===========================================================================
+
+\documentclass[a4paper]{article}
+
+\usepackage[margin=0pt]{geometry}
+\usepackage{ifthen}
+\usepackage{pdfpages}
+\usepackage{tikz}
+\usepackage[pdftex]{hyperref}
+
+% Unterstrich als gewoehnliches Zeichen — die Feldnamen brauchen ihn
+% (s2_talent_fw_07). Das Dokument enthaelt keine Mathematik.
+\catcode`\_=12
+
+\input{konfig}
+\input{mechanik}
+
+% Koordinatentabelle der gewaehlten Quelle. Sammelt nur ein, setzt nichts.
+\input{\feldtabelle}
+
+% Werte des Helden. Fehlt die Datei nicht, fehlt der Wert — beides ist ok.
+% Die Heldendatei darf ausserdem \bogennur{} oder \bogenweglassen{} setzen.
+\ifx\Held\undefined\else
+  \IfFileExists{helden/\Held.tex}{\input{helden/\Held}}{%
+    \message{^^JHINWEIS: helden/\Held.tex nicht gefunden, alle Felder bleiben leer.^^J}}
+\fi
+
+% Erst jetzt zaehlen, welcher Bogen ueberhaupt Werte hat: die Feldtabelle
+% liefert die Namen, die Heldendatei die Werte. Grundlage fuer -OhneLeere.
+\werteZaehlen
+
+% Faellt danach jeder Bogen weg, bleibt Bogen 1 stehen (sonst gaebe es
+% kein PDF und das sahe wie ein Absturz aus).
+\bogenAuswahlPruefen
+
+\begin{document}
+
+\ifthenelse{\equal{\Modus}{liste}}{%
+  % --- Dritte Fassung: Werte ohne den Originalbogen ------------------------
+  % Enthaelt kein Verlagsmaterial und ist damit weitergebbar. Benutzt
+  % dieselbe Feldtabelle, nur als Liste statt als Overlay.
+  \input{werteliste}
+}{%
+  % --- Ueberlagerte Fassungen ---------------------------------------------
+  % GENAU EIN Form um das ganze Dokument. Ein \TextField ausserhalb erzeugt
+  % kein Feld und keine Fehlermeldung.
+  \begin{Form}
+    \bogenseite{1}
+    \bogenseite{2}
+    \bogenseite{3}
+    \bogenseite{4}
+    \bogenseite{5}
+    \bogenseite{6}
+  \end{Form}
+}
+
+\end{document}

@@ -1,0 +1,108 @@
+% ===========================================================================
+% mappe/mappe.tex — Charaktermappe: Umschlag fuer die Heldenbögen
+%
+% Vier Blätter, in zwei Ausgabefassungen:
+%
+%   \def\Fassung{digital}   4 x A4 hochkant, eine Seite je Blatt.
+%                           Fuer die Weitergabe als PDF; in der Praxis
+%                           zaehlen davon die erste und die letzte Seite.
+%   \def\Fassung{druck}     2 x A3 quer, je zwei Blätter nebeneinander.
+%                           Gefalzt ergibt das den Umschlag, in den die
+%                           Heldenbögen eingelegt werden.
+%
+% Weitere Steuerung von aussen (siehe bau/mappe-bauen.ps1):
+%   \def\Held{dorle}        Wertedatei helden/<name>.tex
+%   \def\Wenden{kurz}       Wendeachse der Druckfassung, siehe unten
+%
+% ZWINGEND pdflatex (wie der Heldenbogen) und ZWINGEND zweimal — die
+% Blätter sind Boxen, aber tikz braucht seinen zweiten Lauf trotzdem.
+%
+% Die Mappe enthält KEINE Seite des Originalbogens. Sie ist damit anders als
+% die überlagerten Fassungen weitergebbar, sofern der Pflichttext der
+% Vereinbarung über Gemeinschaftsinhalte mitgeht — der steht auf Blatt 3.
+% ===========================================================================
+
+\documentclass{article}
+
+\usepackage{ifthen}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{ebgaramond}      % Lesetext; setzt sich als \rmdefault
+\usepackage[black]{cinzel}   % Auszeichnung, liefert \cinzelblack
+
+% Unterstrich als gewoehnliches Zeichen — die Wertenamen brauchen ihn
+% (mappe_akzentfarbe). Das Dokument enthaelt keine Mathematik.
+\catcode`\_=12
+
+\ifx\Fassung\undefined \def\Fassung{digital}\fi
+\ifx\Wenden\undefined  \def\Wenden{kurz}\fi
+
+% Seitenformat je Fassung. Kein Rand: die Blätter sind randabfallend.
+\ifthenelse{\equal{\Fassung}{druck}}{%
+  \usepackage[paperwidth=420mm,paperheight=297mm,margin=0pt]{geometry}%
+}{%
+  \usepackage[paperwidth=210mm,paperheight=297mm,margin=0pt]{geometry}%
+}
+
+\input{mappe/mechanik-mappe}
+
+% Werte des Helden. Fehlt die Datei, fehlen die Werte — kein Abbruch.
+\ifx\Held\undefined\else
+  \IfFileExists{helden/\Held.tex}{\input{helden/\Held}}{%
+    \message{^^JHINWEIS: helden/\Held.tex nicht gefunden, die Mappe bleibt leer.^^J}}
+\fi
+
+\input{mappe/blaetter}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\fboxsep}{0pt}
+
+% Zwei Blätter nebeneinander auf A3 quer, ohne Fuge.
+% Die Namen duerfen KEINE Ziffer enthalten. Ein Makro namens a3seite liest
+% LaTeX als Befehl a, gefolgt vom Text "3seite" -- Ziffern sind keine
+% Buchstaben, und a ist schon vergeben: "Command  already defined".
+\newcommand{\umschlagseite}[2]{%
+  \noindent\hbox to 420mm{#1#2}\newpage}
+
+% Ein Blatt auf einer A4-Seite.
+\newcommand{\einzelseite}[1]{%
+  \noindent#1\newpage}
+
+\begin{document}
+
+\ifthenelse{\equal{\Fassung}{druck}}{%
+  % --- A3 quer, zweiseitig -----------------------------------------------
+  % Aussen: links die Rueckseite, rechts der Titel. Gefalzt wird der Titel
+  % zur Vorderseite.
+  \umschlagseite{\blattrueckseite}{\blatttitel}
+  % Innen: was man beim Oeffnen sieht. Links liegt die Rueckseite des
+  % Titels, rechts die der Rueckseite -- das ist der Grund fuer die
+  % Reihenfolge und fuer \Wenden.
+  %
+  % \Wenden=kurz  (Wenden um die senkrechte Achse, das gewohnte Umblaettern)
+  % \Wenden=lang  (Wenden um die waagerechte Achse) -- dann sind die beiden
+  % Innenblätter getauscht. Welche der beiden Einstellungen der Drucker
+  % "langer Rand" nennt, ist von Treiber zu Treiber verschieden; im Zweifel
+  % einmal beides ausgeben und das richtige behalten.
+  \ifthenelse{\equal{\Wenden}{lang}}{%
+    \umschlagseite{\blattinnenrechts}{\blattinnenlinks}%
+  }{%
+    \umschlagseite{\blattinnenlinks}{\blattinnenrechts}%
+  }
+}{%
+  % --- 4 x A4 --------------------------------------------------------------
+  % Erste und letzte Seite sind Titel und Rueckseite; die beiden
+  % Innenblätter liegen dazwischen, damit die digitale Fassung dieselben
+  % vier Blätter zeigt wie die gedruckte.
+  \einzelseite{\blatttitel}
+  \einzelseite{\blattinnenlinks}
+  \einzelseite{\blattinnenrechts}
+  \einzelseite{\blattrueckseite}
+}
+
+\end{document}

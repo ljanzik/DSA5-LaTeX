@@ -19,6 +19,11 @@ Die Vorlage ist mit Hilfe einer KI entstanden und dafür gedacht, auch mit einer
 werden: **LaTeX muss man dafür nicht (vollständig) lernen.** Wie das geht, steht unter
 „Mit einer KI setzen“.
 
+Dazu kommt `bogen/`: ein Werkzeug, das das offizielle DSA5-Heldendokument mit Formularfeldern
+überlagert — ausfüllbar oder mit den Werten eines Helden vorbefüllt — und eine Charaktermappe
+als Umschlag dazu setzt. Es läuft mit pdflatex statt XeLaTeX und folgt eigenen Regeln; alles
+darüber steht in [`doku/BOGEN.md`](doku/BOGEN.md).
+
 ---
 
 ## Warum keine Grafiken im Projekt

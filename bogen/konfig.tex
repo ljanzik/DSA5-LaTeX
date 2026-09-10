@@ -1,0 +1,51 @@
+% konfig.tex — Quelldateien und Seitenzuordnung. Die einzige Datei, die Pfade kennt.
+%
+% Die beiden Quell-PDF sind Verlagsmaterial und liegen absichtlich AUSSERHALB des
+% Projektverzeichnisses. Pfade mit Schrägstrich, nicht mit Backslash.
+
+\def\quelleDF{C:/Users/LeifJanzik/Downloads/Heldendokument_druckerfreundlich.pdf}
+
+% Die Farbfassung wird NICHT direkt eingelegt. Sie ist eine Druckdatei:
+% MediaBox 230.8 x 317.8 mm (A4 plus 11 mm Beschnitt), TrimBox 208.8 x 295.8 mm.
+% pdfpages wuerde sie um etwa +0,6 % auf A4 skalieren, und dann stimmt keine
+% gemessene Koordinate mehr. bau\quelle-vorbereiten.ps1 beschneidet sie
+% einmal auf die TrimBox und setzt sie unskaliert mittig auf A4; erst diese
+% abgeleitete Datei wird eingelegt. bauen.ps1 erzeugt sie bei Bedarf selbst.
+\def\quelleFarbe{bau/ausgabe/quelle-farbe-a4.pdf}
+
+% --- Seitenzuordnung -------------------------------------------------------
+% Logischer Bogen 1..6 -> physische Seite in der jeweiligen Quelldatei.
+% Der logische Bogen ist die gemeinsame Sprache beider Fassungen; nur hier
+% wird auf die abweichende Seitenreihenfolge der Farbfassung umgerechnet.
+%
+%   Bogen  Inhalt                     DF   Farbe
+%   1      Persönliche Daten           1     1
+%   2      Talente / Fertigkeiten      2     2
+%   3      Kampfwerte / Kampf          3     3
+%   4      Liturgien & Zeremonien      4     5
+%   5      Zauber & Rituale            5     6
+%   6      Ausrüstung / Besitz         6     4
+%
+% Seiten 7-10 der Farbfassung (Meisterdokument, Kampfprotokoll) bekommen
+% bewusst keine Felder — siehe CLAUDE.md.
+
+\newcommand{\seitenzuordnungDF}[1]{#1}
+\newcommand{\seitenzuordnungFarbe}[1]{%
+  \ifcase#1\relax
+    \or 1\or 2\or 3\or 5\or 6\or 4%
+  \else #1%
+  \fi}
+
+% --- Auswahl der Quelle ----------------------------------------------------
+% \Quelle wird von aussen gesetzt: "df" (Vorgabe) oder "farbe".
+\ifx\Quelle\undefined \def\Quelle{df}\fi
+
+\ifthenelse{\equal{\Quelle}{farbe}}{%
+  \def\quelldatei{\quelleFarbe}%
+  \let\quellseite\seitenzuordnungFarbe
+  \def\feldtabelle{felder/farbe}%
+}{%
+  \def\quelldatei{\quelleDF}%
+  \let\quellseite\seitenzuordnungDF
+  \def\feldtabelle{felder/df}%
+}

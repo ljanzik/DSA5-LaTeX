@@ -1,0 +1,323 @@
+% ===========================================================================
+% mappe/mechanik-mappe.tex — Darstellungsebene der Charaktermappe
+%
+% Dieselbe Trennung wie beim Heldenbogen: hier steht nur, WIE etwas aussieht.
+% WAS drinsteht, kommt aus helden/<name>.tex, und WO die Blätter landen,
+% entscheidet mappe.tex.
+%
+% Der Kern ist die Umgebung mappenblatt: sie baut EIN A4-Feld von genau
+% 210 x 297 mm als Box. Die digitale Fassung setzt eines pro Seite, die
+% Druckfassung zwei davon nebeneinander auf A3 quer. Deshalb darf hier
+% nichts vom Seitenrand abhängen — alles wird absolut in das Feld gesetzt.
+%
+% Koordinaten in Millimeter von der linken OBEREN Feldecke, wie im ganzen
+% Projekt. Erreicht wird das mit y=-1mm; das dreht die y-Achse um und hat
+% zwei Folgen, die weiter unten je an ihrer Stelle stehen: rotate=90 und
+% rotate=-90 tauschen den Sinn, und yshift zählt weiter nach oben.
+% ===========================================================================
+
+\makeatletter
+
+% --- Werte einsammeln ------------------------------------------------------
+% Gleiche Schnittstelle wie mechanik.tex, damit helden/<name>.tex
+% unverändert durch beide Dokumente läuft.
+\newcommand{\wert}[2]{\expandafter\gdef\csname wert@#1\endcsname{#2}}
+\newcommand{\wertvon}[1]{\ifcsname wert@#1\endcsname\csname wert@#1\endcsname\fi}
+\newcommand{\wertdaP}[1]{%
+  \ifcsname wert@#1\endcsname\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi}
+% Erster gesetzter Wert aus zwei Namen, sonst leer. Damit greift die Mappe
+% auf die Felder des Heldenbogens zurück: mappe_name, sonst s1_name.
+\newcommand{\wertoder}[2]{\wertdaP{#1}{\wertvon{#1}}{\wertvon{#2}}}
+% Wert oder Vorgabe.
+\newcommand{\mappewahl}[2]{\wertdaP{#1}{\wertvon{#1}}{#2}}
+
+% Die Heldendateien dürfen die Bogenauswahl setzen. Für die Mappe ist das
+% ohne Bedeutung — hier verschluckt, damit \input nicht scheitert.
+\newcommand{\bogennur}[1]{}
+\newcommand{\bogenweglassen}[1]{}
+
+% --- Farben ----------------------------------------------------------------
+% Am HvS-Charakterbogen gemessen (300 dpi, Querschnitt durch den Rahmen).
+\definecolor{bandcreme}{HTML}{D5C7C4}
+\definecolor{bandkontur}{HTML}{412A1E}
+\definecolor{schrift}{HTML}{241A14}
+\definecolor{pergament}{HTML}{FCFAF6}
+
+% Die Akzentfarbe kommt aus der Heldendatei: \wert{mappe_akzentfarbe}{AD6ED0}.
+% Fehlt sie, bleibt der Rahmen im gedeckten Braun des Bandes — nicht
+% farblos, nur ohne Akzent.
+\newcommand{\akzentsetzen}{%
+  \wertdaP{mappe_akzentfarbe}{%
+    % \definecolor expandiert seine Angabe nicht selbst — erst den Aufruf
+    % zusammenbauen, dann ausführen.
+    \edef\akzent@ruf{\noexpand\definecolor{akzent}{HTML}{\wertvon{mappe_akzentfarbe}}}%
+    \akzent@ruf
+  }{\colorlet{akzent}{bandkontur!35!bandcreme}}}
+
+% --- Flechtband ------------------------------------------------------------
+% Am Vorbild eingemessen. Maße in mm von der Blattkante:
+%   1,75--2,10  dunkle Kontur   \
+%   2,15--2,85  Creme-Körper     > Strang A  (Mitte 2,45  Dicke 1,40)
+%   2,95--3,15  dunkle Kontur   /
+%   3,20--4,35  AKZENTFARBE       (die Lücke zwischen den Strängen!)
+%   4,40--4,60  dunkle Kontur   \
+%   4,65--5,25  Creme-Körper     > Strang B  (Mitte 5,00)
+%   5,35--5,60  dunkle Kontur   /
+%   6,85--8,35  glatte Innenlinie (Creme 7,20--7,95)
+% Kettenmaß 18,12 mm, davon 11,00 mm gerader Balken.
+%
+% Der Witz des Motivs: es sind ZWEI parallele Bänder. Die Akzentfarbe ist
+% nichts als der Zwischenraum. Auf der Geraden wird daraus ein langer
+% Balken, zwischen zwei Kreuzungen eine spitze Linse. Ein Farbwert genügt,
+% um den ganzen Rahmen umzustimmen.
+\def\bandmitte{3.68}
+\def\strangversatz{1.23}
+\def\strangbauch{1.78}
+\def\strangdick{1.40}
+\def\strangcreme{0.70}
+\def\innenlinie{7.60}
+\def\innendick{1.50}
+\def\innencreme{0.75}
+\def\periode{18.12}
+\def\balken{11.00}
+
+% Strangkurve. \pp \bb \kk \np müssen vorher gesetzt sein — sie DÜRFEN nicht
+% hier gesetzt werden: eine Zuweisung mitten im Pfad bricht TikZ ab
+% ("Giving up on this path. Did you forget a semicolon?").
+% #1 = Vorzeichen des Versatzes.
+\newcommand{\strangvor}[1]{%
+  (0,{#1*\strangversatz})%
+  \foreach \i in {0,...,\the\numexpr\np-1\relax} {%
+    -- ({\i*\pp+\bb},{#1*\strangversatz})
+    .. controls ({\i*\pp+\bb+0.20*\kk},{#1*\strangversatz})
+            and ({\i*\pp+\bb+0.27*\kk},{-#1*\strangbauch})
+     .. ({\i*\pp+\bb+0.50*\kk},{-#1*\strangbauch})
+    .. controls ({\i*\pp+\bb+0.73*\kk},{-#1*\strangbauch})
+            and ({\i*\pp+\bb+0.80*\kk},{#1*\strangversatz})
+     .. ({\i*\pp+\pp},{#1*\strangversatz})%
+  }%
+}
+% Derselbe Weg rückwärts. Gebraucht, um die Akzentfläche als geschlossenen
+% Pfad zu bekommen: Strang A hin, Strang B zurück.
+\newcommand{\strangrueck}[1]{%
+  \foreach \j in {1,...,\np} {%
+    -- ({(\np-\j)*\pp+\pp},{#1*\strangversatz})
+    .. controls ({(\np-\j)*\pp+\bb+0.80*\kk},{#1*\strangversatz})
+            and ({(\np-\j)*\pp+\bb+0.73*\kk},{-#1*\strangbauch})
+     .. ({(\np-\j)*\pp+\bb+0.50*\kk},{-#1*\strangbauch})
+    .. controls ({(\np-\j)*\pp+\bb+0.27*\kk},{-#1*\strangbauch})
+            and ({(\np-\j)*\pp+\bb+0.20*\kk},{#1*\strangversatz})
+     .. ({(\np-\j)*\pp+\bb},{#1*\strangversatz})
+    -- ({(\np-\j)*\pp},{#1*\strangversatz})%
+  }%
+}
+
+% Eine Kante: läuft von (0,0) nach (#1,0), +y zeigt nach außen.
+% #2 = Anzahl Kettenglieder. Die Konturen ALLER Stränge zuerst, dann alle
+% Creme-Körper — sonst deckt die Kontur des zweiten Strangs den ersten ab.
+\newcommand{\flechtkante}[2]{%
+  \def\np{#2}%
+  \pgfmathsetmacro{\pp}{#1/#2}%
+  \pgfmathsetmacro{\bb}{\pp*\balken/\periode}%
+  \pgfmathsetmacro{\kk}{\pp-\bb}%
+  \fill[akzent] \strangvor{-1} \strangrueck{1} -- cycle;
+  \foreach \sg in {1,-1} {%
+    \draw[bandkontur,line width=\strangdick mm,line cap=round] \strangvor{\sg};}%
+  \foreach \sg in {1,-1} {%
+    \draw[bandcreme,line width=\strangcreme mm,line cap=round] \strangvor{\sg};}%
+}
+
+% Ecke: beide Stränge gehrt um die Ecke, dazwischen die Akzentfläche.
+% Scheitel in (0,0), die Kanten laufen nach +x und +y. #1 = Schenkellänge.
+\newcommand{\flechtecke}[1]{%
+  \fill[akzent] (#1,{-\strangversatz}) -- ({-\strangversatz},{-\strangversatz})
+             -- ({-\strangversatz},#1) -- ({\strangversatz},#1)
+             -- ({\strangversatz},{\strangversatz}) -- (#1,{\strangversatz}) -- cycle;
+  \foreach \s in {\strangversatz,-\strangversatz} {%
+    \draw[bandkontur,line width=\strangdick mm,line join=round,line cap=round]
+      (#1,{-\s}) -- ({-\s},{-\s}) -- ({-\s},#1);}%
+  \foreach \s in {\strangversatz,-\strangversatz} {%
+    \draw[bandcreme,line width=\strangcreme mm,line join=round,line cap=round]
+      (#1,{-\s}) -- ({-\s},{-\s}) -- ({-\s},#1);}%
+}
+
+% Der ganze Rahmen. Wird in einem Feld mit y nach UNTEN aufgerufen.
+% Der Einzug ist so gewählt, dass die Kette waagerecht in 10 und senkrecht
+% in 15 gleiche Glieder aufgeht — 18,3 bzw. 17,96 mm gegen die gemessenen
+% 18,12. Das ist der einzige Punkt, an dem vom Maß abgewichen wird, und der
+% Grund dafür ist zwingend: ein halbes Glied in der Ecke fällt auf.
+\def\kanteneinzug{13.6}
+\newcommand{\flechtrahmen}{%
+  \pgfmathsetmacro{\ez}{\kanteneinzug}
+  \pgfmathsetmacro{\lw}{210-2*\ez}
+  \pgfmathsetmacro{\lh}{297-2*\ez}
+  \pgfmathsetmacro{\el}{\ez-\bandmitte}
+  % glatte Innenlinie als EIN umlaufendes Rechteck — so schließen die Ecken
+  \draw[bandkontur,line width=\innendick mm]
+    (\innenlinie,\innenlinie) rectangle ({210-\innenlinie},{297-\innenlinie});
+  \draw[bandcreme,line width=\innencreme mm]
+    (\innenlinie,\innenlinie) rectangle ({210-\innenlinie},{297-\innenlinie});
+  % Kanten. Das +y der Kante zeigt jeweils nach außen. Weil die y-Achse
+  % dieses Feldes nach unten läuft, ist der Drehsinn getauscht: rotate=90
+  % dreht das +x der Kante nach OBEN.
+  \begin{scope}[shift={(\ez,\bandmitte)},yscale=-1]         \flechtkante{\lw}{10}\end{scope}
+  \begin{scope}[shift={(210-\ez,297-\bandmitte)},xscale=-1] \flechtkante{\lw}{10}\end{scope}
+  \begin{scope}[shift={(\bandmitte,297-\ez)},rotate=90]     \flechtkante{\lh}{15}\end{scope}
+  \begin{scope}[shift={(210-\bandmitte,\ez)},rotate=-90]    \flechtkante{\lh}{15}\end{scope}
+  % Ecken
+  \begin{scope}[shift={(\bandmitte,\bandmitte)}]                             \flechtecke{\el}\end{scope}
+  \begin{scope}[shift={(210-\bandmitte,\bandmitte)},xscale=-1]               \flechtecke{\el}\end{scope}
+  \begin{scope}[shift={(\bandmitte,297-\bandmitte)},yscale=-1]               \flechtecke{\el}\end{scope}
+  \begin{scope}[shift={(210-\bandmitte,297-\bandmitte)},xscale=-1,yscale=-1] \flechtecke{\el}\end{scope}
+}
+
+% Kopfzier: dort, wo beim Vorbild das Verlagslogo steht. Das ist eine
+% eingetragene Marke und wird NICHT nachgezeichnet. Stattdessen ein
+% freistehendes Stück derselben Kette — es nimmt die Akzentfarbe mit, was
+% das Logo nie getan hätte.
+% #1 = Mitte x, #2 = Mitte y, #3 = Breite, #4 = Glieder
+\newcommand{\kopfzier}[4]{%
+  \begin{scope}[shift={({#1-#3/2},#2)}]
+    \flechtkante{#3}{#4}
+  \end{scope}}
+
+% --- Pergament -------------------------------------------------------------
+% Fläche und Fußkasten sind aus dem Scriptorium-Baukasten abgeleitet, siehe
+% bau/pergament-vorbereiten.py. Die abgeleiteten Dateien liegen in
+% bau/ausgabe/ und sind Verlagsmaterial — sie werden nicht weitergegeben,
+% wohl aber das fertige PDF (siehe RECHTLICHES auf dem linken Innenblatt).
+\newcommand{\pergamentgrund}{%
+  \node[anchor=north west,inner sep=0pt] at (0,0)
+    {\includegraphics[width=210mm,height=297mm]{bau/ausgabe/pergament-a4.jpg}};}
+
+% Ein Pergamentkasten mit gerissenem Rand, wie am Fuß der Vorbildseiten.
+% #1 x, #2 y (linke obere Ecke, mm), #3 Breite in mm, #4 Inhalt.
+%
+% Die HÖHE wird nicht angegeben, sondern am Inhalt gemessen. Ein fester
+% Wert lässt bei kurzem Text ein leeres Stück Pergament stehen, und das
+% sieht nach Versehen aus.
+% Der Einzug ist waagerecht groesser als senkrecht. Grund: der gerissene
+% Rand der Vorlage wird beim Einpassen mitskaliert. Die Vorlage ist
+% 1010 x 599 Pixel, der Fusskasten aber 182 x 28 mm -- waagerecht wird der
+% Rand dadurch auf gut 4 mm gestreckt, senkrecht auf gut einen. Mit einem
+% einheitlichen Einzug steht der Text seitlich in der Faserung.
+\newlength{\kasteneinzug}
+\setlength{\kasteneinzug}{12mm}
+\newlength{\kasteneinzughoch}
+\setlength{\kasteneinzughoch}{6mm}
+\newsavebox{\kastenbox}
+\newcommand{\pergamentkasten}[4]{%
+  % pgfinterruptpicture ist hier PFLICHT. Ein \sbox mit einer minipage
+  % darin, direkt in einem tikzpicture aufgerufen, kommt LEER zurueck --
+  % gemessen: ht 2,5 pt, dp 0 pt bei richtiger Breite, ohne jede
+  % Fehlermeldung. Der Kasten schrumpft dann auf die doppelte Randbreite
+  % und der Text fehlt einfach. pgfinterruptpicture stellt fuer den
+  % Augenblick den gewoehnlichen LaTeX-Satzzustand her; \global, weil die
+  % Umgebung eine Gruppe ist und die Box sie sonst nicht ueberlebt.
+  \begin{pgfinterruptpicture}%
+    \global\setbox\kastenbox\hbox{%
+      \begin{minipage}{\dimexpr#3mm-2\kasteneinzug\relax}%
+        \raggedright\color{schrift}#4\par
+      \end{minipage}}%
+  \end{pgfinterruptpicture}%
+  \node[anchor=north west,inner sep=0pt] at (#1,#2)
+    {\includegraphics[width=#3mm,
+       height=\dimexpr\ht\kastenbox+\dp\kastenbox+2\kasteneinzughoch\relax]
+       {bau/ausgabe/pergament-kasten.png}};
+  % yshift zählt in Leinwandkoordinaten, dort ist +y oben — daher das Minus.
+  \node[anchor=north west,inner sep=0pt]
+    at ([xshift=\kasteneinzug,yshift=-\kasteneinzughoch]#1,#2) {\usebox\kastenbox};}
+
+% --- Schrift ---------------------------------------------------------------
+% Cinzel für die Auszeichnung, EB Garamond für den Lesetext. Beide liegen in
+% TeX Live und laufen unter pdflatex.
+%
+% Zwei Dinge, die daran nicht zu ändern sind:
+% - Die Titelschrift des Vorbilds ist ein Rasterbild. Sie ist damit nicht
+%   greifbar, auch nicht über die Schriftliste des PDF — dort steht nur
+%   Gentium Basic, und das nur für den Fußtext.
+% - Der Baukasten schreibt Gentium Basic als Fließtext vor. Ein
+%   pdflatex-fähiges Gentium gibt es in TeX Live nicht mehr
+%   ("tlmgr: package gentium-tug not present in repository"). EB Garamond
+%   ist der nächste Verwandte, der da ist.
+\newcommand{\auszeichnung}{\cinzelblack}
+\newcommand{\lesetext}{\rmfamily}
+
+% ACHTUNG, zweimal eingetreten:
+%
+% 1. Die Schriftwahl muss als font=-Option des Knotens stehen, NICHT im
+%    Knotentext. Steht sie im Text, gilt sie nur für die erste Zeile: nach
+%    einem \\ in einem align-Knoten fällt die Größe auf die Grundschrift
+%    zurück, ohne Fehlermeldung. Der Titel sieht dann aus wie ein Name in
+%    40 pt mit einem Nachnamen in 10 pt.
+% 2. Mehrabsätziger Text braucht ein \par am Ende. Der Zeilenabstand eines
+%    Absatzes wird bei seinem \par festgelegt; fehlt es, setzt TeX den
+%    letzten Absatz mit dem Zeilenabstand von AUSSERHALB des Knotens. In
+%    einem Text aus drei Absätzen sind dann zwei locker und einer eng.
+%    \pergamentkasten und \mappetextblock hängen das \par selbst an.
+
+% Zeile in Akzentfarbe mit dunkler Kontur, wie der Name auf dem Vorbild.
+% Umgesetzt als Versatzkranz: derselbe Text achtmal in der Konturfarbe
+% ringsum, dann einmal in der Akzentfarbe darüber. Umständlicher als ein
+% echtes Umranden, dafür ohne \pdfliteral im Textmodus — und bei 40 pt ist
+% das Ergebnis nicht zu unterscheiden.
+% #1 x, #2 y (Mitte oben), #3 Konturradius in mm, #4 Schriftwahl, #5 Inhalt
+\newcommand{\konturzeile}[5]{%
+  \foreach \dx/\dy in {-1/0,1/0,0/-1,0/1,-0.71/-0.71,0.71/-0.71,-0.71/0.71,0.71/0.71} {%
+    \node[anchor=north,align=center,font=#4,text=bandkontur]
+      at ({#1+\dx*#3},{#2+\dy*#3}) {#5};}%
+  \node[anchor=north,align=center,font=#4,text=akzent] at (#1,#2) {#5};}
+
+% Lesetext-Block. #1 x, #2 y (linke obere Ecke), #3 Breite mm,
+% #4 Schriftwahl, #5 Ausrichtung (justify/center), #6 Inhalt.
+\newcommand{\mappetextblock}[6]{%
+  \node[anchor=north west,text=schrift,text width=#3mm,align=#5,font=#4]
+    at (#1,#2) {#6\par};}
+
+% --- Stellschrauben mit Vorgabewert ----------------------------------------
+% Alle über die Heldendatei übersteuerbar, alle mit brauchbarer Vorgabe.
+% Zweck: ein langer Name braucht eine kleinere Schrift, und das soll nicht
+% dazu zwingen, das Layout anzufassen.
+\newcommand{\mappenamengroesse}{\mappewahl{mappe_namengroesse}{40}}
+\newcommand{\mappenamenzeile}{\mappewahl{mappe_namenzeile}{45}}
+\newcommand{\mappeprofgroesse}{\mappewahl{mappe_professionsgroesse}{21}}
+\newcommand{\mappehintergrundtitel}{\mappewahl{mappe_hintergrundtitel}{HINTERGRUND}}
+\newcommand{\mappecopyright}{\mappewahl{mappe_copyright}{[Jahr] [Name]}}
+
+% --- Heldenbild ------------------------------------------------------------
+% #1 bevorzugter Wertename, #2 Rückfall, dann x, y, Breite, Höhe (mm).
+%
+% Das Bild sitzt auf der UNTERKANTE des Kastens, nicht mittig darin. Eine
+% stehende Figur, die in der Luft hängt, fällt sofort auf; ein Bild, das
+% oben Luft lässt, nicht. Fehlt Wert oder Datei, bleibt die Fläche leer und
+% der Lauf schreibt nur einen Hinweis ins Log — wie bei jedem Feld.
+\newcommand{\mappebild}[6]{%
+  \edef\mappe@bild{\wertoder{#1}{#2}}%
+  \ifx\mappe@bild\empty
+    \message{^^JHINWEIS: kein Bild gesetzt (#1 / #2), Bildflaeche bleibt leer.^^J}%
+  \else
+    \IfFileExists{\mappe@bild}{%
+      \node[anchor=south,inner sep=0pt] at ({#3+#5/2},{#4+#6})
+        {\includegraphics[width=#5mm,height=#6mm,keepaspectratio]{\mappe@bild}};%
+    }{\message{^^JHINWEIS: Bilddatei nicht gefunden: \mappe@bild^^J}}%
+  \fi}
+
+% --- Ein Blatt -------------------------------------------------------------
+% Baut ein A4-Feld von genau 210 x 297 mm als Box. y läuft nach unten,
+% (0,0) ist oben links.
+\newsavebox{\mappenbox}
+\newenvironment{mappenblatt}{%
+  \akzentsetzen
+  \begin{lrbox}{\mappenbox}%
+  \begin{tikzpicture}[x=1mm,y=-1mm,inner sep=0pt,outer sep=0pt]
+    \useasboundingbox (0,0) rectangle (210,297);
+    \begin{scope}
+      \clip (0,0) rectangle (210,297);
+      \pergamentgrund
+}{%
+    \end{scope}
+  \end{tikzpicture}%
+  \end{lrbox}%
+  \usebox{\mappenbox}}
+
+\makeatother

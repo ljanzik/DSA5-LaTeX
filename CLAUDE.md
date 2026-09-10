@@ -12,6 +12,20 @@ Grundlinienraster. Die Elementreferenz steht in `doku/ELEMENTE.md`. Dazu sechs
 Python-Werkzeuge in `werkzeuge/`, drei Dokumente in `doku/` und vier Beispieldokumente in
 `beispiel/`.
 
+## Der Heldenbogen ist ein eigener Bereich
+
+`bogen/` ist die Ausnahme von allem, was in dieser Datei steht: es überlagert das offizielle
+DSA5-Heldendokument mit AcroForm-Feldern, läuft deshalb **zwingend mit pdflatex** statt
+XeLaTeX, kennt kein Grundlinienraster und misst seine 1255 Koordinaten nicht am Baukasten,
+sondern aus den PDF-Content-Streams des Verlagsbogens. Dazu gehört die Charaktermappe
+(`bogen/mappe/`), der Umschlag für die Bögen.
+
+**Die Regeln von Teil B gelten dort nicht.** Wer an `bogen/` arbeitet, liest `doku/BOGEN.md`;
+wer an der Klasse arbeitet, braucht ihn nicht. Berührungspunkte sind heute zwei: die Schriften
+in `schriften/`, die beide Seiten aus `werkzeuge/aufbereiten.py` bekommen, und die
+Wertedateien `bogen/helden/*.tex`. Die Maße des Bogens stehen in `doku/BOGEN.md`, nicht in
+`doku/MASSE.md` — dort bleibt die Dreier-Rangfolge des Baukastens unter sich.
+
 ---
 
 # Teil A — ein Dokument setzen
