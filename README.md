@@ -128,26 +128,44 @@ der Baukasten nicht unter der Scriptorium-Vereinbarung. Ihre Pfade — und nur d
 `bogen/konfig.tex`; ab Werk zeigen sie nach `~/Downloads`. Näheres in
 [`doku/BOGEN.md`](doku/BOGEN.md), Abschnitt „Die zwei Quelldateien".
 
-### Schritt 2 — aufbereiten
+### Schritt 2 — einrichten
 
-Der bequeme Weg. Das Werkzeug legt alles an, was die Klasse braucht, und benennt es passend:
-
-```sh
-python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
-```
-
-Für die Rückseite gibt es ein zweites Paket, das Rückseiten-Karten-Paket. Es bringt eine
-fertige Rückseite mit Zierrahmen und 28 Masken, die je eine Region Aventuriens hervorheben:
+Ein Aufruf, und alles ist da:
 
 ```sh
-python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4" \
+python3 werkzeuge/einrichten.py "/pfad/zu/Scriptorium Aventuris v4" \
     --rueckseiten "/pfad/zum/Rueckseiten_Karten_Paket"
 ```
 
-Es braucht `Pillow` und `psd-tools`:
+Das `--rueckseiten` ist optional; ohne es fehlen nur die 29 Rückseiten aus Schritt 1b.
+
+`einrichten.py` ist die Klammer um die drei Werkzeuge, die die Arbeit tun — und der einzige
+Ort, an dem der Pfad zum Baukasten genannt wird:
+
+| | |
+|---|---|
+| `aufbereiten.py` | Grafiken und Schriften aus dem Baukasten |
+| `pergament.py` | die Pergamentfläche der Charaktermappe |
+| `pruefen.py` | Pixelmaße gegen `doku/MASSE.md` |
+
+Am Ende steht, was noch fehlt — auch die Heldendokumente aus Schritt 1c, die nicht aufbereitet,
+sondern nur gesucht werden. Wer nur wissen will, wie es steht, fragt ohne Baukasten:
 
 ```sh
-python3 -m pip install Pillow psd-tools
+python3 werkzeuge/einrichten.py --pruefen
+```
+
+Es braucht `Pillow`, `psd-tools` und `numpy`, für `nachmessen.py` außerdem `pdfplumber`:
+
+```sh
+python3 -m pip install Pillow psd-tools numpy pdfplumber
+```
+
+Die Werkzeuge lassen sich auch einzeln aufrufen, jedes mit demselben Baukastenpfad:
+
+```sh
+python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
+python3 werkzeuge/pergament.py   "/pfad/zu/Scriptorium Aventuris v4"
 ```
 
 Was es tut:
@@ -163,7 +181,15 @@ Was es tut:
 - kopiert die fünf Schriftdateien nach `schriften/`
 - schreibt am Ende eine Liste dessen, was fehlt
 
+`pergament.py` leitet daraus die beiden Flächen der Charaktermappe ab: `mappe-pergament-a4.jpg`
+formatfüllend auf A4 bei 300 ppi, dazu `mappe-pergament-kasten.png` als Fußkasten. Quelle ist
+`Kasten_Pergament.png` — die Doppelseiten des Baukastens taugen dafür nicht, ihre Innenfläche ist
+mit einer Standardabweichung von 1,0 praktisch glattes Weiß. Die Herleitung steht im Kopf des
+Werkzeugs.
+
 ### Schritt 3 — prüfen
+
+`einrichten.py` ruft es am Ende selbst auf; einzeln geht es auch:
 
 ```sh
 python3 werkzeuge/pruefen.py

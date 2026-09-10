@@ -89,8 +89,8 @@ $PSScriptRoot`). Sie lassen sich deshalb von der Projektwurzel aus aufrufen, und
 darin — `felder/`, `helden/`, `bau/ausgabe/` — bleiben relativ zu `bogen/`.
 
 `bogen/bau/ausgabe/` und `bogen/bau/bilder/` sind in `.gitignore`. Darin steckt
-Verlagsmaterial: jede überlagerte Fassung enthält die Quellseiten vollständig, und
-`pergament-a4.jpg` ist aus dem Baukasten abgeleitet.
+Verlagsmaterial: jede überlagerte Fassung enthält die Quellseiten vollständig, und die
+normalisierte Farbquelle ist eine Kopie der Verlagsdatei.
 
 ## Befehle
 
@@ -122,7 +122,13 @@ Die Python-Werkzeuge erwarten `bogen/` als Arbeitsverzeichnis:
 cd bogen
 python bau\geometrie.py <roh.pdf> --waag --senk --rechteck --text
 python bau\fassungen-vergleichen.py          # deckt sich Farbfassung mit df?
-python bau\pergament-vorbereiten.py --zeigen # Pergament aus dem Baukasten
+```
+
+Das Pergament der Mappe liegt in `grafiken/` und kommt vom Einrichten, nicht vom Bauen:
+
+```powershell
+python3 werkzeuge/einrichten.py "/pfad/zu/Scriptorium Aventuris v4"
+python3 werkzeuge/pergament.py  "/pfad/zu/Scriptorium Aventuris v4" --zeigen
 ```
 
 Die Skripte holen TeX Live selbst in den `PATH` (`bogen/bau/texpfad.ps1`) und lassen `pdflatex`
@@ -492,9 +498,11 @@ gemessenen 18,12). Ein halbes Glied in der Ecke fällt auf, eine Abweichung von 
 
 ### Das Pergament kommt aus dem Baukasten
 
-`bau/pergament-vorbereiten.py` leitet zwei Dateien nach `bau/ausgabe/` ab, aus
-`~/Downloads/Scriptorium_Aventuris_Layout_Baukasten`. `mappe-bauen.ps1` erzeugt sie bei Bedarf
-selbst. Zwei Befunde, beide gemessen:
+`werkzeuge/pergament.py` leitet zwei Dateien nach `grafiken/` ab, wie jede andere
+Baukastengrafik: `mappe-pergament-a4.jpg` und `mappe-pergament-kasten.png`. Erzeugt werden sie
+beim Einrichten, nicht beim Bauen — `werkzeuge/einrichten.py` gibt ihnen denselben
+Baukastenpfad wie `aufbereiten.py`. `mappe-bauen.ps1` prüft nur noch, ob sie da sind, und
+verweist sonst aufs Einrichten. Zwei Befunde, beide gemessen:
 
 1. **Die Baukasten-Doppelseiten sind als Textur wertlos** — Standardabweichung 1,0 von 255 in
    der Innenfläche, also praktisch glattes Weiß. Und sie bringen eigene Randgrafik mit
@@ -506,7 +514,7 @@ selbst. Zwei Befunde, beide gemessen:
    abschneiden, Farbigkeit auf 62 % zurücknehmen (das Vorbild ist graustichiger), eigenen
    Papierrand aufbringen (satter Saum bis 1,75 mm, Auslauf 16 mm).
 
-Die Fläche wird als **JPEG** abgelegt (`pergament-a4.jpg`, Güte 88, ohne Farbunterabtastung),
+Die Fläche wird als **JPEG** abgelegt (`mappe-pergament-a4.jpg`, Güte 88, ohne Farbunterabtastung),
 nicht als PNG. Verlustfrei bringt bei einer gefleckten Textur ohne Kanten nichts und kostet
 viel: als PNG waren es 5,3 MB und damit eine 6-MB-Mappe, als JPEG sind es 700 KB und 1,5 MB.
 Für die digitale Weitergabe ist das der Unterschied zwischen Anhang und Downloadlink.

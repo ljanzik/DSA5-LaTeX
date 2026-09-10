@@ -183,12 +183,15 @@
 
 % --- Pergament -------------------------------------------------------------
 % Fläche und Fußkasten sind aus dem Scriptorium-Baukasten abgeleitet, siehe
-% bau/pergament-vorbereiten.py. Die abgeleiteten Dateien liegen in
-% bau/ausgabe/ und sind Verlagsmaterial — sie werden nicht weitergegeben,
+% werkzeuge/pergament.py. Sie liegen in grafiken/ wie jede andere
+% Baukastengrafik und sind Verlagsmaterial — sie werden nicht weitergegeben,
 % wohl aber das fertige PDF (siehe RECHTLICHES auf dem linken Innenblatt).
+%
+% Der Pfad ist relativ zum Arbeitsverzeichnis, und das ist bogen/ — die
+% Bauskripte setzen es dorthin. Deshalb ../grafiken/, nicht grafiken/.
 \newcommand{\pergamentgrund}{%
   \node[anchor=north west,inner sep=0pt] at (0,0)
-    {\includegraphics[width=210mm,height=297mm]{bau/ausgabe/pergament-a4.jpg}};}
+    {\includegraphics[width=210mm,height=297mm]{../grafiken/mappe-pergament-a4.jpg}};}
 
 % Ein Pergamentkasten mit gerissenem Rand, wie am Fuß der Vorbildseiten.
 % #1 x, #2 y (linke obere Ecke, mm), #3 Breite in mm, #4 Inhalt.
@@ -223,7 +226,7 @@
   \node[anchor=north west,inner sep=0pt] at (#1,#2)
     {\includegraphics[width=#3mm,
        height=\dimexpr\ht\kastenbox+\dp\kastenbox+2\kasteneinzughoch\relax]
-       {bau/ausgabe/pergament-kasten.png}};
+       {../grafiken/mappe-pergament-kasten.png}};
   % yshift zählt in Leinwandkoordinaten, dort ist +y oben — daher das Minus.
   \node[anchor=north west,inner sep=0pt]
     at ([xshift=\kasteneinzug,yshift=-\kasteneinzughoch]#1,#2) {\usebox\kastenbox};}

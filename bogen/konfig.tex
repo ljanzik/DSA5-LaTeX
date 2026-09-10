@@ -5,6 +5,13 @@
 
 \def\quelleDF{C:/Users/LeifJanzik/Downloads/Heldendokument_druckerfreundlich.pdf}
 
+% Die Farbfassung, wie sie vom Verlag kommt. LaTeX selbst legt sie nie ein
+% (siehe unten), aber der Pfad gehoert trotzdem hierher: bau\quelle-vorbereiten.ps1
+% las ihn frueher aus einer eigenen fest verdrahteten Zeile, und damit war die
+% Zusage im Kopf dieser Datei -- "die einzige Datei, die Pfade kennt" -- nicht
+% mehr wahr. Das Skript liest ihn jetzt hier heraus.
+\def\quelleFarbeRoh{C:/Users/LeifJanzik/Downloads/US25505PDF_Heldendokumente.pdf}
+
 % Die Farbfassung wird NICHT direkt eingelegt. Sie ist eine Druckdatei:
 % MediaBox 230.8 x 317.8 mm (A4 plus 11 mm Beschnitt), TrimBox 208.8 x 295.8 mm.
 % pdfpages wuerde sie um etwa +0,6 % auf A4 skalieren, und dann stimmt keine

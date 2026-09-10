@@ -24,10 +24,19 @@ $Projekt = Split-Path -Parent $PSScriptRoot
 Set-Location $Projekt
 . (Join-Path $PSScriptRoot 'texpfad.ps1')
 
-$quelle = Join-Path $env:USERPROFILE 'Downloads\US25505PDF_Heldendokumente.pdf'
+# Der Pfad steht in konfig.tex, nicht hier. Er stand einmal an beiden
+# Stellen, und konfig.tex behauptet im Kopf, die einzige Datei zu sein, die
+# Pfade kennt -- das soll auch stimmen.
+$konfig = Get-Content (Join-Path $Projekt 'konfig.tex') -Raw
+if ($konfig -notmatch '(?m)^\\def\\quelleFarbeRoh\{([^}]*)\}') {
+    throw 'In konfig.tex fehlt \def\quelleFarbeRoh{...}'
+}
+$quelle = $Matches[1]
 $ziel   = Join-Path $Projekt 'bau\ausgabe\quelle-farbe-a4.pdf'
 
-if (-not (Test-Path $quelle)) { Write-Error "Quelle nicht gefunden: $quelle" }
+if (-not (Test-Path $quelle)) {
+    Write-Error "Quelle nicht gefunden: $quelle`nPfad in konfig.tex anpassen (\quelleFarbeRoh)."
+}
 
 $ausgabe = Split-Path -Parent $ziel
 if (-not (Test-Path $ausgabe)) { New-Item -ItemType Directory -Path $ausgabe | Out-Null }

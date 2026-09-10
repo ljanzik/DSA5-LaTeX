@@ -1,4 +1,5 @@
-# bau/pergament-vorbereiten.py
+#!/usr/bin/env python3
+# werkzeuge/pergament.py
 #
 # Erzeugt die A4-Pergamentflaeche fuer die Charaktermappe aus dem
 # Scriptorium-Aventuris-Baukasten.
@@ -19,11 +20,20 @@
 #    Kante mit braunem Auslauf. Also leicht ueberformatig einpassen, den
 #    Deckelrand abschneiden und einen eigenen Papierrand aufbringen.
 #
-# Die Quelle ist Verlagsmaterial und liegt ausserhalb des Projekts (wie die
-# beiden Heldenbogen-PDF, siehe konfig.tex). Die abgeleitete Datei landet in
-# bau/ausgabe/ und wird nicht weitergegeben.
+# Die Quelle ist Verlagsmaterial und liegt ausserhalb des Projekts. Das
+# Ergebnis landet in grafiken/ und wird wie jede andere Baukastengrafik
+# behandelt: nicht im Repository, nicht weitergegeben, siehe .gitignore.
 #
-#   python bau/pergament-vorbereiten.py [--zeigen]
+#   python3 werkzeuge/pergament.py "/pfad/zu/Scriptorium Aventuris v4"
+#   python3 werkzeuge/pergament.py "/pfad/zum/Baukasten" --ziel /pfad/zum/projekt
+#   python3 werkzeuge/pergament.py "/pfad/zum/Baukasten" --zeigen
+#
+# Der Baukastenpfad ist ein Argument und steht nicht mehr in der Datei. Er
+# stand hier einmal fest verdrahtet, waehrend aufbereiten.py ihn als Argument
+# nahm -- zwei Orte fuer denselben Pfad, und beim naechsten Baukasten waere
+# einer davon liegengeblieben. werkzeuge/einrichten.py gibt beiden denselben.
+#
+# Copyright 2026 Leif Janzik. Apache License 2.0.
 
 import sys
 from pathlib import Path
@@ -31,25 +41,26 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-BAUKASTEN = Path.home() / "Downloads" / "Scriptorium_Aventuris_Layout_Baukasten" \
-    / "Scriptorium Aventuris v4" / "PNG innen"
-QUELLE = BAUKASTEN / "Kasten_Pergament.png"
-
-AUSGABE = Path(__file__).resolve().parent / "ausgabe"
+# Die Unterordner sind dieselben, die aufbereiten.py kennt.
+UNTERORDNER = "PNG innen"
 
 # JPEG, nicht PNG. Die Flaeche ist eine gefleckte Textur ohne Kanten und
 # ohne Transparenz -- verlustfrei bringt hier nichts und kostet viel: als
 # PNG waren es 5,3 MB und damit eine 6-MB-Mappe, als JPEG bleibt ein
 # Bruchteil davon. Fuer die digitale Weitergabe ist das der Unterschied
 # zwischen Anhang und Downloadlink.
-ZIEL = AUSGABE / "pergament-a4.jpg"
+#
+# Der Praefix "mappe-" haelt die beiden von den fuenf pergament-*.png des
+# Baukastens auseinander, die aufbereiten.py in denselben Ordner legt.
+QUELLNAME = "Kasten_Pergament.png"
+ZIELNAME = "mappe-pergament-a4.jpg"
 GUETE = 88
 
 # Der Fusskasten der Mappe. Dieselbe Textur, quer, mit gerissenem Rand --
 # genau der Kasten, der beim Vorbild am Seitenfuss steht. Der Alphakanal muss
 # erhalten bleiben, sonst sitzt der Kasten in einem weissen Rechteck.
-QUELLE_KASTEN = BAUKASTEN / "Kasten_Pergament_ver3 Kopie.png"
-ZIEL_KASTEN = AUSGABE / "pergament-kasten.png"
+QUELLNAME_KASTEN = "Kasten_Pergament_ver3 Kopie.png"
+ZIELNAME_KASTEN = "mappe-pergament-kasten.png"
 
 DPI = 300
 BREITE = round(210 / 25.4 * DPI)   # 2480
@@ -122,7 +133,32 @@ def randmaske(breite: int, hoehe: int) -> np.ndarray:
     return np.clip(m, 0.0, 1.0) * RANDSTAERKE
 
 
+def wege(argv):
+    """Baukastenordner und Zielprojekt aus der Befehlszeile. Dieselbe Form
+    wie bei aufbereiten.py: der Baukasten positional, --ziel optional."""
+    argumente = [a for a in argv[1:] if not a.startswith("--")]
+    if not argumente:
+        raise SystemExit(__doc__ or
+                         'Aufruf: python3 werkzeuge/pergament.py '
+                         '"/pfad/zu/Scriptorium Aventuris v4"')
+    baukasten = Path(argumente[0].rstrip("/\\"))
+    if not baukasten.is_dir():
+        raise SystemExit(f"Kein Ordner: {baukasten}")
+
+    if "--ziel" in argv:
+        i = argv.index("--ziel")
+        if i + 1 >= len(argv):
+            raise SystemExit("--ziel braucht einen Pfad.")
+        projekt = Path(argv[i + 1].rstrip("/\\")).resolve()
+    else:
+        projekt = Path(__file__).resolve().parent.parent
+    return baukasten / UNTERORDNER, projekt / "grafiken"
+
+
 def main() -> None:
+    quellordner, zielordner = wege(sys.argv)
+    QUELLE = quellordner / QUELLNAME
+    ZIEL = zielordner / ZIELNAME
     if not QUELLE.exists():
         raise SystemExit(f"Baukasten-Quelle nicht gefunden:\n  {QUELLE}")
 
@@ -158,21 +194,22 @@ def main() -> None:
     bild.save(ZIEL, dpi=(DPI, DPI), quality=GUETE, subsampling=0, optimize=True)
     print(f"{ZIEL}  {BREITE}x{HOEHE} px  {ZIEL.stat().st_size / 1024:.0f} KB")
 
-    kasten()
+    kasten(quellordner / QUELLNAME_KASTEN, zielordner / ZIELNAME_KASTEN)
 
     if "--zeigen" in sys.argv:
-        vorschau = ZIEL.with_name("pergament-a4-vorschau.png")
+        vorschau = ZIEL.with_name("mappe-pergament-a4-vorschau.png")
         bild.resize((BREITE // 4, HOEHE // 4), Image.LANCZOS).save(vorschau)
         print(vorschau)
 
 
-def kasten() -> None:
+def kasten(QUELLE_KASTEN: Path, ZIEL_KASTEN: Path) -> None:
     """Uebernimmt den Fusskasten unter einem Namen ohne Leerzeichen und
     Umlaute -- \\includegraphics kommt mit "Kasten_Pergament_ver3 Kopie.png"
     nicht ohne Klimmzuege zurecht. Die Farbigkeit wird wie bei der Flaeche
     zurueckgenommen, damit beides zusammenpasst. Der Alphakanal bleibt."""
     if not QUELLE_KASTEN.exists():
         raise SystemExit(f"Baukasten-Quelle nicht gefunden:\n  {QUELLE_KASTEN}")
+    ZIEL_KASTEN.parent.mkdir(parents=True, exist_ok=True)
     im = Image.open(QUELLE_KASTEN).convert("RGBA")
     a = np.asarray(im, dtype=float)
     rgb, alpha = a[..., :3], a[..., 3:]

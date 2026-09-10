@@ -30,14 +30,20 @@ Set-Location $Projekt
 $Ausgabe = Join-Path $Projekt 'bau\ausgabe'
 if (-not (Test-Path $Ausgabe)) { New-Item -ItemType Directory -Path $Ausgabe | Out-Null }
 
-# Pergamentfläche und Fusskasten werden aus dem Scriptorium-Baukasten
-# abgeleitet. Einmal genügt; fehlt eine der Dateien, wird sie erzeugt.
-$Flaeche = Join-Path $Ausgabe 'pergament-a4.jpg'
-$Kasten  = Join-Path $Ausgabe 'pergament-kasten.png'
+# Pergamentfläche und Fusskasten liegen in grafiken/, wie jede andere
+# Baukastengrafik. Erzeugt werden sie beim Einrichten, nicht beim Bauen:
+# dafür braucht es den Pfad zum Baukasten, und den kennt allein der
+# Anwender. Dasselbe Verhalten wie bei der Abenteuerklasse — ohne
+# grafiken/ kompiliert nichts, und das sagt sie auch.
+$Grafiken = Join-Path (Split-Path -Parent $Projekt) 'grafiken'
+$Flaeche  = Join-Path $Grafiken 'mappe-pergament-a4.jpg'
+$Kasten   = Join-Path $Grafiken 'mappe-pergament-kasten.png'
 if (-not (Test-Path $Flaeche) -or -not (Test-Path $Kasten)) {
-    Write-Output '=== Pergament aus dem Baukasten ableiten'
-    & python (Join-Path $PSScriptRoot 'pergament-vorbereiten.py')
-    if ($LASTEXITCODE -ne 0) { throw 'pergament-vorbereiten.py fehlgeschlagen' }
+    Write-Output 'Das Pergament der Mappe fehlt in grafiken/.'
+    Write-Output '  python3 werkzeuge/einrichten.py "/pfad/zu/Scriptorium Aventuris v4"'
+    Write-Output 'oder nur diesen Teil:'
+    Write-Output '  python3 werkzeuge/pergament.py "/pfad/zu/Scriptorium Aventuris v4"'
+    exit 1
 }
 
 $script:Fehlgeschlagen = 0
