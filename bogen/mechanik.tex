@@ -6,12 +6,10 @@
 % schlichten Werteliste ohne den Originalbogen.
 
 % --- Werte ----------------------------------------------------------------
-% \wert{feldname}{Wert} aus helden/<name>.tex. Ein fehlender Wert ist kein
-% Fehler, sondern ein leeres Feld.
-
-\newcommand{\wert}[2]{\expandafter\gdef\csname wert@#1\endcsname{#2}}
-\newcommand{\wertvon}[1]{\ifcsname wert@#1\endcsname\csname wert@#1\endcsname\fi}
-\newcommand{\wertdaP}[1]{\ifcsname wert@#1\endcsname\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi}
+% \wert, \wertvon, \wertdaP, \wertoder stehen in werte.tex — dieselbe Datei,
+% die die Charaktermappe einbindet. Nur so laeuft helden/<name>.tex
+% unveraendert durch beide Dokumente, und zwar dauerhaft.
+\input{werte}
 
 % --- Feldtabelle einsammeln ------------------------------------------------
 % Beim Einlesen wird nicht gesetzt, sondern gesammelt. Gesetzt wird erst je

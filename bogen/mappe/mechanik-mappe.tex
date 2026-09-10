@@ -19,16 +19,12 @@
 \makeatletter
 
 % --- Werte einsammeln ------------------------------------------------------
-% Gleiche Schnittstelle wie mechanik.tex, damit helden/<name>.tex
-% unverändert durch beide Dokumente läuft.
-\newcommand{\wert}[2]{\expandafter\gdef\csname wert@#1\endcsname{#2}}
-\newcommand{\wertvon}[1]{\ifcsname wert@#1\endcsname\csname wert@#1\endcsname\fi}
-\newcommand{\wertdaP}[1]{%
-  \ifcsname wert@#1\endcsname\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi}
-% Erster gesetzter Wert aus zwei Namen, sonst leer. Damit greift die Mappe
-% auf die Felder des Heldenbogens zurück: mappe_name, sonst s1_name.
-\newcommand{\wertoder}[2]{\wertdaP{#1}{\wertvon{#1}}{\wertvon{#2}}}
-% Wert oder Vorgabe.
+% Dieselbe Datei, die auch mechanik.tex einbindet — nur so läuft
+% helden/<name>.tex unverändert durch beide Dokumente.
+\input{werte}
+% Wert oder Vorgabe. Bleibt hier: die Vorgabe ist ein Gestaltungsmittel der
+% Mappe (ein langer Name braucht eine kleinere Schrift), der Bogen kennt
+% nichts dergleichen.
 \newcommand{\mappewahl}[2]{\wertdaP{#1}{\wertvon{#1}}{#2}}
 
 % Die Heldendateien dürfen die Bogenauswahl setzen. Für die Mappe ist das

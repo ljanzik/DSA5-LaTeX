@@ -1,0 +1,50 @@
+% werte.tex — die Werteschnittstelle. Nur diese vier Makros, sonst nichts.
+%
+% Sie stand wortgleich in mechanik.tex und in mappe/mechanik-mappe.tex, mit
+% dem Kommentar „Gleiche Schnittstelle wie mechanik.tex, damit
+% helden/<name>.tex unverändert durch beide Dokumente läuft". Genau das ist
+% der Grund, warum sie nicht zweimal stehen darf: die beiden Fassungen waren
+% schon auseinandergelaufen — \wertoder gab es nur in der Mappe, und \wertdaP
+% war einmal einzeilig und einmal umbrochen geschrieben. Solange sie sich nur
+% im Zeilenumbruch unterscheiden, fällt es nicht auf; beim nächsten Zusatz
+% schon.
+%
+% Eingebunden mit \input{werte} — das Arbeitsverzeichnis ist bogen/, dafür
+% sorgen die Bauskripte.
+%
+% \makeatletter hier selbst, nicht beim Aufrufer: \@firstoftwo braucht es,
+% und eine Datei, die nur unter einer bestimmten Katcode-Lage funktioniert,
+% ist eine Falle für den, der sie später woanders einbindet.
+%
+% Am Ende steht deshalb NICHT \makeatother, sondern die Lage des Aufrufers,
+% wie sie beim Eintritt war. Der Unterschied ist einmal aufgetreten und
+% kostet Suchzeit: mechanik.tex steht selbst unter \makeatletter, nach einem
+% \makeatother wäre dort das @ kein Buchstabe mehr, und der Lauf endete mit
+%
+%   ! Undefined control sequence.
+%   \feld @zeile->\endgroup \g @addto@macro\feldliste {...}
+%
+% — mit einem Zeilenverweis auf felder/df.tex. Die Meldung zeigt also auf
+% die Feldtabelle, während der Fehler hier steht.
+
+\expandafter\edef\csname werte@katcode\endcsname{%
+  \catcode`\noexpand\@=\the\catcode`\@\relax}
+\makeatletter
+
+% \wert{feldname}{Wert} kommt aus helden/<name>.tex. Ein fehlender Wert ist
+% kein Fehler, sondern ein leeres Feld — der Lauf darf daran nicht scheitern.
+\newcommand{\wert}[2]{\expandafter\gdef\csname wert@#1\endcsname{#2}}
+
+% Der Wert, oder nichts.
+\newcommand{\wertvon}[1]{\ifcsname wert@#1\endcsname\csname wert@#1\endcsname\fi}
+
+% \wertdaP{name}{dann}{sonst} — das P steht für Prädikat. Verzweigt, ohne den
+% Wert selbst zu setzen.
+\newcommand{\wertdaP}[1]{%
+  \ifcsname wert@#1\endcsname\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi}
+
+% Der erste gesetzte Wert aus zwei Namen, sonst leer. Damit greift die Mappe
+% auf die Felder des Heldenbogens zurück: mappe_name, sonst s1_name.
+\newcommand{\wertoder}[2]{\wertdaP{#1}{\wertvon{#1}}{\wertvon{#2}}}
+
+\werte@katcode
