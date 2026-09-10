@@ -1,6 +1,6 @@
 # dsa5-latex
 
-Eine LaTeX-Dokumentklasse, die Abenteuer im Layout von **Das Schwarze Auge 5** setzt — nach den
+Eine LaTeX-Dokumentklasse, die Abenteuer im Layout von **Das Schwarze Auge 5** setzt, nach den
 Maßen des offiziellen *Scriptorium Aventuris – Layout Baukastens* von Ulisses Spiele.
 
 Zweispaltiger Satz auf A4 mit Grundlinienraster, Pergament- und Wertekästen in ihren
@@ -8,11 +8,12 @@ Produktionsgrößen, Kapitelbanner, Meistermasken, Seitenhintergründe und die W
 freigestellte Grafiken mit Textumfluss.
 
 **Der Code steht unter Apache 2.0. Die Grafiken und Schriften sind nicht Teil dieses Projekts** und
-müssen selbst besorgt werden — siehe Abschnitt „Grafiken und Schriften besorgen". Ohne sie
-kompiliert nichts.
+müssen selbst besorgt werden. Wie, steht im Abschnitt „Grafiken und Schriften besorgen“.
+Ohne sie kompiliert nichts.
 
 Die Vorlage ist mit Hilfe einer KI entstanden und dafür gedacht, auch mit einer KI benutzt zu
-werden: **LaTeX muss man dafür nicht (vollständig) lernen** — siehe „Mit einer KI setzen".
+werden: **LaTeX muss man dafür nicht (vollständig) lernen.** Wie das geht, steht unter
+„Mit einer KI setzen“.
 
 ---
 
@@ -25,10 +26,10 @@ Rückfrage, die Scriptorium-Vereinbarung nicht.
 
 Deshalb enthält dieses Repository **ausschließlich eigenen Code**: die Klasse, die Werkzeuge, die
 Dokumentation der Maße. Die Ordner `grafiken/` und `schriften/` sind leer und in `.gitignore`
-eingetragen. Wer die Klasse benutzt, lädt das offizielle Paket selbst herunter — was ohnehin
-Voraussetzung dafür ist, im Scriptorium zu veröffentlichen.
+eingetragen. Wer die Klasse benutzt, lädt das offizielle Paket selbst herunter. Wer im
+Scriptorium veröffentlichen will, braucht es sowieso.
 
-Die **Maße** in diesem Projekt sind kein Bildmaterial, sondern Messergebnisse. Sie stehen in
+Die Maße in diesem Projekt sind kein Bildmaterial, sondern Messergebnisse. Sie stehen in
 `doku/MASSE.md` mit ihrer Herleitung.
 
 ---
@@ -57,7 +58,7 @@ Scriptorium Aventuris v4/
 
 Das *Rückseiten Karten Paket* von Ulisses Spiele, ein eigenes Produkt (nicht kostenlos, rund
 einen Euro). Es liefert die letzte Seite eines Hefts: eine fertige Rückseite mit Zierrahmen,
-Banner und kleiner Aventurienkarte, dazu 28 **Masken**, die je eine Region hervorheben.
+Banner und kleiner Aventurienkarte, dazu 28 Masken, die je eine Region hervorheben.
 
 ```
 Rückseiten_Karten_Paket/
@@ -70,18 +71,24 @@ Rückseiten_Karten_Paket/
 ```
 
 **Eine Maske ist keine fertige Seite.** Sie ist die verdunkelte Karte mit einem Loch an der Stelle
-der Region — bei `Aventurien_Mittelreich.png` sind das 2,3 Prozent der Fläche, mitten in der Karte.
-Erst über die neutrale Rückseite gelegt entsteht das gewünschte Bild: die Region bleibt hell, der
-Rest tritt zurück. `aufbereiten.py --rueckseiten` setzt beides zusammen und legt alle 29 Fassungen
-als `ruecken-neutral`, `ruecken-mittelreich`, `ruecken-thorwal` und so weiter ab.
+der Region; bei `Aventurien_Mittelreich.png` sind das 2,3 Prozent der Fläche, mitten in der Karte.
+Sie sagt also nur, *wo* die Region liegt.
+
+**Gesetzt wird nicht die Verdunkelung des Pakets, sondern die Fassung der offiziellen Hefte:** die
+Karte in Sepia, allein die aktive Region in Farbe, ein weicher Schlagschatten darum. Das hebt die
+Region deutlich besser heraus. In einem dunkelgrünen Waldgebiet war die bloß abgedunkelte Fassung
+kaum zu erkennen. `aufbereiten.py --rueckseiten` rechnet das aus Maske und Rückseite aus und legt
+alle 29 Fassungen als `ruecken-neutral`, `ruecken-mittelreich`, `ruecken-thorwal` und so weiter ab.
+Die Sepiarampe ist an zwei gesetzten Rücktiteln gemessen; die Herleitung steht in `doku/MASSE.md`
+unter „Die Sepiakarte der Rückseite“.
 
 Für eine eigene Aufteilung gibt es `werkzeuge/regionsmaske.py`: es flutet von einem Saatpunkt aus
 innerhalb der Grenzlinien und schneidet die gefundene Fläche aus der Verdunkelung. Das Grenznetz
-kennt allerdings nur die großen Regionen — eine Saat im Kosch flutet das ganze Mittelreich.
+kennt allerdings nur die großen Regionen: eine Saat im Kosch flutet das ganze Mittelreich.
 
 **Mehr braucht es nicht.** Der Zierrahmen des Kapitelanfangs und die drei Rautenkacheln kamen
 früher aus einer dritten, fremden Sammlung; beide stecken im Baukasten selbst und werden daraus
-erzeugt — der Rahmen aus der Pergamentebene von `DSA5-Kapitelstart-Beispielgrafik.psd`, die
+erzeugt: der Rahmen aus der Pergamentebene von `DSA5-Kapitelstart-Beispielgrafik.psd`, die
 Rauten aus `AufzaehlerDSA5_Rueckseite_rot/blau/schwarz.psd`. Die Option `--zusatz` gibt es nicht
 mehr.
 
@@ -93,7 +100,7 @@ Der bequeme Weg. Das Werkzeug legt alles an, was die Klasse braucht, und benennt
 python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
 ```
 
-Für die Rückseite gibt es ein zweites Paket, das **Rückseiten-Karten-Paket**. Es bringt eine
+Für die Rückseite gibt es ein zweites Paket, das Rückseiten-Karten-Paket. Es bringt eine
 fertige Rückseite mit Zierrahmen und 28 Masken, die je eine Region Aventuriens hervorheben:
 
 ```sh
@@ -111,10 +118,12 @@ Was es tut:
 
 - kopiert die benötigten PNG aus `PNG innen/` und `PNG aussen/` nach `grafiken/` und benennt sie
   auf Namen ohne Leerzeichen und Umlaute um
-- **schneidet** die vier Doppelseiten aus `Links/` in je eine linke und eine rechte Einzelseite
-  (`seite-links-0` bis `-3`, `seite-rechts-0` bis `-3`) — die Klasse rotiert über die ersten drei
-- **extrahiert** aus `Links/DSA5-Kapitelstart-Beispielgrafik.psd` die Pergamentfläche und das
+- schneidet die vier Doppelseiten aus `Links/` in je eine linke und eine rechte Einzelseite
+  (`seite-links-0` bis `-3`, `seite-rechts-0` bis `-3`); die Klasse rotiert über die ersten drei
+- holt aus `Links/DSA5-Kapitelstart-Beispielgrafik.psd` die Pergamentfläche und das
   Drachenornament für den Kapitelanfang
+- rechnet mit `--rueckseiten` die 29 Rückseiten aus: Karte in Sepia, die aktive Region in
+  Farbe, Schlagschatten darum
 - kopiert die fünf Schriftdateien nach `schriften/`
 - schreibt am Ende eine Liste dessen, was fehlt
 
@@ -126,7 +135,7 @@ python3 werkzeuge/pruefen.py
 
 Vergleicht jede Datei in `grafiken/` gegen die erwarteten Pixelmaße aus `doku/MASSE.md`. Weicht
 eine ab, ist entweder eine andere Fassung des Baukastens im Umlauf oder beim Kopieren etwas
-schiefgegangen — beides würde sonst erst im gesetzten PDF auffallen.
+schiefgegangen. Beides würde sonst erst im gesetzten PDF auffallen.
 
 ### Der Weg von Hand
 
@@ -135,7 +144,7 @@ Zieldatei. Die Umbenennung ist nötig, weil der Baukasten Leerzeichen und Umlaut
 verwendet und LaTeX damit schlecht umgeht.
 
 Die Seitenhintergründe und die beiden Kapitelanfang-Teile lassen sich von Hand nicht sinnvoll
-herstellen — dafür braucht es das Werkzeug oder ein Bildbearbeitungsprogramm.
+herstellen. Dafür braucht es das Werkzeug oder ein Bildbearbeitungsprogramm.
 
 ---
 
@@ -175,7 +184,7 @@ Die Elementreferenz steht in `doku/ELEMENTE.md`.
 
 ## Mit einer KI setzen
 
-Diese Vorlage ist mit Hilfe einer KI entstanden — nachgemessen, geschrieben und geprüft wurde
+Diese Vorlage ist mit Hilfe einer KI entstanden: nachgemessen, geschrieben und geprüft wurde
 mit einem Agenten. Und sie ist dafür gedacht, auch so benutzt zu werden. **Man muss LaTeX
 dafür nicht vollständig lernen.** Wer seinen Text fertig hat, kann ihn von einer KI in diese
 Klasse setzen lassen und sich um das kümmern, was ihm gehört: das Abenteuer.
@@ -185,17 +194,17 @@ statt sie zu erfinden:
 
 | Datei | was sie einer KI gibt |
 |---|---|
-| `CLAUDE.md` | die Einweisung. Teil A: wie man mit der Vorlage ein Dokument setzt — Gerüst, die fünf Fallen, Bauweg. Teil B: wie man an der Vorlage selbst arbeitet |
+| `CLAUDE.md` | die Einweisung. Teil A: wie man mit der Vorlage ein Dokument setzt (Gerüst, die fünf Fallen, Bauweg). Teil B: wie man an der Vorlage selbst arbeitet |
 | `doku/ELEMENTE.md` | jeden der rund neunzig Befehle mit Zweck, Maß und Beispiel |
 | `beispiel/beispiel.tex` | jedes Element genau einmal, zum Abschreiben |
 | `doku/MASSE.md` | zu jedem Zahlenwert die Quelle, aus der er stammt |
 
 ### So fängt man an
 
-Mit **Claude Code** oder einem anderen Agenten mit Dateizugriff, im Projektordner:
+Mit Claude Code oder einem anderen Agenten mit Dateizugriff, im Projektordner:
 
 1. Grafiken und Schriften besorgen (siehe oben). Ohne sie kompiliert auch für eine KI nichts.
-2. Den eigenen Text danebenlegen, etwa als `mein-abenteuer.md` — Fließtext genügt, mit
+2. Den eigenen Text danebenlegen, etwa als `mein-abenteuer.md`. Fließtext genügt, mit
    Überschriften und einer Notiz, wo ein Kasten oder eine Tabelle hin soll.
 3. Auffordern, etwa so:
 
@@ -205,20 +214,20 @@ Mit **Claude Code** oder einem anderen Agenten mit Dateizugriff, im Projektordne
 
 4. Ins PDF sehen.
 
-Ohne Dateizugriff — ein reines Chatfenster — erreicht man dasselbe, indem man `CLAUDE.md` und
-`doku/ELEMENTE.md` in die Unterhaltung kopiert und den Satz Stück für Stück zurückschreiben
-lässt.
+In einem reinen Chatfenster, ohne Dateizugriff, erreicht man dasselbe: man kopiert `CLAUDE.md`
+und `doku/ELEMENTE.md` in die Unterhaltung und lässt den Satz Stück für Stück
+zurückschreiben.
 
 ### Was die KI nicht sieht
 
 Sie schreibt gültiges LaTeX, aber sie sieht die Seite nicht. Drei Dinge fallen ihr nicht von
 selbst auf, und genau die prüft man selbst:
 
-* **Eine Tabelle oder ein Kasten, der unten aus der Spalte läuft.** Die Klasse warnt bei
-  Tabellen, aber nur als `Class dsa5latex Warning` — im Log leicht zu übersehen.
-* **Ein Bild, das das Raster verschiebt.** Jedes Bild im Textfluss belegt eine ganze Zahl
+* Eine Tabelle oder ein Kasten, der unten aus der Spalte läuft. Die Klasse warnt bei
+  Tabellen, aber nur als `Class dsa5latex Warning`, und das übersieht man im Log leicht.
+* Ein Bild, das das Raster verschiebt. Jedes Bild im Textfluss belegt eine ganze Zahl
   Rastereinheiten; ein nacktes `\includegraphics` verschiebt alles darunter.
-* **Ob es gut aussieht.** Ein Umbruch, der einen Zwischentitel allein unten stehen lässt, ist
+* Ob es gut aussieht. Ein Umbruch, der einen Zwischentitel allein unten stehen lässt, ist
   kein Fehler, den ein Log meldet.
 
 Deshalb nach jedem Lauf einmal mit `rasterzeigen` bauen: sitzen die Zeilen beider Spalten auf
@@ -229,30 +238,31 @@ einer Höhe, stimmt der Satz.
 ## Stand
 
 **Die Klasse läuft.** Alle vier Beispieldokumente bauen mit XeLaTeX aus TeX Live 2026
-fehlerfrei durch — `beispiel.tex` mit 22 Seiten, ohne eine einzige LaTeX-Warnung. Sechs
+fehlerfrei durch, `beispiel.tex` mit 22 Seiten und ohne eine einzige LaTeX-Warnung. Sechs
 `Overfull \hbox` sind der gewollte Überhang der Kästen, fünf `Underfull \hbox` sind lockere
 Umbrüche im 80,5-mm-Satz.
 
-**Und sie ist nachgemessen.** Von den vierzehn `% PRUEFEN:`-Marken, die der Quelltext einmal
-trug, sind zehn erledigt — darunter zwei echte Fehler: der Kapiteltitel stand mit 23,5 statt
-31,73 pt (die IDML skaliert ihn auf 135 %), und vor dem Titel stand ein „Kapitel N:", das
-kein gesetzter Band führt. Die vier verbliebenen Marken warten nicht auf eine Messung,
-sondern auf eine Quelle, die es nicht gibt; welche das sind, steht in `doku/ELEMENTE.md`
-unter „Was noch nicht nachgemessen ist", der Stand jeder Messung in `doku/PRUEFPLAN.md`.
+**Und sie ist nachgemessen.** Von den vierzehn Prüfmarken, die der Quelltext einmal trug,
+sind zehn erledigt, darunter zwei echte Fehler: der Kapiteltitel stand mit 23,5 statt
+31,73 pt (die IDML skaliert ihn auf 135 %), und vor dem Titel stand ein „Kapitel N:“, das
+kein gesetzter Band führt. Die vier verbliebenen heißen im Quelltext `% OFFEN:`: sie warten
+nicht auf eine Messung, sondern auf eine Quelle, die es nicht gibt. Welche das sind, steht
+in `doku/ELEMENTE.md` unter „Was noch nicht nachgemessen ist“, der Stand jeder Messung in
+`doku/PRUEFPLAN.md`.
 
 ---
 
 ## Woher die Maße kommen
 
-Nicht geschätzt, sondern gemessen — auf drei voneinander unabhängigen Wegen, die sich gegenseitig
-bestätigen:
+Nicht geschätzt, sondern gemessen, auf drei voneinander unabhängigen Wegen, die sich
+gegenseitig bestätigen:
 
-1. **Der Klartext des Verlags.** Seite 2 des Baukasten-PDF nennt Satzspiegel, Grafikbereich, Raster
+1. Der Klartext des Verlags. Seite 2 des Baukasten-PDF nennt Satzspiegel, Grafikbereich, Raster
    und Anschnitt in Worten. `Scriptorium Aventuris Lies mich zuerst v1.4.pdf` nennt die
    Schriftenhierarchie.
-2. **Die Pixelmaße der Vorlagengrafiken.** Alle sind mit 300 ppi angelegt; Pixel geteilt durch 300,
+2. Die Pixelmaße der Vorlagengrafiken. Alle sind mit 300 ppi angelegt; Pixel geteilt durch 300,
    mal 25,4 ergibt das Produktionsmaß.
-3. **Die Rahmenmaße im InDesign-Dokument.** `Scriptorium Aventuris v4.idml` ist ein ZIP; darin
+3. Die Rahmenmaße im InDesign-Dokument. `Scriptorium Aventuris v4.idml` ist ein ZIP; darin
    stehen zu jedem platzierten Bild der Rahmen und, entscheidend, `ActualPpi` und `EffectivePpi`.
    Sind beide gleich, liegt das Bild auf 100 % und der Rahmen ist das Produktionsmaß. Von 46
    platzierten Bildern erfüllen 27 das.
@@ -265,9 +275,9 @@ Alles einzeln in `doku/MASSE.md`.
 
 Sie ist **keine** Fortsetzung von **DSaTeX** von Lukas Ester, der ersten LaTeX-Vorlage für DSA5 im
 Scriptorium. Diese Klasse teilt mit ihr keine Zeile Code. Sie ist aber durch sie angeregt, und der
-Vergleich mit ihr hat die meisten Maße überhaupt erst hervorgebracht — 24 Abweichungen zwischen
-DSaTeX und dem offiziellen Baukasten sind in `doku/MASSE.md` festgehalten, weil sie erklären, warum
-hier manches anders gelöst ist.
+Vergleich mit ihr hat die meisten Maße überhaupt erst hervorgebracht. 24 Abweichungen zwischen
+DSaTeX und dem offiziellen Baukasten stehen in `doku/MASSE.md`, weil sie erklären, warum hier
+manches anders gelöst ist.
 
 Wer DSaTeX benutzt und sie behalten will, findet dort die Liste der Punkte, die sich lohnen zu
 korrigieren. Insbesondere: DSaTeX lädt keine Sprachunterstützung, trennt deutschen Text also nach
@@ -279,7 +289,7 @@ englischen Mustern.
 
 Der Code dieses Projekts steht unter **Apache License 2.0**, siehe `LICENSE` und `NOTICE`.
 
-Das gilt **nicht** für das Material, das in `grafiken/` und `schriften/` landet — weder für das aus
+Das gilt **nicht** für das Material, das in `grafiken/` und `schriften/` landet: weder für das aus
 dem Baukasten noch für die Karten des Rückseiten-Pakets oder die einzelnen Grafikdateien. Dafür
 gilt die *Vereinbarung über Gemeinschaftsinhalte für SCRIPTORIUM AVENTURIS*. Der Baukasten schreibt einen
 Wortlaut vor, der in jedem damit gesetzten Werk stehen muss; die Klasse stellt ihn als

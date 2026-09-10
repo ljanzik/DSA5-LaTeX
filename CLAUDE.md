@@ -62,12 +62,12 @@ Fließtext. Absätze durch Leerzeilen, kein Einzug, kein \verb|\vspace|.
 | Frage | Antwort steht in |
 |---|---|
 | Welcher Befehl setzt X? | `doku/ELEMENTE.md`, Abschnitt nach Elementart |
-| Welche Kästen gibt es, wie groß sind sie? | `doku/ELEMENTE.md`, „Kästen" — fünfzehn Umgebungen mit Maßen |
-| Wie setze ich eine Tabelle? | `doku/ELEMENTE.md`, „Tabellen und Raster" |
-| Wie geht Textumfluss um ein Bild? | `doku/ELEMENTE.md`, „Textumfluss" |
+| Welche Kästen gibt es, wie groß sind sie? | `doku/ELEMENTE.md`, „Kästen“ — fünfzehn Umgebungen mit Maßen |
+| Wie setze ich eine Tabelle? | `doku/ELEMENTE.md`, „Tabellen und Raster“ |
+| Wie geht Textumfluss um ein Bild? | `doku/ELEMENTE.md`, „Textumfluss“ |
 | Woher kommt dieser Zahlenwert? | `doku/MASSE.md` |
 | Ist das geprüft? | `doku/PRUEFPLAN.md` |
-| Wie besorge ich Grafiken und Schriften? | `README.md`, „Grafiken und Schriften besorgen" |
+| Wie besorge ich Grafiken und Schriften? | `README.md`, „Grafiken und Schriften besorgen“ |
 
 ## Die fünf Fallen beim Setzen
 
@@ -117,7 +117,7 @@ die steht in `doku/MASSE.md`. Es gibt drei zulässige Quellen, in dieser Rangfol
 3. die Rahmenmaße im IDML, aber nur dort, wo `ActualPpi` und `EffectivePpi` gleich sind
 
 Wo alle Quellen schweigen, wird der Wert als geschätzt gekennzeichnet und kommt in
-`doku/MASSE.md` unter „Was offen ist". **Nie eine Zahl erfinden und nie eine ändern, ohne die
+`doku/MASSE.md` unter „Was offen ist“. **Nie eine Zahl erfinden und nie eine ändern, ohne die
 Quelle nachzusehen.**
 
 **2. Das Grundlinienraster ist nicht verhandelbar.** 12 bp, nicht 12 pt — der Baukasten ist in
@@ -130,7 +130,7 @@ TeX fällt auf `\lineskip` zurück, und alles darunter liegt daneben.
 **3. Grafiken und Schriften gehören nicht ins Repository.** `grafiken/` und `schriften/` sind in
 `.gitignore`. Das Material gehört Ulisses Spiele und steht unter der Scriptorium-Vereinbarung, die
 mit Apache 2.0 nicht vereinbar ist. Nie eine Datei aus diesen Ordnern einchecken, auch keine
-verkleinerte Fassung, auch nicht „nur zum Testen".
+verkleinerte Fassung, auch nicht „nur zum Testen“.
 
 **4. Nichts gilt als fertig, bevor es gemessen ist.** Eine Änderung am Satz wird gebaut und am PDF
 nachgemessen — nicht am Quelltext beurteilt. Wie, steht unten.
@@ -180,7 +180,7 @@ Der zweite Weg ist `rasterzeigen`: bauen, ansehen, ob die Zeilen beider Spalten 
 liegen. Das ist die einzige Prüfung, die das Raster wirklich prüft.
 
 Was geprüft wurde und was dabei herauskam, steht in `doku/PRUEFPLAN.md`. Wer etwas prüft, trägt
-das Ergebnis dort ein — auch ein „passt".
+das Ergebnis dort ein — auch ein „passt“.
 
 ## Schreibweise
 
@@ -188,10 +188,11 @@ das Ergebnis dort ein — auch ein „passt".
   Zeichenketten, die im Satz erscheinen, stehen echte Umlaute. Die Markdown-Dateien haben überall
   echte Umlaute.
 * Die Kommentare erklären **warum**, nicht was. Wo ein Wert gemessen wurde, steht die Messung
-  daneben: „gemessen 3,3 bp neben dem Raster". Wo ein Weg verworfen wurde, steht warum er
+  daneben: „gemessen 3,3 bp neben dem Raster“. Wo ein Weg verworfen wurde, steht warum er
   verworfen wurde. Das ist der Ton der Datei — wer etwas hinzufügt, hält ihn.
-* `% PRUEFEN:` markiert eine Stelle, die nicht am Ergebnis geprüft ist. Wer sie prüft, entfernt
-  die Marke und trägt das Ergebnis in `doku/PRUEFPLAN.md` ein.
+* `% OFFEN:` markiert einen Wert, für den der Baukasten keine Quelle hergibt — nicht eine
+  Stelle, die nur noch niemand geprüft hat. Wer eine Quelle findet, entfernt die Marke, trägt
+  den Wert mit seiner Quelle in `doku/MASSE.md` ein und die Messung in `doku/PRUEFPLAN.md`.
 * Benennung: öffentliche Befehle `\dsaGrossKlein`, Längen und interne Werte `\dsakleinzusammen`,
   Internes mit `@`: `\dsa@name`.
 * Die Klasse ist in zwanzig nummerierte Abschnitte geteilt (`%%% 17  Tabellen`). Neues kommt in
@@ -211,9 +212,11 @@ Kommt ein Maß aus dem Baukasten neu dazu, gehört es außerdem nach `werkzeuge/
 ## Git
 
 * Commit-Nachrichten sind deutsch, ohne Umlaute, Betreff im Aussagesatz ohne Punkt:
-  „Kapitel auf rechte Seiten, und sechs Warnungsursachen behoben". Der Rumpf nennt Befund,
+  „Kapitel auf rechte Seiten, und sechs Warnungsursachen behoben“. Der Rumpf nennt Befund,
   Ursache und Messung — er ist oft dreißig Zeilen lang, und das ist so gewollt.
-* Autor dieses Projekts: `Leif Janzik <leif.janzik@gmail.com>` (in `.git/config` gesetzt).
+* Der Autor kommt aus der Git-Konfiguration des jeweiligen Klons. Nie `--author` setzen und
+  nie einen Namen aus dieser Datei übernehmen: wer hier arbeitet, committet unter seiner
+  eigenen Kennung.
 * Nichts committen oder pushen ohne ausdrückliche Aufforderung.
 
 ## Der Baukasten

@@ -273,7 +273,7 @@ die Karte in Sepia, nur die aktive Region in Farbe, ein weicher Schlagschatten d
 die Region ungleich deutlicher heraus — in einem dunkelgrünen Waldgebiet war die halbierte
 Fassung kaum zu erkennen. Die Sepiarampe ist ein fester Farbversatz auf das Grau (+15 / −4 /
 −20), an zwei Rücktiteln gemessen und helligkeitserhaltend; Herleitung und Messwerte in
-`MASSE.md` unter „Die Sepiakarte der Rückseite".
+`MASSE.md` unter „Die Sepiakarte der Rückseite“.
 
 Für eine eigene Aufteilung gibt es `werkzeuge/regionsmaske.py`: es flutet von einem Saatpunkt aus
 innerhalb der Grenzlinien und schneidet die gefundene Fläche aus der Verdunkelung. Das Grenznetz
@@ -460,8 +460,8 @@ Achtzehn Rastereinheiten hoch, also 216 pt oder 76,2 mm.
 
 Der Weg des Verlags — der Baukasten sagt es selbst: *„Die Wertekästen in unseren Büchern sind
 normalerweise eine Kombination aus verschiedenen Elementen: Pergamentkästen von Seite 2/3, sowie
-die Zierleisten und ggf. den Portrait-Rahmen von Seite 10."* Und zum Abstand: *„Feste Abstände für
-Objekte haben wir nicht."* Die fertigen Kästen sind Bequemlichkeit, nicht das Verfahren.
+die Zierleisten und ggf. den Portrait-Rahmen von Seite 10.“* Und zum Abstand: *„Feste Abstände für
+Objekte haben wir nicht.“* Die fertigen Kästen sind Bequemlichkeit, nicht das Verfahren.
 
 ---
 
@@ -557,7 +557,7 @@ seiner IDML nachgemessen:
 Senkrechte Linien gibt es nicht, auch nicht am Rand. Der Zelleneinzug ist **1,2 mm** ringsum,
 zwischen zwei Spalten also 2,4 mm.
 
-**Beide Flächen liegen auf „Multiplizieren".** Der Baukasten schreibt es auf der Seite mit seinen
+**Beide Flächen liegen auf „Multiplizieren“.** Der Baukasten schreibt es auf der Seite mit seinen
 Tabellen ausdrücklich vor, und es ist kein Schönheitsfehler: ein Verlauf, der deckend nach Weiß
 blendet, legt sein rechtes Ende als weißes Rechteck auf das Pergament. Die Klasse zeichnet die
 Bänder deshalb mit `blend mode=multiply`; das Pergament bleibt darunter sichtbar. Einzelheiten und
@@ -653,7 +653,7 @@ und nennt die Höhe. Eine solche Tabelle muss von Hand geteilt werden, mit wiede
    Tabellen stehen ausdrücklich nicht im Grundlinienraster (`GridAlignment="None"` in der IDML).
    Hier gilt das Raster — eine einzeilige Zeile ist genau eine Rastereinheit, 12 bp. Wer es
    luftiger braucht, setzt `\dsatabellenluft` auf ein Vielfaches von 12 bp.
-2. **Der Verlauf.** Das Farbfeld „Tabelle Überschrift" hat seinen Mittelpunkt bei 40,33 statt
+2. **Der Verlauf.** Das Farbfeld „Tabelle Überschrift“ hat seinen Mittelpunkt bei 40,33 statt
    50 Prozent; die Klasse blendet linear. Am gesetzten PDF gemessen ist der Unterschied im
    mittleren Drittel höchstens 5 von 255 Stufen und auf Papier nicht zu sehen.
 
@@ -681,7 +681,7 @@ auf der **Titelrückseite**. Im Englischen: *copyright page*. Der Markenhinweis 
 
 `\begin{dsaImpressumseite}` setzt die Überschrift IMPRESSUM und stellt alles mittig,
 `\dsaImpressumsblock{Rubrik}{Inhalt}` je Angabe, `\dsaRechtevermerk{Jahr}{Name}` den
-vorgeschriebenen Hinweis mit der Zwischenüberschrift „Disclaimer".
+vorgeschriebenen Hinweis mit der Zwischenüberschrift „Disclaimer“.
 
 Aufbau und Rubriken nach dem Vorbild einer gesetzten Scriptorium-Veröffentlichung: Autor,
 Redaktion, Lektorat, Korrektorat, Künstlerische Leitung, Coverbild, Satz Layout und Gestaltung,
@@ -701,7 +701,7 @@ Befehl dafür.
 2026 fehlerfrei durch, 22 Seiten, ohne eine einzige LaTeX-Warnung; `raster.tex`, `kaesten.tex`
 und `rest.tex` ebenso.
 
-Von den vierzehn `% PRUEFEN:`-Marken, die der Quelltext einmal trug, sind **zehn erledigt**:
+Von den vierzehn Prüfmarken, die der Quelltext einmal trug, sind **zehn erledigt**:
 
 | Was | Wie geklärt |
 |---|---|
@@ -711,7 +711,7 @@ Von den vierzehn `% PRUEFEN:`-Marken, die der Quelltext einmal trug, sind **zehn
 | Fadings unter XeLaTeX? | laufen — der Covertitel legt je Zeile eines an |
 | Kapitelgrad 23,5 oder 31,7 pt? | **31,73** — IDML: 23,5 pt mal 135 % Skalierung |
 | Unterkapitel 14 pt? | **18,9** — dieselbe Skalierung |
-| Steht „Kapitel N:" davor? | **nein** — acht Kapitelanfänge zweier Bände, nie eine Nummer |
+| Steht „Kapitel N:“ davor? | **nein** — acht Kapitelanfänge zweier Bände, nie eine Nummer |
 | Reichen 10 Rastereinheiten für zweizeilige Titel? | die Frage war falsch: es sind **7**, und sie reichen für beides |
 | Rahmen von `Kasten_Pergament` und `Meisterkasten` | kein Sollmaß — `EffectivePpi` 301 bzw. 425, dazu 180° Drehung |
 | Grundlinien nach `\dsaQuerEnde`? | sitzen — ±0,00 bp gemessen |
@@ -722,7 +722,8 @@ Die Messungen stehen in [MASSE.md](MASSE.md) und [PRUEFPLAN.md](PRUEFPLAN.md).
 
 Alle vier warten nicht auf eine Messung, die niemand gemacht hat, sondern auf eine **Quelle,
 die es nicht gibt**. Der Baukasten schweigt dazu, und in den durchgesehenen Bänden kommt der
-Fall nicht vor.
+Fall nicht vor. Im Quelltext heißen sie deshalb `% OFFEN:` und nicht mehr `% PRUEFEN:` —
+prüfen kann sie niemand, es fehlt der Maßstab.
 
 1. **Beschnitt der deckenden Bilder** ist mittig. Bei einem Porträt sitzt der Kopf oft oben.
    Der Baukasten zeigt keinen beschnittenen Porträtausschnitt. Wer einen braucht, nimmt

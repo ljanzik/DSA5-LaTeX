@@ -5,7 +5,7 @@
 Die Klasse ist aus den Maßen des Layout-Baukastens gebaut. Ein Maß im Quelltext ist aber noch kein
 Maß auf dem Papier: ein Kasten kann zwei Millimeter zu weit außen sitzen, ein Medaillon um seine
 halbe Breite verschoben sein, ein Textblock neben seinem Rahmen liegen. Im PDF sieht man das als
-„irgendwie schief", nicht als Zahl. Dieser Plan macht daraus Zahlen.
+„irgendwie schief“, nicht als Zahl. Dieser Plan macht daraus Zahlen.
 
 ## Wie gemessen wird
 
@@ -78,7 +78,7 @@ tiefer.
 | Kolumnentitel (Kapitelname neben der Zahl) | Andalus 14 bp schwarz, Grundlinie wie die Zahl, rechts 24,29 mm und links 40,35 mm von der Außenkante | gesetzte Veröffentlichung | `#` |
 | Kapiteltitel: Grad | **31,73 pt** = 23,5 × 135 % | IDML-Absatzformat, Musterbogen, 8 Kapitel zweier Bände | `#` |
 | Kapiteltitel: Grundlinie | y 94,71 pt, linksbündig am inneren Rand | Musterbogen, US25324 | `#` |
-| Kapiteltitel: kein „Kapitel N:" | nur der Titel | 8 Kapitelanfänge, US25324 und US25326 | `#` |
+| Kapiteltitel: kein „Kapitel N:“ | nur der Titel | 8 Kapitelanfänge, US25324 und US25326 | `#` |
 | Textanfang der Kapitelseite | y 168,00 pt = 7 Rastereinheiten | US25324, ein- und zweizeilige Titel | `#` |
 | Unterkapitel: Grad | **18,9 pt** = 14 × 135 % | IDML-Absatzformat, 7 Zwischenüberschriften | `#` |
 | Impressumtitel | Andalus 31,73 pt, Grundlinie y 94,00 pt | US25324 und US25326 | `#` |
@@ -145,9 +145,9 @@ Musterbogen zeigt sie ohne Text.
 | Text im Kasten | 9,5 pt auf 11,4 pt, eigenes Raster | Musterbogen, IDML | `#` |
 | Kastenüberschrift | 12 pt, als `\dsaKastentitel` | Musterbogen, Zeichenformat | `#` |
 | Vorlesetext, Zierleiste darüber | 15,39 mm breiter als die Spalte, mittig darüber | IDML und gesetzte Veröffentlichung | `#` |
-| Werteabsatz, hängender Einzug | 8,50 pt | IDML, Format „Werte" | `ok` |
+| Werteabsatz, hängender Einzug | 8,50 pt | IDML, Format „Werte“ | `ok` |
 | Einführung, Stimmung, Zitat | Laufweite +10, Grau 404040 | IDML | — |
-| Aufzählungen: Einzug | 17,01 pt = 6,0 mm hängend | IDML, „Aufzählung v2" | `ok` |
+| Aufzählungen: Einzug | 17,01 pt = 6,0 mm hängend | IDML, „Aufzählung v2“ | `ok` |
 | Aufzählungen: Zeichengröße | 4,36 × 2,36 mm | IDML, Rahmenmaß | `#` |
 
 ### Marken und Zeichen
@@ -189,7 +189,7 @@ Linien und Flächen aus dem Inhaltsstrom des PDF, Farben aus einem 600-dpi-Raste
 | Linie unter jeder Zeile | 25 % Schwarz, gemessen `#D0D0D0` | Musterbogen S. 8 | `#` |
 | Linie über und unter der Titelzeile | 60 % Schwarz, gemessen `#878785` | Musterbogen S. 8 | `#` |
 | Fläche der Rubrikzeile | 10 % Schwarz, gemessen `#ECECEC` | Musterbogen S. 8 | `#` |
-| Verlauf der Titelzeile | Tabellenrot nach Weiß über die ganze Breite | Farbfeld „Tabelle Überschrift" | `#` |
+| Verlauf der Titelzeile | Tabellenrot nach Weiß über die ganze Breite | Farbfeld „Tabelle Überschrift“ | `#` |
 | Schriftgrade | Titel fett 10 pt, Rubrik fett 9,5 pt, Werte 10 pt | Musterbogen S. 8 | `#` |
 | Zeilenhöhe | 15,54 pt — bewusst nicht übernommen, siehe unten | IDML, Zeilenhöhen | `!` |
 | Probenzeile | Balken volle Spaltenbreite × 6,985 mm, Text Gentium fett 11 bp, Grundlinie 4,87 mm unter der Oberkante | gesetzte Veröffentlichung | `#` |
@@ -205,7 +205,7 @@ Linien und Flächen aus dem Inhaltsstrom des PDF, Farben aus einem 600-dpi-Raste
    Kopfleiste über die volle Spalte bis 284,88 — 60 pt Unterschied, im Abzug ein abgebrochener
    Kasten. `dsaTabelle` spannt jetzt `tabular*` über `\linewidth`.
 3. **Die Grauwerte waren gerechnet, nicht gemessen.** `#BFBFBF` ist der rechnerische Tonwert von
-   25 Prozent Schwarz; im Export sind es `#D0D0D0`, weil „Black" im IDML CMYK ist und der
+   25 Prozent Schwarz; im Export sind es `#D0D0D0`, weil „Black“ im IDML CMYK ist und der
    Tonwert durch das Farbprofil geht. Siehe `MASSE.md`, Abschnitt 4.
 4. **`\hline` brach das Raster.** Die Linie bringt ihre Strichstärke als Bauhöhe mit, und die
    Grundlinien standen 12,25 statt 12,00 bp auseinander. Die Umgebung zeichnet die Linien jetzt
@@ -331,7 +331,7 @@ stellt den alten Wert zurück.
 
 ### Vier Statuszeilen nachgeprüft
 
-Vier Zeilen trugen noch „Abweichung gefunden". An den Abzügen nachgemessen:
+Vier Zeilen trugen noch „Abweichung gefunden“. An den Abzügen nachgemessen:
 
 * **Kapiteltitel im Banner** — kein Fehler. Die 12,93 mm der IDML sind die Oberkante des
   Textrahmens, nicht die Grundlinie; die liegt bei Andalus 23,5 bp rund 9,2 mm darunter, also

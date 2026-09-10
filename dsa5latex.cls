@@ -19,10 +19,11 @@
 %%% 300 ppi, und die Rahmenmasse im IDML dort, wo ActualPpi und EffectivePpi
 %%% gleich sind und das Bild also auf 100 Prozent liegt.
 %%%
-%%% Zeilen mit  % PRUEFEN:  sind gebaut, aber nicht am Ergebnis
-%%% nachgemessen. Es sind noch vier, und alle vier warten auf eine Quelle,
-%%% die es bisher nicht gibt — nicht auf eine Messung, die niemand gemacht
-%%% hat. Der Stand jeder Messung steht in doku/PRUEFPLAN.md.
+%%% Zeilen mit  % OFFEN:  nennen einen Wert, fuer den der Baukasten keine
+%%% Quelle hergibt. Es sind vier, und sie sind nicht ungeprueft — es gibt
+%%% nichts, woran man sie messen koennte. Wer eine Quelle findet, entfernt
+%%% die Marke und traegt den Wert in doku/MASSE.md ein. Was bisher gemessen
+%%% wurde, steht in doku/PRUEFPLAN.md.
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{dsa5latex}[2026/09/07 v2.0 DSA5-Satz nach Scriptorium Aventuris v4]
@@ -435,7 +436,7 @@
 % verglichen werden. Das haelt: \dsaBildDeckend steht in beiden Umschlaegen
 % und auf der Rueckseite jedes Beispieldokuments.
 %
-% PRUEFEN: Der Beschnitt ist mittig. Bei einem Portrait sitzt der Kopf oft
+% OFFEN: Der Beschnitt ist mittig. Bei einem Portrait sitzt der Kopf oft
 % oben; dann braucht es einen Versatz. Ein Sollmass dafuer gibt es nicht —
 % der Baukasten zeigt keinen beschnittenen Portraetausschnitt. Wer einen
 % braucht, nimmt \dsaBildForm oder schneidet mit werkzeuge/freistellen.py
@@ -803,7 +804,7 @@
 % werkzeuge/aufbereiten.py legt beide Teile deckungsgleich auf voller
 % Leinwand ab, 109,2 x 300,0 mm.
 \newlength{\dsakapitelbildrand} \setlength{\dsakapitelbildrand}{3.5mm}
-% PRUEFEN: geschaetzt. Der Baukasten zeigt den Kapitelanfang nur mit der
+% OFFEN: geschaetzt. Der Baukasten zeigt den Kapitelanfang nur mit der
 % Beispielgrafik randlos auf der Pergamentflaeche, nicht eingerueckt — eine
 % Sollbreite fuer den sichtbaren Rand gibt er nicht her. Wer eine gesetzte
 % Kapitelseite mit Bild zur Hand hat, misst nach und traegt es in MASSE.md
@@ -1022,7 +1023,7 @@
 
 \newlength{\dsakasteninnen}  \setlength{\dsakasteninnen}{8mm}
 \newlength{\dsakastenoben}   \setlength{\dsakastenoben}{6mm}
-% PRUEFEN: beide geschaetzt und fuer alle Kaesten gueltig. Der Musterbogen
+% OFFEN: beide geschaetzt und fuer alle Kaesten gueltig. Der Musterbogen
 % zeigt auf Seite 7 nur die gezeichneten Kaesten mit Text — dort sind es
 % 3,0 mm links und 2,25 mm rechts, aber diese Kaesten haben keinen
 % Zierrand. Die Grafikkaesten zeigt er ohne Text, und damit gibt er den
@@ -1359,7 +1360,7 @@
   \nobreak #2\par
   \dsa@vorleseleiste{#1}{trenner-maske}%
   \dsaRasterluft{1}}
-% PRUEFEN: Ob der Vorlesetext kursiv gesetzt wird, sagt der Baukasten nicht.
+% OFFEN: Ob der Vorlesetext kursiv gesetzt wird, sagt der Baukasten nicht.
 % Nachgesehen: seine IDML kennt kein Absatzformat dafuer, und im Musterbogen
 % steht kein solcher Block — die einzigen kursiven Stellen dort sind
 % Rubriken und die Ueberschrift „Optionale Regel". Hier aufrecht.

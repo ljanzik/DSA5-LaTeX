@@ -21,3 +21,6 @@ beispiel/*.pdf
 # Python
 __pycache__/
 *.pyc
+
+# Persoenliche Claude-Code-Einstellungen (Plugins, Berechtigungen)
+.claude/settings.local.json
