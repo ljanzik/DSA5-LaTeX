@@ -4,6 +4,12 @@
 # Grafiken im Projekt".
 grafiken/*
 !grafiken/.gitkeep
+
+# Eine Ausnahme: das Titelbild der Beispiele ist kein Ulisses-Material,
+# sondern eine KI-erzeugte Illustration dieses Projekts. Sie liegt hier,
+# damit ein Umschlag nach dem Klonen ein Bild hat.
+!grafiken/titelbild.jpg
+
 schriften/*
 !schriften/.gitkeep
 

@@ -79,8 +79,9 @@ Fließtext. Absätze durch Leerzeilen, kein Einzug, kein \verb|\vspace|.
    Modifikatoren mit `\dsaMod{-}{2}`.
 4. **Tabellen kommen in `dsaTabelle`, nicht in `tabular`**, und die Umgebung zieht die Linien
    selbst. Ein eigenes `\hline` bricht das Raster.
-5. **Ohne `grafiken/` und `schriften/` kompiliert nichts.** Beide Ordner sind absichtlich leer im
-   Repository; `werkzeuge/aufbereiten.py` füllt sie aus dem Baukasten.
+5. **Ohne `grafiken/` und `schriften/` kompiliert nichts.** Beide Ordner sind bis auf
+   `grafiken/titelbild.jpg` absichtlich leer im Repository; `werkzeuge/aufbereiten.py` füllt
+   sie aus dem Baukasten.
 
 ## Bauen und ansehen
 
@@ -131,6 +132,11 @@ TeX fällt auf `\lineskip` zurück, und alles darunter liegt daneben.
 `.gitignore`. Das Material gehört Ulisses Spiele und steht unter der Scriptorium-Vereinbarung, die
 mit Apache 2.0 nicht vereinbar ist. Nie eine Datei aus diesen Ordnern einchecken, auch keine
 verkleinerte Fassung, auch nicht „nur zum Testen“.
+
+Eine einzige Datei ist ausgenommen und in `.gitignore` freigestellt:
+`grafiken/titelbild.jpg`, der Zwerg am Setzkasten. Sie ist mit einer KI erzeugt und stammt
+nicht aus dem Baukasten. Was neu dazukommt, gehört nur dann ebenfalls freigestellt, wenn es
+nachweislich nicht von Ulisses stammt — im Zweifel nicht.
 
 **4. Nichts gilt als fertig, bevor es gemessen ist.** Eine Änderung am Satz wird gebaut und am PDF
 nachgemessen — nicht am Quelltext beurteilt. Wie, steht unten.

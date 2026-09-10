@@ -1,5 +1,9 @@
 # dsa5-latex
 
+<p align="center">
+  <img src="doku/bilder/titel.png" alt="LaTeX Layout" width="400">
+</p>
+
 Eine LaTeX-Dokumentklasse, die Abenteuer im Layout von **Das Schwarze Auge 5** setzt, nach den
 Maßen des offiziellen *Scriptorium Aventuris – Layout Baukastens* von Ulisses Spiele.
 
@@ -24,10 +28,15 @@ stehen unter der *Vereinbarung über Gemeinschaftsinhalte für SCRIPTORIUM AVENT
 Vereinbarung ist mit Apache 2.0 nicht vereinbar: Apache erlaubt Weitergabe und Veränderung ohne
 Rückfrage, die Scriptorium-Vereinbarung nicht.
 
-Deshalb enthält dieses Repository **ausschließlich eigenen Code**: die Klasse, die Werkzeuge, die
-Dokumentation der Maße. Die Ordner `grafiken/` und `schriften/` sind leer und in `.gitignore`
-eingetragen. Wer die Klasse benutzt, lädt das offizielle Paket selbst herunter. Wer im
-Scriptorium veröffentlichen will, braucht es sowieso.
+Deshalb enthält dieses Repository **ausschließlich eigenes Material**: die Klasse, die
+Werkzeuge, die Dokumentation der Maße. `schriften/` ist leer, `grafiken/` bis auf eine
+Ausnahme ebenso, und beide sind in `.gitignore` eingetragen. Wer die Klasse benutzt, lädt
+das offizielle Paket selbst herunter. Wer im Scriptorium veröffentlichen will, braucht es
+sowieso.
+
+Die Ausnahme ist `grafiken/titelbild.jpg`, der Zwerg am Setzkasten. Das Bild ist mit einer KI
+erzeugt und gehört diesem Projekt, nicht Ulisses — deshalb darf es hier liegen, und
+`\dsaUmschlagVorne` hat nach dem Klonen ein Titelbild, ohne dass man eines suchen muss.
 
 Die Maße in diesem Projekt sind kein Bildmaterial, sondern Messergebnisse. Sie stehen in
 `doku/MASSE.md` mit ihrer Herleitung.
@@ -288,6 +297,10 @@ englischen Mustern.
 ## Rechtliches
 
 Der Code dieses Projekts steht unter **Apache License 2.0**, siehe `LICENSE` und `NOTICE`.
+
+Die Titelgrafik oben ist keine Ausnahme von der Regel, sondern ihr Ergebnis: sie ist mit
+`beispiel/titelgrafik.tex` aus der Klasse gesetzt und zeigt das Titeldesign des Baukastens.
+Der Satz gehört diesem Projekt, das Design nicht.
 
 Das gilt **nicht** für das Material, das in `grafiken/` und `schriften/` landet: weder für das aus
 dem Baukasten noch für die Karten des Rückseiten-Pakets oder die einzelnen Grafikdateien. Dafür
