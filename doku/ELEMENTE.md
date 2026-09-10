@@ -73,11 +73,11 @@ Gesetzt wird von unten: die Grundlinie der **letzten** Zeile sitzt auf `\dsatite
 weitere Zeile schiebt nach oben. Ein dreizeiliger Titel wächst also in das Bild hinein und nicht in
 den unteren Rahmen.
 
-Der Aufbau hat drei Lagen, von hinten nach vorn: die graue Fläche in der Form des Schriftzugs, der
-helle Rand um die Schrift, der Verlauf in der Schrift. Das PSD führt zusätzlich zwei Schlagschatten,
-einen für die Fläche und einen für die Schrift; beide sind dort weichgezeichnet und teildeckend.
-Hart nachgebildet lasen sie sich als zweiter, versetzter Schriftzug und überdeckten den hellen Rand
-— sie sind deshalb nicht enthalten.
+Der Aufbau hat fünf Lagen, von hinten nach vorn: der Schlagschatten der Fläche, die graue Fläche in
+der Form des Schriftzugs, der Schlagschatten der Schrift, der helle Rand um die Schrift, der
+Verlauf in der Schrift. Beide Schlagschatten sind wie im PSD weichgezeichnet und teildeckend — sie
+entstehen aus gestaffelten Lagen derselben Silhouette, weil ein harter Versatz sich als zweiter
+Schriftzug liest. Wie das gerechnet wird, steht in `MASSE.md`.
 
 Alles einstellbar, in der Präambel:
 
@@ -92,9 +92,13 @@ Alles einstellbar, in der Präambel:
 | `\dsaTitelVerlaufAus` | — | schlicht weiß mit Kontur |
 | `\dsaTitelFlaecheAus` | — | ohne graue Fläche |
 | `\dsaTitelRahmenAus` | — | ohne hellen Rand |
+| `\dsaTitelSchattenAus` | — | ohne die beiden Schlagschatten; halbiert die Zeit des Umschlaglaufs |
 
 Zwei Werte in der Klasse steuern, wie glatt der Rand der Fläche wird: `\dsatitelperlabstand`
-(0,6 pt) und `\dsatitelflaechenstufen` (5). Warum, steht in `MASSE.md`.
+(0,6 pt) und `\dsatitelflaechenstufen` (5). Für die Schlagschatten gibt es dieselben Stellschrauben
+noch einmal — `\dsatitelschattenlagen` (5), `\dsatitelschattenperlabstand` (1,2 pt) — und je Schatten
+Abstand, Weichzeichnung und Deckung, etwa `\dsatitelschriftschattendeckung` (0,63). Warum, steht in
+`MASSE.md`.
 
 ### Bilder auf dem Raster
 
@@ -276,7 +280,7 @@ Fassung kaum zu erkennen. Die Sepiarampe ist ein fester Farbversatz auf das Grau
 `MASSE.md` unter „Die Sepiakarte der Rückseite“.
 
 Für eine eigene Aufteilung gibt es `werkzeuge/regionsmaske.py`: es flutet von einem Saatpunkt aus
-innerhalb der Grenzlinien und schneidet die gefundene Fläche aus der Verdunkelung. Das Grenznetz
+innerhalb der Grenzlinien und rechnet aus der gefundenen Fläche dieselbe Sepiafassung. Das Grenznetz
 des Pakets kennt allerdings nur die großen Regionen — eine Saat im Kosch flutet das ganze
 Mittelreich, und eine fertige Kosch-Fassung gibt es nicht mehr: sie kam aus einer fremden Sammlung.
 

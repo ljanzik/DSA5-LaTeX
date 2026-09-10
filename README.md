@@ -91,15 +91,10 @@ alle 29 Fassungen als `ruecken-neutral`, `ruecken-mittelreich`, `ruecken-thorwal
 Die Sepiarampe ist an zwei gesetzten Rücktiteln gemessen; die Herleitung steht in `doku/MASSE.md`
 unter „Die Sepiakarte der Rückseite“.
 
-Für eine eigene Aufteilung gibt es `werkzeuge/regionsmaske.py`: es flutet von einem Saatpunkt aus
-innerhalb der Grenzlinien und schneidet die gefundene Fläche aus der Verdunkelung. Das Grenznetz
-kennt allerdings nur die großen Regionen: eine Saat im Kosch flutet das ganze Mittelreich.
-
-**Mehr braucht es nicht.** Der Zierrahmen des Kapitelanfangs und die drei Rautenkacheln kamen
-früher aus einer dritten, fremden Sammlung; beide stecken im Baukasten selbst und werden daraus
-erzeugt: der Rahmen aus der Pergamentebene von `DSA5-Kapitelstart-Beispielgrafik.psd`, die
-Rauten aus `AufzaehlerDSA5_Rueckseite_rot/blau/schwarz.psd`. Die Option `--zusatz` gibt es nicht
-mehr.
+Für eine eigene Aufteilung gibt es `werkzeuge/regionsmaske.py`: es flutet von einem Saatpunkt
+aus innerhalb der Grenzlinien und rechnet aus der gefundenen Fläche dieselbe Sepiafassung wie
+`aufbereiten.py`. Das Grenznetz kennt allerdings nur die großen Regionen: eine Saat im Kosch
+flutet das ganze Mittelreich.
 
 ### Schritt 2 — aufbereiten
 
