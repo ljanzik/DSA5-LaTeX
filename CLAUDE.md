@@ -6,16 +6,10 @@ Wer nur ein Abenteuer schreiben soll, braucht Teil A.
 
 ## Was das hier ist
 
-Zwei LaTeX-Dokumentklassen im Layout von *Das Schwarze Auge 5*, nach den Maßen des offiziellen
-*Scriptorium Aventuris – Layout Baukastens*:
-
-| Klasse | wofür | Dokumentation |
-|---|---|---|
-| `dsa5latex.cls` | Abenteuer, A4 hoch, zweispaltig mit Grundlinienraster | `doku/ELEMENTE.md` |
-| `dsa5einleger.cls` | Einleger für den Spielleiterschirm, A4 quer, vier freie Spalten, kein Raster | `doku/EINLEGER.md` |
-
-`dsa5einleger` lädt `dsa5latex` und ändert nur, was ein Einleger anders macht. Dazu sieben
-Python-Werkzeuge in `werkzeuge/`, vier Dokumente in `doku/` und fünf Beispieldokumente in
+`dsa5latex.cls` setzt Abenteuer im Layout von *Das Schwarze Auge 5*, nach den Maßen des
+offiziellen *Scriptorium Aventuris – Layout Baukastens*: A4 hoch, zweispaltig, mit
+Grundlinienraster. Die Elementreferenz steht in `doku/ELEMENTE.md`. Dazu sechs
+Python-Werkzeuge in `werkzeuge/`, drei Dokumente in `doku/` und vier Beispieldokumente in
 `beispiel/`.
 
 ---
@@ -24,11 +18,10 @@ Python-Werkzeuge in `werkzeuge/`, vier Dokumente in `doku/` und fünf Beispieldo
 
 ## Der schnellste Weg zu einer `.tex`
 
-**Erst nachsehen, dann schreiben.** `beispiel/beispiel.tex` zeigt jedes Element der
-Abenteuerklasse genau einmal, `beispiel/einleger.tex` jedes der Einlegerklasse. Beide sind als
-Vorlage zum Abschreiben gedacht. Was ein Befehl tut und welche Maße dahinterstehen, steht in
-`doku/ELEMENTE.md` beziehungsweise `doku/EINLEGER.md` — **nie einen Befehl raten**, die Klassen
-haben rund neunzig davon und keine Fehlermeldung, wenn einer fehlt.
+**Erst nachsehen, dann schreiben.** `beispiel/beispiel.tex` zeigt jedes Element der Klasse
+genau einmal und ist als Vorlage zum Abschreiben gedacht. Was ein Befehl tut und welche Maße
+dahinterstehen, steht in `doku/ELEMENTE.md` — **nie einen Befehl raten**, die Klasse hat rund
+neunzig davon und keine Fehlermeldung, wenn einer fehlt.
 
 ### Gerüst für ein Abenteuer
 
@@ -64,33 +57,6 @@ Fließtext. Absätze durch Leerzeilen, kein Einzug, kein \verb|\vspace|.
 \end{document}
 ```
 
-### Gerüst für einen Einleger
-
-Der Einleger hat keinen durchlaufenden Satz. Seine Seiten sind aus **Reihen** gebaut, und in einer
-Reihe stehen **Kolumnen** von einer bis vier Spalten Breite nebeneinander. Verschachteln ist der
-Normalfall.
-
-```latex
-\documentclass{dsa5einleger}
-\begin{document}
-
-\begin{dsaReihe}
-  \dsaKolumne{1}{%
-    \begin{dsaEinlegertabelle}[RW 19]{Eigenschaftsmodifikatoren}{Xl}
-      \dsaKopfzeile Modifikator & \dsaKopfschrift Bewertung \\
-      \dsaMod{+}{2} & leichte Probe \\
-      \dsaMod{-}{2} & schwere Probe \\
-    \end{dsaEinlegertabelle}}
-  \dsaKolumne{3}{ …Block über die restlichen drei Spalten… }
-\end{dsaReihe}
-
-\end{document}
-```
-
-Drei Dinge, die im Einleger anders heißen als im Abenteuer: Abstand ist `\dsaLuft{n}` statt
-`\dsaRasterluft{n}`, feste Spaltenbreiten sind `T{22mm}` statt `L{22mm}`, und Tabellen kommen in
-`dsaEinlegertabelle` statt `dsaTabelle`. Alles Weitere in `doku/EINLEGER.md`.
-
 ## Wo was steht
 
 | Frage | Antwort steht in |
@@ -99,7 +65,6 @@ Drei Dinge, die im Einleger anders heißen als im Abenteuer: Abstand ist `\dsaLu
 | Welche Kästen gibt es, wie groß sind sie? | `doku/ELEMENTE.md`, „Kästen" — fünfzehn Umgebungen mit Maßen |
 | Wie setze ich eine Tabelle? | `doku/ELEMENTE.md`, „Tabellen und Raster" |
 | Wie geht Textumfluss um ein Bild? | `doku/ELEMENTE.md`, „Textumfluss" |
-| Einleger: Reihen, Kolumnen, Tabellen | `doku/EINLEGER.md`, Abschnitte 5 bis 7 |
 | Woher kommt dieser Zahlenwert? | `doku/MASSE.md` |
 | Ist das geprüft? | `doku/PRUEFPLAN.md` |
 | Wie besorge ich Grafiken und Schriften? | `README.md`, „Grafiken und Schriften besorgen" |
@@ -107,7 +72,7 @@ Drei Dinge, die im Einleger anders heißen als im Abenteuer: Abstand ist `\dsaLu
 ## Die fünf Fallen beim Setzen
 
 1. **Jeder senkrechte Abstand ist ein Vielfaches von 12 bp.** `\vspace{5mm}` ist immer falsch,
-   `\dsaRasterluft{n}` ist richtig. Gilt nicht im Einleger, der hat kein Raster.
+   `\dsaRasterluft{n}` ist richtig.
 2. **Jedes Bild im Textfluss belegt eine ganze Zahl Rastereinheiten.** `\dsaBildSpalte{Bild}{7}`
    oder `\dsaBildRaster{7}{…}`. Ein `\includegraphics` mitten im Text verschiebt alles darunter.
 3. **Kein `$…$`.** Die Klasse lädt kein Mathematikpaket. Zahlenangaben mit `\dsaFormel{1W6+4}`,
@@ -125,7 +90,6 @@ ohne Zutun:
 ```sh
 cd beispiel
 TEXINPUTS="..;" xelatex meinabenteuer.tex     # dreimal, wegen Inhalt und Marken
-TEXINPUTS="..;" xelatex meineinleger.tex      # einmal genügt, kein Inhaltsverzeichnis
 ```
 
 Liegt sie woanders, muss `TEXINPUTS` auf den Ordner mit der `.cls` zeigen und `\graphicspath` auf
@@ -133,13 +97,11 @@ den mit `grafiken/`.
 
 Beim Schreiben `entwurf` in die Klassenoptionen nehmen — Bilder werden zu Rahmen, der Lauf dauert
 Sekunden statt Minuten. Vor dem Abgeben einmal ohne bauen und **einmal mit `rasterzeigen`**: sitzen
-die Zeilen beider Spalten auf einer Höhe? Für den Einleger heißt die Option `spaltenzeigen`, und sie
-zeigt die vier Spaltenkanten.
+die Zeilen beider Spalten auf einer Höhe?
 
-**Was schiefgehen kann, ohne dass LaTeX etwas sagt:** eine Tabelle, die höher ist als eine Spalte,
-läuft unten heraus (die Klasse warnt, aber nur als `Class dsa5latex Warning`); eine Kolumne im
-Einleger, deren Inhalt nicht auf die Seite passt, ebenso — dort ohne jede Meldung. Deshalb nach dem
-Bau **ins PDF sehen**, nicht nur ins Log.
+**Was schiefgehen kann, ohne dass LaTeX etwas sagt:** eine Tabelle, die höher ist als eine
+Spalte, läuft unten heraus — die Klasse warnt, aber nur als `Class dsa5latex Warning`. Deshalb
+nach dem Bau **ins PDF sehen**, nicht nur ins Log.
 
 ---
 
@@ -154,11 +116,6 @@ die steht in `doku/MASSE.md`. Es gibt drei zulässige Quellen, in dieser Rangfol
 2. die Pixelmaße der Vorlagengrafiken, geteilt durch 300 ppi
 3. die Rahmenmaße im IDML, aber nur dort, wo `ActualPpi` und `EffectivePpi` gleich sind
 
-Für `dsa5einleger.cls` kommt eine vierte Quelle dazu, und **nur für sie**: der offizielle
-*Universal Spielleiterschirm Einleger, Auflage 5*, Seiten 4 bis 6. Der Baukasten kennt kein
-Querformat und keine Tabellenseite ohne Raster; für alles, was er selbst sagt, bleibt er
-maßgeblich. Was aus dem Einleger stammt, steht in `doku/MASSE.md`, Abschnitt 8.
-
 Wo alle Quellen schweigen, wird der Wert als geschätzt gekennzeichnet und kommt in
 `doku/MASSE.md` unter „Was offen ist". **Nie eine Zahl erfinden und nie eine ändern, ohne die
 Quelle nachzusehen.**
@@ -169,11 +126,6 @@ von `\dsaRaster{1}`. `\vspace{5mm}` ist in diesem Projekt immer falsch; `\dsaRas
 richtig. Wer ein Element einbaut, das höher ist als eine Zeile, muss es in eine Box ohne Höhe und
 Tiefe setzen und den Raum mit `\dsaRasterluft` liefern — sonst greift die Grundlinienregel nicht,
 TeX fällt auf `\lineskip` zurück, und alles darunter liegt daneben.
-
-**Im Einleger gilt das nicht, und auch das ist gemessen.** Von den 371 Grundlinien der drei
-Originalseiten treffen gegen ein 12-bp-Raster 17 — nicht mehr als zufällig. `dsa5einleger.cls`
-hat deshalb kein Raster; senkrechte Abstände kommen dort von `\dsaLuft{n}` und zählen in
-Textzeilen zu 10,8 bp. An die Stelle der Rasterprüfung tritt die Prüfung der Spaltenkanten.
 
 **3. Grafiken und Schriften gehören nicht ins Repository.** `grafiken/` und `schriften/` sind in
 `.gitignore`. Das Material gehört Ulisses Spiele und steht unter der Scriptorium-Vereinbarung, die
@@ -196,26 +148,18 @@ TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 `TEXINPUTS` ist nötig, weil `dsa5latex.cls` eine Ebene höher liegt und nicht installiert ist. Wer
 die Klasse nach `TEXMFHOME/tex/latex/dsa5latex/` legt, kann es weglassen.
 
-Fünf Beispieldokumente, alle in `beispiel/`:
+Vier Beispieldokumente, alle in `beispiel/`:
 
 | Datei | Klasse | wofür |
 |---|---|---|
-| `beispiel.tex` | `dsa5latex` | jedes Element genau einmal, 21 Seiten — der Regellauf |
+| `beispiel.tex` | `dsa5latex` | jedes Element genau einmal, 22 Seiten — der Regellauf |
 | `raster.tex` | `dsa5latex` | nur Text und Raster, baut in Sekunden — für schnelle Prüfungen |
 | `kaesten.tex` | `dsa5latex` | alle fünfzehn Kästen |
 | `rest.tex` | `dsa5latex` | Seitentypen, Umschlag, Rückseite |
-| `einleger.tex` | `dsa5einleger` | jedes Element der Einlegerklasse, drei Seiten A4 quer |
 
 Klassenoptionen zum Arbeiten: `entwurf` setzt Bilder als Rahmen und macht den Lauf um ein
 Vielfaches schneller, `ohnehintergrund` lässt die 7-MB-Seitenhintergründe weg, `rasterzeigen`
-druckt die Grundlinien mit. Im Einleger heißt letztere `spaltenzeigen` und druckt die
-Spaltenkanten.
-
-Der Einleger braucht einmalig eigene Hintergrundgrafiken, die aus den Buchseiten erzeugt werden:
-
-```sh
-python3 werkzeuge/einleger.py            # nach aufbereiten.py, einmal
-```
+druckt die Grundlinien mit.
 
 ## Prüfen
 
@@ -235,12 +179,6 @@ sind nur die Elemente mit eigenem Maß — Seitenzahl, Kolumnentitel, Kastentext
 Der zweite Weg ist `rasterzeigen`: bauen, ansehen, ob die Zeilen beider Spalten auf einer Höhe
 liegen. Das ist die einzige Prüfung, die das Raster wirklich prüft.
 
-**Für den Einleger gilt eine andere Prüfung.** Er hat kein Raster; stattdessen muss jede
-waagerechte Tabellenlinie auf einer der acht Spaltenkanten beginnen und enden — 31,18 / 217,06 /
-229,06 / 414,95 / 426,94 / 612,83 / 624,83 / 810,71 bp —, und jede einzeilige Tabellenzeile muss
-14,56 bp hoch sein. Der zweite Weg ist `spaltenzeigen`. Einzelheiten in `doku/EINLEGER.md`,
-Abschnitt 10.
-
 Was geprüft wurde und was dabei herauskam, steht in `doku/PRUEFPLAN.md`. Wer etwas prüft, trägt
 das Ergebnis dort ein — auch ein „passt".
 
@@ -256,25 +194,19 @@ das Ergebnis dort ein — auch ein „passt".
   die Marke und trägt das Ergebnis in `doku/PRUEFPLAN.md` ein.
 * Benennung: öffentliche Befehle `\dsaGrossKlein`, Längen und interne Werte `\dsakleinzusammen`,
   Internes mit `@`: `\dsa@name`.
-* Die Klassen sind in nummerierte Abschnitte geteilt (`%%% 17  Tabellen`) — `dsa5latex.cls` in
-  zwanzig, `dsa5einleger.cls` in neun. Neues kommt in den passenden Abschnitt, nicht ans Ende.
+* Die Klasse ist in zwanzig nummerierte Abschnitte geteilt (`%%% 17  Tabellen`). Neues kommt in
+  den passenden Abschnitt, nicht ans Ende.
 
 ## Was zusammen geändert werden muss
 
-Eine Änderung an einer Klasse ist erst vollständig, wenn diese vier Stellen zusammenpassen:
+Eine Änderung an der Klasse ist erst vollständig, wenn diese vier Stellen zusammenpassen:
 
-| | Abenteuer | Einleger |
-|---|---|---|
-| Umsetzung samt Kommentar mit Begründung | `dsa5latex.cls` | `dsa5einleger.cls` |
-| der Befehl in der Referenz | `doku/ELEMENTE.md` | `doku/EINLEGER.md` |
-| der Zahlenwert mit seiner Quelle | `doku/MASSE.md` | `doku/MASSE.md`, Abschnitt 8 |
-| das Element im Regellauf | `beispiel/beispiel.tex` | `beispiel/einleger.tex` |
+1. `dsa5latex.cls` — die Umsetzung samt Kommentar mit Begründung
+2. `doku/ELEMENTE.md` — der Befehl in der Elementreferenz
+3. `doku/MASSE.md` — der Zahlenwert mit seiner Quelle, falls einer dazukam
+4. `beispiel/beispiel.tex` — das Element im Regellauf, damit es mitgebaut wird
 
 Kommt ein Maß aus dem Baukasten neu dazu, gehört es außerdem nach `werkzeuge/pruefen.py`.
-
-**Am Einleger arbeiten heißt fast immer, an `dsa5einleger.cls` zu arbeiten, nicht an
-`dsa5latex.cls`.** Die Einlegerklasse lädt die Abenteuerklasse; eine Änderung dort schlägt auf
-alle vier Abenteuer-Beispiele durch und muss dort nachgemessen werden.
 
 ## Git
 

@@ -11,6 +11,9 @@ freigestellte Grafiken mit Textumfluss.
 müssen selbst besorgt werden — siehe Abschnitt „Grafiken und Schriften besorgen". Ohne sie
 kompiliert nichts.
 
+Die Vorlage ist mit Hilfe einer KI entstanden und dafür gedacht, auch mit einer KI benutzt zu
+werden: **LaTeX muss man dafür nicht (vollständig) lernen** — siehe „Mit einer KI setzen".
+
 ---
 
 ## Warum keine Grafiken im Projekt
@@ -149,7 +152,7 @@ TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 `TEXMFHOME/tex/latex/dsa5latex/` legt, kann es weglassen. Unter Windows in der PowerShell:
 `$env:TEXINPUTS = "..;"`.
 
-Fünf Beispieldokumente liegen in `beispiel/`: `beispiel.tex` zeigt jedes Element genau einmal
+Vier Beispieldokumente liegen in `beispiel/`: `beispiel.tex` zeigt jedes Element genau einmal
 (22 Seiten), `raster.tex` nur Text und Raster und baut in Sekunden, `kaesten.tex` alle fünfzehn
 Kästen, `rest.tex` die Seitentypen.
 
@@ -166,10 +169,60 @@ microtype hyperref tabularx environ`.
 \documentclass[raster,entwurf]{dsa5latex}      % Bilder als Rahmen, schnelles Bauen
 ```
 
-Die Elementreferenz steht in `doku/ELEMENTE.md`. Wer mit
-**Claude Code** an den Klassen arbeitet,
-findet die Hausregeln des Projekts in `CLAUDE.md` — Quellen der Maße, Rasterregel, Bauweg,
-Prüfweg, Schreibweise.
+Die Elementreferenz steht in `doku/ELEMENTE.md`.
+
+---
+
+## Mit einer KI setzen
+
+Diese Vorlage ist mit Hilfe einer KI entstanden — nachgemessen, geschrieben und geprüft wurde
+mit einem Agenten. Und sie ist dafür gedacht, auch so benutzt zu werden. **Man muss LaTeX
+dafür nicht vollständig lernen.** Wer seinen Text fertig hat, kann ihn von einer KI in diese
+Klasse setzen lassen und sich um das kümmern, was ihm gehört: das Abenteuer.
+
+Das geht deshalb, weil das Projekt so angelegt ist, dass eine KI die Antworten nachlesen kann,
+statt sie zu erfinden:
+
+| Datei | was sie einer KI gibt |
+|---|---|
+| `CLAUDE.md` | die Einweisung. Teil A: wie man mit der Vorlage ein Dokument setzt — Gerüst, die fünf Fallen, Bauweg. Teil B: wie man an der Vorlage selbst arbeitet |
+| `doku/ELEMENTE.md` | jeden der rund neunzig Befehle mit Zweck, Maß und Beispiel |
+| `beispiel/beispiel.tex` | jedes Element genau einmal, zum Abschreiben |
+| `doku/MASSE.md` | zu jedem Zahlenwert die Quelle, aus der er stammt |
+
+### So fängt man an
+
+Mit **Claude Code** oder einem anderen Agenten mit Dateizugriff, im Projektordner:
+
+1. Grafiken und Schriften besorgen (siehe oben). Ohne sie kompiliert auch für eine KI nichts.
+2. Den eigenen Text danebenlegen, etwa als `mein-abenteuer.md` — Fließtext genügt, mit
+   Überschriften und einer Notiz, wo ein Kasten oder eine Tabelle hin soll.
+3. Auffordern, etwa so:
+
+   > Lies `CLAUDE.md`, Teil A. Setze `mein-abenteuer.md` damit als DSA5-Abenteuer nach
+   > `beispiel/mein-abenteuer.tex`. Nimm nur Befehle, die in `doku/ELEMENTE.md` stehen, und
+   > rate keinen. Danach bauen und das Log zeigen.
+
+4. Ins PDF sehen.
+
+Ohne Dateizugriff — ein reines Chatfenster — erreicht man dasselbe, indem man `CLAUDE.md` und
+`doku/ELEMENTE.md` in die Unterhaltung kopiert und den Satz Stück für Stück zurückschreiben
+lässt.
+
+### Was die KI nicht sieht
+
+Sie schreibt gültiges LaTeX, aber sie sieht die Seite nicht. Drei Dinge fallen ihr nicht von
+selbst auf, und genau die prüft man selbst:
+
+* **Eine Tabelle oder ein Kasten, der unten aus der Spalte läuft.** Die Klasse warnt bei
+  Tabellen, aber nur als `Class dsa5latex Warning` — im Log leicht zu übersehen.
+* **Ein Bild, das das Raster verschiebt.** Jedes Bild im Textfluss belegt eine ganze Zahl
+  Rastereinheiten; ein nacktes `\includegraphics` verschiebt alles darunter.
+* **Ob es gut aussieht.** Ein Umbruch, der einen Zwischentitel allein unten stehen lässt, ist
+  kein Fehler, den ein Log meldet.
+
+Deshalb nach jedem Lauf einmal mit `rasterzeigen` bauen: sitzen die Zeilen beider Spalten auf
+einer Höhe, stimmt der Satz.
 
 ---
 
@@ -180,10 +233,12 @@ fehlerfrei durch — `beispiel.tex` mit 22 Seiten, ohne eine einzige LaTeX-Warnu
 `Overfull \hbox` sind der gewollte Überhang der Kästen, fünf `Underfull \hbox` sind lockere
 Umbrüche im 80,5-mm-Satz.
 
-**Geprüft ist damit noch nicht alles.** Gebaut heißt nicht nachgemessen: fünfzehn Stellen
-tragen im Quelltext weiter `% PRUEFEN:`, weil ihr Ergebnis noch niemand am PDF nachgemessen
-hat. Die Liste steht in `doku/ELEMENTE.md` unter „Was noch nicht nachgemessen ist", der
-Stand jeder Messung in `doku/PRUEFPLAN.md`.
+**Und sie ist nachgemessen.** Von den vierzehn `% PRUEFEN:`-Marken, die der Quelltext einmal
+trug, sind zehn erledigt — darunter zwei echte Fehler: der Kapiteltitel stand mit 23,5 statt
+31,73 pt (die IDML skaliert ihn auf 135 %), und vor dem Titel stand ein „Kapitel N:", das
+kein gesetzter Band führt. Die vier verbliebenen Marken warten nicht auf eine Messung,
+sondern auf eine Quelle, die es nicht gibt; welche das sind, steht in `doku/ELEMENTE.md`
+unter „Was noch nicht nachgemessen ist", der Stand jeder Messung in `doku/PRUEFPLAN.md`.
 
 ---
 
