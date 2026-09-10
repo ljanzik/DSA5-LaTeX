@@ -1,0 +1,42 @@
+%%% aufsteller.tex — dsa5aufsteller.sty vorfuehren: ein einfacher Bogen nur
+%%% mit Groesse M, dann ein gemischter Bogen mit S, M, L und XL zusammen.
+%%%
+%%% Beide Bogen bekommen automatisch eine Rueckseite, deren Karten an
+%%% derselben physischen Blattstelle stehen wie vorne -- siehe die
+%%% Begruendung bei \dsaAufstellerbogen in ../dsa5aufsteller.sty.
+%%%
+%%% Platzhalterbild fuer alle Karten: grafiken/titelbild.jpg, die einzige
+%%% Grafik im Projekt, die nicht aus dem Ulisses-Baukasten stammt.
+%%%
+%%%   xelatex aufsteller.tex
+%%%   python3 ../werkzeuge/nachmessen.py aufsteller.pdf
+
+\documentclass[ohnehintergrund]{dsa5latex}
+\graphicspath{{../}}
+\usepackage{dsa5aufsteller}
+
+\begin{document}
+
+% Bogen 1: nur Groesse M, sauberes 3x2-Raster.
+\begin{dsaAufstellerbogen}
+\dsaAufstellerM{0mm}{0mm}{\dsagrafik{titelbild}}{Ork}
+\dsaAufstellerM{40mm}{0mm}{\dsagrafik{titelbild}}{Goblin}
+\dsaAufstellerM{80mm}{0mm}{\dsagrafik{titelbild}}{Wache}
+\dsaAufstellerM{0mm}{60mm}{\dsagrafik{titelbild}}{Baeuerin}
+\dsaAufstellerM{40mm}{60mm}{\dsagrafik{titelbild}}{Bandit}
+\dsaAufstellerM{80mm}{60mm}{\dsagrafik{titelbild}}{Kultistin}
+\end{dsaAufstellerbogen}
+
+% Bogen 2: gemischte Groessenklassen auf einem Bogen, frei platziert --
+% genau der Fall, den ein starres Spaltenraster nicht koennte. Alle vier
+% Klassen stehen hochkant (Bogen oben, gerade Kante unten wie bei M).
+\begin{dsaAufstellerbogen}
+\dsaAufstellerXL{0mm}{0mm}{\dsagrafik{titelbild}}{Drache}
+\dsaAufstellerL{85mm}{0mm}{\dsagrafik{titelbild}}{Troll}
+\dsaAufstellerM{85mm}{70mm}{\dsagrafik{titelbild}}{Waldlaeufer}
+\dsaAufstellerS{0mm}{106mm}{\dsagrafik{titelbild}}{Rabe}
+\dsaAufstellerS{26mm}{106mm}{\dsagrafik{titelbild}}{Fuchs}
+\dsaAufstellerS{52mm}{106mm}{\dsagrafik{titelbild}}{Kroete}
+\end{dsaAufstellerbogen}
+
+\end{document}

@@ -777,3 +777,73 @@ sichtbar.
 Alles andere ist echt. Ein `Underfull \hbox` in laufendem Text heißt: die Zeile ist zu locker, und
 zu ändern ist sie nur redaktionell — `\emergencystretch`, `\hyphenpenalty` und `\hbadness`
 wurden über das Ganter-Heft durchgemessen und bewegen die Zahl nicht.
+
+---
+
+## Aufsteller
+
+*Eigenständiges Extra in `dsa5aufsteller.sty`, nicht Teil von `dsa5latex.cls`. Die Maße dahinter
+stehen nicht in [MASSE.md](MASSE.md) — das dokumentiert ausschließlich die Baukasten-Treue der
+Kernklasse. Quelle und Messverfahren jeder Zahl stehen als Kommentar direkt in der `.sty`-Datei.*
+
+Vorführung: `beispiel/aufsteller.tex`.
+
+```latex
+\documentclass{dsa5latex}
+\usepackage{dsa5aufsteller}
+```
+
+Setzt kleine Standfiguren zum Ausschneiden (Fuß wird separat erworben) auf eigenen A4-Bögen, mit
+automatisch erzeugter Rückseite für den beidseitigen Druck.
+
+### Größenklassen
+
+| Klasse | Breite × Höhe (fertige Karte, hochkant) | Kurzbefehl |
+|---|---|---|
+| S | 21,29 × 28,66 mm | `\dsaAufstellerS{x}{y}{Bild}{Name}` |
+| M | 28,54 × 48,57 mm | `\dsaAufstellerM{x}{y}{Bild}{Name}` |
+| L | 48,59 × 63,43 mm | `\dsaAufstellerL{x}{y}{Bild}{Name}` |
+| XL | 76,05 × 99,02 mm | `\dsaAufstellerXL{x}{y}{Bild}{Name}` |
+
+Alle vier Klassen stehen hochkant, Bogen oben, gerade Kante unten — wie M. Auf dem Stanzbogen der
+Vorlage liegen S, L und XL quer (Platzersparnis beim Stanzen, Kunstgrafik dort um 90° gedreht);
+Breite und Höhe sind hier gegenüber der Vorlage vertauscht, damit die Klasse die fertig
+ausgeschnittene Karte beschreibt, nicht ihre Lage auf dem Bogen.
+
+`x`/`y` sind Längen (z. B. `40mm`): die obere linke Ecke der Karte, gemessen von der oberen linken
+Ecke der Nutzfläche des Bogens (Rand `\dsaAufstellerRand`, Standard 15 mm). Jede Karte wird einzeln
+platziert — kein Spaltenraster, kein Packalgorithmus. Das erlaubt gemischte Bögen: Karten
+verschiedener Größenklassen frei nebeneinander, wie im Beispiel `beispiel/aufsteller.tex`.
+
+`\dsaAufstellerKarte{Breite}{Höhe}{x}{y}{Bild}{Name}` setzt eine Karte in freier Größe; die vier
+Kurzbefehle sind dünne Wrapper darum.
+
+### Der Bogen
+
+```latex
+\begin{dsaAufstellerbogen}[kurz,ohnerueckseite]
+\dsaAufstellerM{0mm}{0mm}{grafiken/ork}{Ork}
+\dsaAufstellerXL{40mm}{0mm}{grafiken/drache}{Drache}
+\end{dsaAufstellerbogen}
+```
+
+Öffnet eine eigene A4-Seite ohne Kolumnentitel oder Seitenzahl, sammelt alle
+`\dsaAufsteller...`-Aufrufe und erzeugt danach automatisch die Rückseite.
+
+**Die Duplex-Formel:** dieselbe Karte muss auf Vorder- und Rückseite an derselben physischen
+Blattstelle stehen. Beim Wenden an der langen Kante (Standardfall, Hochkant-Duplexdruck) dreht sich
+das Blatt um die senkrechte Mittelachse — für jede Karte gilt einzeln:
+
+```
+x' = Nutzbreite - x - Kartenbreite      (y bleibt gleich)
+```
+
+Rechnerisch geprüft (`werkzeuge/nachmessen.py` an `beispiel/aufsteller.pdf`, siehe
+[PRUEFPLAN.md](PRUEFPLAN.md)): für jede Karte beider Beispielbögen, auch im gemischten Bogen,
+stimmt die gespiegelte Position auf den Bruchteilmillimeter. Bei Option `kurz` (Wenden an der
+kurzen Kante) gilt statt dessen `y' = Nutzhoehe - y - Kartenhoehe`. Option `ohnerueckseite`
+unterdrückt die automatische Rückseite, falls eine eigene gebraucht wird.
+
+Nach `\end{dsaAufstellerbogen}` steht das Dokument wieder zweispaltig (wie vor der Umgebung), auch
+wenn ein Bogen mitten im Heft steht — anders als `\dsaUmschlagHinten`/`\dsaRueckseite`, die nur am
+Heftende stehen und deshalb nicht zurückschalten.

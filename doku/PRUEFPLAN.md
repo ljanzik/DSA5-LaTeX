@@ -390,6 +390,45 @@ python3 werkzeuge/nachmessen.py <datei>.pdf --text \
   | awk '$2=="mm" && $4=="mm" && $10!="+0.00" {print $9, $10, $11}'
 ```
 
+## Aufsteller (dsa5aufsteller.sty)
+
+Eigenständiges Extra, kein Teil der Baukasten-Prüfung oben — die Maße kommen aus dem
+Ulisses-Produkt „Aufsteller-Set für Das Schwarze Auge“ (US25533PDF), nicht aus dem Scriptorium-
+Baukasten, und stehen deshalb auch nicht in `MASSE.md`. Geprüft wird hier nur, ob die eigene
+Umsetzung tut, was sie soll.
+
+| Prüfung | Ergebnis | Status |
+|---|---|---|
+| Kartenrahmen (Bogen oben, gerade Kante unten), vier Größenklassen S/M/L/XL | `beispiel/aufsteller.tex` gebaut und im PDF angesehen — Form, rote Linie, Namensstreifen wie vorgesehen | `ok` |
+| Gemischter Bogen (S+M+L+XL auf einem Bogen) | zweiter Bogen in `beispiel/aufsteller.tex`, keine Überlappung, alle vier Klassen sichtbar | `ok` |
+| **Duplex-Passung**, Formel `x' = Nutzbreite - x - Breite` | mit `werkzeuge/nachmessen.py` an `beispiel/aufsteller.pdf` (Seite 1↔2, Seite 3↔4) nachgerechnet, siehe Befund unten. Alle Treffer auf den Hundertstelmillimeter, y unverändert | `ok` |
+
+Wichtig beim Bauen: wie jede TikZ-`remember picture`-Seite braucht ein Aufstellerbogen die vollen
+drei `xelatex`-Durchläufe — nach nur einem Lauf ist `current page` in der Vorderseiten-Grafik noch
+nicht aufgelöst, und die erste Seite bleibt sichtbar leer (beim ersten Testlauf hier tatsächlich so
+aufgetreten, durch den dritten Lauf behoben).
+
+### Befund: zwei Fehler in der ersten Fassung, beide beim Ansehen des PDF gefunden
+
+1. **Größenklassen S/L/XL standen quer statt hochkant.** Ursache: die erste Fassung übernahm
+   Breite/Höhe direkt aus der Kartenkontur auf dem Stanzbogen der Vorlage. Dort liegen S, L und XL
+   aber gedreht — Platzersparnis beim Stanzen, erkennbar an der seitlich statt unten laufenden
+   Beschriftung auf den Seiten 6/7 und 10-13 der Vorlage. Die fertig ausgeschnittene Karte steht
+   danach hochkant, wie M. Behoben durch Vertauschen von Breite und Höhe bei S, L, XL (nicht bei
+   M, die stand schon richtig).
+2. **Die obere Rundung wirkte gestaucht.** Ursache: `\dsaAufstellerrundungx`/`...y` skalierten den
+   gemessenen Radius anteilig an Breite bzw. Höhe der jeweiligen Karte. Weil die Klassen
+   unterschiedliche Seitenverhältnisse haben, wuchsen x- und y-Anteil unterschiedlich stark
+   auseinander — sichtbar elliptisch bei L und XL. Behoben durch ein festes Maß
+   (`\dsaAufstellerRundungX/Y`, 10,34 × 9,06 mm, an der Vorlage gemessen) für alle Klassen
+   gleich, nur bei der kleinen Klasse S über `min()` auf 0,45 der eigenen Kartenmaße gekappt.
+
+Nach beiden Korrekturen erneut mit `nachmessen.py` an `beispiel/aufsteller.pdf` nachgerechnet:
+Karte „Ork“ (M, x=15,00 mm): Rückseite bei x=166,46 mm — 180 mm (Nutzbreite) − 15 mm − 28,54 mm =
+166,46 mm, exakt. „Drache“ (XL, x=15,00→118,95 mm): 180 − 0 − 76,05 = 103,95, plus 15 mm Rand =
+118,95 mm, exakt. „Troll“ (L, x=100,00→61,41 mm): 180 − 85 − 48,59 = 46,41, plus 15 mm Rand =
+61,41 mm, exakt.
+
 ## Vorgehen
 
 Seriell von oben nach unten, je Block: `probeseiten.tex` bauen, mit `nachmessen.py` die Zahlen
