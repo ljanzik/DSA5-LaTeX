@@ -142,12 +142,20 @@ herstellen — dafür braucht es das Werkzeug oder ein Bildbearbeitungsprogramm.
 
 ```sh
 cd beispiel
-xelatex beispiel.tex     # dreimal
+TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 ```
+
+`TEXINPUTS` ist nötig, weil `dsa5latex.cls` eine Ebene höher liegt. Wer die Datei nach
+`TEXMFHOME/tex/latex/dsa5latex/` legt, kann es weglassen. Unter Windows in der PowerShell:
+`$env:TEXINPUTS = "..;"`.
+
+Fünf Beispieldokumente liegen in `beispiel/`: `beispiel.tex` zeigt jedes Element genau einmal
+(22 Seiten), `raster.tex` nur Text und Raster und baut in Sekunden, `kaesten.tex` alle fünfzehn
+Kästen, `rest.tex` die Seitentypen.
 
 Gebraucht werden aus TeX Live oder MiKTeX: `geometry graphicx xcolor fontspec polyglossia tikz
 tcolorbox eso-pic fancyhdr enumitem wrapfig contour changepage intcalc array colortbl textcomp
-microtype hyperref`.
+microtype hyperref tabularx environ`.
 
 ### Klassenoptionen
 
@@ -158,17 +166,24 @@ microtype hyperref`.
 \documentclass[raster,entwurf]{dsa5latex}      % Bilder als Rahmen, schnelles Bauen
 ```
 
-Die Elementreferenz steht in `doku/ELEMENTE.md`.
+Die Elementreferenz steht in `doku/ELEMENTE.md`. Wer mit
+**Claude Code** an den Klassen arbeitet,
+findet die Hausregeln des Projekts in `CLAUDE.md` — Quellen der Maße, Rasterregel, Bauweg,
+Prüfweg, Schreibweise.
 
 ---
 
 ## Stand
 
-**Diese Klasse ist noch nicht am Ergebnis geprüft.** Sie ist aus gemessenen Maßen geschrieben, aber
-bei ihrer Entstehung stand keine LaTeX-Installation zur Verfügung. Jede Stelle, an der LaTeX anders
-reagieren könnte als gedacht, trägt im Quelltext `% PRUEFEN:`; die Liste steht in
-`doku/ELEMENTE.md` unter „Beim ersten Lauf prüfen". Wer sie als erster kompiliert, arbeitet die
-Liste ab.
+**Die Klasse läuft.** Alle vier Beispieldokumente bauen mit XeLaTeX aus TeX Live 2026
+fehlerfrei durch — `beispiel.tex` mit 22 Seiten, ohne eine einzige LaTeX-Warnung. Sechs
+`Overfull \hbox` sind der gewollte Überhang der Kästen, fünf `Underfull \hbox` sind lockere
+Umbrüche im 80,5-mm-Satz.
+
+**Geprüft ist damit noch nicht alles.** Gebaut heißt nicht nachgemessen: fünfzehn Stellen
+tragen im Quelltext weiter `% PRUEFEN:`, weil ihr Ergebnis noch niemand am PDF nachgemessen
+hat. Die Liste steht in `doku/ELEMENTE.md` unter „Was noch nicht nachgemessen ist", der
+Stand jeder Messung in `doku/PRUEFPLAN.md`.
 
 ---
 
@@ -202,11 +217,6 @@ hier manches anders gelöst ist.
 Wer DSaTeX benutzt und sie behalten will, findet dort die Liste der Punkte, die sich lohnen zu
 korrigieren. Insbesondere: DSaTeX lädt keine Sprachunterstützung, trennt deutschen Text also nach
 englischen Mustern.
-
-Sie ist auch **keine** Fortsetzung der Wordvorlage *Vorlage Scriptorium Aventuris* von Moritz Baur.
-Die drei breiten Wertekästen, die es nur dort gibt, sind hier nicht enthalten — sie sind seine
-eigene Arbeit, nicht Teil des offiziellen Baukastens, und stehen nicht unter Apache 2.0. Wer sie
-verwenden will, holt sie aus seiner Vorlage und nennt ihn im Impressum.
 
 ---
 

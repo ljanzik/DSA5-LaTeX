@@ -214,14 +214,13 @@ Kontur. Der Absatz muss lang genug sein, dass alle acht Zeilen entstehen.
 \dsaabschnitt{Tabelle}
 
 \dsaTabellenkopf{Qualitaet und Preis einer Herberge}
-
-\dsaTabellenlinie
-\begin{dsaTabelle}{@{}ll@{}}
-\hline
-1 & jaemmerliche Bruchbude, 50 Prozent\\
-3 & einfache Herberge, Normalpreis\\
-6 & luxurioese Unterkunft, 400 Prozent\\
-\hline
+\begin{dsaTabelle}{ll}
+\dsaTabellenrubrik \dsaRubrikschrift Qualitaet & \dsaRubrikschrift Preis\\
+\textbf{1} & jaemmerliche Bruchbude, 50 Prozent\\
+\textbf{3} & einfache Herberge, Normalpreis\\
+\textbf{6} & luxurioese Unterkunft, 400 Prozent\\
+\dsaTabellenrubrik \dsaRubrikschrift Anmerkung
+  & \dsaAnmerkungsschrift Preise je Nacht und Person\\
 \end{dsaTabelle}
 
 \dsaProbe{Sinnesschaerfe (Suchen), erschwert um 2}
@@ -260,7 +259,33 @@ Text nach der Querseite. Mit \verb|rasterzeigen| nachsehen, ob die
 Grundlinien wieder stimmen.
 
 %%% ==================================================================
-%%% Rueckseite
+%%% Rueckseite mit Regionalkarte
+%%% ==================================================================
+% Die letzte Seite eines Hefts, aus dem Rueckseiten-Karten-Paket. Die Karte
+% steht in Sepia, nur die genannte Region in Farbe, mit weichem
+% Schlagschatten -- so wie die offiziellen Hefte es zeigen. Hier zum
+% Vergleich neben \dsaUmschlagHinten; ein wirkliches Heft nimmt eins von
+% beiden.
+%
+% Zum Pruefen: die Region muss farbig sein, der Rest sepia, und der
+% Zierrahmen unveraendert bunt. Wer eine andere Region will, setzt
+% ruecken-thorwal, ruecken-bornland und so weiter ein -- 28 stehen bereit.
+\dsaRueckseite{ruecken-mittelreich}{Ein Beispiel}{von [Name]}{%
+  Hier steht der Klappentext. Absaetze werden durch Leerzeilen getrennt und
+  im Blocksatz gesetzt, 81,7 mm breit.
+
+  Der zweite Absatz zeigt den Abstand von 2,83 mm, den das Vorbild
+  zwischen zwei Absaetzen laesst.
+}{%
+  \dsaRueckKopf{Ein DSA-Gruppenabenteuer\\fuer 3 bis 5 Helden}
+  \dsaRueckFeld{Genre}{Beispiel}
+  \dsaRueckFeld{Ort}{irgendwo}
+  \dsaRueckStrich
+  \dsaAnforderungen{1}{4}{2}{1}
+}
+
+%%% ==================================================================
+%%% Umschlag hinten
 %%% ==================================================================
 
 \dsaUmschlagHinten{grafiken/umschlag-hinten}{Ein Beispiel}{%

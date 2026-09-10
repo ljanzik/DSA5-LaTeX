@@ -172,14 +172,53 @@ Musterbogen zeigt sie ohne Text.
 
 ### Tabellen
 
+Der Musterbogen des Baukastens hat auf Seite 8 vier Tabellen, drei davon im Zellenformat der
+Waffentabellen. Damit gibt es doch ein Sollmaß, und alle Werte unten sind daran gemessen —
+Linien und Flächen aus dem Inhaltsstrom des PDF, Farben aus einem 600-dpi-Rastern.
+
 | Prüfung | Sollmaß | Quelle | Status |
 |---|---|---|---|
-| Tabellenkopf, Linienstärke, Zeilenabstand | kein Sollmaß gefunden | IDML | — |
+| Tabellenbreite | volle Spaltenbreite, x 56,69 bis 284,88 pt | Musterbogen S. 8 | `#` |
+| Zelleneinzug | 1,2 mm ringsum, erstes Zeichen bei x 60,09 pt | IDML, Zellenformate | `#` |
+| Linienstärke | 0,25 pt, keine senkrechten Linien | IDML, Zellenformate | `#` |
+| Linie unter jeder Zeile | 25 % Schwarz, gemessen `#D0D0D0` | Musterbogen S. 8 | `#` |
+| Linie über und unter der Titelzeile | 60 % Schwarz, gemessen `#878785` | Musterbogen S. 8 | `#` |
+| Fläche der Rubrikzeile | 10 % Schwarz, gemessen `#ECECEC` | Musterbogen S. 8 | `#` |
+| Verlauf der Titelzeile | Tabellenrot nach Weiß über die ganze Breite | Farbfeld „Tabelle Überschrift" | `#` |
+| Schriftgrade | Titel fett 10 pt, Rubrik fett 9,5 pt, Werte 10 pt | Musterbogen S. 8 | `#` |
+| Zeilenhöhe | 15,54 pt — bewusst nicht übernommen, siehe unten | IDML, Zeilenhöhen | `!` |
 | Probenzeile | Balken volle Spaltenbreite × 6,985 mm, Text Gentium fett 11 bp, Grundlinie 4,87 mm unter der Oberkante | gesetzte Veröffentlichung | `#` |
 
-Zum Tabellenkopf: die durchgesehene Veröffentlichung enthält keine Tabelle mit Kopfleiste. Die
-Balken, die dort wie Tabellenköpfe aussehen, sind Probenzeilen — dieselben Maße, andere Funktion.
-Solange kein Vorbild vorliegt, bleibt die Kopfleiste bei einer Rastereinheit Höhe.
+**Vier Befunde, alle behoben.**
+
+1. **Der Verlauf der Kopfleiste wurde nie gezeichnet.** Die `tcolorbox` stand auf `blankest`,
+   und das schaltet das Innere ab; `interior style` holt es nicht zurück. Am gesetzten PDF
+   gemessen war die Leiste über die ganze Breite reinweiß — (239, 230, 223) am linken Rand war
+   der Pergamenthintergrund, nicht die Farbe. Jetzt zeichnet TikZ, gemessen (193, 145, 124) am
+   linken Rand gegen (193, 144, 122) im Baukasten.
+2. **Die Tabelle endete nicht mit der Spalte.** Die Linien liefen von x 56,69 bis 225,04 pt, die
+   Kopfleiste über die volle Spalte bis 284,88 — 60 pt Unterschied, im Abzug ein abgebrochener
+   Kasten. `dsaTabelle` spannt jetzt `tabular*` über `\linewidth`.
+3. **Die Grauwerte waren gerechnet, nicht gemessen.** `#BFBFBF` ist der rechnerische Tonwert von
+   25 Prozent Schwarz; im Export sind es `#D0D0D0`, weil „Black" im IDML CMYK ist und der
+   Tonwert durch das Farbprofil geht. Siehe `MASSE.md`, Abschnitt 4.
+4. **`\hline` brach das Raster.** Die Linie bringt ihre Strichstärke als Bauhöhe mit, und die
+   Grundlinien standen 12,25 statt 12,00 bp auseinander. Die Umgebung zeichnet die Linien jetzt
+   selbst, über `\everycr`, mit ausgleichendem `\vskip`. Nachgemessen an `beispiel/raster.pdf`:
+   alle Zeilen der Tabelle und der Fließtext danach auf ±0,00 bp.
+
+**Zwei bewusste Abweichungen.** Die Zeilenhöhe des Baukastens ist 15,54 pt und liegt auf keiner
+Rasterlinie — seine Tabellen stehen ausdrücklich nicht im Grundlinienraster
+(`GridAlignment="None"`). Hier gilt das Raster mit 12 bp. Und das Farbfeld hat seinen
+Verlaufsmittelpunkt bei 40,33 statt 50 Prozent; die Klasse blendet linear, gemessener Unterschied
+höchstens 5 von 255 Stufen.
+
+**Offen: lange Tabellen.** Eine Tabelle ist ein Block und wird nicht umbrochen. Passt sie in
+keine Spalte — mehr als 58 Rastereinheiten —, läuft sie unten heraus; gemessen an einer Probe mit
+70 Zeilen stand Zeile 56 bei y 782,8 pt, also 6,8 pt unter dem Satzspiegel, und die Zeilen 57 bis
+69 fehlten ganz. Die Klasse warnt jetzt mit `dsa5latex Warning` und nennt die Höhe; geteilt werden
+muss von Hand. Ein automatischer Umbruch bräuchte `\halign` in einer `\vbox` und `\vsplit`, weil
+`longtable` im zweispaltigen Satz nicht arbeitet.
 
 
 ### Ergebnis des Kastenblocks

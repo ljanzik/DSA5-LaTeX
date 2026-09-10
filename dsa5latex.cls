@@ -19,9 +19,8 @@
 %%% 300 ppi, und die Rahmenmasse im IDML dort, wo ActualPpi und EffectivePpi
 %%% gleich sind und das Bild also auf 100 Prozent liegt.
 %%%
-%%% Zeilen mit  % PRUEFEN:  sind nicht am Ergebnis geprueft. Diese Klasse ist
-%%% aus gemessenen Massen geschrieben, aber bei ihrer Entstehung stand keine
-%%% LaTeX-Installation zur Verfuegung.
+%%% Zeilen mit  % PRUEFEN:  sind gebaut, aber nicht am Ergebnis nachgemessen.
+%%% Der Stand jeder Messung steht in doku/PRUEFPLAN.md.
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{dsa5latex}[2026/09/07 v2.0 DSA5-Satz nach Scriptorium Aventuris v4]
@@ -145,11 +144,19 @@
 % Der Ordner mit den Schriften: erst neben dem Dokument suchen, dann eine
 % Ebene hoeher. fontspec nimmt nur einen Pfad, deshalb wird er hier bestimmt,
 % bevor die erste Schrift geladen wird.
-\IfFileExists{schriften/GenBasR.ttf}
-  {\newcommand*{\dsa@schriften}{schriften/}}
-  {\IfFileExists{../schriften/GenBasR.ttf}
+%
+% Beide Pfade beginnen mit ./ — ohne den Punkt sucht kpathsea den Namen in
+% TEXINPUTS mit. Wer die Klasse mit TEXINPUTS=.. aus einem Unterordner baut,
+% bekaeme dann schriften/GenBasR.ttf ueber den Elternpfad gemeldet: gefunden
+% waere die Datei, aber fontspec bekaeme mit Path=schriften/ einen Pfad, den
+% es vom Arbeitsverzeichnis aus nicht gibt, und der Lauf endete mit "not
+% loadable". Ein fuehrendes ./ schaltet die Suche ab und fragt genau das
+% Arbeitsverzeichnis.
+\IfFileExists{./schriften/GenBasR.ttf}
+  {\newcommand*{\dsa@schriften}{./schriften/}}
+  {\IfFileExists{./../schriften/GenBasR.ttf}
      {\newcommand*{\dsa@schriften}{../schriften/}}
-     {\newcommand*{\dsa@schriften}{schriften/}%
+     {\newcommand*{\dsa@schriften}{./schriften/}%
       \ClassWarning{dsa5latex}{Der Ordner schriften/ ist weder neben dem
         Dokument noch eine Ebene hoeher zu finden. Erzeugen mit
         werkzeuge/aufbereiten.py}}}
@@ -236,7 +243,19 @@
 \definecolor{dsawesenzug}{cmyk}{0.64,0.17,0.82,0.13}
 \definecolor{dsatuerkis}{RGB}{0,176,240}
 \definecolor{dsaprofession}{RGB}{170,105,46}     % aus LAB umgerechnet
-\definecolor{dsatabellenlinie}{HTML}{BFBFBF}
+% Die drei Grauwerte der Tabelle sind im IDML Tonwerte von „Black", und
+% „Black" ist dort CMYK 0/0/0/100. Ein Tonwert davon kommt beim Export nicht
+% als 100-x Prozent Weiss heraus, sondern geht durch das Farbprofil. Deshalb
+% steht hier nicht der gerechnete, sondern der am Baukasten-PDF gemessene
+% Wert — das ist die Farbe, die der Leser sieht:
+%
+%   Tonwert  gerechnet  gemessen (Seite 8)
+%   10 %     #E6E6E6    #ECECEC   Kopf- und Anmerkungszeile
+%   25 %     #BFBFBF    #D0D0D0   Linie unter jeder Wertezeile
+%   60 %     #666666    #878785   Linie ueber und unter der Titelzeile
+\definecolor{dsatabellengrau}{HTML}{ECECEC}      % 10 % Schwarz
+\definecolor{dsatabellenlinie}{HTML}{D0D0D0}     % 25 % Schwarz
+\definecolor{dsatabellenkopflinie}{HTML}{878785} % 60 % Schwarz
 \definecolor{dsazitat}{HTML}{404040}
 
 %%% ==================================================================
@@ -1475,39 +1494,191 @@
 %%% 17  Tabellen
 %%% ==================================================================
 %
-% Kopfleiste mit Verlauf von „Tabellenrot" nach Weiss, Linien in #BFBFBF.
-% Der Baukasten warnt: Objekte mit Farbverlauf gehoeren auf „Multiplizieren".
-
-% Die Kopfleiste ist genau eine Rastereinheit hoch, damit die Tabelle das
-% Raster nicht verlaesst. Ihr Text sitzt darin mittig.
+% Die Tabelle der Vorlage, am Musterbogen des Baukastens (Seite 8) und an
+% seiner IDML nachgemessen:
 %
-% Sie darf aber nicht als eigener Absatz stehen: eine Box, die so hoch ist
-% wie der Durchschuss, sprengt die Grundlinienregel, TeX nimmt \lineskip,
-% und alles darunter lag gemessen 3,3 bp neben dem Raster. Deshalb steht sie
-% wie ein Bild in einer Box ohne Hoehe und Tiefe und belegt genau die Zeile,
-% in der sie aufgerufen wird.
+%   Breite             immer die volle Spaltenbreite. Die Linien laufen von
+%                      Spaltenkante zu Spaltenkante, die Spalten der Tabelle
+%                      verteilen sich darin.
+%   Zelleneinzug       1,2 mm = 3,4016 bp auf allen vier Seiten. Zwischen
+%                      zwei Spalten also 2,4 mm, am Rand 1,2 mm.
+%   senkrechte Linien  keine, auch nicht am Rand.
+%   Titelzeile         Verlauf von Tabellenrot nach Papierweiss ueber die
+%                      ganze Breite, fett. Linie darueber und darunter,
+%                      0,25 pt in 60 Prozent Schwarz.
+%   Rubrikzeile        Flaeche in 10 Prozent Schwarz. Das ist im Baukasten
+%                      der Spaltenkopf und die Anmerkung am Fuss der
+%                      Waffentabellen.
+%   jede Zeile         eine Linie darunter, 0,25 pt in 25 Prozent Schwarz.
 %
-% \dsatabellenkopftiefer schiebt sie so weit nach unten, dass ihr Text auf
-% der Grundlinie dieser Zeile sitzt. Der Wert ist an tabtest.pdf gemessen:
-% mit 4,6 bp lag der Kopftext 1,2 bp zu tief, mit 3,4 bp sitzt er.
-\newlength{\dsatabellenkopftiefer}
-\setlength{\dsatabellenkopftiefer}{3.4bp}
+% Die Zellenformate heissen in der IDML „Tabelle Ueber aktuell" (Titel),
+% „Anmerkung" (Rubrik) und „Werte"; der Verlauf ist das Farbfeld „Tabelle
+% Ueberschrift", von Tabellenrot am Ort 0 nach Papier am Ort 100.
+%
+% Gemessen an der Waffentabelle auf Musterseite 8: Tabellenkante x 56,69 pt,
+% erstes Zeichen x 60,09 pt — genau der Zelleneinzug. Rechte Kante 284,88 pt,
+% also 56,69 + 228,19 = die vollen 80,5 mm der Spalte.
+%
+% Zwei Dinge macht die Klasse anders als die Vorlage, beide mit Grund:
+%
+% 1. Die Zeilenhoehe. Im Baukasten sind es 15,54 pt, und die liegen auf
+%    keiner Rasterlinie: seine Tabellen stehen ausdruecklich nicht im
+%    Grundlinienraster, GridAlignment="None" in der IDML. Hier gilt das
+%    Raster, eine einzeilige Zeile ist genau eine Rastereinheit.
+% 2. Die Grauwerte. In der IDML sind es Tonwerte von CMYK-Schwarz; hier
+%    stehen die am gesetzten PDF gemessenen RGB-Werte, siehe Abschnitt 6.
 
+% 1,2 mm. Steht als \tabcolsep in jeder dsaTabelle und als Einzug des
+% Titeltextes.
+\newlength{\dsatabelleninnen}
+\setlength{\dsatabelleninnen}{3.4016bp}
+
+% 0,25 pt fuer jede Linie der Tabelle, aus den Zellenformaten der IDML.
+\newlength{\dsatabellenstrich}
+\setlength{\dsatabellenstrich}{0.25bp}
+
+% Die Linienfarbe. Bleibt als eigener Befehl erhalten, weil er in Dokumenten
+% steht; noetig ist er nicht mehr, dsaTabelle setzt ihn selbst.
+\newcommand*{\dsaTabellenlinie}{\arrayrulecolor{dsatabellenlinie}}
+
+% ---- Das Band hinter einer Zeile ----
+%
+% Titelzeile und Rubrikzeile sind farbige Baender ueber die volle
+% Spaltenbreite. Sie duerfen keine eigene Hoehe haben: eine Box, die so hoch
+% ist wie der Durchschuss, sprengt die Grundlinienregel, TeX nimmt \lineskip,
+% und alles darunter lag gemessen 3,3 bp neben dem Raster. Das Band wird
+% deshalb von der Grundlinie aus gezeichnet — \dp\strutbox nach unten, der
+% Rest der Rastereinheit nach oben — und belegt genau die Zeile, in der es
+% steht.
+%
+% Frueher stand hier eine tcolorbox mit „blankest, interior style={left
+% color=...}". Die zeichnet den Verlauf nicht: „blankest" schaltet das Innere
+% ab, und „interior style" holt es nicht zurueck. Am gesetzten PDF gemessen
+% war die Leiste ueber die ganze Breite reinweiss. Jetzt zeichnet TikZ.
+%
+% Das Band liegt auf „Multiplizieren". Der Baukasten schreibt es auf genau der
+% Seite vor, auf der seine Tabellen stehen:
+%
+%   „Tipp: Auch bei Tabellen daran denken, den entsprechenden Rahmen unter
+%    Fenster>Effekte auf ‚Multiplizieren' zu stellen."
+%
+% Das ist keine Feinheit. Ein Verlauf, der deckend nach Weiss blendet, legt
+% sein rechtes Ende als weisses Rechteck auf das Pergament — gemessen
+% (254,254,254) gegen einen Grund, der im unteren Zehntel der Seite bei
+% (243,236,221) liegt. Multipliziert bleibt der Grund stehen.
+%
+% Nachweisbar ist es am Musterbogen an der grauen Rubrikzeile: 10 Prozent
+% Schwarz deckend waere (236,236,236), gemessen sind (232,231,228) — warm,
+% also mit dem Pergament darunter. Multipliziert gerechnet: (233,232,229).
+%
+% \pgfsetblendmode braucht einen Treiber, der Mischmodi kann. XeLaTeX ueber
+% xdvipdfmx kann sie: an einer Probe mit vier Baendern ueber einem Verlauf von
+% Weiss nach Pergamentgelb liess der multiplizierte Streifen den Grund mit
+% (212,171,99) unveraendert stehen, der deckende machte (250,247,246) daraus.
+%
+% Die Haarlinien unter den Wertezeilen bleiben aussen vor: sie kommen aus
+% \noalign und nicht aus TikZ. Bei 0,25 pt in 25 Prozent Schwarz liegt der
+% Unterschied auf dem hellen Pergament unter einer Stufe von 255.
+%
+%   #1  Versatz nach links. Ausserhalb der Tabelle 0pt; in der ersten Zelle
+%       einer Tabellenzeile \dsatabelleninnen, weil der Text dort schon um
+%       den Zelleneinzug weiter rechts steht.
+%   #2  Fuellung als TikZ-Schluessel, etwa „fill=dsatabellengrau" oder
+%       „shade, left color=..., right color=...".
+%   #3  Farbe der Linien oben und unten. Leer laesst sie weg.
+\newlength{\dsa@tabellenbreite}
+\newlength{\dsa@bandunten}
+\newlength{\dsa@bandoben}
+% Die Hoehe des Bandes steht in einem eigenen Makro, damit eine abgeleitete
+% Klasse sie umlegen kann, ohne die Zeichnung zu wiederholen — etwa fuer
+% einen Satz ohne Grundlinienraster, wo eine Zeile keine Rastereinheit misst
+% und eine Kopfzeile mehrzeilig sein darf. Das Band selbst, Rechteck, Verlauf
+% und die zwei Linien, bleibt dasselbe.
+\newcommand*{\dsa@bandmasse}{%
+  \setlength{\dsa@bandunten}{\dp\strutbox}%
+  \setlength{\dsa@bandoben}{\dimexpr\dsaRaster{1}-\dp\strutbox\relax}}
+\newcommand{\dsa@tabellenband}[3]{%
+  \dsa@bandmasse
+  \begin{tikzpicture}[overlay, blend mode=multiply]
+    \path[#2] (-#1,-\dsa@bandunten)
+      rectangle (\dimexpr\dsa@tabellenbreite-#1\relax,\dsa@bandoben);
+    \def\dsa@bandlinie{#3}%
+    \ifx\dsa@bandlinie\@empty\else
+      \path[draw=#3,line width=\dsatabellenstrich]
+        (-#1,\dsa@bandoben) -- (\dimexpr\dsa@tabellenbreite-#1\relax,\dsa@bandoben);
+      \path[draw=#3,line width=\dsatabellenstrich]
+        (-#1,-\dsa@bandunten) -- (\dimexpr\dsa@tabellenbreite-#1\relax,-\dsa@bandunten);
+    \fi
+  \end{tikzpicture}%
+}
+
+% Die Titelzeile. Sie steht vor der Tabelle und ist genau so breit wie sie,
+% weil beide die volle Spaltenbreite nehmen.
+%
+% Der Verlauf laeuft von Tabellenrot nach Papierweiss und liegt auf
+% „Multiplizieren" — auf dem Pergament bleibt sein rechtes Ende deshalb
+% Pergament und wird nicht weiss. Warum, steht bei \dsa@tabellenband.
 \newcommand{\dsaTabellenkopf}[1]{%
-  \par\nobreak\noindent
-  \makebox[\linewidth][l]{%
-    \raisebox{-\dsatabellenkopftiefer}[0pt][0pt]{%
-      \begin{tcolorbox}[
-        enhanced, blankest, nobeforeafter, width=\linewidth,
-        height=\dsaRaster{1}, valign=center,
-        left=1.5mm, right=1.5mm, top=0pt, bottom=0pt,
-        interior style={left color=dsatabellenrot, right color=white}]
-        \bfseries #1
-      \end{tcolorbox}}}%
+  \par
+  \noindent
+  \setlength{\dsa@tabellenbreite}{\linewidth}%
+  \dsa@tabellenband{0pt}%
+    {shade,left color=dsatabellenrot,right color=white}%
+    {dsatabellenkopflinie}%
+  \hspace*{\dsatabelleninnen}\textbf{#1}%
   \par\nobreak}
-% PRUEFEN: „blend mode=multiply" braeuchte einen Treiber, der Mischmodi kann.
-% Unter XeLaTeX nicht selbstverstaendlich, deshalb weggelassen — auf weissem
-% Grund faellt der Unterschied nicht auf.
+
+% Die graue Zeile. Der Baukasten hat zwei davon, beide im Zellenformat
+% „Anmerkung": den Spaltenkopf oben und die Anmerkung am Fuss der
+% Waffentabellen. Am Musterbogen abgelesen:
+%
+%   Titelzeile      Gentium Basic Bold 10,0 pt
+%   Spaltenkopf     Gentium Basic Bold  9,5 pt
+%   Wertezeile      Gentium Basic      10,0 pt, erste Spalte fett
+%   Anmerkung       Gentium Basic       9,5 pt, das Wort „Anmerkung" fett
+%
+% \dsaTabellenrubrik steht ganz am Anfang der Zeile, vor der ersten Zelle,
+% und zeichnet das Band:
+%
+%   \dsaTabellenrubrik \dsaRubrikschrift Name & \dsaRubrikschrift Technik\\
+%
+% Die 9,5 pt und das Fett muessen leider in jede Zelle. Eine Schriftart
+% ueber die Zellengrenze hinweg gibt es in LaTeX nicht: jede Zelle einer
+% Tabelle ist eine eigene Gruppe, und ein \bfseries in der ersten waere am
+% ersten & wieder vergessen. Der Weg ueber \globaldefs ist begangen und
+% wieder verlassen — \fontsize und \selectfont setzen dabei die
+% Schriftverwaltung von LaTeX global um, und der Lauf endete mit
+% „Missing \endcsname inserted", zehnmal je Tabelle.
+%
+% \rowcolor taugt fuer das Band nicht: colortbl faerbt die Zellen samt
+% \tabcolsep, aber nicht die dehnbare Luft zwischen den Spalten. Gemessen
+% blieb in der Mitte einer zweispaltigen Zeile ein weisser Streifen von
+% 154 pt.
+\newcommand*{\dsatabellenrubrikgrad}{9.5}
+\newcommand*{\dsaRubrikschrift}{%
+  \fontsize{\dsatabellenrubrikgrad bp}{\dsagrunddurchschuss bp}\selectfont
+  \bfseries}
+\newcommand*{\dsaAnmerkungsschrift}{%
+  \fontsize{\dsatabellenrubrikgrad bp}{\dsagrunddurchschuss bp}\selectfont}
+\newcommand*{\dsaTabellenrubrik}{%
+  \dsa@tabellenband{\dsatabelleninnen}{fill=dsatabellengrau}{}%
+  \ignorespaces}
+
+% Die Linie unter jeder Zeile. \hline taugt nicht: sie bringt ihre
+% Strichstaerke als Bauhoehe mit, und die Grundlinien standen gemessen
+% 12,25 statt 12,00 bp auseinander — nach vierzig Zeilen ein Zehntel
+% Millimeter, nach einer Seite sichtbar. Der \vskip nimmt die Hoehe wieder
+% weg, die Linie bleibt.
+\newcommand*{\dsa@tabellenlinie}{%
+  \noalign{\vskip-\dsatabellenstrich
+           {\color{dsatabellenlinie}\hrule \@height\dsatabellenstrich}}}
+
+% Gesetzt wird sie ueber \everycr, damit der Autor sie nicht hinter jede
+% Zeile schreiben muss. \ialign loescht \everycr, bevor \halign beginnt —
+% deshalb steht die Zuweisung im ersten \noalign der Tabelle und muss
+% \global sein: \noalign oeffnet eine Gruppe.
+\newcommand*{\dsa@tabellenlinienan}{%
+  \noalign{\global\everycr{\dsa@tabellenlinie}}}
 
 % Die Kastenueberschrift. Der Musterbogen gibt 12 pt, der Kastentext hat
 % 9,5 bp auf 11,4 bp -- ein Kasten ist ein eigener Satzraum und folgt nicht
@@ -1522,21 +1693,27 @@
    \selectfont #1\par}%
   \nobreak}
 
-\newcommand*{\dsaTabellenlinie}{\arrayrulecolor{dsatabellenlinie}}
-
-% Der rastertreue Weg zur Tabelle. \begin{tabular} allein genuegt nicht:
-% ohne Positionsargument wird die Tabelle ein \vcenter, dessen Hoehe halbe
-% Tabellenhoehe plus Mathe-Achse ist. Die Box ist damit hoeher als eine
-% Grundlinie, TeX faellt auf \lineskip zurueck, und der Anfang haengt an der
-% Tiefe der letzten Textzeile -- gemessen 0,7 bp neben dem Raster.
+% ---- Die Tabelle ----
 %
-% \begin{dsaTabelle}{@{}ll@{}} nimmt dasselbe Spaltenformat wie tabular und
-% setzt sie in eine Box ohne Hoehe und Tiefe. Mit [t] ist die
-% Referenzgrundlinie der Box die erste Zeilengrundlinie; sie sitzt damit
-% genau auf der laufenden Grundlinie, die Zeilen darunter halten ihre 12 bp
-% von selbst. Den Raum liefert \dsaRasterluft, aufgerundet auf ganze
-% Rastereinheiten -- deshalb vertraegt die Umgebung auch Linien und
-% mehrzeilige Zellen.
+% \begin{dsaTabelle}{ll} nimmt dasselbe Spaltenformat wie tabular. Zwei
+% Dinge macht die Umgebung daraus:
+%
+% 1. Sie spannt die Tabelle ueber die volle Spaltenbreite. Ohne das endet
+%    die Tabelle dort, wo ihr laengster Eintrag endet, waehrend die
+%    Titelleiste ueber die ganze Spalte laeuft — Leiste und Linien standen
+%    gemessen 60 pt auseinander. \extracolsep{\fill} verteilt die
+%    Restbreite zwischen den Spalten; die aeusseren \hskip halten den
+%    Zelleneinzug an beiden Raendern.
+% 2. Sie setzt sie in eine Box ohne Hoehe und Tiefe. \begin{tabular} allein
+%    genuegt nicht: ohne Positionsargument wird die Tabelle ein \vcenter,
+%    dessen Hoehe halbe Tabellenhoehe plus Mathe-Achse ist. Die Box ist
+%    damit hoeher als eine Grundlinie, TeX faellt auf \lineskip zurueck, und
+%    der Anfang haengt an der Tiefe der letzten Textzeile -- gemessen 0,7 bp
+%    neben dem Raster. Mit [t] ist die Referenzgrundlinie die erste
+%    Zeilengrundlinie und sitzt genau auf der laufenden Grundlinie; die
+%    Zeilen darunter halten ihre 12 bp von selbst. Den Raum liefert
+%    \dsaRasterluft, aufgerundet auf ganze Rastereinheiten.
+%
 % L{<breite>} ist p{<breite>} mit Flattersatz.
 %
 % Blocksatz in einer schmalen Spalte zieht die Wortabstaende auf: in eine
@@ -1549,12 +1726,35 @@
 % zurueckdreht. Der Flattersatz muss deshalb in die Spaltenvorschrift.
 % \arraybackslash gibt \\ seine Tabellenbedeutung zurueck, die
 % \raggedright ueberschreibt.
-\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+%
+% Die Tiefenstuetze am Zellenende ist hier wirkungslos und steht trotzdem
+% da. Im Rastersatz braucht sie niemand: die Zeilenhoehe kommt aus dem
+% Raster, und \dsazellstuetze ist 0 pt, also eine Box ohne Hoehe, Tiefe und
+% Breite. Gebraucht wird sie in einem Satz ohne Raster: dort folgt die Linie
+% unter einer mehrzeiligen Zelle sonst der Unterlaenge des letzten Wortes —
+% gemessen bis zu 3,4 bp Unterschied zwischen zwei Zeilen derselben Tabelle.
+% So laesst sich der Spaltentyp teilen, statt ihn zu verdoppeln.
+\newlength{\dsazellstuetze}\setlength{\dsazellstuetze}{0pt}
+\newcommand*{\dsa@zellstuetze}{\rule[-\dsazellstuetze]{0pt}{0pt}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}<{\dsa@zellstuetze}}
 
 \newsavebox{\dsa@tabelle}
 \newenvironment{dsaTabelle}[1]
-  {\begin{lrbox}{\dsa@tabelle}\begin{tabular}[t]{#1}}
-  {\end{tabular}\end{lrbox}%
+  {% \linewidth ist in einer p-Spalte die Zellenbreite, nicht die der
+   % Spalte. Das Band einer Rubrikzeile waere dort nur so breit wie ihre
+   % erste Zelle -- gemessen 24 statt 80,5 mm. Die Breite wird deshalb hier
+   % gemerkt, ausserhalb der Tabelle.
+   \setlength{\dsa@tabellenbreite}{\linewidth}%
+   \begin{lrbox}{\dsa@tabelle}%
+   \setlength{\tabcolsep}{\dsatabelleninnen}%
+   \setlength{\arrayrulewidth}{\dsatabellenstrich}%
+   \dsaTabellenlinie
+   \begin{tabular*}{\linewidth}[t]%
+     {@{\hskip\dsatabelleninnen\extracolsep{\fill}}#1@{\hskip\dsatabelleninnen}}%
+   \dsa@tabellenlinienan}
+  {\end{tabular*}\end{lrbox}%
+   % \everycr ist global gesetzt und muss global zurueck.
+   \global\everycr{}%
    \dsa@tabellesetzen}
 
 \newcommand*{\dsa@tabellesetzen}{%
@@ -1570,6 +1770,16 @@
     \ifdim\dimexpr\dsaRaster{\dsa@tabzeilen}\relax
           <\dimexpr\dimen@-1bp\relax
       \edef\dsa@tabzeilen{\the\numexpr\dsa@tabzeilen+1\relax}%
+    \fi
+    % Eine Tabelle ist ein Block und wird nicht umbrochen. Passt sie in die
+    % laufende Spalte, wandert sie ganz in die naechste; passt sie in keine,
+    % laeuft sie unten heraus und die letzten Zeilen fehlen im Abzug. Das
+    % faellt beim Lesen des Quelltextes nicht auf, deshalb die Warnung.
+    \ifdim\dsaRaster{\dsa@tabzeilen}>\textheight
+      \ClassWarning{dsa5latex}{Diese Tabelle ist \dsa@tabzeilen\space
+        Rastereinheiten hoch und passt in keine Spalte (\the\textheight).
+        Sie laeuft unten aus der Spalte heraus. In mehrere dsaTabelle
+        aufteilen und den Kopf wiederholen}%
     \fi
     % Die Box so heben, dass ihre erste TEXTgrundlinie auf der laufenden
     % Grundlinie liegt.
@@ -1602,7 +1812,8 @@
 % Kein \extrarowheight. Am gesetzten Ergebnis nachgemessen stehen die
 % Grundlinien einer Tabelle ohne Zutun genau 12 bp auseinander — mit 2 bp
 % Zugabe waren es 14, und die Tabelle lief aus dem Raster. Wer die Zeilen
-% luftiger braucht, nimmt ein Vielfaches von 12 bp, nicht irgendeinen Wert.
+% luftiger braucht, nimmt ein Vielfaches von 12 bp, nicht irgendeinen Wert;
+% das Band der Titel- und Rubrikzeilen bleibt dabei eine Rastereinheit hoch.
 \newlength{\dsatabellenluft}\setlength{\dsatabellenluft}{0bp}
 \AtBeginDocument{\setlength{\extrarowheight}{\dsatabellenluft}}
 

@@ -22,15 +22,19 @@ Die zweite Betriebsart nimmt die Flaeche aus einer vorliegenden Fassung,
 statt sie zu fluten:
 
     python3 werkzeuge/regionsmaske.py "/pfad/zum/Paket" kosch \\
-        --aus-fassung "/pfad/DSA5-Aventurienkarte_Kosch.png" \\
-                      "/pfad/DSA5-Aventurienkarte_verdunkelt.png"
+        --aus-fassung "/pfad/eigene-fassung.png" \\
+                      "/pfad/derselbe-grund-ohne-region.png"
 
-Das ist der Weg fuer Karten, die schon eine Region hervorheben, aber auf dem
-falschen Grund sitzen. Gemessen im Kartenbereich hat
-DSA5-Aventurienkarte_Kosch.png eine mittlere Helligkeit von 76,1 -- so viel
-wie die verdunkelte Karte selbst (75,1), waehrend die helle Karte des
-Kartenpakets 116,7 hat. Die Region ist darin also nur schwach aufgehellt.
-Brauchbar ist die Flaeche; die Farben kommen aus dem Kartenpaket.
+Das ist der Weg fuer Karten, die schon eine Region hervorheben, aber auf
+dem falschen Grund sitzen: aus dem Unterschied der beiden Bilder nimmt das
+Werkzeug die Flaeche und setzt sie auf den Grund des Kartenpakets. Die
+zweite Datei ist dieselbe Karte ohne die Hervorhebung.
+
+So kommt man auch an Regionen, die das Grenznetz nicht kennt -- den Kosch
+zum Beispiel. Wie hell die Vorlage die Region zeichnet, ist dabei gleich;
+gebraucht wird nur ihre Form. An einer solchen Fassung gemessen lag die
+Region bei einer mittleren Helligkeit von 76,1 gegen 75,1 der verdunkelten
+Karte -- also kaum aufgehellt -- und war als Flaeche trotzdem brauchbar.
 
 Die Koordinaten sind Millimeter auf der A4-Seite, von der linken oberen
 Ecke. Wer sie nicht kennt: die Karte liegt zwischen 104 und 207 mm

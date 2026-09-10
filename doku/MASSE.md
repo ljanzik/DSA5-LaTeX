@@ -215,6 +215,37 @@ Aus `Resources/Graphic.xml` des IDML, unverändert.
 | `dsagruenverlauf` | Grün für gradient | CMYK 70 53 91 17 |
 | `dsapergamentgelb` | Für Gelb | CMYK 9 26 56 9 |
 
+### Die drei Grauwerte der Tabelle
+
+Sie stehen im IDML nicht als Farbe, sondern als **Tonwert von „Black"** — und „Black" ist dort
+CMYK 0/0/0/100. Ein Tonwert davon kommt beim Export nicht als 100 − *x* Prozent Weiß heraus,
+sondern geht durch das Farbprofil. In der Klasse steht deshalb nicht der gerechnete, sondern der
+am Baukasten-PDF (Seite 8) gemessene Wert — das ist die Farbe, die der Leser sieht:
+
+| Zellenformat | Tonwert | gerechnet | gemessen | Name in der Klasse |
+|---|---|---|---|---|
+| Anmerkung, Fläche | 10 % | `#E6E6E6` | `#ECECEC` | `dsatabellengrau` |
+| Werte, Linie unten | 25 % | `#BFBFBF` | `#D0D0D0` | `dsatabellenlinie` |
+| Tabelle Über aktuell, Linie | 60 % | `#666666` | `#878785` | `dsatabellenkopflinie` |
+
+Die Linienstärke ist überall 0,25 pt. `Tabellenrot` selbst ist im IDML RGB und übersteht den
+Export unverändert: gemessen (193, 144, 122) gegen (193, 144, 123) in der Datei.
+
+### Der Verlauf der Titelzeile
+
+Farbfeld „Tabelle Überschrift", linear, von `Tabellenrot` am Ort 0 nach `Paper` am Ort 100 — mit
+**Mittelpunkt bei 40,33** statt 50. Die Klasse blendet linear. Gemessen an der Waffentabelle auf
+Seite 8, quer über die Leiste:
+
+| Anteil der Breite | Baukasten | Klasse |
+|---|---|---|
+| 2 % | 193, 144, 122 | 193, 145, 124 |
+| 20 % | 206, 169, 150 | 205, 166, 150 |
+| 50 % | 226, 204, 191 | 224, 199, 189 |
+| 70 % | 239, 226, 218 | 236, 222, 216 |
+
+Höchstens 5 von 255 Stufen Unterschied, im mittleren Drittel, auf Papier nicht zu sehen.
+
 ## Die Rautenskala
 
 Die drei Kacheln stehen im Baukasten, als Masterdateien: `AufzaehlerDSA5_Rueckseite_rot.psd`,
@@ -698,6 +729,41 @@ Die schwersten Befunde:
 
 Befunde 5 und 6 stammen aus dem Käuferfeedback im Scriptorium, nicht aus dem Quelltext — sie fallen
 beim Lesen nicht auf, beim Setzen sofort.
+
+### Was DSaTeX nicht kann: Tabellen
+
+**Gar nichts.** Beide Fassungen der Klasse — 1013 und 1055 Zeilen — definieren keinen einzigen
+Tabellenbefehl, keine Tabellenfarbe, keine Linienstärke. `colortbl`, `array`, `longtable` und
+`tabularx` sind nicht geladen. Das einzige `tabular` im ganzen Paket steht in `neueFeatures.tex`
+und richtet dort zwei Rautenskalen nebeneinander aus, in schlichtem `{l c}` ohne Farbe. Der
+Tabellenkopf des Baukastens, die grauen Rubrikzeilen und die Haarlinien fehlen vollständig.
+
+### Was DSaTeX besser gemacht hat: den Verlauf durchsichtig enden lassen
+
+Die neuere Fassung bringt vier Befehle für **farbig unterlegte Überschriften** in einer frei
+wählbaren Farbe — `\fadeSection{Farbe}{Titel}`, `\fadeSubSection`, und beide noch einmal mit
+Nummer. Vorgeführt werden sie in `farbigeberschriften.tex` mit `dsaGold` (RGB 214 173 120) und
+`green!60!blue`. Optisch ist das der Balken des Tabellenkopfs, nur eben als Überschrift und in
+beliebiger Farbe — daher wohl der Eindruck, DSaTeX könne „Tabellen in mehreren Farben".
+
+Interessant ist nicht der Befehl, sondern seine Technik:
+
+```latex
+\tikzfading[name=fade right, left color=transparent!0, right color=transparent!100]
+\fill[#1, path fading=fade right] (0,0) rectangle (.5\linewidth,.9em);
+```
+
+Der Balken blendet **nach durchsichtig**, nicht nach Weiß. Genau das verlangt der Baukasten für
+seine Tabellen, und zwar im Klartext auf der Seite, auf der sie stehen: *„Tipp: Auch bei Tabellen
+daran denken, den entsprechenden Rahmen unter Fenster>Effekte auf ‚Multiplizieren' zu stellen."*
+Diese Klasse hatte bis dahin einen deckenden Verlauf nach Weiß und damit ein weißes Rechteck im
+rechten Drittel des Kopfbalkens — auf dem Pergament gemessen (254,254,254) gegen einen Grund von
+(243,236,221). Sie erledigt es jetzt mit `blend mode=multiply`, was dieselbe Wirkung hat und
+zusätzlich für die graue Rubrikzeile stimmt; `path fading` deckt nur den Verlaufsfall ab.
+
+Der Nachweis am Musterbogen läuft über die graue Rubrikzeile: deckend wären es (236,236,236),
+gemessen sind es (232,231,228) — warm, also mit dem Pergament darunter, und genau der Wert, den
+Multiplizieren rechnerisch ergibt.
 
 ---
 

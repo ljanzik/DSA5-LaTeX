@@ -1,6 +1,7 @@
 # Elementreferenz
 
-*Alle Befehle und Umgebungen der Klasse. Die Maße dahinter stehen in [MASSE.md](MASSE.md).*
+*Alle Befehle und Umgebungen von `dsa5latex.cls`. Die Maße dahinter stehen in
+[MASSE.md](MASSE.md).*
 
 Vollständiges Beispiel: `beispiel/beispiel.tex`.
 
@@ -263,10 +264,16 @@ nicht bis zum Rand deckt.
 
 Die Grafik kommt aus dem **Rückseiten-Karten-Paket** von Ulisses, einem zweiten Paket neben dem
 Baukasten. Es bringt eine fertige Rückseite mit Zierrahmen (`ruecken-neutral`) und 28 **Masken** —
-jede ist die verdunkelte Karte mit einem Loch an der Stelle einer Region. Über die neutrale
-Rückseite gelegt bleibt die Region hell und der Rest tritt zurück.
-`werkzeuge/aufbereiten.py --rueckseiten <pfad>` setzt beides zusammen und legt es als
+jede ist die verdunkelte Karte mit einem Loch an der Stelle einer Region.
+`werkzeuge/aufbereiten.py --rueckseiten <pfad>` baut daraus die 28 Rückseiten und legt sie als
 `ruecken-mittelreich`, `ruecken-thorwal` und so weiter ab.
+
+**Gesetzt wird nicht die Verdunkelung des Pakets, sondern die Fassung der offiziellen Hefte:**
+die Karte in Sepia, nur die aktive Region in Farbe, ein weicher Schlagschatten darum. Das hebt
+die Region ungleich deutlicher heraus — in einem dunkelgrünen Waldgebiet war die halbierte
+Fassung kaum zu erkennen. Die Sepiarampe ist ein fester Farbversatz auf das Grau (+15 / −4 /
+−20), an zwei Rücktiteln gemessen und helligkeitserhaltend; Herleitung und Messwerte in
+`MASSE.md` unter „Die Sepiakarte der Rückseite".
 
 Für eine eigene Aufteilung gibt es `werkzeuge/regionsmaske.py`: es flutet von einem Saatpunkt aus
 innerhalb der Grenzlinien und schneidet die gefundene Fläche aus der Verdunkelung. Das Grenznetz
@@ -537,56 +544,122 @@ leistet, nur nimmt ihm dort der Freistellpfad die Zahlen ab.
 
 ## Tabellen und Raster
 
-`\dsaTabellenkopf{Text}` setzt die Kopfleiste mit Verlauf von `Tabellenrot` nach Weiß,
-`\dsaTabellenlinie` die Linienfarbe auf `#BFBFBF`.
+Eine Tabelle der Vorlage besteht aus vier Teilen. Am Musterbogen des Baukastens (Seite 8) und an
+seiner IDML nachgemessen:
 
-**Schmale Spalten nehmen `L{}` statt `p{}`.** `L` ist `p` mit Flattersatz. Blocksatz in einer
-`p{20mm}` bringt zwei Wörter je Zeile unter und zieht die Wortabstände auf: im Ganter-Heft waren
-das 59 von 79 `Underfull \hbox`-Meldungen und im Abzug löchrige Zeilen. Ein `\raggedright` vor
-dem `tabular` hilft nicht, weil eine `p`-Spalte eine `parbox` ist und `\@parboxrestore` den
-`\rightskip` zurückdreht.
+| Teil | Aussehen |
+|---|---|
+| Titelzeile | Verlauf von `Tabellenrot` nach Weiß über die ganze Breite, fett 10 pt, Linie darüber und darunter in 60 % Schwarz |
+| Rubrikzeile | Fläche in 10 % Schwarz, fett 9,5 pt — der Spaltenkopf und die Anmerkung am Fuß |
+| Wertezeile | ohne Fläche, 10 pt, erste Spalte fett |
+| jede Zeile | eine Linie darunter, 0,25 pt in 25 % Schwarz |
 
-**Die Spaltenbreiten müssen in die Spalte passen**, und zwischen zwei Spalten liegt zweimal
-`\tabcolsep`, also 12 pt oder 4,23 mm. `@{}` am Anfang und Ende nimmt nur die äußeren Abstände
-weg. Für die Summe der Breiten bleiben damit bei *n* Spalten:
+Senkrechte Linien gibt es nicht, auch nicht am Rand. Der Zelleneinzug ist **1,2 mm** ringsum,
+zwischen zwei Spalten also 2,4 mm.
 
-| | zweispaltig im Heft | Querformat mit 15 mm Rand |
-|---|---|---|
-| 2 Spalten | 76,27 mm | 262,77 mm |
-| 3 Spalten | 72,05 mm | 258,55 mm |
-| 4 Spalten | 67,82 mm | 254,32 mm |
-| 5 Spalten | 63,59 mm | 250,09 mm |
+**Beide Flächen liegen auf „Multiplizieren".** Der Baukasten schreibt es auf der Seite mit seinen
+Tabellen ausdrücklich vor, und es ist kein Schönheitsfehler: ein Verlauf, der deckend nach Weiß
+blendet, legt sein rechtes Ende als weißes Rechteck auf das Pergament. Die Klasse zeichnet die
+Bänder deshalb mit `blend mode=multiply`; das Pergament bleibt darunter sichtbar. Einzelheiten und
+Messwerte in `MASSE.md`, Abschnitt 4 und 6.
 
-**Tabellen kommen in `dsaTabelle`, nicht in `tabular`.** Die Umgebung nimmt dasselbe
-Spaltenformat:
+**Die Tabelle nimmt immer die volle Spaltenbreite.** Das ist keine Zutat, sondern das Maß der
+Vorlage: die Linien laufen von Spaltenkante zu Spaltenkante, die Spalten der Tabelle verteilen
+sich darin. `dsaTabelle` setzt das selbst um — die Restbreite geht als dehnbare Luft zwischen die
+Spalten. Vorher endete die Tabelle dort, wo ihr längster Eintrag endete, während die Titelleiste
+über die ganze Spalte lief; gemessen standen Leiste und Linien 60 pt auseinander.
 
 ```latex
 \dsaTabellenkopf{Qualität und Preis einer Herberge}
-\dsaTabellenlinie
-\begin{dsaTabelle}{@{}ll@{}}
-ärmlich & 2 Kreuzer\\
-gut & 1 Silbertaler\\
+\begin{dsaTabelle}{ll}
+\dsaTabellenrubrik \dsaRubrikschrift Qualität & \dsaRubrikschrift Preis\\
+\textbf{1} & jämmerliche Bruchbude, 50 Prozent\\
+\textbf{3} & einfache Herberge, Normalpreis\\
+\textbf{6} & luxuriöse Unterkunft, 400 Prozent\\
+\dsaTabellenrubrik \dsaRubrikschrift Anmerkung
+  & \dsaAnmerkungsschrift Preise je Nacht und Person\\
 \end{dsaTabelle}
 ```
 
-Warum nicht `tabular` allein: ohne Positionsargument setzt LaTeX die Tabelle als `\vcenter`,
-dessen Höhe halbe Tabellenhöhe plus Mathe-Achse ist. Die Box ist damit höher als eine Grundlinie,
-TeX kann die Grundlinienregel nicht anwenden und fällt auf `\lineskip` zurück — der Anfang hängt
-dann an der Tiefe der letzten Textzeile. Gemessen begann die Tabelle 0,7 bp neben dem Raster, und
-der Fließtext danach blieb 0,9 bp daneben, bis zum Spaltenende.
+| Aufruf | wofür |
+|---|---|
+| `\dsaTabellenkopf{Titel}` | die Verlaufsleiste, steht vor der Umgebung |
+| `\begin{dsaTabelle}{Spaltenformat}` | die Tabelle, Format wie bei `tabular` |
+| `\dsaTabellenrubrik` | ganz am Zeilenanfang: graues Band über die ganze Breite |
+| `\dsaRubrikschrift` | 9,5 pt fett, in jeder Zelle einer Rubrikzeile |
+| `\dsaAnmerkungsschrift` | 9,5 pt mager, für den Text einer Anmerkungszeile |
+| `L{Breite}` | `p{Breite}` mit Flattersatz |
+
+**Warum die Schrift in jede Zelle muss.** Eine Schriftart über die Zellengrenze hinweg gibt es in
+LaTeX nicht: jede Zelle ist eine eigene Gruppe, ein `\bfseries` in der ersten wäre am ersten `&`
+wieder vergessen. Der Weg über `\globaldefs` ist begangen und wieder verlassen — `\fontsize` und
+`\selectfont` setzen dabei die Schriftverwaltung global um, und der Lauf endete mit
+`Missing \endcsname inserted`, zehnmal je Tabelle.
+
+**Die Linie unter jeder Zeile zeichnet die Umgebung selbst**, über `\everycr`. `\hline` ist dafür
+untauglich: sie bringt ihre Strichstärke als Bauhöhe mit, und die Grundlinien standen gemessen
+12,25 statt 12,00 bp auseinander — nach vierzig Zeilen ein Zehntel Millimeter, nach einer Seite
+sichtbar. Wer trotzdem `\hline` schreibt, bekommt eine zweite, dickere Linie und verliert das
+Raster.
+
+**Schmale Spalten nehmen `L{}` statt `p{}`.** Blocksatz in einer `p{20mm}` bringt zwei Wörter je
+Zeile unter und zieht die Wortabstände auf: in einem Probelauf waren das 59 von 79
+`Underfull \hbox`-Meldungen und im Abzug löchrige Zeilen. Ein `\raggedright` vor dem `tabular`
+hilft nicht, weil eine `p`-Spalte eine `parbox` ist und `\@parboxrestore` den `\rightskip`
+zurückdreht.
+
+**Feste Spaltenbreiten müssen in die Spalte passen.** Zwischen zwei Spalten liegen zweimal 1,2 mm,
+am Rand je 1,2 mm. Für die Summe der festen Breiten bleiben damit bei *n* Spalten:
+
+| | zweispaltig im Heft | Querformat mit 15 mm Rand |
+|---|---|---|
+| 2 Spalten | 75,70 mm | 262,20 mm |
+| 3 Spalten | 73,30 mm | 259,80 mm |
+| 4 Spalten | 70,90 mm | 257,40 mm |
+| 5 Spalten | 68,50 mm | 255,00 mm |
+
+Wer weniger vergibt, verteilt die Klasse auf die Zwischenräume; wer mehr vergibt, sprengt die
+Spalte.
+
+### Was am Raster hängt
+
+**Tabellen kommen in `dsaTabelle`, nicht in `tabular`.** Ohne Positionsargument setzt LaTeX die
+Tabelle als `\vcenter`, dessen Höhe halbe Tabellenhöhe plus Mathe-Achse ist. Die Box ist damit
+höher als eine Grundlinie, TeX kann die Grundlinienregel nicht anwenden und fällt auf `\lineskip`
+zurück — der Anfang hängt dann an der Tiefe der letzten Textzeile. Gemessen begann die Tabelle
+0,7 bp neben dem Raster, und der Fließtext danach blieb 0,9 bp daneben, bis zum Spaltenende.
 
 `dsaTabelle` setzt die Tabelle mit `[t]` in eine Box ohne Höhe und Tiefe: die Referenzgrundlinie
 ist damit die erste Zeilengrundlinie und sitzt auf der laufenden Grundlinie. Den Raum liefert
 `\dsaRasterluft`, aufgerundet auf ganze Rastereinheiten — deshalb verträgt die Umgebung auch
 Linien und mehrzeilige Zellen.
 
-Derselbe Grund gilt für den Kopf: seine `tcolorbox` ist genau eine Rastereinheit hoch, also nicht
-niedriger als der Durchschuss. `\dsaTabellenkopf` setzt sie deshalb ebenfalls in eine Box ohne
-Höhe und schiebt sie um `\dsatabellenkopftiefer` (3,4 bp) nach unten, damit ihr Text auf der
-Grundlinie bleibt. Der Kopf belegt genau die Zeile, in der er steht.
+Dasselbe gilt für die farbigen Bänder von Titel- und Rubrikzeile: sie sind genau eine
+Rastereinheit hoch, also nicht niedriger als der Durchschuss, und dürfen deshalb keine eigene
+Bauhöhe haben. Gezeichnet werden sie von der Grundlinie aus — `\dp\strutbox` nach unten, der Rest
+nach oben — und belegen genau die Zeile, in der sie stehen.
 
-Gemessen an einer Probe mit drei Fällen — Tabelle ohne Kopf, Tabelle mit Kopf, Kopf allein —
-liegen alle Zeilen einschließlich des Folgetexts auf +0,00 bp.
+Gemessen an `beispiel/raster.pdf`: alle Zeilen der Tabelle und der Fließtext danach liegen auf
+±0,00 bp. Daneben liegen nur die Elemente mit eigenem Maß, Seitenzahl und Kolumnentitel.
+
+**Eine Tabelle wird nicht umbrochen.** Passt sie nicht mehr in die laufende Spalte, wandert sie
+ganz in die nächste. Passt sie in gar keine Spalte — mehr als 58 Rastereinheiten —, läuft sie
+unten heraus und die letzten Zeilen fehlen im Abzug; die Klasse warnt dann mit `dsa5latex Warning`
+und nennt die Höhe. Eine solche Tabelle muss von Hand geteilt werden, mit wiederholtem Kopf.
+
+### Zwei Abweichungen von der Vorlage
+
+1. **Die Zeilenhöhe.** Im Baukasten ist sie 15,54 pt und liegt damit auf keiner Rasterlinie: seine
+   Tabellen stehen ausdrücklich nicht im Grundlinienraster (`GridAlignment="None"` in der IDML).
+   Hier gilt das Raster — eine einzeilige Zeile ist genau eine Rastereinheit, 12 bp. Wer es
+   luftiger braucht, setzt `\dsatabellenluft` auf ein Vielfaches von 12 bp.
+2. **Der Verlauf.** Das Farbfeld „Tabelle Überschrift" hat seinen Mittelpunkt bei 40,33 statt
+   50 Prozent; die Klasse blendet linear. Am gesetzten PDF gemessen ist der Unterschied im
+   mittleren Drittel höchstens 5 von 255 Stufen und auf Papier nicht zu sehen.
+
+### Werte, nicht Tabellen
+
+Die folgenden Elemente sehen aus wie Tabellen, sind aber eigene Bausteine mit eigenen Maßen:
 
 | Aufruf | wofür |
 |---|---|
@@ -622,47 +695,45 @@ Befehl dafür.
 
 ---
 
-## Beim ersten Lauf prüfen
+## Was noch nicht nachgemessen ist
 
-**Diese Klasse ist noch nicht am Ergebnis geprüft** — sie ist aus gemessenen Maßen geschrieben, aber
-bei ihrer Entstehung stand keine LaTeX-Installation zur Verfügung. Im Quelltext stehen dieselben
-Punkte als `% PRUEFEN:`. Nach Bruchwahrscheinlichkeit sortiert.
+**Die Klasse läuft.** `beispiel.tex` baut mit XeLaTeX aus TeX Live 2026 fehlerfrei durch,
+22 Seiten, ohne eine einzige LaTeX-Warnung; `raster.tex`, `kaesten.tex` und `rest.tex`
+ebenso.
 
-### Bricht der Lauf ab
+**Damit ist die alte Bruchliste erledigt.** Sie führte zehn Stellen, an denen der Lauf
+abbrechen könnte — `polyglossia` mit `spelling=new`, `\ifnum` in einer `\foreach`-Schleife,
+die selbstgebaute `\parshape`-Liste des Umflusses, `\f@size` in den Kapitälchen, die Zeichen
+`\textminus` und `\guillemotright`, `\addfontfeature`, `\contour` mit gesetzter Schriftgröße,
+der `underlay`-Schlüssel des Porträtkastens, `\pgfdeclarefading` und der Längenvergleich in
+`\dsaBildDeckend`. Neun davon setzen die Beispieldokumente inzwischen ein, und sie bauen. Der
+zehnte ist `\dsaBildMaskiert`: **kein Beispiel benutzt ihn**, das Fading darin ist also als
+einziges ungeprüft.
 
-1. **`polyglossia` mit `spelling=new`** — sonst auf `\setdefaultlanguage{german}` zurückfallen; die
-   Trennmuster sind dann trotzdem deutsch.
-2. **`\dsa@rauten`** benutzt `\ifnum` in einer `\foreach`-Schleife.
-3. **`\dsaUmfluss` und `\dsaUmflussKontur`** bauen die `\parshape`-Liste selbst auf. Mit kleinen
-   Werten testen, etwa `\dsaUmfluss{l}{2}{4}{25mm}`.
-4. **`\f@size` in `\dsaKapitaelchen`** — wenn es bricht, feste `10pt` einsetzen.
-5. **`\textminus`, `\texttimes`, `\guillemotright`** — ob Gentium Basic die Zeichen hat.
-6. **`\addfontfeature{LetterSpace=1.0}`** in `\dsaEinfuehrung`.
-7. **`\contour` mit gesetzter Schriftgröße** im Umschlag und in der Seitenzahl.
-8. **`underlay app`** im Porträtschlüssel — braucht die `skins`-Bibliothek von tcolorbox.
-9. **`\pgfdeclarefading`** in `\dsaBildMaskiert` — Transparenzgruppen sind unter XeLaTeX weniger
-   erprobt als unter pdflatex.
-10. **`\dsaBildDeckend`** vergleicht zwei pgfmath-Makros als Längen in pt.
+Was bleibt, sind Maße, die niemand am Papier nachgemessen hat. Im Quelltext stehen dieselben
+Punkte als `% PRUEFEN:`, fünfzehn Stück. Der Stand jeder
+Messung steht in [PRUEFPLAN.md](PRUEFPLAN.md); wer etwas nachmisst, trägt es dort ein und
+nimmt die Marke aus dem Quelltext.
 
-### Läuft durch, sieht aber falsch aus
+### Maße, die geschätzt sind
 
-11. **Innenabstände der Kästen** — geschätzt, an einer Stelle änderbar.
-12. **Lage und Durchmesser des Porträtmedaillons** — geschätzt.
-13. **Breite des Pergamentrands am Kapitelbild** (`\dsakapitelbildrand`) — geschätzt.
-14. **Größe und Abstand der gezeichneten Rauten** — mit den offiziellen vergleichen.
-15. **Lage der Kapitelüberschrift im Banner** — 22 mm unter der Kante, mittig auf 150 mm,
+1. **Innenabstände der Kästen** — geschätzt, an einer Stelle änderbar.
+2. **Lage und Durchmesser des Porträtmedaillons** — geschätzt.
+3. **Breite des Pergamentrands am Kapitelbild** (`\dsakapitelbildrand`) — geschätzt.
+4. **Größe und Abstand der gezeichneten Rauten** — mit den offiziellen vergleichen.
+5. **Lage der Kapitelüberschrift im Banner** — 22 mm unter der Kante, mittig auf 150 mm,
     geschätzt. Bei zweizeiligen Titeln reichen 10 Rastereinheiten nicht.
-16. **Seitenhintergrund** — Anker an der Außenkante; bleibt ein weißer Streifen, ist der Anker
+6. **Seitenhintergrund** — Anker an der Außenkante; bleibt ein weißer Streifen, ist der Anker
     falsch gewählt, nicht das Maß. Und: die Folge muss 0,0,1,1,2,2,3,3 sein.
-17. **Lage der Titelzeilen im Umschlag** — geschätzt.
-18. **Absatzeinzug** — `\parindent` auf 1 em, am offiziellen PDF nachmessen.
-19. **Icongrößen** — 4 mm Höhe gewählt, nicht belegt.
-20. **Beschnitt der deckenden Bilder** ist mittig. Bei einem Porträt sitzt der Kopf oft oben.
-21. **`\dsaVorlesetext`** steht aufrecht auf Spaltenbreite; ob das stimmt, sagt der Baukasten nicht.
-22. **`\dsaNSCkopf`** staucht eine 158,5 mm breite Leiste auf Spaltenbreite.
-23. **Nach `\dsaQuerEnde`** prüfen, ob die Grundlinien wieder sitzen.
-24. **`\dsaBildUmflossen`** — `wrapfig` rundet die Zeilenzahl selbst.
-25. **`\dsaBildBund`** — Vorzeichen und Bezugspunkt am Abzug nachsehen.
+7. **Lage der Titelzeilen im Umschlag** — geschätzt.
+8. **Absatzeinzug** — `\parindent` auf 1 em, am offiziellen PDF nachmessen.
+9. **Icongrößen** — 4 mm Höhe gewählt, nicht belegt.
+10. **Beschnitt der deckenden Bilder** ist mittig. Bei einem Porträt sitzt der Kopf oft oben.
+11. **`\dsaVorlesetext`** steht aufrecht auf Spaltenbreite; ob das stimmt, sagt der Baukasten nicht.
+12. **`\dsaNSCkopf`** staucht eine 158,5 mm breite Leiste auf Spaltenbreite.
+13. **Nach `\dsaQuerEnde`** prüfen, ob die Grundlinien wieder sitzen.
+14. **`\dsaBildUmflossen`** — `wrapfig` rundet die Zeilenzahl selbst.
+15. **`\dsaBildBund`** — Vorzeichen und Bezugspunkt am Abzug nachsehen.
 
 ### Warnungen, die planmäßig kommen
 
