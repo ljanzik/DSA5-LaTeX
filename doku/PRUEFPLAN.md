@@ -76,7 +76,12 @@ tiefer.
 | Impressum: Überschrift, Rubriken, Vermerk | 37,6 mm / 14 pt / 94,5 mm | gesetzte Veröffentlichung | `#` |
 | Seitenzahl | 18,4 mm von außen, 5,9 mm über der Kante, Andalus 13 pt | Musterbogen | `#` |
 | Kolumnentitel (Kapitelname neben der Zahl) | Andalus 14 bp schwarz, Grundlinie wie die Zahl, rechts 24,29 mm und links 40,35 mm von der Außenkante | gesetzte Veröffentlichung | `#` |
-| Kapiteltitel im Banner | erste Grundlinie 33,41 mm unter der Papierkante, linksbündig am inneren Rand | Musterbogen | `ok` |
+| Kapiteltitel: Grad | **31,73 pt** = 23,5 × 135 % | IDML-Absatzformat, Musterbogen, 8 Kapitel zweier Bände | `#` |
+| Kapiteltitel: Grundlinie | y 94,71 pt, linksbündig am inneren Rand | Musterbogen, US25324 | `#` |
+| Kapiteltitel: kein „Kapitel N:" | nur der Titel | 8 Kapitelanfänge, US25324 und US25326 | `#` |
+| Textanfang der Kapitelseite | y 168,00 pt = 7 Rastereinheiten | US25324, ein- und zweizeilige Titel | `#` |
+| Unterkapitel: Grad | **18,9 pt** = 14 × 135 % | IDML-Absatzformat, 7 Zwischenüberschriften | `#` |
+| Impressumtitel | Andalus 31,73 pt, Grundlinie y 94,00 pt | US25324 und US25326 | `#` |
 | Seitenhintergrund: Lage, Anschnitt, Folge 0,0,1,1,2,2,3,3 | 213 × 303 mm an der Außenkante | Schnitt der Doppelseiten | — |
 | Kapitelanfang: Banner, Bild, Pergamentrand | Banner 210,1 × 43,2 mm am oberen Rand | IDML | — |
 | Inhaltsverzeichnis | kein Sollmaß | — | — |

@@ -89,14 +89,40 @@ Wortlaut, `Scriptorium Aventuris Lies mich zuerst v1.4.pdf`:
 | Ebene | Schrift | Ausrichtung |
 |---|---|---|
 | Fließtext | Gentium Basic 10 pt auf 12 pt | Blocksatz |
-| Kapitel | Andalus 23,5 pt | Versalien, im Banner |
-| Unterkapitel | Andalus 14 pt | **zentriert**, 12 pt Abstand danach |
+| Kapitel | Andalus **31,73 pt** auf 28,2 pt | Versalien, im Banner |
+| Unterkapitel | Andalus **18,9 pt** | **zentriert**, 12 pt Abstand danach |
 | Abschnitt | Gentium Basic fett 13 pt | linksbündig |
 | Unterabschnitt | Gentium Basic fett 10 pt | linksbündig |
 | Covertitel | Andalus 42,8 pt fett | zentriert, aus dem PSD |
 | Titel im Impressum | Andalus 23,5 pt | Versalien, zentriert |
 | Rubrik im Impressum | Gentium Basic fett 14 pt | zentriert |
 | Wert im Impressum | Gentium Basic 10 pt | zentriert |
+
+### Die 135 Prozent auf Andalus
+
+Der Klartext nennt 23,5 pt für das Kapitel und 14 pt für das Unterkapitel. Gesetzt sind sie
+größer, und beides stimmt: die Absatzformate der IDML führen zu ihrer Punktgröße eine
+**Skalierung von 135 Prozent** in beiden Richtungen.
+
+| Format | `PointSize` | `HorizontalScale` / `VerticalScale` | gesetzt |
+|---|---|---|---|
+| `Kapitel-Überschrift` | 23,5 | 135 / 135 | 31,725 → **31,73 pt** |
+| `Absatzüberschrift` | 14 | 135 / 135 | 18,90 pt |
+
+Bestätigt an drei Quellen: der Musterbogen setzt seine Überschrift „ICH BIN EINE ÜBERSCHRIFT"
+mit 31,73 pt und seine sieben Zwischenüberschriften mit 18,90 pt; die gesetzten Abenteuer
+US25324 und US25326 setzen **jeden** ihrer acht Kapitelanfänge mit 31,73 pt, ohne eine
+Abweichung. Der Durchschuss bleibt 28,2 pt — zweizeilige Titel liegen auf y 94,71 und 122,91.
+
+**Kein „Kapitel N:" davor.** Die acht Kapitelanfänge tragen nur den Titel: EINLEITUNG, DER
+GESTOHLENE VERTRAG, RECHT UND ORDNUNG, KETTEN FÜR DIE EWIGKEIT, SCHMUGGLERJAGD, SUCHE NACH
+DEN KULTISTEN, UNTERWEGS IN DER UNTERSTADT, ANHANG. Eine Nummer steht nirgends.
+
+**Der Text beginnt auf y 168,00 pt**, gleich ob der Titel ein- oder zweizeilig ist —
+84 + 7 × 12. Der Bannerblock lässt also **sieben** Rastereinheiten frei, nicht zehn.
+
+**IMPRESSUM ist derselbe Grad:** 31,73 pt Andalus auf einer Grundlinie von y 94,00 pt
+(= 33,16 mm), in beiden Bänden gleich.
 
 Trennung laut IDML: Wörter ab 5 Zeichen, mindestens 2 nach dem Anfang und 2 vor dem Ende, auch
 Großgeschriebenes.
