@@ -76,8 +76,18 @@
 % --- Blatt 3: Innenseite links ---------------------------------------------
 % Trägt den Pflichttext der Vereinbarung über Gemeinschaftsinhalte. Der muss
 % laut Baukasten ("Lies mich zuerst", Seite 2: "Der folgende Text muss stets
-% im Werk enthalten sein") wortgleich im Werk stehen — deshalb steht er hier
-% fest und nicht in der Heldendatei. Nur die Copyright-Zeile ist variabel.
+% im Werk enthalten sein") wortgleich im Werk stehen — deshalb steht er nicht
+% in der Heldendatei. Nur die Copyright-Zeile ist variabel.
+%
+% Der Wortlaut selbst steht in ../pflichttext.tex, gemeinsam mit dem
+% Impressum der Abenteuerklasse. Hier stand eine ältere Fassung mit einem
+% anderen Rechteinhaber ("von Ulisses Medien und Spiele Distribution GmbH in
+% Deutschland, den U.S.A. und anderen Ländern") und einer anderen
+% Markenliste, während dsa5latex.cls die aktuelle führte. Welche gilt,
+% entscheidet sich jetzt an einer Stelle.
+%
+% Die Absatztrennung bleibt hier bei der Vorgabe \par: den Abstand macht
+% \parskip, siehe unten.
 \newcommand{\blattinnenlinks}{%
   \begin{mappenblatt}
     \flechtrahmen
@@ -88,22 +98,7 @@
     % ist ein Absatz von dreien anders ausgerichtet als die übrigen.
     \mappetextblock{30.6}{42}{148.9}%
       {\lesetext\fontsize{10.5}{14.5}\selectfont\setlength{\parskip}{4mm}}%
-      {center}{%
-      Dieses Produkt wurde unter Lizenz erstellt. Das Schwarze Auge und sein
-      Logo sowie Aventuria, Dere, Myranor, Riesland, Tharun, Uthuria,
-      The Dark Eye und ihre Logos sind eingetragene Marken von Ulisses
-      Medien und Spiele Distribution GmbH in Deutschland, den U.S.A. und
-      anderen Ländern. Ulisses Spiele und sein Logo sind eingetragene Marken
-      der Ulisses Medien und Spiele Distribution GmbH.
-
-      Dieses Werk enthält Material, das durch Ulisses Spiele und/oder andere
-      Autoren urheberrechtlich geschützt ist. Solches Material wird mit
-      Erlaubnis im Rahmen der Vereinbarung über Gemeinschaftsinhalte für
-      SCRIPTORIUM AVENTURIS verwendet.
-
-      Alle anderen Originalmaterialien in diesem Werk sind Copyright
-      \mappecopyright{} und werden im Rahmen der Vereinbarung über
-      Gemeinschaftsinhalte für SCRIPTORIUM AVENTURIS veröffentlicht.}%
+      {center}{\dsaPflichttext{\mappecopyright}}%
     \wertdaP{mappe_innen_links_text}{%
       \pergamentkasten{14}{205}{182}{%
         \centering
