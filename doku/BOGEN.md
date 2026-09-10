@@ -684,10 +684,11 @@ Weitergebbar ist der Umschlag, nicht sein Inhalt.
 Der Umzug ist Schritt 1 von vier und hat mit Absicht **nichts** am Inhalt geändert. Was noch
 aussteht, in dieser Reihenfolge:
 
-2. **Die Werteschnittstelle in die Klasse.** `\wert`, `\wertvon`, `\wertdaP`, `\wertoder`
-   stehen heute doppelt — in `mechanik.tex` und `mechanik-mappe.tex`, wortgleich, damit eine
-   Heldendatei durch beide läuft. Als `\dsaWert` und Geschwister in Abschnitt 19 von
-   `dsa5latex.cls` gäbe es sie einmal. Der Unterstrich in den Feldnamen braucht dafür
+2. **Die Werteschnittstelle in die Klasse.** `\wert`, `\wertvon`, `\wertdaP` und `\wertoder`
+   stehen seit dem Umzug nur noch einmal, in `bogen/werte.tex`, und beide Mechanikdateien
+   binden sie ein. Der nächste Schritt ist, sie als `\dsaWert` und Geschwister nach Abschnitt 19
+   von `dsa5latex.cls` zu heben — dann kennt auch die Abenteuerklasse sie, und die Mappe
+   bekommt sie mit `\LoadClass`. Der Unterstrich in den Feldnamen braucht dafür
    `\catcode`\_=12`; das ist gefahrlos, weil die Klasse kein Mathematikpaket lädt.
 3. **`dsa5mappe.cls`** nach dem Muster von `dsa5einleger.cls`: `\LoadClass{dsa5latex}` mit
    `ohneraster,ohnehintergrund`, dann A4 randabfallend beziehungsweise A3 quer. Damit bekommt
@@ -706,12 +707,11 @@ aussteht, in dieser Reihenfolge:
      Rahmen selbst bleibt wie er ist — er ist am Vorbild eingemessen und trägt die Akzentfarbe.
 4. **`feature/einleger` einsammeln**, sonst liegen zwei halbfertige Zweigklassen nebeneinander.
 
-**Ein Befund gehört unabhängig davon behoben:** Der Pflichttext steht zweimal. In
-`mappe/blaetter.tex` (Blatt 3) in einer älteren Fassung — „Ulisses Medien und Spiele
-Distribution GmbH", mit Aventuria, Dere, Myranor, Riesland, Tharun, Uthuria — und in
-`dsa5latex.cls` als `\dsaRechtevermerk` in der aktuellen: „Ulisses Spiele GmbH, Waldems". Der
-Kommentar dort beschreibt genau diesen Fall und sagt: „es gibt absichtlich nur diesen einen Ort
-dafür."
+**Erledigt:** Der Pflichttext stand zweimal — in `mappe/blaetter.tex` (Blatt 3) in einer
+älteren Fassung mit „Ulisses Medien und Spiele Distribution GmbH" und einer anderen
+Markenliste, in `dsa5latex.cls` in der aktuellen mit „Ulisses Spiele GmbH, Waldems". Er steht
+jetzt in `pflichttext.tex` neben der Klasse; beide binden ihn ein, die Mappe als
+`../pflichttext`. Nach außen bleibt `\dsaRechtevermerk{Jahr}{Name}` unverändert.
 
 ## Weiterführend
 
