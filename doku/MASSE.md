@@ -27,6 +27,14 @@ Weg 2 und Weg 3 stimmen bei allen auf 100 % platzierten Bildern überein. Beispi
 `Kasten_Pergament_ver1` hat 1010 × 2272 px, das sind 85,5 × 192,4 mm — und genau so groß ist der
 Rahmen im IDML.
 
+**Weg 4 — der offizielle Einleger, nur für den Einleger.** Der Baukasten kennt kein Querformat und
+keine Tabellenseite ohne Grundlinienraster. Für `dsa5einleger.cls` ist deshalb der *Universal
+Spielleiterschirm Einleger, Auflage 5* die Quelle: seine Seiten 4 bis 6, mit PyMuPDF ausgelesen —
+Tabellenkanten, Linienfarben, Grundlinien, Bildrahmen. Diese Quelle gilt **ausschließlich** für
+Abschnitt 8; für alles, was der Baukasten selbst sagt, bleibt seine Aussage maßgeblich. Wo beide
+etwas zum selben Gegenstand sagen und sich unterscheiden — die Farbe der Kopflinie tut das —, steht
+der Unterschied bei dem Wert.
+
 ---
 
 ## 2. Satzspiegel
@@ -793,6 +801,121 @@ Multiplizieren rechnerisch ergibt.
 
 ---
 
+## 8. Der Einleger
+
+Quelle ist Weg 4, der *Universal Spielleiterschirm Einleger, Auflage 5*, Seiten 4 bis 6. Die
+Umsetzung steht in `dsa5einleger.cls`, die Anleitung in [EINLEGER.md](EINLEGER.md).
+
+### Papier und Satzspiegel
+
+| Größe | Original | in der Klasse | Quelle |
+|---|---|---|---|
+| Papier | 276 × 216 mm | **297 × 210 mm** | Vorgabe: A4 quer, bewusste Abweichung |
+| Rand seitlich | 31,181 bp = 11,00 mm | **31,181 bp** | linke Kante jeder Tabelle der 1. Spalte |
+| Rand oben | 37,04 bp = 13,07 mm | **12 mm** | Unterkante der oberen Zierleiste; 12 mm frei gewählt |
+| Rand unten | 33,30 bp = 11,75 mm | **12 mm** | Oberkante der unteren Zierleiste |
+| Spalten | 4 | **4** | gemessen |
+| Spaltenbreite | 171,0 bp = 60,32 mm | **185,882 bp = 65,58 mm** | gerechnet aus A4 quer |
+| Spaltenabstand | 12,0 bp = 4,23 mm | **12,0 bp** | gemessen |
+
+**Die Probe.** 31,181 + 4 × 171 + 3 × 12 = 751,18 bp — dort liegt die rechte Kante jeder Tabelle
+der vierten Spalte. Die sechs inneren Kanten treffen auf ein Hundertstel bp: 202,18 / 214,18 /
+385,18 / 397,18 / 568,18 / 580,18.
+
+### Kein Grundlinienraster
+
+Auf den drei Seiten liegen 371 Grundlinien. Gegen ein Raster von 12, 11 und 10,5 bp getestet
+treffen 17, 26 und 26 — nicht mehr als zufällig. Die Abstände verteilen sich auf über 40 Werte. Das
+passt zur IDML des Baukastens, die für Tabellen `GridAlignment="None"` führt.
+
+### Typografie
+
+| Element | Wert | Quelle |
+|---|---|---|
+| Fließtext und Tabellenzelle | Gentium Basic 9,0 bp auf 10,8 bp | gemessen, 10,8 = InDesigns 120 % |
+| Blocktitel | Gentium Basic Bold 9,0 bp | Grundlinie y = 44,01 |
+| Kopfzeile | Gentium Basic Bold 9,0 bp | Grundlinie y = 59,26 |
+| Überschrift über mehrere Spalten | Gentium Basic 12,72 bp, zentriert, nicht fett | Seite 6, y = 437,26 |
+| Quellenmarke | Minion Pro 7,0 bp — hier **Gentium Basic 7,0 bp** | Minion Pro gehört nicht zum Baukasten |
+
+Die Grade 8,73 bis 9,13 bp, die im Original neben 9,0 auftauchen, sind waagerechte
+Laufweitenanpassung von InDesign, kein anderer Grad.
+
+### Tabellenzeile
+
+| Größe | Wert | Quelle |
+|---|---|---|
+| Zeilenhöhe, einzeilig | **14,56 bp** | 48,05 → 62,61 (Kopf), 62,61 → 87,93 minus eine Zeile |
+| je weitere Zeile | **10,8 bp** | Grundlinien 73,80 → 84,60 |
+| Grundlinie unter Zeilenoberkante | 11,20 bp | 73,80 − 62,61 |
+| Grundlinie über Zeilenunterkante | 3,36 bp | 87,93 − 84,60; = 1,2 mm, der Zelleneinzug des Baukastens |
+| Zelleneinzug seitlich | 3,4016 bp = 1,2 mm | wie im Buch, Text bei x = 34,51 an Kante 31,18 |
+| Linienstärke | 0,245 bp gemessen, **0,25 bp** gesetzt | PDF-Rundung von 0,25 pt aus der IDML |
+
+**Die Probe.** Die acht Zeilen der Tabelle „Regeneration“ messen 25,32 / 46,93 / 36,12 / 46,93 /
+25,32 / 25,33 / 46,92 / 46,93 bp. Das sind zwei-, vier-, drei-, vier-, zwei-, zwei-, vier- und
+vierzeilige Zellen, jede auf 14,56 + (n−1) × 10,8. Größte Abweichung 0,04 bp.
+
+### Farben
+
+| Farbe | Wert | Anmerkung |
+|---|---|---|
+| Kopfband | Verlauf von `dsatabellenrot` `#C1907B` nach durchsichtig | im Original „Multiplizieren“ über Pergament |
+| Linie über und unter dem Kopfband | **`#646363`** | im Baukasten `#878785` (60 % Schwarz) — anderes Dokument, anderer Wert |
+| Zeilenlinie | `#D0D0D0` | derselbe Wert wie im Buch |
+| Quellenmarke | **`#9D9D9C`** | eigener Grauton, kein Tonwert von Schwarz |
+
+Zum Kopfband: gemessen ist die Fläche links `#B47D62`. Tabellenrot `#C1907B` multipliziert mit dem
+Pergament `#F8F1E9` ergibt `#BB8872` — dieselbe Farbe bis auf die Rundung des Farbprofils. Die
+Klasse setzt deshalb keinen Verlauf nach Weiß (der legte einen hellen Streifen aufs Pergament),
+sondern `path fading=east`: Tabellenrot, das nach rechts durchsichtig wird und das Pergament
+durchscheinen lässt. Das braucht keinen Mischmodus, den der Treiber können müsste.
+
+### Quellenmarke
+
+| Größe | Wert |
+|---|---|
+| Höhe | 8,79 bp |
+| Grundlinie über der Unterkante | 1,85 bp |
+| Innenluft links und rechts | 3,8 bp |
+| Breite | Textbreite + 2 × 3,8 bp — „RW 339“ 30,57 bp, „RW 255/309“ 43,09 bp |
+| Lage | rechtsbündig an der Spaltenkante, Grundlinie des Blocktitels |
+| Eckenrundung | **geschätzt 1,5 bp**, abgelesen |
+
+### Hintergrund
+
+| Grafik | Original | in der Klasse |
+|---|---|---|
+| Pergamentfläche | 1690 × 1331 px auf 811 × 638 bp = 150 ppi | `einleger-flaeche-N`, 303 × 216 mm |
+| Zierleiste oben | 1694 × 111 px auf 811 × 53,2 bp, sichtbar 37,04 bp hoch | `einleger-leiste-oben`, **8,5 mm** |
+| Zierleiste unten | 1691 × 106 px, sichtbar 33,30 bp hoch | `einleger-leiste-unten`, **8,5 mm** |
+
+Der Baukasten hat keinen Querformat-Hintergrund. `werkzeuge/einleger.py` erzeugt beides aus den
+Buchseiten: die Schuppenkante am Bund ist dasselbe Motiv wie die Leiste des Originals, bei 300 ppi
+8,5 mm breit. Sie wird um 90 Grad gedreht und in ihrer eigenen Auflösung gesetzt, statt auf die
+18,8 mm des Originals hochgerechnet zu werden. Der weiche Auslauf nach innen, 3 mm, ist die einzige
+Erfindung des Werkzeugs.
+
+Für die Stimmungsbildseite kommen zwei senkrechte Leisten dazu, `einleger-leiste-links` und
+`-rechts`, 8,5 × 216,0 mm, aus derselben Buchkante ungedreht.
+
+### Die Stimmungsbildseite
+
+| Größe | Original | in der Klasse |
+|---|---|---|
+| Bild | 1635 × 1281 px auf 784,6 × 614,5 bp, also 150 ppi | deckend zugeschnitten auf **303 × 216 mm** |
+| Überstand über die Papierkante | 1,08 bp an allen vier Seiten | 3 mm Anschnitt, wie beim Pergament |
+| Rahmen | zwei Leisten, oben und unten, in die Grafik eingerechnet | zwei Zierleisten der Klasse darüber |
+| senkrechte Ränder | Bildinhalt bis zur Papierkante, keine Leiste | ebenso; `\dsaRahmenRundum` fügt welche hinzu |
+| Text | keiner | keiner |
+
+Die ersten drei Seiten des Originals sind so gebaut: je ein einziges Bild, kein Text, kein
+zweites Objekt. Der Rahmen steckt dort in der Grafik; hier legt ihn die Klasse darüber, damit die
+Grafik eine gewöhnliche Illustration bleiben kann. `\dsaStimmungsbild*` verzichtet auf ihn, für
+den Fall, dass er schon im Bild ist.
+
+---
+
 ## 7. Was offen ist
 
 1. Sollgröße von Auge und Aufzählungszeichen — im IDML verankerte Objekte ohne Rahmenmaß.
@@ -805,3 +928,10 @@ Multiplizieren rechnerisch ergibt.
 7. Die Form des Umflusses um freigestellte Grafiken ist an einem gesetzten
    Scriptorium-Abenteuer gemessen, nicht an einem Verlagsband. Die Konturform ist übertragbar, die
    absoluten Werte nicht.
+8. **Einleger:** Eckenrundung der Quellenmarke, abgelesen statt gemessen.
+9. **Einleger:** Rand oben und unten. Das Original hat 13,07 und 11,75 mm bei einer 18,8 mm hohen
+   Zierleiste; die Klasse nimmt 12 mm bei einer 8,5 mm hohen. Frei gewählt, über
+   `\dsaeinlegerrandoben` einstellbar.
+10. **Einleger:** Die Kästen der Abenteuerklasse sind im Querformat ungeprüft. Ihre
+    Pergamentflächen sind für A4 hoch angelegt und für ein Grundlinienraster gebaut, das es im
+    Einleger nicht gibt.

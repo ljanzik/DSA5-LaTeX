@@ -7,12 +7,12 @@ des offiziellen *Scriptorium Aventuris – Layout Baukastens* von Ulisses Spiele
 im Einzelnen kann, steht in der Feature-Liste unten.
 
 **Der Code steht unter Apache 2.0. Die Grafiken und Schriften sind nicht Teil dieses Projekts** und
-müssen selbst besorgt werden — siehe [doku/EINRICHTUNG.md](doku/EINRICHTUNG.md). Ohne sie
+müssen selbst besorgt werden — siehe [Einrichten und Bauen](doku/EINRICHTUNG.md). Ohne sie
 kompiliert nichts.
 
 Die Vorlage ist mit Hilfe einer KI entstanden und dafür gedacht, auch mit einer KI benutzt zu
 werden: **LaTeX muss man dafür nicht (vollständig) lernen.** Wie das geht, steht in
-[doku/EINRICHTUNG.md](doku/EINRICHTUNG.md) unter „Mit einer KI setzen“.
+[Einrichten und Bauen](doku/EINRICHTUNG.md) unter „Mit einer KI setzen“.
 
 ---
 
@@ -22,10 +22,11 @@ Jedes Feature ist eine eigene Klasse oder eine eigene Erweiterung, mit eigener E
 
 | Feature | Klasse | wofür | Doku |
 |---|---|---|---|
-| Abenteuer setzen | `dsa5latex.cls` | Zweispaltiger Satz auf A4 mit Grundlinienraster, Pergament- und Wertekästen in Produktionsgröße, Kapitelbanner, Meistermasken, Seitenhintergründe, Textumfluss | [doku/ELEMENTE.md](doku/ELEMENTE.md) |
+| Abenteuer setzen | `dsa5latex.cls` | Zweispaltiger Satz auf A4 mit Grundlinienraster, Pergament- und Wertekästen in Produktionsgröße, Kapitelbanner, Meistermasken, Seitenhintergründe, Textumfluss | [Elementreferenz](doku/ELEMENTE.md) |
+| Einleger für den Spielleiterschirm | `dsa5einleger.cls` | DIN A4 quer, vier freie Spalten, über die ein Block beliebig laufen darf, Tabellen mit Quellenmarke und Verlaufskopf, Pergament mit Schuppenleiste oben und unten. Lädt `dsa5latex.cls` und ändert nur, was ein Einleger anders macht; Vorbild und Maßquelle ist zusätzlich der offizielle *Universal Spielleiterschirm Einleger, Auflage 5* | [Elementreferenz](doku/EINLEGER.md) |
 
 Einrichten, Grafiken und Schriften besorgen, bauen — das gilt featureübergreifend und steht in
-[doku/EINRICHTUNG.md](doku/EINRICHTUNG.md).
+[Einrichten und Bauen](doku/EINRICHTUNG.md).
 
 ---
 
@@ -53,8 +54,8 @@ Die Maße in diesem Projekt sind kein Bildmaterial, sondern Messergebnisse. Sie 
 
 ## Einrichten und Bauen
 
-Grafiken und Schriften besorgen, XeLaTeX aufsetzen, die Beispieldokumente bauen und — wer will —
-mit einer KI setzen: **[doku/EINRICHTUNG.md](doku/EINRICHTUNG.md)**. Kurzfassung:
+Grafiken und Schriften besorgen, XeLaTeX aufsetzen, die Beispieldokumente bauen und, wer mag,
+auch mit einer KI setzen: **[Einrichten und Bauen](doku/EINRICHTUNG.md)**. Kurzfassung:
 
 ```sh
 python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
@@ -62,24 +63,31 @@ cd beispiel
 TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 ```
 
-Die Elementreferenz der Kernklasse steht in `doku/ELEMENTE.md`.
+Die Elementreferenz der Kernklasse steht in `doku/ELEMENTE.md`, die des Einlegers in
+`doku/EINLEGER.md`. Was der Einleger zusätzlich braucht (eigene Hintergrundgrafiken,
+Klassenoptionen, eigenes Beispieldokument) steht ebenfalls in `doku/EINRICHTUNG.md`.
 
 ---
 
 ## Stand
 
-**Die Klasse läuft.** Alle vier Beispieldokumente bauen mit XeLaTeX aus TeX Live 2026
-fehlerfrei durch, `beispiel.tex` mit 22 Seiten und ohne eine einzige LaTeX-Warnung. Sechs
+**Beide Klassen laufen.** Alle fünf Beispieldokumente bauen mit XeLaTeX aus TeX Live 2026
+fehlerfrei durch — `beispiel.tex` mit 22 Seiten, ohne eine einzige LaTeX-Warnung. Sechs
 `Overfull \hbox` sind der gewollte Überhang der Kästen, fünf `Underfull \hbox` sind lockere
-Umbrüche im 80,5-mm-Satz.
+Umbrüche im 80,5-mm-Satz. `einleger.tex` baut drei Seiten ohne Warnung.
 
-**Und sie ist nachgemessen.** Von den vierzehn Prüfmarken, die der Quelltext einmal trug,
+**Und beide sind nachgemessen.** Von den vierzehn Prüfmarken, die `dsa5latex.cls` einmal trug,
 sind zehn erledigt, darunter zwei echte Fehler: der Kapiteltitel stand mit 23,5 statt
 31,73 pt (die IDML skaliert ihn auf 135 %), und vor dem Titel stand ein „Kapitel N:“, das
 kein gesetzter Band führt. Die vier verbliebenen heißen im Quelltext `% OFFEN:`: sie warten
-nicht auf eine Messung, sondern auf eine Quelle, die es nicht gibt. Welche das sind, steht
-in `doku/ELEMENTE.md` unter „Was noch nicht nachgemessen ist“, der Stand jeder Messung in
-`doku/PRUEFPLAN.md`.
+nicht auf eine Messung, sondern auf eine Quelle, die es nicht gibt — Einzelheiten in
+`doku/ELEMENTE.md` unter „Was noch nicht nachgemessen ist“. Der Einleger ist ebenso
+nachgemessen: über 322 waagerechte Tabellenkanten der drei Seiten liegt die größte Abweichung
+von der Sollspalte bei 0,20 bp, die meisten unter 0,005 bp; jede einzeilige Tabellenzeile misst
+14,5600 bp gegen ein Sollmaß von 14,56 bp. Ungeprüft sind dort noch die Kästen der
+Abenteuerklasse im Querformat, und zwei Stellen in `dsa5einleger.cls` tragen weiter
+`% PRUEFEN:`, weil ihr Ergebnis noch niemand am PDF nachgemessen hat. Der Stand jeder Messung
+steht in `doku/PRUEFPLAN.md`.
 
 ---
 

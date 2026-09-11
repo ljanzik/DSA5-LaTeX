@@ -1,0 +1,395 @@
+% Einleger fuer den Spielleiterschirm, DIN A4 quer.
+%
+% Der Regellauf fuer dsa5einleger.cls: jedes Element genau einmal, und die
+% drei Seiten nachgebaut, an denen die Klasse vermessen wurde.
+%
+%   cd beispiel
+%   TEXINPUTS="..;" xelatex einleger.tex
+%
+% Zum Pruefen der Spaltenlage:
+%   \documentclass[spaltenzeigen]{dsa5einleger}
+
+\documentclass{dsa5einleger}
+
+% Hilfslaenge fuer das letzte Beispiel.
+\newlength{\dsahilfe}
+
+\begin{document}
+
+%%% ---------------------------------------------------------------- 0
+%%% Eine Stimmungsbildseite: nur ein randfuellendes Bild mit umlaufendem
+%%% Zierrahmen, so wie die ersten drei Seiten des offiziellen Einlegers.
+%%% Das Bild wird deckend zugeschnitten, nicht gestreckt.
+%%%
+%%% Der Baukasten hat keine Illustration im Querformat, deshalb der
+%%% Ruecksprung: liegt ein eigenes Bild in grafiken/, wird es genommen,
+%%% sonst die neutrale Buchrueckseite. So baut der Regellauf bei jedem
+%%% durch, der nur die Baukastengrafiken hat.
+%%%
+%%% Das Ideal ist ein Bild im Verhaeltnis 303:216 = 1,40. stimmung-dorf hat
+%%% 2528 x 1696 px, also 1,49 — \dsaBildDeckend skaliert es auf die
+%%% Blatthoehe und beschneidet die Breite mittig, je 9,5 mm links und
+%%% rechts. Auf 303 mm Blattbreite steht es damit auf 199 ppi.
+
+\IfFileExists{../grafiken/stimmung-dorf.jpg}
+  {\dsaStimmungsbild{\dsagrafik{stimmung-dorf}}}
+  {\dsaStimmungsbild{\dsagrafik{ruecken-neutral}}}
+
+%%% ---------------------------------------------------------------- 1
+%%% Vier gleiche Spalten, der einfachste Fall.
+
+\begin{dsaReihe}
+
+\dsaKolumne{1}{%
+  \begin{dsaEinlegertabelle}{Beispiele für Eigenschaftsmodifikatoren}{RW 19}{Xl}
+    \dsaKopfzeile Modifikator & \dsaKopfschrift Bewertung \\
+    \dsaMod{+}{6}  & extrem leichte Probe \\
+    \dsaMod{+}{4}  & sehr leichte Probe \\
+    \dsaMod{+}{2}  & leichte Probe \\
+    \dsaMod{+}{}\slash\dsaMod{-}{ 0} & anspruchsvolle Probe \\
+    \dsaMod{-}{2}  & schwere Probe \\
+    \dsaMod{-}{4}  & sehr schwere Probe \\
+    \dsaMod{-}{6}  & extrem schwere Probe \\
+  \end{dsaEinlegertabelle}
+
+  \dsaLuft{2}
+
+  \begin{dsaEinlegertabelle}{Qualitätsstufen}{RW 23}{Xl}
+    \dsaKopfzeile Fertigkeitspunkte & \dsaKopfschrift Qualitätsstufe \\
+    0--3   & 1 \\
+    4--6   & 2 \\
+    7--9   & 3 \\
+    10--12 & 4 \\
+    13--15 & 5 \\
+    16+    & 6 \\
+  \end{dsaEinlegertabelle}
+}
+
+\dsaKolumne{1}{%
+  \begin{dsaEinlegertabelle}{Ergebnisse bei Sammelproben}{RW 26}{lX}
+    \dsaKopfzeile QS & \dsaKopfschrift Erfolg \\
+    6  & Teilerfolg \\
+    10 & Aufgabe erfüllt \\
+  \end{dsaEinlegertabelle}
+
+  \dsaLuft{2}
+
+  \begin{dsaEinlegertabelle}{Anzahl der erlaubten Proben}{RW 26}{lX}
+    \dsaKopfzeile Anzahl & \dsaKopfschrift Herausforderung \\
+    5  & schwer \\
+    7  & durchschnittlich \\
+    10 & leicht \\
+  \end{dsaEinlegertabelle}
+
+  \dsaLuft{2}
+
+  % Eine Tabelle mit mehreren Abschnitten: \dsaZwischenzeile setzt mitten
+  % im Satz eine zweite Kopfzeile.
+  \begin{dsaEinlegertabelle}{Modifikatoren für die Zeremonieprobe}{RW 312}{Xr}
+    \dsaKopfzeile Ort\rlap{*} & \dsaKopfschrift Modifikator \\
+    Heiligtum der Gottheit               & \dsaMod{+}{2} \\
+    Tempel der Gottheit (geweihter Boden) & \dsaMod{+}{1} \\
+    Unheiligtum eines Erzdämonen          & \dsaMod{-}{3} \\
+    \dsaZwischenzeile Zeit\rlap{*} & \dsaKopfschrift Modifikator \\
+    Monat des eigenen Gottes  & \dsaMod{+}{1} \\
+    Feiertag des eigenen Gottes & \dsaMod{+}{2} \\
+    Namenlose Tage            & \dsaMod{-}{5} \\
+  \end{dsaEinlegertabelle}
+
+  \dsaAnmerkung{*Nur einer der Modifikatoren kann gelten}
+}
+
+\dsaKolumne{1}{%
+  % Eine Tabelle mit umbrechenden Zellen: T{} statt X, wenn die Breite fest
+  % sein soll, X, wenn sie sich den Rest teilen.
+  \begin{dsaEinlegertabelle}{Regeneration}{RW 339}{XL{22mm}}
+    \dsaKopfzeile Situation & \dsaKopfschrift Regeneration \\
+    \textbf{Grundregeneration für 6 Stunden Schlaf} & 1W6 LeP\slash AsP\slash KaP \\
+    \textbf{Schlechter Lagerplatz, misslungene Probe auf Wildnisleben
+      (Lagersuche)} & \dsaMod{-}{1} LeP\slash AsP\slash KaP \\
+    \textbf{Unterbrechung der Nachtruhe (z.\,B. Wache halten\slash Ruhestörung)}
+      & \dsaMod{-}{1} LeP\slash AsP\slash KaP \\
+    \textbf{Held ist erkrankt\slash vergiftet} & keine LeP-Regeneration \\
+    \textbf{Gute Unterkunft (Einzelzimmer Reisegasthof)}
+      & \dsaMod{+}{1} LeP\slash AsP\slash KaP \\
+  \end{dsaEinlegertabelle}
+}
+
+\dsaKolumne{1}{%
+  \begin{dsaEinlegertabelle}{Routinevoraussetzungen}{RW 185}{L{24mm}r}
+    \dsaKopfzeile[2] Modifikator-Maximum & \dsaKopfschrift Fertigkeitswert-Minimum \\
+    \dsaMod{+}{3} und höher & 1 \\
+    \dsaMod{+}{2}  & 4 \\
+    \dsaMod{+}{1}  & 7 \\
+    \dsaMod{+}{}\slash\dsaMod{-}{0} & 10 \\
+    \dsaMod{-}{1}  & 13 \\
+    \dsaMod{-}{2}  & 16 \\
+    \dsaMod{-}{3}  & 19 \\
+  \end{dsaEinlegertabelle}
+
+  \dsaAnmerkung{*Alle beteiligten Eigenschaften mindestens 13}
+
+  \dsaLuft{2}
+
+  % Ein Pergamentkasten: derselbe Block, aber auf der Pergamentflaeche mit
+  % gezacktem Rand statt auf blankem Grund. So steht er auch im Original auf
+  % Seite 4. Innen gilt der normale Einlegersatz -- Blocktitel mit Marke,
+  % Aufzaehlung, derselbe Schriftgrad.
+  \begin{dsaPergament}{1}{9}
+    \dsaBlocktitel[RW 29]{Einsatz von Schips}
+    \begin{dsaliste}
+      \item \textbf{Erster:} Der Held kann in einer Kampfrunde zuerst
+        handeln.
+      \item \textbf{Neuer Wurf:} Beliebig viele Würfel einer Probe dürfen
+        erneut gewürfelt werden.
+      \item \textbf{Qualität verbessern:} Die QS einer gelungenen Probe
+        steigt um 1.
+    \end{dsaliste}
+  \end{dsaPergament}
+}
+
+\end{dsaReihe}
+
+\newpage
+
+%%% ---------------------------------------------------------------- 2
+%%% Verschachtelte Reihen: links eine Spalte ueber die volle Hoehe, rechts
+%%% eine breite Tabelle und darunter drei schmale. Das ist der Aufbau von
+%%% Seite 4 des Originals.
+
+\begin{dsaReihe}
+
+\dsaKolumne{1}{%
+  \begin{dsaEinlegertabelle}{Beispiele für Fertigkeitsmodifikatoren}{RW 23}{Xl}
+    \dsaKopfzeile Modifikator & \dsaKopfschrift Bewertung \\
+    \dsaMod{+}{5} & extrem leichte Probe \\
+    \dsaMod{+}{3} & sehr leichte Probe \\
+    \dsaMod{+}{1} & leichte Probe \\
+    \dsaMod{+}{}\slash\dsaMod{-}{ 0} & anspruchsvolle Probe \\
+    \dsaMod{-}{1} & schwierige Probe \\
+    \dsaMod{-}{3} & sehr schwierige Probe \\
+    \dsaMod{-}{5} & extrem schwierige Probe \\
+  \end{dsaEinlegertabelle}
+}
+
+\dsaKolumne{3}{%
+  % Eine Tabelle ueber drei Spalten. Sechs Wertespalten teilen sich die
+  % Breite; die erste bleibt fest, damit die Zustandsnamen nicht umbrechen.
+  \begin{dsaEinlegertabelle}{Zustände}{RW 31}{L{22mm}lXXXX}
+    \dsaKopfzeile Zustand & \dsaKopfschrift Abbau
+      & \dsaKopfschrift Stufe I & \dsaKopfschrift Stufe II
+      & \dsaKopfschrift Stufe III & \dsaKopfschrift Stufe IV \\
+    \textbf{Belastung} & -- & einige Proben auf Talente \dsaMinus 1; AT, VW, INI, GS \dsaMinus 1
+      & einige Proben auf Talente \dsaMinus 2; AT, VW, INI, GS \dsaMinus 2
+      & einige Proben auf Talente \dsaMinus 3; AT, VW, INI, GS \dsaMinus 3
+      & \textit{Handlungsunfähig} \\
+    \textbf{Betäubung} & 3 Std. & alle Proben \dsaMinus 1 & alle Proben \dsaMinus 2
+      & alle Proben \dsaMinus 3 & \textit{Handlungsunfähig} \\
+    \textbf{Furcht} & 5 Min. & alle Proben \dsaMinus 1 & alle Proben \dsaMinus 2
+      & alle Proben \dsaMinus 3 & \textit{Handlungsunfähig} \\
+    \textbf{Paralyse} & 30 Min. & Proben, die Bewegung erfordern, \dsaMinus 1, GS 75\,\%
+      & Proben, die Bewegung erfordern, \dsaMinus 2, GS 50\,\%
+      & Proben, die Bewegung erfordern, \dsaMinus 3, GS 25\,\%
+      & \textit{Bewegungsunfähig} \\
+    \textbf{Schmerz} & 4 Std. & alle Proben \dsaMinus 1, GS \dsaMinus 1
+      & alle Proben \dsaMinus 2, GS \dsaMinus 2
+      & alle Proben \dsaMinus 3, GS \dsaMinus 3
+      & \textit{Handlungsunfähig}, ansonsten alle Proben \dsaMinus 4 \\
+    \textbf{Verwirrung} & 1 Std. & alle Proben \dsaMinus 1 & alle Proben \dsaMinus 2
+      & alle Proben \dsaMinus 3, komplexe Aktivitäten unmöglich
+      & \textit{Handlungsunfähig} \\
+  \end{dsaEinlegertabelle}
+
+  \dsaLuft{2}
+
+  % Verschachtelt: drei schmale Felder unter der breiten Tabelle.
+  \begin{dsaReihe}
+    \dsaKolumne{1}{%
+      \begin{dsaEinlegertabelle}{Modifikatoren im Nahkampf}{RW 238}{Xl}
+        \dsaKopfzeile Art & \dsaKopfschrift Modifikatoren \\
+        \textbf{Kurze Waffen}   & \dsaMod{+}{}\slash\dsaMod{-}{0} auf AT \\
+        \textbf{Mittlere Waffen} & \dsaMod{-}{4} auf AT \\
+        \textbf{Lange Waffen}   & \dsaMod{-}{8} auf AT \\
+        \textbf{Kleine Schilde} & \dsaMod{-}{2} auf AT \\
+        \textbf{Große Schilde}  & \dsaMod{-}{6} auf AT \\
+      \end{dsaEinlegertabelle}
+    }
+    \dsaKolumne{1}{%
+      \begin{dsaEinlegertabelle}{Reichweite}{RW 241}{Xl}
+        \dsaKopfzeile Entfernung & \dsaKopfschrift Modifikator \\
+        \textbf{Nah}   & \dsaMod{+}{2} auf FK (\dsaMod{+}{1} TP) \\
+        \textbf{Mittel} & \dsaMod{+}{}\slash\dsaMod{-}{0} auf FK \\
+        \textbf{Weit}  & \dsaMod{-}{2} auf FK (\dsaMinus 1 TP) \\
+      \end{dsaEinlegertabelle}
+    }
+    \dsaKolumne{1}{%
+      \begin{dsaEinlegertabelle}{Größenkategorien}{RW 239}{L{16mm}Xl}
+        \dsaKopfzeile Größe & \dsaKopfschrift Beispiele & \dsaKopfschrift Mod. \\
+        \textbf{Winzig} & Ratte, Kröte, Spatz & \dsaMod{-}{4} AT \\
+        \textbf{Klein}  & Rehkitz, Schaf, Ziege & \dsaMod{+}{}\slash\dsaMod{-}{0} AT \\
+        \textbf{Mittel} & Mensch, Zwerg, Esel & \dsaMod{+}{}\slash\dsaMod{-}{0} AT \\
+        \textbf{Groß}   & Oger, Troll, Rind & nur Schildparade \\
+        \textbf{Riesig} & Drache, Riese, Elefant & nur Ausweichen \\
+      \end{dsaEinlegertabelle}
+    }
+  \end{dsaReihe}
+}
+
+\end{dsaReihe}
+
+\newpage
+
+%%% ---------------------------------------------------------------- 3
+%%% Ein Block ueber alle vier Spalten, darunter zwei zu je zweien und eine
+%%% Ueberschrift ueber alles. Das ist der Aufbau der unteren Haelfte von
+%%% Seite 6 des Originals, um die volle Breite ergaenzt.
+
+%%% Eine Tabelle ueber die ganze Blattbreite: \dsaKolumne{4}. Sechs
+%%% Wertespalten haben hier 275 mm zur Verfuegung statt 65.
+\begin{dsaReihe}
+  \dsaKolumne{4}{%
+    \begin{dsaEinlegertabelle}{Zustände im Überblick}{RW 31}{L{26mm}lXXXX}
+      \dsaKopfzeile Zustand & \dsaKopfschrift Abbau
+        & \dsaKopfschrift Stufe I & \dsaKopfschrift Stufe II
+        & \dsaKopfschrift Stufe III & \dsaKopfschrift Stufe IV \\
+      \textbf{Berauscht} & 2 Std. & Proben auf Zechen \dsaMinus 1
+        & Proben auf Zechen \dsaMinus 2 & Proben auf Zechen \dsaMinus 3
+        & Held erleidet eine Stufe \textit{Betäubung} \\
+      \textbf{Entrückung} & 1 Std. & einige Proben \dsaMinus 1
+        & wohlgefällige Talente \dsaMod{+}{1}, einige Proben \dsaMinus 2
+        & wohlgefällige Talente \dsaMod{+}{2}, einige Proben \dsaMinus 3
+        & wohlgefällige Talente \dsaMod{+}{3}, einige Proben \dsaMinus 4 \\
+      \textbf{Trance} & 24 Std. & keine AsP-Regeneration
+        & keine AsP-Regeneration, alle Proben außer auf wohlgefällige
+          Talente und Liturgien \dsaMinus 2
+        & keine AsP-Regeneration, alle Proben \dsaMinus 3
+        & \textit{Handlungsunfähig}, keine AsP-Regeneration \\
+    \end{dsaEinlegertabelle}
+  }
+\end{dsaReihe}
+
+\dsaLuft{3}
+
+\begin{dsaReihe}
+  \dsaKolumne{2}{%
+    \begin{dsaEinlegertabelle}{Modifikatoren für die Ritualprobe}{RW 260}{Xr}
+      \dsaKopfzeile Umstand & \dsaKopfschrift Modifikator \\
+      Heiligtum oder magischer Ort & \dsaMod{+}{1} \\
+      falscher Ritualplatz         & \dsaMod{-}{3} \\
+      passende Konstellation (Mondstand meist Voll- oder Neumond)
+        & \dsaMod{+}{1} \\
+      unpassende Konstellation     & \dsaMod{-}{1} \\
+      passende Kleidung            & \dsaMod{+}{1} \\
+      besonders geeignete Gerätschaften & \dsaMod{+}{1} \\
+    \end{dsaEinlegertabelle}
+  }
+  \dsaKolumne{2}{%
+    \begin{dsaEinlegertabelle}{Magische Analyse}{RW 269}{lX}
+      \dsaKopfzeile QS & \dsaKopfschrift Artefakt \slash{} Wesen \slash{} Zauberwirkung \\
+      QS 1 & Eingrenzung der FP; mehr oder weniger als 10 FP; Bestimmung des
+        Wesens: Dämon, Elementar, Geist \\
+      QS 2 & Genauere Eingrenzung der FP; bis auf 3 FP genau \\
+      QS 3 & Art des Artefakts (Zauberspeicher-Artefakt, Selbst aufladendes
+        Artefakt, Dauerhaft wirkendes Artefakt) \\
+      QS 4 & Tradition des Artefakterschaffers \slash{} Tradition des
+        Beschwörers \\
+    \end{dsaEinlegertabelle}
+  }
+\end{dsaReihe}
+
+\dsaLuft{3}
+
+\dsaUeberschrift{Modifikationen bei Zaubersprüchen und Liturgien
+  sowie Ritualen und Zeremonien}
+
+\dsaLuft{2}
+
+\begin{dsaReihe}
+  \dsaKolumne{2}{%
+    \dsaBlocktitel[RW 255/309]{Modifikationen im Überblick}
+    \begin{dsaliste}
+      \item \textbf{Erzwingen:} Kosten um eine Stufe erhöht, Probe \dsaMod{+}{1}
+      \item \textbf{Kosten senken:} Kosten um einen Schritt gesenkt,
+        Probe \dsaMinus 1
+      \item \textbf{Reichweite erhöhen:} Reichweite um eine Stufe erhöht,
+        Probe \dsaMinus 1
+      \item \textbf{Zauber-\slash Liturgiedauer erhöhen:} Dauer um eine Stufe
+        erhöht, Probe \dsaMod{+}{1}
+      \item \textbf{Geste oder Formel weglassen:} Jeweils Probe \dsaMinus 2
+    \end{dsaliste}
+  }
+  \dsaKolumne{2}{%
+    \begin{dsaEinlegertabelle}{Modifikationstabelle Zaubersprüche
+      und Liturgien}{RW 255/309}{lXXXXX}
+      \dsaKopfzeile Dauer & \dsaKopfschrift 1 Aktion
+        & \dsaKopfschrift 2 Akt. & \dsaKopfschrift 4 Akt.
+        & \dsaKopfschrift 8 Akt. & \dsaKopfschrift 16 Akt. \\
+      \textbf{Reichweite} & Berühren & 4 Schritt & 8 Schritt & 16 Schritt
+        & 32 Schritt \\
+      \textbf{Kosten} & 1 AsP\slash KaP & 2 AsP\slash KaP & 4 AsP\slash KaP
+        & 8 AsP\slash KaP & 16 AsP\slash KaP \\
+    \end{dsaEinlegertabelle}
+
+    \dsaLuft{2}
+
+    \begin{dsaEinlegertabelle}{Modifikationstabelle Rituale
+      und Zeremonien}{RW 260/313}{lXXXXX}
+      \dsaKopfzeile Dauer & \dsaKopfschrift 5 Min.
+        & \dsaKopfschrift 30 Min. & \dsaKopfschrift 2 Std.
+        & \dsaKopfschrift 8 Std. & \dsaKopfschrift 16 Std. \\
+      \textbf{Reichweite} & Berühren & 4 Schritt & 8 Schritt & 16 Schritt
+        & 32 Schritt \\
+      \textbf{Kosten} & 8 AsP\slash KaP & 16 AsP\slash KaP & 32 AsP\slash KaP
+        & 64 AsP\slash KaP & 128 AsP\slash KaP \\
+    \end{dsaEinlegertabelle}
+  }
+\end{dsaReihe}
+
+
+\dsaLuft{3}
+
+
+%%% ---------------------------------------------------------------- 4
+%%% Der Rest der Elemente: Blocktitel ohne Marke, Marke allein, Tabelle
+%%% ohne Titel, zentrierte Spalte, selbst gerechnete Breite.
+
+\begin{dsaReihe}
+  \dsaKolumne{1}{%
+    % Blocktitel ohne Quellenmarke.
+    \dsaBlocktitel{Ohne Quellenangabe}
+    Ein Block muss keine Marke tragen. Der Titel steht dann allein an der
+    Spaltenkante.
+  }
+  \dsaKolumne{1}{%
+    % Tabelle ohne Titelzeile: erstes Argument leer lassen. Nuetzlich fuer
+    % den zweiten Teil einer Tabelle, die in der Spalte daneben weitergeht.
+    % Eine X-Spalte muss dabei sein, sonst erreicht die Tabelle die
+    % Kolumnenbreite nicht.
+    \begin{dsaEinlegertabelle}{}{}{Xcr}
+      \dsaKopfzeile links & \dsaKopfschrift Mitte & \dsaKopfschrift rechts \\
+      a & b & c \\
+      d & e & f \\
+    \end{dsaEinlegertabelle}
+  }
+  \dsaKolumne{2}{%
+    % Die Quellenmarke allein, mitten im Text.
+    \dsaBlocktitel{Marke und eigene Breite}
+    Die Marke \dsaQuelle{RW 12} steht auch allein im Text.
+
+    \dsaLuft{1}
+    % \dsaKolumnenbreite{n} ist die Breite von n Spalten samt der Abstaende
+    % dazwischen. Es ist ein \dimexpr und taugt nicht unmittelbar als
+    % Argument von minipage -- erst in eine Laenge, dann einsetzen.
+    %
+    % \verb geht hier nicht: der Inhalt einer \dsaKolumne ist ein
+    % Makroargument, und \verb liest seinen Text zeichenweise aus dem
+    % Eingabestrom. Der Lauf meldet "\verb illegal in argument".
+    \setlength{\dsahilfe}{\dsaKolumnenbreite{1}}%
+    \noindent\begin{minipage}{\dsahilfe}%
+      Diese Box ist genau eine Spalte breit, gerechnet mit
+      \texttt{\textbackslash dsaKolumnenbreite\{1\}}.%
+    \end{minipage}
+  }
+\end{dsaReihe}
+
+\end{document}
