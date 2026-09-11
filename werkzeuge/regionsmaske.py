@@ -10,9 +10,11 @@ und ein Netz aus Regionsgrenzen. Dieselben Ebenen liegen als
 `KarteVerdunkelt.png` und `Grenzen.png` daneben.
 
 Das Verfahren: von einem Saatpunkt aus wird innerhalb der Grenzlinien
-geflutet. Die gefundene Flaeche wird aus der Verdunkelung ausgenommen, und
-das Ergebnis kommt ueber die neutrale Rueckseite. Mehrere Saatpunkte
-ergeben mehrere Regionen in einer Maske.
+geflutet. Die gefundene Flaeche ist die Region. Gesetzt wird daraus
+dieselbe Fassung, die aufbereiten.py --rueckseiten fuer die 28 fertigen
+Masken rechnet: die Karte in Sepia, allein die Region in Farbe, ein
+weicher Schlagschatten darum. Mehrere Saatpunkte ergeben mehrere
+Regionen in einer Fassung.
 
     python3 werkzeuge/regionsmaske.py "/pfad/zum/Paket" mittelreich 148.4,105.0
     python3 werkzeuge/regionsmaske.py "/pfad/zum/Paket" zwei-regionen \\
@@ -64,10 +66,17 @@ import os
 import sys
 
 try:
-    from PIL import Image, ImageDraw
+    from PIL import Image, ImageChops, ImageDraw, ImageFilter
     Image.MAX_IMAGE_PIXELS = None
 except ImportError:
     sys.exit("Pillow fehlt: pip install pillow")
+
+# Die Sepiarampe und der Schlagschatten stehen in aufbereiten.py, samt
+# Herleitung. Hier nur benutzt, nicht noch einmal aufgeschrieben: zwei
+# Kopien derselben Zahl laufen frueher oder spaeter auseinander.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from aufbereiten import (JPEG_QUALITAET, SCHATTEN_TIEFE,  # noqa: E402
+                         SCHATTEN_WEICH, SEPIA)
 
 PPI = 300.0
 MMPX = 25.4 / PPI
@@ -82,7 +91,9 @@ GRENZSCHWELLE = 40
 # Ab diesem Unterschied gilt ein Pixel als hervorgehoben, wenn die Flaeche
 # aus zwei Fassungen kommt.
 FASSUNGSSCHWELLE = 12
-JPEG_QUALITAET = 88
+# Ab diesem Unterschied zwischen heller und verdunkelter Fassung gilt ein
+# Pixel als Teil der Karte. Derselbe Wert wie in aufbereiten.py.
+KARTENSCHWELLE = 3
 
 
 def finde(ordner, name):
@@ -116,7 +127,6 @@ def flaeche_aus_fassungen(hervorgehoben, grund):
     Fuer Karten, die eine Region schon hervorheben, aber auf dem falschen
     Grund sitzen: die Geometrie ist brauchbar, die Farben nicht.
     """
-    from PIL import ImageChops
     a = hervorgehoben.convert("RGB")
     b = grund.convert("RGB")
     if a.size != b.size:
@@ -174,18 +184,37 @@ def main():
     if anteil > 25:
         print("Das ist viel — sind die Grenzen dort offen? Ergebnis pruefen.")
 
-    # Die Verdunkelung mit einem Loch an der Stelle der Region.
-    maske = verdunkelt.copy()
-    alpha = maske.getchannel("A")
-    loch = flaeche.point(lambda v: 0 if v else 255)
-    maske.putalpha(Image.composite(loch, alpha, flaeche))
-
-    fertig = Image.alpha_composite(neutral, maske).convert("RGB")
+    # Daraus die Rueckseite, Schritt fuer Schritt wie in aufbereiten.py:
+    #
+    #   die Kartenflaeche   | hell - verdunkelt | > KARTENSCHWELLE
+    #   die Sepiafassung    Grau plus fester Farbversatz
+    #   der Schlagschatten  die weichgezeichnete Region, multipliziert
+    #   zusammengesetzt     Sepia auf der Karte, Farbe in der Region
+    #
+    # Der Kniff ist die erste Zeile: KarteVerdunkelt.png halbiert genau
+    # die Karte und laesst den Zierrahmen unberuehrt. Die Differenz zur
+    # hellen Fassung ist damit die Kartenflaeche, punktgenau und ohne
+    # Freistellen von Hand.
+    unterlage = neutral.convert("RGB")
+    karte = ImageChops.difference(unterlage, verdunkelt.convert("RGB")) \
+        .convert("L").point(lambda v: 255 if v > KARTENSCHWELLE else 0)
+    grau = unterlage.convert("L")
+    sepia = Image.merge("RGB", [grau.point(
+        lambda v, s=s: max(0, min(255, v + s))) for s in SEPIA])
+    # Weichgezeichnet wird die Region selbst, nicht ihr Rand -- innerhalb
+    # liegt sie ohnehin unter der Farbfassung und faellt dort nicht auf.
+    weich = flaeche.filter(ImageFilter.GaussianBlur(SCHATTEN_WEICH))
+    dunkler = Image.eval(weich, lambda v: 255 - int(v * SCHATTEN_TIEFE))
+    beschattet = ImageChops.multiply(
+        sepia, Image.merge("RGB", (dunkler, dunkler, dunkler)))
+    fertig = Image.composite(beschattet, unterlage, karte)
+    fertig = Image.composite(unterlage, fertig, flaeche)
 
     hier = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     ziel = os.path.join(hier, "grafiken", "ruecken-%s.jpg" % name)
     os.makedirs(os.path.dirname(ziel), exist_ok=True)
-    fertig.save(ziel, "JPEG", quality=JPEG_QUALITAET, optimize=True)
+    fertig.save(ziel, "JPEG", quality=JPEG_QUALITAET, optimize=True,
+                progressive=False, subsampling=0)
     print("geschrieben: %s" % ziel)
     print()
     print("Zu benutzen als:")

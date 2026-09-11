@@ -19,8 +19,11 @@
 %%% 300 ppi, und die Rahmenmasse im IDML dort, wo ActualPpi und EffectivePpi
 %%% gleich sind und das Bild also auf 100 Prozent liegt.
 %%%
-%%% Zeilen mit  % PRUEFEN:  sind gebaut, aber nicht am Ergebnis nachgemessen.
-%%% Der Stand jeder Messung steht in doku/PRUEFPLAN.md.
+%%% Zeilen mit  % OFFEN:  nennen einen Wert, fuer den der Baukasten keine
+%%% Quelle hergibt. Es sind vier, und sie sind nicht ungeprueft — es gibt
+%%% nichts, woran man sie messen koennte. Wer eine Quelle findet, entfernt
+%%% die Marke und traegt den Wert in doku/MASSE.md ein. Was bisher gemessen
+%%% wurde, steht in doku/PRUEFPLAN.md.
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{dsa5latex}[2026/09/07 v2.0 DSA5-Satz nach Scriptorium Aventuris v4]
@@ -98,8 +101,10 @@
 % auf. polyglossia ist unter XeLaTeX mit fontspec der eingespielte Weg.
 
 \setdefaultlanguage[spelling=new]{german}
-% PRUEFEN: Bricht der Lauf hier, auf \setdefaultlanguage{german} zurueckfallen
-% — die Trennmuster sind dann trotzdem deutsch.
+% spelling=new laeuft. Geprueft an allen vier Beispieldokumenten mit
+% polyglossia aus TeX Live 2026; faellt es auf einer aelteren Installation
+% aus, tut es \setdefaultlanguage{german} auch — die Trennmuster sind dann
+% trotzdem deutsch.
 
 %%% ==================================================================
 %%% 4  Grafikpfad
@@ -427,11 +432,15 @@
       \node[anchor=center, inner sep=0] at (0,0) {\includegraphics[width=#1]{#3}};
     \fi
   \end{tikzpicture}}
-% PRUEFEN: Der Vergleich laeuft ueber zwei pgfmath-Makros, die als Laengen in
-% pt verglichen werden. Wenn er bricht, mit \pgfmathparse und \pgfmathresult
-% umbauen.
-% PRUEFEN: Der Beschnitt ist mittig. Bei einem Portrait sitzt der Kopf oft
-% oben; dann braucht es einen Versatz.
+% Der Vergleich laeuft ueber zwei pgfmath-Makros, die als Laengen in pt
+% verglichen werden. Das haelt: \dsaBildDeckend steht in beiden Umschlaegen
+% und auf der Rueckseite jedes Beispieldokuments.
+%
+% OFFEN: Der Beschnitt ist mittig. Bei einem Portrait sitzt der Kopf oft
+% oben; dann braucht es einen Versatz. Ein Sollmass dafuer gibt es nicht —
+% der Baukasten zeigt keinen beschnittenen Portraetausschnitt. Wer einen
+% braucht, nimmt \dsaBildForm oder schneidet mit werkzeuge/freistellen.py
+% vor, das --x und --y kennt.
 
 % Kreisrund beschnitten, deckend skaliert.
 \newcommand{\dsaBildKreis}[2]{%
@@ -456,9 +465,10 @@
     \node[anchor=center, inner sep=0, path fading=dsa@fading] at (0,0)
       {\dsaBildDeckend{#2}{#3}{#4}};
   \end{tikzpicture}}
-% PRUEFEN: Fadings sind Transparenzgruppen und brauchen einen Treiber, der
-% sie kann. Unter XeLaTeX laufen sie, sind aber weniger erprobt als unter
-% pdflatex.
+% Fadings sind Transparenzgruppen und brauchen einen Treiber, der sie kann.
+% XeLaTeX ueber xdvipdfmx kann sie: der Covertitel legt je Zeile ein eigenes
+% Fading an, und beide Umschlaege bauen. Nur \dsaBildMaskiert selbst steht
+% in keinem Beispieldokument und ist damit als einziges ungeprueft.
 
 %%% ==================================================================
 %%% 10  Seitenhintergrund
@@ -677,15 +687,15 @@
   \node[anchor=base west, inner sep=0]
     at ([shift={(\dsa@linkerrand,-\dsabannertitelunten)}]%
         current page.north west)
-    {\dsaandalus\fontsize{23.5bp}{28.2bp}\selectfont
-     \MakeUppercase{Kapitel \thedsakapitel: #1}};}
+    {\dsaandalus\fontsize{\dsakapitelgrad bp}{28.2bp}\selectfont
+     \MakeUppercase{#1}};}
 
 \newcommand*{\dsa@bannerblock}[1]{%
   \dsa@linkerrandsetzen
   \begin{tikzpicture}[remember picture, overlay]
     \dsa@bannerknoten{#1}%
   \end{tikzpicture}%
-  \dsaRasterluft{10}}
+  \dsaRasterluft{\dsabannerluft}}
 
 % Der Vorspann mit Rahmen: erst der Rahmen, dann das Banner darueber.
 \newcommand*{\dsa@bannerblockmitrahmen}[2]{%
@@ -694,13 +704,28 @@
     \dsa@rahmenknoten{#1}%
     \dsa@bannerknoten{#2}%
   \end{tikzpicture}%
-  \dsaRasterluft{10}}
-% PRUEFEN: pdfplumber liest fuer die Titelzeilen des Musterbogens 31,7 pt,
-% waehrend Absatz- und Zeichenformat 23,5 pt nennen und der Durchschuss von
-% 28,2 pt zu 23,5 pt passt. Hier gilt der Formatwert.
-% PRUEFEN: Ob der Verlag „Kapitel N:" voranstellt, ist nicht belegt — im
-% Musterbogen steht nur der Titel.
-% PRUEFEN: Bei zweizeiligen Titeln reichen 10 Rastereinheiten nicht.
+  \dsaRasterluft{\dsabannerluft}}
+% Der Kapiteltitel misst 31,73 bp, nicht 23,5. Beides steht in der IDML und
+% beides stimmt: das Absatzformat „Kapitel-Ueberschrift" nennt PointSize
+% 23,5 und dazu HorizontalScale und VerticalScale von je 135. 23,5 mal 1,35
+% sind 31,725 — und genau 31,73 pt liest man aus dem Musterbogen und aus
+% zwei gesetzten Abenteuern (US25324, US25326), dort an acht
+% Kapitelanfaengen ohne eine Abweichung. Der Durchschuss bleibt 28,2 pt;
+% zweizeilige Titel liegen dort auf 94,71 und 122,91.
+%
+% Kein „Kapitel N:" davor. Die acht Kapitelanfaenge der beiden Abenteuer
+% tragen nur den Titel: EINLEITUNG, DER GESTOHLENE VERTRAG, RECHT UND
+% ORDNUNG, KETTEN FUER DIE EWIGKEIT, ANHANG. Die Nummer steht nirgends.
+
+% 23,5 pt mal 135 Prozent Skalierung der IDML.
+\newcommand*{\dsakapitelgrad}{31.73}
+
+% Der Raum, den der Bannerblock unter sich freilaesst. Sieben
+% Rastereinheiten: in beiden gesetzten Abenteuern beginnt der Text der
+% Kapitelseite auf y 168,00 pt, und 84 + 7 mal 12 sind 168. Das gilt fuer
+% ein- wie fuer zweizeilige Titel — die zweite Titelzeile liegt auf 122,91
+% und bleibt mit ihrer Unterlaenge deutlich darueber.
+\newcommand*{\dsabannerluft}{7}
 
 % \dsakapitel[<Bild>]{<Titel>}
 % Reihenfolge: erst \twocolumn, also neue Seite plus Banner, dann das
@@ -779,8 +804,11 @@
 % werkzeuge/aufbereiten.py legt beide Teile deckungsgleich auf voller
 % Leinwand ab, 109,2 x 300,0 mm.
 \newlength{\dsakapitelbildrand} \setlength{\dsakapitelbildrand}{3.5mm}
-% PRUEFEN: geschaetzt. Am Pergament nachmessen, wie breit der sichtbare Rand
-% sein soll.
+% OFFEN: geschaetzt. Der Baukasten zeigt den Kapitelanfang nur mit der
+% Beispielgrafik randlos auf der Pergamentflaeche, nicht eingerueckt — eine
+% Sollbreite fuer den sichtbaren Rand gibt er nicht her. Wer eine gesetzte
+% Kapitelseite mit Bild zur Hand hat, misst nach und traegt es in MASSE.md
+% ein.
 
 % Der Zeichner fuer beide Wege. #1 ist der Bildpfad oder leer -- ohne Bild
 % bleibt die Pergamentflaeche als Platzhalter stehen.
@@ -904,8 +932,11 @@
 % beendet werden, sonst laeuft der Text dahinter.
 \newcommand*{\dsaKapitelseiteEnde}{\clearpage}
 
-% Unterkapitel: Andalus 14 pt, zentriert, 12 pt danach — Absatzformat
-% „Absatzueberschrift" des Baukastens.
+% Unterkapitel: Andalus 18,9 pt, zentriert, 12 pt danach. Das Absatzformat
+% „Absatzueberschrift" der IDML nennt PointSize 14 und dazu Horizontal- und
+% VerticalScale von je 135 — 14 mal 1,35 sind 18,9, und genau 18,90 pt liest
+% man an den sieben Zwischenueberschriften des Musterbogens.
+\newcommand*{\dsaunterkapitelgrad}{18.9}
 \newcommand{\dsaunterkapitel}[1]{%
   \par\dsaRasterluft{1}%
   % Ohne eigenen Anker zeigen alle Unterkapitel eines Kapitels auf den
@@ -917,7 +948,7 @@
   % den die IDML als SpaceAfter 12 pt nennt. \dsa@lineskipraster haelt den
   % Durchschuss, obwohl die Zeile hoeher ist als er.
   {\centering\dsa@lineskipraster
-   \dsaandalus\fontsize{14bp}{24bp}\selectfont #1\par}%
+   \dsaandalus\fontsize{\dsaunterkapitelgrad bp}{24bp}\selectfont #1\par}%
   \dsaRasterluft{1}\nobreak}
 
 \newcommand{\dsaabschnitt}[1]{%
@@ -992,8 +1023,12 @@
 
 \newlength{\dsakasteninnen}  \setlength{\dsakasteninnen}{8mm}
 \newlength{\dsakastenoben}   \setlength{\dsakastenoben}{6mm}
-% PRUEFEN: beide geschaetzt und fuer alle Kaesten gueltig. Am ersten Abzug
-% nachmessen, wie weit der Zierrand der Grafik nach innen reicht.
+% OFFEN: beide geschaetzt und fuer alle Kaesten gueltig. Der Musterbogen
+% zeigt auf Seite 7 nur die gezeichneten Kaesten mit Text — dort sind es
+% 3,0 mm links und 2,25 mm rechts, aber diese Kaesten haben keinen
+% Zierrand. Die Grafikkaesten zeigt er ohne Text, und damit gibt er den
+% Innenabstand nicht her. Wer einen gesetzten Band mit Pergamentkasten hat,
+% misst nach.
 
 % Der Text im Kasten ist kleiner als der Fliesstext: 9,5 pt auf 11,4 pt. So
 % nennen es die Absatzformate der IDML („4_Pergamentkasten",
@@ -1120,10 +1155,11 @@
 \dsaKastenNeu{dsaPergamentMittel}{85.5mm} {99.5mm} {24}{pergament-mittel}{dsaueberhang=2.5mm}
 \dsaKastenNeu{dsaPergamentLang}  {85.5mm} {192.4mm}{46}{pergament-lang}  {dsaueberhang=2.5mm}
 % Breit und schmal passen nicht in eine Spalte — einspaltig setzen.
-% PRUEFEN: Der Baukasten rahmt diese Grafik mit 136,57 x 189,26 mm. Die
-% Breite passt zur Produktionsgroesse (136,90 mm), die Hoehe nicht (189,26
-% gegen 192,37). Der Rahmen ist also nicht proportional, die Grafik dort
-% vermutlich beschnitten. Solange das nicht geklaert ist, gilt die
+% Der Baukasten rahmt diese Grafik mit 136,57 x 189,26 mm, die
+% Produktionsgroesse ist 136,90 x 192,37. Geklaert: der Rahmen traegt
+% ActualPpi 300 und EffectivePpi 301 — die beiden sind ungleich, das Bild
+% liegt also nicht auf 100 Prozent, und der Rahmen ist kein Sollmass. Der
+% Unterschied ist ein Beschnitt von 3,1 mm in der Hoehe. Es gilt die
 % Produktionsgroesse.
 \dsaKastenNeu{dsaPergamentBreit} {136.9mm}{192.4mm}{46}{pergament-breit} {}
 % Produktionsgroesse, hochkant. Der Musterbogen des Baukastens zeigt diese
@@ -1219,10 +1255,13 @@
 % meister-schmal ist HOCHKANT, 59,9 x 114,2 mm. meister-breit ist mit
 % 177,9 mm breiter als die Satzbreite von 166 mm und ragt je Seite 5,95 mm
 % hinaus — einspaltig setzen.
-% PRUEFEN: Das IDML rahmt Meisterkasten.psd mit 84,60 x 42,25 mm — quer,
-% obwohl die Grafik mit 707 x 1349 px hochkant ist. Das passt zu keiner
-% Skalierung und deutet auf einen gedrehten Rahmen; Drehungen liest das
-% Messwerkzeug nicht aus. Hier gilt die Produktionsgroesse.
+% Das IDML rahmt Meisterkasten.psd mit 84,60 x 42,25 mm — quer, obwohl die
+% Grafik mit 707 x 1349 px hochkant ist. Geklaert: die ItemTransform des
+% Rahmens dreht um 180 Grad, und ActualPpi 300 steht gegen EffectivePpi 425.
+% Das Bild liegt dort also auf 70,6 Prozent und ist beschnitten; der Rahmen
+% ist kein Sollmass. Es gilt die Produktionsgroesse. Derselbe Griff in die
+% ItemTransform bestaetigt die Drehung von Kasten_Pergament_sehr schmal:
+% minus 90 Grad, bei EffectivePpi 310.
 \dsaKastenNeu{dsaMeisterSchmal}    {59.9mm} {114.2mm}{27}{meister-schmal}     {coltext=white,left=6mm,right=6mm,top=8mm,bottom=8mm}
 \dsaKastenNeu{dsaMeisterBreit}     {177.9mm}{114.2mm}{27}{meister-breit}      {coltext=white,dsaueberhang=5.95mm,left=10mm,right=10mm,top=8mm,bottom=8mm}
 \dsaKastenNeu{dsaMeisterMaske}     {84.0mm} {108.0mm}{26}{meister-maske}      {coltext=white,dsaueberhang=1.75mm,left=7mm,right=7mm,top=10mm,bottom=8mm}
@@ -1321,8 +1360,10 @@
   \nobreak #2\par
   \dsa@vorleseleiste{#1}{trenner-maske}%
   \dsaRasterluft{1}}
-% PRUEFEN: Ob der Vorlesetext kursiv gesetzt wird, sagt der Baukasten nicht —
-% hier aufrecht.
+% OFFEN: Ob der Vorlesetext kursiv gesetzt wird, sagt der Baukasten nicht.
+% Nachgesehen: seine IDML kennt kein Absatzformat dafuer, und im Musterbogen
+% steht kein solcher Block — die einzigen kursiven Stellen dort sind
+% Rubriken und die Ueberschrift „Optionale Regel". Hier aufrecht.
 
 % Der Baukasten liefert die Meistermaske MIT gestrichelter Verbindung als
 % fertige Grafik in drei Hoehen — deshalb keine TikZ-Konstruktion.
@@ -2376,10 +2417,14 @@
 % Die Grundlinienabstaende stehen als Durchschuss im jeweiligen \fontsize:
 % TeX setzt zwischen zwei Zeilen den Durchschuss der FOLGENDEN Zeile, also
 % traegt jede Zeile den Abstand zu ihrer Vorgaengerin.
-% 34,1 mm ist die Grundlinie; die 37,6 mm der Messung sind deren Unterkante
-% samt Unterlaengen der Andalus, also 3,5 mm tiefer.
-\newcommand*{\dsaimpressumkopf}{34.1mm}   % Grundlinie der Ueberschrift
-\newcommand*{\dsaimpressumkopfgrad}{23.5}
+% Grundlinie und Grad sind an zwei gesetzten Abenteuern gemessen, US25324
+% und US25326: beide setzen IMPRESSUM in Andalus 31,73 bp auf einer
+% Grundlinie von y 94,00 pt, das sind 33,16 mm unter der Papierkante. 31,73
+% ist derselbe Grad wie der Kapiteltitel — 23,5 pt mal der Skalierung von
+% 135 Prozent, die die IDML nennt. Vorher standen hier 34,1 mm und 23,5 bp;
+% die 37,6 mm der aelteren Messung waren die Unterkante samt Unterlaengen.
+\newcommand*{\dsaimpressumkopf}{33.16mm}  % Grundlinie der Ueberschrift
+\newcommand*{\dsaimpressumkopfgrad}{\dsakapitelgrad}
 \newcommand*{\dsaimpressumstart}{25.1pt}  % bis zur ersten Rubrikgrundlinie
 % Der Satzspiegel ist nicht mittig auf dem Papier: innen 20 mm, aussen 24 mm.
 % Seine Mitte liegt also 2 mm neben der Papiermitte, auf einer linken Seite
@@ -2613,8 +2658,11 @@
   \normalsize
   \ifdsa@raster\setlength{\topskip}{\dsa@topskip}\fi
   \pagestyle{fancy}\dsaHintergrundAn\twocolumn}
-% PRUEFEN: \restoregeometry stellt \textheight wieder her; danach mit der
-% Option rasterzeigen pruefen, ob die Grundlinien wieder sitzen.
+% \restoregeometry stellt \textheight wieder her, und die Grundlinien sitzen
+% danach wieder. Nachgemessen an beispiel.pdf: die Seite nach dem Querformat
+% traegt ihre Zeilen auf +0,00 bp. Die Probe ist nur zwei Zeilen lang, aber
+% sie greift dort, wo es darauf ankommt — waere \topskip nicht
+% zurueckgesetzt, laege schon die erste daneben.
 
 %%% ==================================================================
 %%% 19  Raster fuer wiederkehrende Angaben
@@ -2813,9 +2861,10 @@
     \xdef\dsa@psn{\the\@tempcntb}%
   \endgroup
   \parshape=\dsa@psn \dsa@psg\relax}
-% PRUEFEN: Beide Befehle bauen die \parshape-Liste selbst auf. \parshape
-% braucht die Zeilenzahl und danach genau doppelt so viele Laengen; ist die
-% Liste falsch, bricht der Lauf mit unverstaendlicher Meldung ab. Mit kleinen
-% Werten testen, etwa \dsaUmfluss{l}{2}{4}{25mm}.
+% Beide Befehle bauen die \parshape-Liste selbst auf. \parshape braucht die
+% Zeilenzahl und danach genau doppelt so viele Laengen; ist die Liste falsch,
+% bricht der Lauf mit unverstaendlicher Meldung ab. Sie ist richtig:
+% beispiel.tex setzt \dsaUmfluss{l}{2}{4}{25mm} und \dsaUmflussKontur mit
+% acht Werten, und das Dokument baut.
 
 \endinput

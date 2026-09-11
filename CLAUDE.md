@@ -96,13 +96,13 @@ Drei Dinge, die im Einleger anders heißen als im Abenteuer: Abstand ist `\dsaLu
 | Frage | Antwort steht in |
 |---|---|
 | Welcher Befehl setzt X? | `doku/ELEMENTE.md`, Abschnitt nach Elementart |
-| Welche Kästen gibt es, wie groß sind sie? | `doku/ELEMENTE.md`, „Kästen" — fünfzehn Umgebungen mit Maßen |
-| Wie setze ich eine Tabelle? | `doku/ELEMENTE.md`, „Tabellen und Raster" |
-| Wie geht Textumfluss um ein Bild? | `doku/ELEMENTE.md`, „Textumfluss" |
+| Welche Kästen gibt es, wie groß sind sie? | `doku/ELEMENTE.md`, „Kästen“ — fünfzehn Umgebungen mit Maßen |
+| Wie setze ich eine Tabelle? | `doku/ELEMENTE.md`, „Tabellen und Raster“ |
+| Wie geht Textumfluss um ein Bild? | `doku/ELEMENTE.md`, „Textumfluss“ |
 | Einleger: Reihen, Kolumnen, Tabellen | `doku/EINLEGER.md`, Abschnitte 5 bis 7 |
 | Woher kommt dieser Zahlenwert? | `doku/MASSE.md` |
 | Ist das geprüft? | `doku/PRUEFPLAN.md` |
-| Wie besorge ich Grafiken und Schriften? | `README.md`, „Grafiken und Schriften besorgen" |
+| Wie besorge ich Grafiken und Schriften? | `README.md`, „Grafiken und Schriften besorgen“ |
 
 ## Die fünf Fallen beim Setzen
 
@@ -114,8 +114,9 @@ Drei Dinge, die im Einleger anders heißen als im Abenteuer: Abstand ist `\dsaLu
    Modifikatoren mit `\dsaMod{-}{2}`.
 4. **Tabellen kommen in `dsaTabelle`, nicht in `tabular`**, und die Umgebung zieht die Linien
    selbst. Ein eigenes `\hline` bricht das Raster.
-5. **Ohne `grafiken/` und `schriften/` kompiliert nichts.** Beide Ordner sind absichtlich leer im
-   Repository; `werkzeuge/aufbereiten.py` füllt sie aus dem Baukasten.
+5. **Ohne `grafiken/` und `schriften/` kompiliert nichts.** Beide Ordner sind bis auf
+   `grafiken/titelbild.jpg` absichtlich leer im Repository; `werkzeuge/aufbereiten.py` füllt
+   sie aus dem Baukasten.
 
 ## Bauen und ansehen
 
@@ -160,7 +161,7 @@ Querformat und keine Tabellenseite ohne Raster; für alles, was er selbst sagt, 
 maßgeblich. Was aus dem Einleger stammt, steht in `doku/MASSE.md`, Abschnitt 8.
 
 Wo alle Quellen schweigen, wird der Wert als geschätzt gekennzeichnet und kommt in
-`doku/MASSE.md` unter „Was offen ist". **Nie eine Zahl erfinden und nie eine ändern, ohne die
+`doku/MASSE.md` unter „Was offen ist“. **Nie eine Zahl erfinden und nie eine ändern, ohne die
 Quelle nachzusehen.**
 
 **2. Das Grundlinienraster ist nicht verhandelbar.** 12 bp, nicht 12 pt — der Baukasten ist in
@@ -178,7 +179,12 @@ Textzeilen zu 10,8 bp. An die Stelle der Rasterprüfung tritt die Prüfung der S
 **3. Grafiken und Schriften gehören nicht ins Repository.** `grafiken/` und `schriften/` sind in
 `.gitignore`. Das Material gehört Ulisses Spiele und steht unter der Scriptorium-Vereinbarung, die
 mit Apache 2.0 nicht vereinbar ist. Nie eine Datei aus diesen Ordnern einchecken, auch keine
-verkleinerte Fassung, auch nicht „nur zum Testen".
+verkleinerte Fassung, auch nicht „nur zum Testen“.
+
+Eine einzige Datei ist ausgenommen und in `.gitignore` freigestellt:
+`grafiken/titelbild.jpg`, der Zwerg am Setzkasten. Sie ist mit einer KI erzeugt und stammt
+nicht aus dem Baukasten. Was neu dazukommt, gehört nur dann ebenfalls freigestellt, wenn es
+nachweislich nicht von Ulisses stammt — im Zweifel nicht.
 
 **4. Nichts gilt als fertig, bevor es gemessen ist.** Eine Änderung am Satz wird gebaut und am PDF
 nachgemessen — nicht am Quelltext beurteilt. Wie, steht unten.
@@ -200,7 +206,7 @@ Fünf Beispieldokumente, alle in `beispiel/`:
 
 | Datei | Klasse | wofür |
 |---|---|---|
-| `beispiel.tex` | `dsa5latex` | jedes Element genau einmal, 21 Seiten — der Regellauf |
+| `beispiel.tex` | `dsa5latex` | jedes Element genau einmal, 22 Seiten — der Regellauf |
 | `raster.tex` | `dsa5latex` | nur Text und Raster, baut in Sekunden — für schnelle Prüfungen |
 | `kaesten.tex` | `dsa5latex` | alle fünfzehn Kästen |
 | `rest.tex` | `dsa5latex` | Seitentypen, Umschlag, Rückseite |
@@ -242,7 +248,7 @@ waagerechte Tabellenlinie auf einer der acht Spaltenkanten beginnen und enden �
 Abschnitt 10.
 
 Was geprüft wurde und was dabei herauskam, steht in `doku/PRUEFPLAN.md`. Wer etwas prüft, trägt
-das Ergebnis dort ein — auch ein „passt".
+das Ergebnis dort ein — auch ein „passt“.
 
 ## Schreibweise
 
@@ -250,10 +256,14 @@ das Ergebnis dort ein — auch ein „passt".
   Zeichenketten, die im Satz erscheinen, stehen echte Umlaute. Die Markdown-Dateien haben überall
   echte Umlaute.
 * Die Kommentare erklären **warum**, nicht was. Wo ein Wert gemessen wurde, steht die Messung
-  daneben: „gemessen 3,3 bp neben dem Raster". Wo ein Weg verworfen wurde, steht warum er
+  daneben: „gemessen 3,3 bp neben dem Raster“. Wo ein Weg verworfen wurde, steht warum er
   verworfen wurde. Das ist der Ton der Datei — wer etwas hinzufügt, hält ihn.
-* `% PRUEFEN:` markiert eine Stelle, die nicht am Ergebnis geprüft ist. Wer sie prüft, entfernt
-  die Marke und trägt das Ergebnis in `doku/PRUEFPLAN.md` ein.
+* `% OFFEN:` markiert einen Wert, für den der Baukasten keine Quelle hergibt — nicht eine
+  Stelle, die nur noch niemand geprüft hat. Wer eine Quelle findet, entfernt die Marke, trägt
+  den Wert mit seiner Quelle in `doku/MASSE.md` ein und die Messung in `doku/PRUEFPLAN.md`.
+* `% PRUEFEN:` markiert eine Stelle, die nicht am Ergebnis geprüft ist — anders als `% OFFEN:`
+  gibt es hier eine Quelle, nur hat sie noch niemand mit dem Ergebnis verglichen. Wer sie prüft,
+  entfernt die Marke und trägt das Ergebnis in `doku/PRUEFPLAN.md` ein.
 * Benennung: öffentliche Befehle `\dsaGrossKlein`, Längen und interne Werte `\dsakleinzusammen`,
   Internes mit `@`: `\dsa@name`.
 * Die Klassen sind in nummerierte Abschnitte geteilt (`%%% 17  Tabellen`) — `dsa5latex.cls` in
@@ -279,9 +289,11 @@ alle vier Abenteuer-Beispiele durch und muss dort nachgemessen werden.
 ## Git
 
 * Commit-Nachrichten sind deutsch, ohne Umlaute, Betreff im Aussagesatz ohne Punkt:
-  „Kapitel auf rechte Seiten, und sechs Warnungsursachen behoben". Der Rumpf nennt Befund,
+  „Kapitel auf rechte Seiten, und sechs Warnungsursachen behoben“. Der Rumpf nennt Befund,
   Ursache und Messung — er ist oft dreißig Zeilen lang, und das ist so gewollt.
-* Autor dieses Projekts: `Leif Janzik <leif.janzik@gmail.com>` (in `.git/config` gesetzt).
+* Der Autor kommt aus der Git-Konfiguration des jeweiligen Klons. Nie `--author` setzen und
+  nie einen Namen aus dieser Datei übernehmen: wer hier arbeitet, committet unter seiner
+  eigenen Kennung.
 * Nichts committen oder pushen ohne ausdrückliche Aufforderung.
 
 ## Der Baukasten

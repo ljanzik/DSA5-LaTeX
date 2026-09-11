@@ -97,8 +97,8 @@ Wortlaut, `Scriptorium Aventuris Lies mich zuerst v1.4.pdf`:
 | Ebene | Schrift | Ausrichtung |
 |---|---|---|
 | Fließtext | Gentium Basic 10 pt auf 12 pt | Blocksatz |
-| Kapitel | Andalus 23,5 pt | Versalien, im Banner |
-| Unterkapitel | Andalus 14 pt | **zentriert**, 12 pt Abstand danach |
+| Kapitel | Andalus **31,73 pt** auf 28,2 pt | Versalien, im Banner |
+| Unterkapitel | Andalus **18,9 pt** | **zentriert**, 12 pt Abstand danach |
 | Abschnitt | Gentium Basic fett 13 pt | linksbündig |
 | Unterabschnitt | Gentium Basic fett 10 pt | linksbündig |
 | Covertitel | Andalus 42,8 pt fett | zentriert, aus dem PSD |
@@ -106,11 +106,37 @@ Wortlaut, `Scriptorium Aventuris Lies mich zuerst v1.4.pdf`:
 | Rubrik im Impressum | Gentium Basic fett 14 pt | zentriert |
 | Wert im Impressum | Gentium Basic 10 pt | zentriert |
 
+### Die 135 Prozent auf Andalus
+
+Der Klartext nennt 23,5 pt für das Kapitel und 14 pt für das Unterkapitel. Gesetzt sind sie
+größer, und beides stimmt: die Absatzformate der IDML führen zu ihrer Punktgröße eine
+**Skalierung von 135 Prozent** in beiden Richtungen.
+
+| Format | `PointSize` | `HorizontalScale` / `VerticalScale` | gesetzt |
+|---|---|---|---|
+| `Kapitel-Überschrift` | 23,5 | 135 / 135 | 31,725 → **31,73 pt** |
+| `Absatzüberschrift` | 14 | 135 / 135 | 18,90 pt |
+
+Bestätigt an drei Quellen: der Musterbogen setzt seine Überschrift „ICH BIN EINE ÜBERSCHRIFT“
+mit 31,73 pt und seine sieben Zwischenüberschriften mit 18,90 pt; die gesetzten Abenteuer
+US25324 und US25326 setzen **jeden** ihrer acht Kapitelanfänge mit 31,73 pt, ohne eine
+Abweichung. Der Durchschuss bleibt 28,2 pt — zweizeilige Titel liegen auf y 94,71 und 122,91.
+
+**Kein „Kapitel N:“ davor.** Die acht Kapitelanfänge tragen nur den Titel: EINLEITUNG, DER
+GESTOHLENE VERTRAG, RECHT UND ORDNUNG, KETTEN FÜR DIE EWIGKEIT, SCHMUGGLERJAGD, SUCHE NACH
+DEN KULTISTEN, UNTERWEGS IN DER UNTERSTADT, ANHANG. Eine Nummer steht nirgends.
+
+**Der Text beginnt auf y 168,00 pt**, gleich ob der Titel ein- oder zweizeilig ist —
+84 + 7 × 12. Der Bannerblock lässt also **sieben** Rastereinheiten frei, nicht zehn.
+
+**IMPRESSUM ist derselbe Grad:** 31,73 pt Andalus auf einer Grundlinie von y 94,00 pt
+(= 33,16 mm), in beiden Bänden gleich.
+
 Trennung laut IDML: Wörter ab 5 Zeichen, mindestens 2 nach dem Anfang und 2 vor dem Ende, auch
 Großgeschriebenes.
 
 Der Covertitel stand vorher mit 28 pt hier — das ist der Wert der Formatvorlage „DSA Cover
-Vordergrund" aus der Wordvorlage. Der gesetzte Umschlag sagt etwas anderes: die Textebene
+Vordergrund“ aus der Wordvorlage. Der gesetzte Umschlag sagt etwas anderes: die Textebene
 *Abenteuertitel* in `Cover_Buchtitel.psd` trägt `FontSize 75` bei einer Ebenentransformation von
 2,3776, also 178,3 px, und `Leading 90`, also 213,3 px. Bei 300 ppi sind das **42,8 pt Schriftgrad**
 und **51,4 pt Zeilenabstand**. Die Grundlinie liegt 401 px über der unteren Beschnittkante, nach
@@ -122,7 +148,7 @@ Vier Effekte liegen im PSD auf der Titelebene, ein fünfter auf der Ebene *Rahme
 
 | Lage | PSD | in der Klasse |
 |---|---|---|
-| Fläche „Rahmen" | Block mit harter Kante, 35 px um die Textbox, `2E2832` | Silhouette der Schrift, 13 pt Abstand |
+| Fläche „Rahmen“ | Block mit harter Kante, 35 px um die Textbox, `2E2832` | Silhouette der Schrift, 13 pt Abstand |
 | Schlagschatten der Fläche | 21 px Abstand, 21 px Weichzeichnung, 75 % | **nicht enthalten** |
 | Schlagschatten der Schrift | 31 px Abstand, 18 px Weichzeichnung, 63 % | **nicht enthalten** |
 | Kontur | 3 px, Verlauf `A6A6A6` nach `2B2630` | 0,24 pt in `A6A6A6`, einfarbig |
@@ -225,7 +251,7 @@ Aus `Resources/Graphic.xml` des IDML, unverändert.
 
 ### Die drei Grauwerte der Tabelle
 
-Sie stehen im IDML nicht als Farbe, sondern als **Tonwert von „Black"** — und „Black" ist dort
+Sie stehen im IDML nicht als Farbe, sondern als **Tonwert von „Black“** — und „Black“ ist dort
 CMYK 0/0/0/100. Ein Tonwert davon kommt beim Export nicht als 100 − *x* Prozent Weiß heraus,
 sondern geht durch das Farbprofil. In der Klasse steht deshalb nicht der gerechnete, sondern der
 am Baukasten-PDF (Seite 8) gemessene Wert — das ist die Farbe, die der Leser sieht:
@@ -241,7 +267,7 @@ Export unverändert: gemessen (193, 144, 122) gegen (193, 144, 123) in der Datei
 
 ### Der Verlauf der Titelzeile
 
-Farbfeld „Tabelle Überschrift", linear, von `Tabellenrot` am Ort 0 nach `Paper` am Ort 100 — mit
+Farbfeld „Tabelle Überschrift“, linear, von `Tabellenrot` am Ort 0 nach `Paper` am Ort 100 — mit
 **Mittelpunkt bei 40,33** statt 50. Die Klasse blendet linear. Gemessen an der Waffentabelle auf
 Seite 8, quer über die Leiste:
 
@@ -261,7 +287,7 @@ Die drei Kacheln stehen im Baukasten, als Masterdateien: `AufzaehlerDSA5_Rueckse
 **204 × 236 Pixel deckend** — Pixel für Pixel dieselbe Zeichnung, nur auf verschieden großer
 Leinwand (238 × 264, 235 × 259 und 244 × 272).
 
-Was der Baukasten „blau" nennt, heißt in der Skala „grün"; der Stein ist türkis. In der Klasse
+Was der Baukasten „blau“ nennt, heißt in der Skala „grün“; der Stein ist türkis. In der Klasse
 gilt der Name, unter dem sie ihn aufruft — `raute-gruen`.
 
 **Die Teilung ist an einer fertigen Viererskala gemessen**, wie sie fremde Sammlungen als
@@ -280,14 +306,14 @@ bei y 346 bis 624 mm — weit unter dem Papier. Die Skala nimmt deshalb eigene R
 
 ## Der Zierrahmen des Kapitelanfangs
 
-Aus dem Baukasten kommt an dieser Stelle nur die Ebene „Pergament für Bild" — eine vollflächige
+Aus dem Baukasten kommt an dieser Stelle nur die Ebene „Pergament für Bild“ — eine vollflächige
 Textur, auf die das Bild eingerückt gelegt wird. Am Abzug ist das falsch: gesucht ist der
 Zierrahmen, in den das Bild hineinkommt.
 
 **Der Rahmen steckt in derselben Ebene.** Er ist das Pergamentblatt mit ausgeschnittener Mitte:
 was stehen bleibt, ist ein Rand in der Breite des Schnitts, und der behält die gerissene
 Außenkante. `aufbereiten.py` erodiert dafür den Alphakanal um **20 Pixel** und legt das
-Drachenornament („Ebene 10") davor.
+Drachenornament („Ebene 10“) davor.
 
 Die 20 Pixel sind gemessen: gegen die fertige Fassung, die früher aus einer fremden Sammlung kam,
 unterscheiden sich die beiden Umrisse bei dieser Breite in **1,71 Prozent** der Pixel, und die
@@ -382,7 +408,7 @@ Gemessen an der Rückseite einer gesetzten Veröffentlichung:
 
 Der Kasten ist im PDF des Vorbilds kein Rechteck, sondern gerastert — die Farbe ist deshalb am
 gerenderten Bild abgelesen. Blocksatz verträgt die Breite nicht: bei 55 mm wurde
-„Komplexität (Spieler/Meister)" gesperrt und trotzdem getrennt, deshalb linksbündig.
+„Komplexität (Spieler/Meister)“ gesperrt und trotzdem getrennt, deshalb linksbündig.
 
 Die Grafiken kommen aus dem Rückseiten-Karten-Paket, einem zweiten Paket neben dem Baukasten. Die
 28 Regionalfassungen sind **Masken**, keine fertigen Seiten: jede ist die verdunkelte Karte auf
@@ -583,9 +609,9 @@ das 2,6 bp Drift, also eine viertel Zeile.
 
 ## 5. Produktionsmaße der Grafiken
 
-Pixel geteilt durch 300 ppi. Die Spalte „Raster" ist die Zahl der Rastereinheiten von 12 pt, die
+Pixel geteilt durch 300 ppi. Die Spalte „Raster“ ist die Zahl der Rastereinheiten von 12 pt, die
 der Kasten senkrecht belegt — aufgerundet, damit der Text darunter wieder auf der Grundlinie sitzt.
-„Rest" ist die dabei unten leer bleibende Differenz; sie ist unsichtbar, weil dort der
+„Rest“ ist die dabei unten leer bleibende Differenz; sie ist unsichtbar, weil dort der
 Seitenhintergrund durchscheint.
 
 ### Pergamentkästen
@@ -752,7 +778,7 @@ Die neuere Fassung bringt vier Befehle für **farbig unterlegte Überschriften**
 wählbaren Farbe — `\fadeSection{Farbe}{Titel}`, `\fadeSubSection`, und beide noch einmal mit
 Nummer. Vorgeführt werden sie in `farbigeberschriften.tex` mit `dsaGold` (RGB 214 173 120) und
 `green!60!blue`. Optisch ist das der Balken des Tabellenkopfs, nur eben als Überschrift und in
-beliebiger Farbe — daher wohl der Eindruck, DSaTeX könne „Tabellen in mehreren Farben".
+beliebiger Farbe — daher wohl der Eindruck, DSaTeX könne „Tabellen in mehreren Farben“.
 
 Interessant ist nicht der Befehl, sondern seine Technik:
 
@@ -763,7 +789,7 @@ Interessant ist nicht der Befehl, sondern seine Technik:
 
 Der Balken blendet **nach durchsichtig**, nicht nach Weiß. Genau das verlangt der Baukasten für
 seine Tabellen, und zwar im Klartext auf der Seite, auf der sie stehen: *„Tipp: Auch bei Tabellen
-daran denken, den entsprechenden Rahmen unter Fenster>Effekte auf ‚Multiplizieren' zu stellen."*
+daran denken, den entsprechenden Rahmen unter Fenster>Effekte auf ‚Multiplizieren' zu stellen.“*
 Diese Klasse hatte bis dahin einen deckenden Verlauf nach Weiß und damit ein weißes Rechteck im
 rechten Drittel des Kopfbalkens — auf dem Pergament gemessen (254,254,254) gegen einen Grund von
 (243,236,221). Sie erledigt es jetzt mit `blend mode=multiply`, was dieselbe Wirkung hat und

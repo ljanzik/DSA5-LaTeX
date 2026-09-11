@@ -1,0 +1,73 @@
+% Der Titelschriftzug allein, ohne Umschlag, ohne Bild, ohne Hintergrund —
+% die Quelle fuer doku/bilder/titel.png im README.
+%
+% Aus einer gesetzten Umschlagseite laesst sich der Schriftzug nicht
+% herausschneiden: dort liegt er ueber dem Titelbild, und was uebereinander
+% liegt, ist nicht mehr zu trennen. Also wird er allein gesetzt.
+% \dsaTitelZeileAn braucht dafuer nur sein Fading, und das muss ausserhalb
+% jeder tikzpicture deklariert sein — genau wie im ersten Durchgang von
+% \dsaUmschlagVorne.
+%
+% Bauen:
+%
+%   cd beispiel
+%   TEXINPUTS="..;" xelatex titelgrafik.tex     # zweimal
+%
+% Zweimal, weil der Titel ueber remember picture an der Blattmitte
+% haengt: im ersten Lauf steht die Marke noch nicht in der .aux, und
+% das Blatt bleibt leer.
+%
+% Und als PNG mit Alphakanal schneiden. Der Tintenrahmen allein taugt
+% nicht: die Platte stoesst dann ohne Luft an den Bildrand und sieht
+% abgeschnitten aus. 90 Pixel Rand bei 600 dpi sind rund 3,8 mm.
+%
+%   import pymupdf
+%   from PIL import Image
+%   pix = pymupdf.open('titelgrafik.pdf')[0].get_pixmap(dpi=600, alpha=True)
+%   im = Image.frombytes('RGBA', (pix.width, pix.height), pix.samples)
+%   x0, y0, x1, y1 = im.getbbox()
+%   r = 90
+%   im = im.crop((x0 - r, y0 - r, x1 + r, y1 + r))
+%   b = 800
+%   im.resize((b, round(im.height * b / im.width)), Image.LANCZOS) \
+%     .save('../doku/bilder/titel.png', optimize=True)
+%
+% Mit \dsaTitelFlaecheAus faellt die graue Platte weg und es bleiben die
+% Lettern mit Verlauf und Kontur. Fuer das README ist die Platte noetig: die
+% Lettern allein sind hell und verschwinden auf weissem Grund.
+
+\documentclass[ohnehintergrund]{dsa5latex}
+
+% Wie in titel.tex: das Blatt ist ein Thumbnail, kein gedruckter Umschlag,
+% deshalb 88 pt statt der 42,8 pt des Baukastens. Der Rand waechst mit,
+% sonst klebt die Platte am Buchstaben.
+\dsaTitelGrad{88}
+\dsaTitelRand{17}
+
+% Ein eigenes Blatt, quer und mit Luft ringsum. \dsaTitelZeileAn legt
+% seinen Begrenzungsrahmen auf die Textbox — Platte und Schlagschatten
+% liegen ausserhalb davon und werden trotzdem gezeichnet. Auf A4 hoch
+% stehen sie damit ueber die Papierkante hinaus, und was drueber steht,
+% ist im PDF weg: der Schatten war rechts und unten abgeschnitten.
+\geometry{papersize={330mm,150mm}, margin=0mm}
+
+\begin{document}
+\dsaHintergrundAus
+\thispagestyle{empty}
+
+\makeatletter
+\pgfdeclarefading{dsatitelzeile1}{%
+  \tikz\node[inner sep=1pt, text=white]
+    {\dsa@titelschriftgrad{88}LaTeX Layout};}
+
+% Mitten aufs Blatt. Die Koordinate kommt ohne Klammern:
+% \dsaTitelZeileAn setzt sie selbst in ein \node ... at (#2). Der
+% Versatz nach unten haelt die Mitte: der Knoten haengt an seiner
+% Grundlinie, nicht an seiner Mitte.
+\begin{tikzpicture}[remember picture, overlay]
+  \dsaTitelZeileAn{dsatitelzeile1}%
+    {[yshift=-44bp]current page.center}{88}{LaTeX Layout}
+\end{tikzpicture}
+\makeatother
+
+\end{document}

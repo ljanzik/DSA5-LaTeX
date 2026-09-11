@@ -78,11 +78,11 @@ Gesetzt wird von unten: die Grundlinie der **letzten** Zeile sitzt auf `\dsatite
 weitere Zeile schiebt nach oben. Ein dreizeiliger Titel wächst also in das Bild hinein und nicht in
 den unteren Rahmen.
 
-Der Aufbau hat drei Lagen, von hinten nach vorn: die graue Fläche in der Form des Schriftzugs, der
-helle Rand um die Schrift, der Verlauf in der Schrift. Das PSD führt zusätzlich zwei Schlagschatten,
-einen für die Fläche und einen für die Schrift; beide sind dort weichgezeichnet und teildeckend.
-Hart nachgebildet lasen sie sich als zweiter, versetzter Schriftzug und überdeckten den hellen Rand
-— sie sind deshalb nicht enthalten.
+Der Aufbau hat fünf Lagen, von hinten nach vorn: der Schlagschatten der Fläche, die graue Fläche in
+der Form des Schriftzugs, der Schlagschatten der Schrift, der helle Rand um die Schrift, der
+Verlauf in der Schrift. Beide Schlagschatten sind wie im PSD weichgezeichnet und teildeckend — sie
+entstehen aus gestaffelten Lagen derselben Silhouette, weil ein harter Versatz sich als zweiter
+Schriftzug liest. Wie das gerechnet wird, steht in `MASSE.md`.
 
 Alles einstellbar, in der Präambel:
 
@@ -97,9 +97,13 @@ Alles einstellbar, in der Präambel:
 | `\dsaTitelVerlaufAus` | — | schlicht weiß mit Kontur |
 | `\dsaTitelFlaecheAus` | — | ohne graue Fläche |
 | `\dsaTitelRahmenAus` | — | ohne hellen Rand |
+| `\dsaTitelSchattenAus` | — | ohne die beiden Schlagschatten; halbiert die Zeit des Umschlaglaufs |
 
 Zwei Werte in der Klasse steuern, wie glatt der Rand der Fläche wird: `\dsatitelperlabstand`
-(0,6 pt) und `\dsatitelflaechenstufen` (5). Warum, steht in `MASSE.md`.
+(0,6 pt) und `\dsatitelflaechenstufen` (5). Für die Schlagschatten gibt es dieselben Stellschrauben
+noch einmal — `\dsatitelschattenlagen` (5), `\dsatitelschattenperlabstand` (1,2 pt) — und je Schatten
+Abstand, Weichzeichnung und Deckung, etwa `\dsatitelschriftschattendeckung` (0,63). Warum, steht in
+`MASSE.md`.
 
 ### Bilder auf dem Raster
 
@@ -278,10 +282,10 @@ die Karte in Sepia, nur die aktive Region in Farbe, ein weicher Schlagschatten d
 die Region ungleich deutlicher heraus — in einem dunkelgrünen Waldgebiet war die halbierte
 Fassung kaum zu erkennen. Die Sepiarampe ist ein fester Farbversatz auf das Grau (+15 / −4 /
 −20), an zwei Rücktiteln gemessen und helligkeitserhaltend; Herleitung und Messwerte in
-`MASSE.md` unter „Die Sepiakarte der Rückseite".
+`MASSE.md` unter „Die Sepiakarte der Rückseite“.
 
 Für eine eigene Aufteilung gibt es `werkzeuge/regionsmaske.py`: es flutet von einem Saatpunkt aus
-innerhalb der Grenzlinien und schneidet die gefundene Fläche aus der Verdunkelung. Das Grenznetz
+innerhalb der Grenzlinien und rechnet aus der gefundenen Fläche dieselbe Sepiafassung. Das Grenznetz
 des Pakets kennt allerdings nur die großen Regionen — eine Saat im Kosch flutet das ganze
 Mittelreich, und eine fertige Kosch-Fassung gibt es nicht mehr: sie kam aus einer fremden Sammlung.
 
@@ -465,8 +469,8 @@ Achtzehn Rastereinheiten hoch, also 216 pt oder 76,2 mm.
 
 Der Weg des Verlags — der Baukasten sagt es selbst: *„Die Wertekästen in unseren Büchern sind
 normalerweise eine Kombination aus verschiedenen Elementen: Pergamentkästen von Seite 2/3, sowie
-die Zierleisten und ggf. den Portrait-Rahmen von Seite 10."* Und zum Abstand: *„Feste Abstände für
-Objekte haben wir nicht."* Die fertigen Kästen sind Bequemlichkeit, nicht das Verfahren.
+die Zierleisten und ggf. den Portrait-Rahmen von Seite 10.“* Und zum Abstand: *„Feste Abstände für
+Objekte haben wir nicht.“* Die fertigen Kästen sind Bequemlichkeit, nicht das Verfahren.
 
 ---
 
@@ -562,7 +566,7 @@ seiner IDML nachgemessen:
 Senkrechte Linien gibt es nicht, auch nicht am Rand. Der Zelleneinzug ist **1,2 mm** ringsum,
 zwischen zwei Spalten also 2,4 mm.
 
-**Beide Flächen liegen auf „Multiplizieren".** Der Baukasten schreibt es auf der Seite mit seinen
+**Beide Flächen liegen auf „Multiplizieren“.** Der Baukasten schreibt es auf der Seite mit seinen
 Tabellen ausdrücklich vor, und es ist kein Schönheitsfehler: ein Verlauf, der deckend nach Weiß
 blendet, legt sein rechtes Ende als weißes Rechteck auf das Pergament. Die Klasse zeichnet die
 Bänder deshalb mit `blend mode=multiply`; das Pergament bleibt darunter sichtbar. Einzelheiten und
@@ -658,7 +662,7 @@ und nennt die Höhe. Eine solche Tabelle muss von Hand geteilt werden, mit wiede
    Tabellen stehen ausdrücklich nicht im Grundlinienraster (`GridAlignment="None"` in der IDML).
    Hier gilt das Raster — eine einzeilige Zeile ist genau eine Rastereinheit, 12 bp. Wer es
    luftiger braucht, setzt `\dsatabellenluft` auf ein Vielfaches von 12 bp.
-2. **Der Verlauf.** Das Farbfeld „Tabelle Überschrift" hat seinen Mittelpunkt bei 40,33 statt
+2. **Der Verlauf.** Das Farbfeld „Tabelle Überschrift“ hat seinen Mittelpunkt bei 40,33 statt
    50 Prozent; die Klasse blendet linear. Am gesetzten PDF gemessen ist der Unterschied im
    mittleren Drittel höchstens 5 von 255 Stufen und auf Papier nicht zu sehen.
 
@@ -686,7 +690,7 @@ auf der **Titelrückseite**. Im Englischen: *copyright page*. Der Markenhinweis 
 
 `\begin{dsaImpressumseite}` setzt die Überschrift IMPRESSUM und stellt alles mittig,
 `\dsaImpressumsblock{Rubrik}{Inhalt}` je Angabe, `\dsaRechtevermerk{Jahr}{Name}` den
-vorgeschriebenen Hinweis mit der Zwischenüberschrift „Disclaimer".
+vorgeschriebenen Hinweis mit der Zwischenüberschrift „Disclaimer“.
 
 Aufbau und Rubriken nach dem Vorbild einer gesetzten Scriptorium-Veröffentlichung: Autor,
 Redaktion, Lektorat, Korrektorat, Künstlerische Leitung, Coverbild, Satz Layout und Gestaltung,
@@ -702,43 +706,64 @@ Befehl dafür.
 
 ## Was noch nicht nachgemessen ist
 
-**Die Klasse läuft.** `beispiel.tex` baut mit XeLaTeX aus TeX Live 2026 fehlerfrei durch,
-22 Seiten, ohne eine einzige LaTeX-Warnung; `raster.tex`, `kaesten.tex` und `rest.tex`
-ebenso.
-**Damit ist die alte Bruchliste erledigt.** Sie führte zehn Stellen, an denen der Lauf
-abbrechen könnte — `polyglossia` mit `spelling=new`, `\ifnum` in einer `\foreach`-Schleife,
-die selbstgebaute `\parshape`-Liste des Umflusses, `\f@size` in den Kapitälchen, die Zeichen
-`\textminus` und `\guillemotright`, `\addfontfeature`, `\contour` mit gesetzter Schriftgröße,
-der `underlay`-Schlüssel des Porträtkastens, `\pgfdeclarefading` und der Längenvergleich in
-`\dsaBildDeckend`. Neun davon setzen die Beispieldokumente inzwischen ein, und sie bauen. Der
-zehnte ist `\dsaBildMaskiert`: **kein Beispiel benutzt ihn**, das Fading darin ist also als
-einziges ungeprüft.
+**Die Klasse läuft, und sie ist nachgemessen.** `beispiel.tex` baut mit XeLaTeX aus TeX Live
+2026 fehlerfrei durch, 22 Seiten, ohne eine einzige LaTeX-Warnung; `raster.tex`, `kaesten.tex`
+und `rest.tex` ebenso.
 
-Was bleibt, sind Maße, die niemand am Papier nachgemessen hat. Im Quelltext stehen dieselben
-Punkte als `% PRUEFEN:`, fünfzehn Stück. Der Stand jeder
-Messung steht in [PRUEFPLAN.md](PRUEFPLAN.md); wer etwas nachmisst, trägt es dort ein und
-nimmt die Marke aus dem Quelltext.
+Von den vierzehn Prüfmarken, die der Quelltext einmal trug, sind **zehn erledigt**:
+
+| Was | Wie geklärt |
+|---|---|
+| `polyglossia` mit `spelling=new` bricht? | nein — alle vier Beispiele bauen damit |
+| `\parshape`-Liste des Umflusses falsch? | nein — `beispiel.tex` setzt beide Umflüsse |
+| Längenvergleich in `\dsaBildDeckend` bricht? | nein — steht in jedem Umschlag |
+| Fadings unter XeLaTeX? | laufen — der Covertitel legt je Zeile eines an |
+| Kapitelgrad 23,5 oder 31,7 pt? | **31,73** — IDML: 23,5 pt mal 135 % Skalierung |
+| Unterkapitel 14 pt? | **18,9** — dieselbe Skalierung |
+| Steht „Kapitel N:“ davor? | **nein** — acht Kapitelanfänge zweier Bände, nie eine Nummer |
+| Reichen 10 Rastereinheiten für zweizeilige Titel? | die Frage war falsch: es sind **7**, und sie reichen für beides |
+| Rahmen von `Kasten_Pergament` und `Meisterkasten` | kein Sollmaß — `EffectivePpi` 301 bzw. 425, dazu 180° Drehung |
+| Grundlinien nach `\dsaQuerEnde`? | sitzen — ±0,00 bp gemessen |
+
+Die Messungen stehen in [MASSE.md](MASSE.md) und [PRUEFPLAN.md](PRUEFPLAN.md).
+
+### Die vier, die offen bleiben
+
+Alle vier warten nicht auf eine Messung, die niemand gemacht hat, sondern auf eine **Quelle,
+die es nicht gibt**. Der Baukasten schweigt dazu, und in den durchgesehenen Bänden kommt der
+Fall nicht vor. Im Quelltext heißen sie deshalb `% OFFEN:` und nicht mehr `% PRUEFEN:` —
+prüfen kann sie niemand, es fehlt der Maßstab.
+
+1. **Beschnitt der deckenden Bilder** ist mittig. Bei einem Porträt sitzt der Kopf oft oben.
+   Der Baukasten zeigt keinen beschnittenen Porträtausschnitt. Wer einen braucht, nimmt
+   `\dsaBildForm` oder schneidet mit `werkzeuge/freistellen.py --x --y` vor.
+2. **Breite des Pergamentrands am Kapitelbild** (`\dsakapitelbildrand`). Der Baukasten legt
+   die Beispielgrafik randlos auf die Pergamentfläche, nicht eingerückt.
+3. **Innenabstände der Kästen** (`\dsakasteninnen`, `\dsakastenoben`). Der Musterbogen zeigt
+   auf Seite 7 nur die *gezeichneten* Kästen mit Text — dort 3,0 mm links und 2,25 mm rechts,
+   aber die haben keinen Zierrand. Die Grafikkästen zeigt er ohne Text.
+4. **Vorlesetext kursiv oder aufrecht?** Die IDML kennt kein Absatzformat dafür, und im
+   Musterbogen steht kein solcher Block. Hier aufrecht.
+
+Dazu ein fünfter Punkt, der keine Marke trägt, weil er kein Maß ist: **`\dsaBildMaskiert`
+steht in keinem Beispieldokument.** Das Fading darin ist als einziges Element nie gelaufen.
 
 ### Maße, die geschätzt sind
 
-1. **Innenabstände der Kästen** — geschätzt, an einer Stelle änderbar.
-2. **Lage und Durchmesser des Porträtmedaillons** — geschätzt.
-3. **Breite des Pergamentrands am Kapitelbild** (`\dsakapitelbildrand`) — geschätzt.
-4. **Größe und Abstand der gezeichneten Rauten** — mit den offiziellen vergleichen.
-5. **Lage der Kapitelüberschrift im Banner** — 22 mm unter der Kante, mittig auf 150 mm,
-    geschätzt. Bei zweizeiligen Titeln reichen 10 Rastereinheiten nicht.
-6. **Seitenhintergrund** — Anker an der Außenkante; bleibt ein weißer Streifen, ist der Anker
-    falsch gewählt, nicht das Maß. Und: die Folge muss 0,0,1,1,2,2,3,3 sein.
-7. **Lage der Titelzeilen im Umschlag** — geschätzt.
-8. **Absatzeinzug** — `\parindent` auf 1 em, am offiziellen PDF nachmessen.
-9. **Icongrößen** — 4 mm Höhe gewählt, nicht belegt.
-10. **Beschnitt der deckenden Bilder** ist mittig. Bei einem Porträt sitzt der Kopf oft oben.
-11. **`\dsaVorlesetext`** steht aufrecht auf Spaltenbreite; ob das stimmt, sagt der Baukasten nicht.
-12. **`\dsaNSCkopf`** staucht eine 158,5 mm breite Leiste auf Spaltenbreite.
-13. **Nach `\dsaQuerEnde`** prüfen, ob die Grundlinien wieder sitzen.
-14. **`\dsaBildUmflossen`** — `wrapfig` rundet die Zeilenzahl selbst.
-15. **`\dsaBildBund`** — Vorzeichen und Bezugspunkt am Abzug nachsehen.
+Kein Sollmaß im Baukasten, also nach Augenmaß gesetzt. Wer eines findet, trägt es in
+[MASSE.md](MASSE.md) ein.
 
+1. **Lage und Durchmesser des Porträtmedaillons.**
+2. **Größe und Abstand der gezeichneten Rauten** — mit den offiziellen vergleichen.
+3. **Lage der Kapitelüberschrift im Banner** — 22 mm unter der Kante, mittig auf 150 mm.
+4. **Seitenhintergrund** — Anker an der Außenkante; bleibt ein weißer Streifen, ist der Anker
+   falsch gewählt, nicht das Maß. Und: die Folge muss 0,0,1,1,2,2,3,3 sein.
+5. **Lage der Titelzeilen im Umschlag.**
+6. **Absatzeinzug** — `\parindent` auf 1 em, am offiziellen PDF nachmessen.
+7. **Icongrößen** — 4 mm Höhe gewählt, nicht belegt.
+8. **`\dsaNSCkopf`** staucht eine 158,5 mm breite Leiste auf Spaltenbreite.
+9. **`\dsaBildUmflossen`** — `wrapfig` rundet die Zeilenzahl selbst.
+10. **`\dsaBildBund`** — Vorzeichen und Bezugspunkt am Abzug nachsehen.
 ### Warnungen, die planmäßig kommen
 
 Zwei Arten stehen in jedem Lauf und sind kein Fehler. Wer im Log nach echten Problemen sucht, zieht
