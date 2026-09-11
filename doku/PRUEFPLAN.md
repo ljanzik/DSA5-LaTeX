@@ -73,6 +73,7 @@ tiefer.
 | Umschlag vorne, Rahmen randabfallend | 216 × 303 mm, mittig | PNG-Pixelmaß | `#` |
 | Covertitel: Grad, Zeilenabstand, Lage | 42,8 pt, 51,4 pt, 31,3 mm über der Kante | `Cover_Buchtitel.psd` | `#` |
 | Titel: Fläche, Rand, Verlauf | 13 pt / 0,24 pt / vier Haltepunkte | PSD, eigene Messung | `#` |
+| Titel: die beiden Schlagschatten | 5,04 bp / 5,04 bp / 75 % und 7,44 bp / 4,32 bp / 63 %, beide unter 120 Grad | `Cover_Buchtitel.psd` | `ok` |
 | Impressum: Überschrift, Rubriken, Vermerk | 37,6 mm / 14 pt / 94,5 mm | gesetzte Veröffentlichung | `#` |
 | Seitenzahl | 18,4 mm von außen, 5,9 mm über der Kante, Andalus 13 pt | Musterbogen | `#` |
 | Kolumnentitel (Kapitelname neben der Zahl) | Andalus 14 bp schwarz, Grundlinie wie die Zahl, rechts 24,29 mm und links 40,35 mm von der Außenkante | gesetzte Veröffentlichung | `#` |
@@ -365,6 +366,30 @@ Gemessene Zahlen finden nicht alles. Diese Fehler waren erst am gerenderten Abzu
 | Inhaltsverzeichnis einspaltig | 166 mm Zeilen mit Punktführung | zweispaltig über `multicol` |
 | Kapitelseiten ohne Bildrahmen | die Klasse konnte ihn nur mit Bild setzen | `\dsakapitelbild`, mit Bild oder als Platzhalter |
 | Rückseite: Karte ganzseitig, Text dunkel darauf | es fehlte die Vorlage | Rückseiten-Karten-Paket, Aufbau am Vorbild vermessen |
+
+### Die beiden Schlagschatten am Titel
+
+Nachgebildet mit gestaffelten Lagen derselben Silhouette; die Rechnung dahinter steht in
+`MASSE.md`. Gemessen am 600-ppi-Auszug von `beispiel/_schattentest.tex` — dieselbe Zeile auf
+hellem und auf dunklem Grund, ohne Umschlagbild —, senkrechtes Profil unter der Unterkante der
+Fläche, 732 Spalten:
+
+| Abstand unter der Flächenkante | gemessene Deckung | Sollkurve |
+|---|---|---|
+| 0 bp | 0,79 | 0,75 |
+| 4,36 bp (harte Kante des Schattens) | 0,69 | 0,75 |
+| 6 bp | 0,32 | 0,56 |
+| 8 bp | 0,09 | 0,16 |
+| 9,4 bp (Ende des Ausklangs) | 0,04 | 0,00 |
+
+Die Kurve sitzt an der richtigen Stelle, fällt aber steiler und läuft weiter aus als gerechnet.
+Beides ist die Messung, nicht der Satz: der Schnitt läuft senkrecht, die Kante ist gekrümmt und
+seitlich um 2,52 bp versetzt, und die Spaltenstreuung von ±0,26 an der Flanke zeigt genau das.
+Der 50-Prozent-Punkt liegt im Median bei 5,8 bp gegen 6,9 bp rechnerisch.
+
+Die Lagenzahl ist am selben Auszug entschieden: bei acht Lagen laufen Wellen durch den Saum des
+Schriftschattens, bei sechzehn nicht mehr, zwischen sechzehn und vierundzwanzig ist kein
+Unterschied zu sehen.
 
 ## Elemente mit eigenem Raster
 

@@ -1921,6 +1921,11 @@
 \definecolor{dsatiteldunkel}{HTML}{3A3442}  % Verlauf unten
 \definecolor{dsatitelflaeche}{HTML}{2E2832} % Ebene „Rahmen"
 \definecolor{dsatitelkante}{HTML}{A6A6A6}   % Kontur, Lichtkante
+% Beide Schlagschatten. Das PSD nennt keine Farbe, also die Voreinstellung
+% von Photoshop: Schwarz, Modus Multiplizieren. Auf einem Bild ist
+% Multiplizieren mit Schwarz dasselbe wie Deckend mit Schwarz, deshalb
+% braucht es hier keinen Mischmodus.
+\definecolor{dsatitelschatten}{HTML}{000000}
 
 % Masse in pt, aus dem PSD umgerechnet (300 ppi, 1 px = 0,24 pt).
 %
@@ -1928,9 +1933,11 @@
 % gleich.
 %
 % Ihren Schlagschatten — im PSD 21 px Abstand unter 120 Grad, 21 px
-% Weichzeichnung, 75 Prozent — gibt es hier nicht. Ohne Weichzeichnung
-% nachgebildet blieb davon eine zweite, versetzte Silhouette, und die liest
-% sich als Schlagschatten des Schriftzugs statt als Schatten einer Flaeche.
+% Weichzeichnung, 75 Prozent — gibt es hier auch, weichgezeichnet ueber
+% gestaffelte Lagen; siehe „Die beiden Schlagschatten" weiter unten. Ein
+% harter Versatz taugte dafuer nicht: davon blieb eine zweite, scharf
+% begrenzte Silhouette, und die las sich als Schlagschatten des Schriftzugs
+% statt als Schatten einer Flaeche.
 % 8,4 pt sind die 35 px des PSD. Mehr laesst die Flaechen zweier Zeilen
 % ineinanderlaufen: bei 42,8 pt Zeilenabstand und rund 31 pt hoher Tinte
 % bleiben 11,8 pt Luft zwischen den Zeilen, in denen sich zwei Raender von
@@ -1965,11 +1972,67 @@
 % zwischen Kopienring und Schrift und duerfen grob bleiben.
 \newcommand*{\dsatitelperlabstand}{0.6}
 \newcommand*{\dsatitelkopieninnen}{16}
+
+% ---- Die beiden Schlagschatten ----
 %
-% Den Schlagschatten des Schriftzugs — im PSD 31 px Abstand, 18 px
-% Weichzeichnung, 63 Prozent — gibt es hier nicht. Hart nachgebildet, ohne
-% Weichzeichnung und ohne Teildeckung, ueberdeckte er die feine Kontur auf
-% zwei Seiten und wirkte selbst wie die Umrandung.
+% Im PSD traegt jede der beiden Ebenen einen weichgezeichneten Schlagschatten:
+%
+%   Rahmen          21 px Abstand, 21 px Weichzeichnung, 75 Prozent, 120 Grad
+%   Abenteuertitel  31 px Abstand, 18 px Weichzeichnung, 63 Prozent
+%
+% Bei 300 ppi sind das 5,04 bp Abstand bei 5,04 bp Weichzeichnung und
+% 7,44 bp bei 4,32 bp. Ein Winkel steht nur beim Schatten der Flaeche; der
+% Schriftschatten uebernimmt ihn, weil Photoshop den Lichtwinkel per
+% Voreinstellung global fuehrt und beide Ebenen aus demselben Dokument
+% stammen.
+%
+% Richtung: Photoshop zaehlt den Winkel als die Richtung, AUS der das Licht
+% kommt, der Schatten faellt entgegengesetzt. Also dx = -Abstand*cos(Winkel),
+% dy = -Abstand*sin(Winkel); bei 120 Grad ist das nach rechts unten.
+%
+% Weichzeichnung ohne Weichzeichner: die Silhouette wird mehrfach
+% uebereinandergelegt, von aussen nach innen mit fallendem Radius und
+% steigender Deckkraft. Lage j von aussen soll kumuliert auf
+% Deckkraft*j/Lagen kommen, also traegt sie selbst
+%
+%   a_j = 1 - (1 - D*j/L) / (1 - D*(j-1)/L)
+%
+% bei; das ergibt einen linearen Abfall von der vollen Deckkraft an der
+% harten Kante auf null am aeusseren Rand. Ein Gaussprofil waere naeher am
+% PSD, aber der Unterschied verschwindet hinter einem Schriftzug.
+%
+% Jede Lage muss dabei in eine PDF-Transparenzgruppe: die 100 und mehr
+% \contour-Kopien einer Lage ueberlappen einander, und ohne Gruppe
+% multipliziert sich ihre Teildeckung an jeder Ueberlappung auf. Der Schatten
+% waere dann in der Mitte fast deckend und am Rand fleckig.
+\newcommand*{\dsatitelschattenwinkel}{120}
+% Sechzehn Lagen. Am 600-ppi-Auszug des Schriftschattens verglichen: bei
+% acht laufen noch Wellen durch den Saum, bei sechzehn nicht mehr, und
+% zwischen sechzehn und vierundzwanzig ist kein Unterschied zu sehen.
+%
+% Der Perlabstand ist derselbe feine wie an der Flaeche. Ein groeberer waere
+% billiger, legt aber einen Kranz Perlen um den weichsten Teil des Schattens.
+% Billiger heisst hier ohnehin wenig: gemessen kosten beide Schatten bei zwei
+% Zeilen in 88 pt rund anderthalb Sekunden, bei 42,8 pt eine halbe. Neben den
+% Seitenhintergruenden faellt das nicht auf.
+%
+% Wers beim Schreiben trotzdem eilig hat, nimmt die Klassenoption „entwurf".
+% Sie setzt hier vier Lagen und den vierfachen Abstand — dann ist der
+% Schatten ein grober Fleck, aber er sitzt an derselben Stelle. Dieselbe
+% Option ersetzt auch schon die Bilder durch Rahmen.
+\newcommand*{\dsatitelschattenlagen}{16}
+\newcommand*{\dsatitelschattenperlabstand}{0.6}
+\ifdsa@entwurf
+  \renewcommand*{\dsatitelschattenlagen}{4}
+  \renewcommand*{\dsatitelschattenperlabstand}{2.4}
+\fi
+\newcommand*{\dsatitelflaechenschattenweg}{5.04}
+\newcommand*{\dsatitelflaechenschattenweich}{5.04}
+\newcommand*{\dsatitelflaechenschattendeckung}{0.75}
+\newcommand*{\dsatitelschriftschattenweg}{7.44}
+\newcommand*{\dsatitelschriftschattenweich}{4.32}
+\newcommand*{\dsatitelschriftschattendeckung}{0.63}
+\newif\ifdsa@titelschatten \dsa@titelschattentrue
 
 % Der Verlauf laeuft nicht ueber die ganze Zeilenhoehe: Photoshop skaliert ihn
 % auf 42 Prozent und versetzt ihn nach unten. Darunter bleibt es durchgehend
@@ -1986,6 +2049,8 @@
 \newif\ifdsa@titelflaeche \dsa@titelflaechetrue
 \newcommand*{\dsaTitelRahmenAus}{\dsa@titelrahmenfalse}
 \newcommand*{\dsaTitelFlaecheAus}{\dsa@titelflaechefalse}
+\newcommand*{\dsaTitelSchattenAus}{\dsa@titelschattenfalse}
+\newcommand*{\dsaTitelSchattenAn}{\dsa@titelschattentrue}
 
 % Der Bezugsgrad, auf den sich alle Masse des Rahmens beziehen: der Grad der
 % PSD-Ebene. Eine Zeile in einem anderen Grad skaliert sie im Verhaeltnis.
@@ -2014,6 +2079,8 @@
 % #5 Schriftgrad  #6 Text
 \newlength{\dsa@titelradius}
 \newlength{\dsa@titeltiefer}
+\newlength{\dsa@titelschattenx}
+\newlength{\dsa@titelschatteny}
 \newcommand{\dsa@titelform}[6]{%
   \foreach \dsa@k in {1,...,#4}{%
     \pgfmathsetlength{\dsa@titelradius}{#3bp*\dsa@k/#4}%
@@ -2030,6 +2097,69 @@
       {\dsa@titelschriftgrad{#5}%
        \contourlength{\dsa@titelradius}\contournumber{\dsa@kopien}%
        \contour{#2}{\textcolor{#2}{#6}}};}}
+
+% Ein weichgezeichneter Schlagschatten in der Form des Schriftzugs: dieselbe
+% Silhouette wie oben, aber mehrfach uebereinander, von aussen nach innen mit
+% fallendem Radius und steigender Teildeckung. Die Rechnung dahinter steht
+% oben bei den Massen.
+%
+% Nur die innerste Lage wird flaechig gefuellt (Stufen #6); die aeusseren
+% duerfen Ringe bleiben, denn zwischen zwei Lagen liegen nur
+% Weichzeichnung/Lagen Punkte, und so viel ueberlappt jeder Buchstabenzug.
+%
+% #1 Ankerkoordinate, Versatz schon eingerechnet
+% #2 Grundradius in bp — die harte Kante der Vorlage
+% #3 Weichzeichnung in bp  #4 Deckkraft 0..1
+% #5 Schriftgrad  #6 Stufen der innersten Lage  #7 Text
+% Das Profil des Saums: welchen Anteil der Deckung der Schatten im Abstand x
+% von der harten Kante noch hat, x von 0 (Kante) bis 1 (aussen). Photoshop
+% zeichnet eine Gausskante, keine Rampe — der Unterschied ist der lange
+% Ausklang aussen, und genau der macht den Schatten weich statt gestuft.
+% exp(-2,5) wird abgezogen und herausgerechnet, damit das Profil bei x = 1
+% wirklich auf null geht und der Schatten keine Abbruchkante bekommt.
+\newcommand{\dsa@titelprofil}[1]{(exp(-2.5*(#1)*(#1))-0.082085)/0.917915}
+
+\newcommand{\dsa@titelschatten}[7]{%
+  \begin{scope}
+    \pgfmathtruncatemacro{\dsa@titellagen}{\dsatitelschattenlagen}%
+    \foreach \dsa@j in {1,...,\dsa@titellagen}{%
+      % Der Saum reicht die volle Weichzeichnung weit nach aussen. Eine
+      % Gausskante laeuft eigentlich um die harte Kante herum, halb nach
+      % innen und halb nach aussen — die innere Haelfte kann \contour aber
+      % nicht, es blaeht auf und schrumpft nicht. Also traegt die innerste
+      % Lage die volle Deckung auf der harten Kante, und der ganze Verlauf
+      % liegt darueber. Mit der halben Spanne wurde der Schatten sichtbar
+      % haerter als der im PSD.
+      \pgfmathsetmacro{\dsa@titelschattenr}%
+        {#2 + #3*(\dsa@titellagen-\dsa@j)/\dsa@titellagen}%
+      % Kumulierte Deckung dieser und aller Lagen darueber, und daraus, was
+      % die Lage selbst beitragen muss.
+      \pgfmathsetmacro{\dsa@titelschattenvor}%
+        {#4*\dsa@titelprofil{(\dsa@titellagen-\dsa@j+1)/\dsa@titellagen}}%
+      \pgfmathsetmacro{\dsa@titelschattennun}%
+        {#4*\dsa@titelprofil{(\dsa@titellagen-\dsa@j)/\dsa@titellagen}}%
+      \pgfmathsetmacro{\dsa@titelschattena}%
+        {1 - (1-\dsa@titelschattennun)/(1-\dsa@titelschattenvor)}%
+      % Der Perlabstand bleibt in jeder Lage derselbe wie an der Flaeche.
+      % Ihn mit der Deckung wachsen zu lassen — die aeussere Lage ist ja nur
+      % ein Achtel so kontrastreich wie die innerste — halbiert zwar die
+      % Kopienzahl und damit den Lauf, legt aber einen sichtbaren Kranz
+      % Perlen um den weichsten Teil des Schattens. Der Umschlag ist eine
+      % Seite je Dokument; er darf dauern.
+      %
+      % Gilt nur bis zum Ende dieses scope und laesst die Kontur des
+      % Schriftzugs, die spaeter kommt, bei ihrem eigenen Abstand.
+      \begin{scope}[transparency group, opacity=\dsa@titelschattena]
+        \let\dsatitelperlabstand\dsatitelschattenperlabstand
+        \ifnum\dsa@j=\dsa@titellagen\relax
+          \dsa@titelform{#1}{dsatitelschatten}{\dsa@titelschattenr}%
+                        {#6}{#5}{#7}%
+        \else
+          \dsa@titelform{#1}{dsatitelschatten}{\dsa@titelschattenr}%
+                        {1}{#5}{#7}%
+        \fi
+      \end{scope}}%
+  \end{scope}}
 
 % Der Verlauf entsteht NICHT ueber ein pgf-Fading. Das waere der naheliegende
 % Weg, laesst sich aber nicht verlaesslich auf den Schriftzug ausrichten:
@@ -2069,9 +2199,11 @@
 % ausgeschrieben, bevor er hierher kommt.
 %
 % Reihenfolge von hinten nach vorn, wie im PSD:
-%   1 die graue Flaeche in der Form des Schriftzugs
-%   2 der helle Rand: die Kontur des Schriftzugs
-%   3 der Verlauf in der Schrift
+%   1 der Schlagschatten der Flaeche
+%   2 die graue Flaeche in der Form des Schriftzugs
+%   3 der Schlagschatten des Schriftzugs, auf der Flaeche
+%   4 der helle Rand: die Kontur des Schriftzugs
+%   5 der Verlauf in der Schrift
 \newcommand{\dsaTitelZeileAn}[4]{%
   % Alle Masse gelten fuer \dsatitelbezugsgrad und skalieren mit dem Grad
   % dieser Zeile.
@@ -2091,13 +2223,49 @@
         (dsa@tzk.south west) rectangle (dsa@tzk.north east);
       \ifdsa@titelverlauf
         \ifdsa@titelflaeche
-          % 1 die graue Flaeche, gleichmaessig aufgeblaeht, harte Kante
+          \ifdsa@titelschatten
+            % 1 der Schlagschatten der Flaeche. Er folgt der Flaeche, traegt
+            % ihren Versatz nach unten also mit.
+            \pgfmathsetlength{\dsa@titelschattenx}%
+              {-\dsa@titelskala*\dsatitelflaechenschattenweg*1bp
+                *cos(\dsatitelschattenwinkel)}%
+            \pgfmathsetlength{\dsa@titelschatteny}%
+              {-\dsa@titelskala*\dsatitelflaechenschattenweg*1bp
+                *sin(\dsatitelschattenwinkel) - \dsa@titeltiefer}%
+            \pgfmathsetmacro{\dsa@titelweich}%
+              {\dsa@titelskala*\dsatitelflaechenschattenweich}%
+            \dsa@titelschatten
+              {[shift={(\dsa@titelschattenx,\dsa@titelschatteny)}]%
+               dsa@tzk.center}%
+              {\dsa@titelrandjetzt}{\dsa@titelweich}%
+              {\dsatitelflaechenschattendeckung}{#3}%
+              {\dsatitelflaechenstufen}{#4}%
+          \fi
+          % 2 die graue Flaeche, gleichmaessig aufgeblaeht, harte Kante
           \dsa@titelform{[shift={(0pt,-\dsa@titeltiefer)}]dsa@tzk.center}%
                         {dsatitelflaeche}{\dsa@titelrandjetzt}%
                         {\dsatitelflaechenstufen}{#3}{#4}%
         \fi
+        \ifdsa@titelschatten
+          % 3 der Schlagschatten des Schriftzugs. Er liegt auf der Flaeche,
+          % nicht darunter — im PSD ist es der Effekt der oberen Ebene. Sein
+          % Grundradius ist null: die Vorlage ist der Schriftzug selbst.
+          \pgfmathsetlength{\dsa@titelschattenx}%
+            {-\dsa@titelskala*\dsatitelschriftschattenweg*1bp
+              *cos(\dsatitelschattenwinkel)}%
+          \pgfmathsetlength{\dsa@titelschatteny}%
+            {-\dsa@titelskala*\dsatitelschriftschattenweg*1bp
+              *sin(\dsatitelschattenwinkel)}%
+          \pgfmathsetmacro{\dsa@titelweich}%
+            {\dsa@titelskala*\dsatitelschriftschattenweich}%
+          \dsa@titelschatten
+            {[shift={(\dsa@titelschattenx,\dsa@titelschatteny)}]%
+             dsa@tzk.center}%
+            {0}{\dsa@titelweich}{\dsatitelschriftschattendeckung}{#3}%
+            {1}{#4}%
+        \fi
         \ifdsa@titelrahmen
-          % 2 der helle Rand um den Schriftzug, ueber dieselbe Routine wie
+          % 4 der helle Rand um den Schriftzug, ueber dieselbe Routine wie
           % die Flaeche: eine Lage genuegt, weil bei so kleinem Radius keine
           % Luecke zum Schriftzug bleibt.
           \pgfmathsetmacro{\dsa@randjetzt}%
@@ -2105,7 +2273,7 @@
           \dsa@titelform{dsa@tzk.center}{dsatitelkante}{\dsa@randjetzt}%
                         {1}{#3}{#4}%
         \fi
-        % 3 der Verlauf, vom Schriftzug maskiert
+        % 5 der Verlauf, vom Schriftzug maskiert
         \shade[shading=dsatitelverlauf, path fading=#1, fit fading=false]
           (dsa@tzk.south west) rectangle (dsa@tzk.north east);
       \else
@@ -2174,6 +2342,7 @@
 %   \dsaTitelVerlaufAus         schlicht weiss mit Kontur statt Verlauf
 %   \dsaTitelFlaecheAus         ohne grauen Rahmen
 %   \dsaTitelRahmenAus          ohne die feine Kontur
+%   \dsaTitelSchattenAus        ohne die beiden Schlagschatten
 %
 % Eine einzelne Zeile kann ihren Grad selbst mitbringen:
 %   \dsaTitelZeile[27.9]{Akt 1 der Fuchsgrund-Reihe}
