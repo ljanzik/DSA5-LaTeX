@@ -7,12 +7,12 @@ des offiziellen *Scriptorium Aventuris – Layout Baukastens* von Ulisses Spiele
 im Einzelnen kann, steht in der Feature-Liste unten.
 
 **Der Code steht unter Apache 2.0. Die Grafiken und Schriften sind nicht Teil dieses Projekts** und
-müssen selbst besorgt werden — siehe [doku/EINRICHTUNG.md](doku/EINRICHTUNG.md). Ohne sie
+müssen selbst besorgt werden — siehe [Einrichten und Bauen](doku/EINRICHTUNG.md). Ohne sie
 kompiliert nichts.
 
 Die Vorlage ist mit Hilfe einer KI entstanden und dafür gedacht, auch mit einer KI benutzt zu
 werden: **LaTeX muss man dafür nicht (vollständig) lernen.** Wie das geht, steht in
-[doku/EINRICHTUNG.md](doku/EINRICHTUNG.md) unter „Mit einer KI setzen“.
+[Einrichten und Bauen](doku/EINRICHTUNG.md) unter „Mit einer KI setzen“.
 
 ---
 
@@ -22,10 +22,10 @@ Jedes Feature ist eine eigene Klasse oder eine eigene Erweiterung, mit eigener E
 
 | Feature | Klasse | wofür | Doku |
 |---|---|---|---|
-| Abenteuer setzen | `dsa5latex.cls` | Zweispaltiger Satz auf A4 mit Grundlinienraster, Pergament- und Wertekästen in Produktionsgröße, Kapitelbanner, Meistermasken, Seitenhintergründe, Textumfluss | [doku/ELEMENTE.md](doku/ELEMENTE.md) |
+| Abenteuer setzen | `dsa5latex.cls` | Zweispaltiger Satz auf A4 mit Grundlinienraster, Pergament- und Wertekästen in Produktionsgröße, Kapitelbanner, Meistermasken, Seitenhintergründe, Textumfluss | [Elementreferenz](doku/ELEMENTE.md) |
 
 Einrichten, Grafiken und Schriften besorgen, bauen — das gilt featureübergreifend und steht in
-[doku/EINRICHTUNG.md](doku/EINRICHTUNG.md).
+[Einrichten und Bauen](doku/EINRICHTUNG.md).
 
 ---
 
@@ -54,7 +54,7 @@ Die Maße in diesem Projekt sind kein Bildmaterial, sondern Messergebnisse. Sie 
 ## Einrichten und Bauen
 
 Grafiken und Schriften besorgen, XeLaTeX aufsetzen, die Beispieldokumente bauen und — wer will —
-mit einer KI setzen: **[doku/EINRICHTUNG.md](doku/EINRICHTUNG.md)**. Kurzfassung:
+mit einer KI setzen: **[Einrichten und Bauen](doku/EINRICHTUNG.md)**. Kurzfassung:
 
 ```sh
 python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
