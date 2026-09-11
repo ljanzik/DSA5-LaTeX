@@ -1,0 +1,243 @@
+%%% battlemap.tex — eine Kampfkarte auf einem Blatt, mit Zollraster.
+%%%
+%%% Zwei Angaben, in dieser Reihenfolge:
+%%%   1. das Blattformat   \dsaBattlemapBlatt{a3}{quer}   in der Praeambel
+%%%   2. die Karte         \dsaBattlemap{grafiken/karte}   je Blatt ein Aufruf
+%%%
+%%% Das Kaestchenmuster kommt von selbst darueber. Mehrere Aufrufe geben
+%%% mehrere Blaetter, alle im selben Format.
+%%%
+%%%   cd beispiel
+%%%   TEXINPUTS="..;" xelatex battlemap.tex     (zweimal, wegen current page)
+%%%
+%%% Zweimal, weil das Blatt ueber den Knoten „current page" bemasst wird und
+%%% TikZ dessen Lage erst aus der .aux-Datei kennt. Nach einem Lauf ist das
+%%% Blatt leer, bis auf einen Streifen der Karte an der Oberkante.
+%%%
+%%% Die Karte gehoert nicht ins Repository: grafiken/ steht in .gitignore, und
+%%% werkzeuge/aufbereiten.py legt battlemap-dorf.jpg nicht an — die Datei ist
+%%% eine Demokarte. Wer diese Vorlage frisch geklont hat, legt seine eigene
+%%% Karte nach grafiken/ und traegt sie unten ein.
+
+% ohneraster: das Blatt traegt keinen Fliesstext, also gibt es keine
+% Grundlinien, die zu halten waeren. Das Zollraster stoert das Raster der
+% Klasse ohnehin nicht — ein Zoll ist 72 bp und damit genau sechs
+% Rastereinheiten.
+% ohnehintergrund: die Pergamentseiten des Baukastens sind auf A4 zugeschnitten
+% und haetten auf einem A2-Blatt nichts zu suchen.
+\documentclass[ohneraster,ohnehintergrund]{dsa5latex}
+\graphicspath{{../}}
+
+% Die internen Namen tragen ein @, wie in der Klasse. In einer .tex ist das
+% kein Buchstabe, also muss es hier ausdruecklich einer werden.
+\makeatletter
+
+%%% ==================================================================
+%%% 1  Blattformat
+%%% ==================================================================
+%
+% DIN 476, Ausgangsformat A0 mit einem Quadratmeter Flaeche und dem
+% Seitenverhaeltnis 1 : Wurzel 2. Jede Stufe halbiert die laengere Kante, die
+% Masse sind auf ganze Millimeter gerundet:
+%
+%   A4  210 x 297 mm    8,27 x 11,69 Zoll
+%   A3  297 x 420 mm   11,69 x 16,54 Zoll
+%   A2  420 x 594 mm   16,54 x 23,39 Zoll
+%   A1  594 x 841 mm   23,39 x 33,11 Zoll
+%
+% Kein Format geht in ganzen Zoll auf — das Verhaeltnis 1 : Wurzel 2 ist
+% irrational, und ein Zoll ist ein festes Mass. Am Rand bleibt deshalb immer
+% ein angeschnittenes Kaestchen, siehe Abschnitt 2.
+
+\newlength{\dsabmbreite}
+\newlength{\dsabmhoehe}
+\newlength{\dsa@bmtausch}
+
+% \@namedef und nicht \newcommand: eine Ziffer ist kein Buchstabe, und
+% \newcommand*{\dsa@bm@a4}{...} definiert deshalb \dsa@bm@a und setzt die 4
+% in den Text. Ueber \csname zusammengebaut, darf der Name Ziffern tragen.
+\@namedef{dsa@bm@a4}{\setlength{\dsabmbreite}{210mm}\setlength{\dsabmhoehe}{297mm}}
+\@namedef{dsa@bm@a3}{\setlength{\dsabmbreite}{297mm}\setlength{\dsabmhoehe}{420mm}}
+\@namedef{dsa@bm@a2}{\setlength{\dsabmbreite}{420mm}\setlength{\dsabmhoehe}{594mm}}
+\@namedef{dsa@bm@a1}{\setlength{\dsabmbreite}{594mm}\setlength{\dsabmhoehe}{841mm}}
+
+\newcommand*{\dsa@bmquer}{quer}
+
+% \dsaBattlemapBlatt{<a4|a3|a2|a1>}{<hoch|quer>}
+%
+% Gehoert in die Praeambel: die Papiergroesse setzt geometry, und geometry
+% nimmt seine Angaben nur dort an. Ein Blatt je Datei — wer zwei Formate
+% braucht, setzt zwei Dateien.
+\newcommand*{\dsaBattlemapBlatt}[2]{%
+  \expandafter\ifx\csname dsa@bm@#1\endcsname\relax
+    \PackageError{battlemap}{Unbekanntes Blattformat '#1'}%
+      {Zulaessig sind a4, a3, a2 und a1.}%
+  \else
+    \csname dsa@bm@#1\endcsname
+  \fi
+  % Die Masse oben sind hochkant. Quer heisst: Kanten tauschen.
+  %
+  % \edef und nicht \def: als Argument darf auch ein Makro kommen, etwa das
+  % \dsalage von der Befehlszeile. Mit \def stuende im Vergleich unten das
+  % Makro selbst gegen „quer" und die Lage bliebe immer hochkant.
+  \edef\dsa@bmlage{#2}%
+  \ifx\dsa@bmlage\dsa@bmquer
+    \setlength{\dsa@bmtausch}{\dsabmbreite}%
+    \setlength{\dsabmbreite}{\dsabmhoehe}%
+    \setlength{\dsabmhoehe}{\dsa@bmtausch}%
+  \fi
+  % reset zuerst: die Klasse hat ihren Satzspiegel schon gesetzt — 20/24 mm
+  % Rand und textheight=708bp —, und geometry rechnet die Angaben zusammen.
+  % Ohne reset kaeme „Over-specification in `v'-direction" und die Hoehe des
+  % A4-Satzes bliebe stehen.
+  %
+  % Kein Rand: die Karte fuellt das Blatt bis an die Kante. ignoreall, damit
+  % Kopf- und Fusszeile nicht von der Blatthoehe abgehen; die Fusszeile der
+  % Klasse bleibt trotzdem leer, dafuer sorgt \pagestyle{empty}.
+  \geometry{reset, paperwidth=\dsabmbreite, paperheight=\dsabmhoehe,
+            margin=0mm, ignoreall, nomarginpar}%
+  % Der Vermerk fuer den Treiber. xdvipdfmx nimmt die Papiergroesse aus
+  % diesem Special; ohne es bleibt die Ausgabe A4, und ein A2-Blatt waere
+  % oben links beschnitten.
+  \AtBeginDvi{\special{papersize=\the\dsabmbreite,\the\dsabmhoehe}}}
+
+%%% ==================================================================
+%%% 2  Kaestchenmuster
+%%% ==================================================================
+%
+% Ein Zoll je Kaestchen, das Mass der Bodenplaene und Figurensockel. TeX kennt
+% die Einheit: 1in sind 25,4 mm auf den Punkt, und zugleich 72 bp — also genau
+% sechs Rastereinheiten der Klasse.
+%
+% Das Muster geht von der Blattmitte aus: die Reihen liegen zu allen vier
+% Kanten gleich weit, und am Rand bleibt ringsum derselbe angeschnittene
+% Streifen — halb so breit wie der Rest, der nicht mehr fuer ein ganzes
+% Kaestchen reicht. Am Blattrand aufgesetzt steckte dieser Rest ganz in der
+% letzten Reihe einer Seite: bei A3 quer 13,6 mm rechts und nichts links.
+%
+% Ob in der Mitte eine Kreuzung oder eine Kaestchenmitte liegt, entscheidet die
+% Anzahl der Kaestchen — siehe die Begruendung in \dsa@bmraster.
+
+\newlength{\dsabmzoll}     \setlength{\dsabmzoll}{1in}
+\newcommand*{\dsabmfarbe}{black}      % Linienfarbe
+\newcommand*{\dsabmdeckung}{0.45}     % Deckkraft, damit die Karte durchkommt
+\newlength{\dsabmstaerke}  \setlength{\dsabmstaerke}{0.4pt}   % Linienbreite
+
+% Strich und Luecke je ein Sechzehntel Zoll: acht Striche je Kaestchenkante,
+% und die Teilung geht auf. Ein krummes Mass — 1,6 mm etwa — laeuft ueber ein
+% Blatt aus dem Tritt, und an den Kreuzungen trifft dann Strich auf Luecke.
+\newlength{\dsabmstrich}   \setlength{\dsabmstrich}{0.0625in}
+\newlength{\dsabmluecke}   \setlength{\dsabmluecke}{0.0625in}
+
+% Halbe Blattkanten als Laengen. In einer TikZ-Koordinate ist eine Zahl ohne
+% Einheit ein Vielfaches der Achseneinheit, also 1 cm — „0.5*\paperheight"
+% waere dort nicht die halbe Blatthoehe, sondern 420 Zentimeter.
+\newlength{\dsa@bmhalbbreite}
+\newlength{\dsa@bmhalbhoehe}
+
+% Gezeichnet wird in der tikzpicture von \dsaBattlemap, also ohne eigene
+% Umgebung.
+\newcommand*{\dsa@bmraster}{%
+  \setlength{\dsa@bmhalbbreite}{0.5\paperwidth}%
+  \setlength{\dsa@bmhalbhoehe}{0.5\paperheight}%
+  % Wie viele ganze Kaestchen passen je Richtung aufs Blatt?
+  \pgfmathtruncatemacro{\dsa@bmmx}{floor(\paperwidth/\dsabmzoll)}%
+  \pgfmathtruncatemacro{\dsa@bmmy}{floor(\paperheight/\dsabmzoll)}%
+  % Wo das Muster in der Mitte ansetzt, entscheidet diese Anzahl.
+  %
+  % Bei gerader Anzahl liegt eine Kreuzung in der Blattmitte, bei ungerader die
+  % Mitte eines Kaestchens — ein halber Zoll Versatz. Anders herum bliebe am
+  % Rand fast ein ganzes Kaestchen ungenutzt: A3 quer ist 11,69 Zoll hoch, und
+  % mit einer Kreuzung in der Mitte passen nur zehn ganze Reihen aufs Blatt
+  % statt elf. Gemessen waren es 21,5 mm Rand oben und unten statt 8,8 mm.
+  %
+  % Symmetrisch ist beides: die Mitte bleibt die Mitte, und der angeschnittene
+  % Streifen ist an allen vier Kanten derselbe.
+  \pgfmathtruncatemacro{\dsa@bmvx}{mod(\dsa@bmmx,2)}%
+  \pgfmathtruncatemacro{\dsa@bmvy}{mod(\dsa@bmmy,2)}%
+  % Die Linien werden von der Mitte aus durchgezaehlt. Bei Versatz laeuft der
+  % Zaehler unten eine Linie weiter, damit beide Seiten gleich viele bekommen.
+  \pgfmathtruncatemacro{\dsa@bmnx}{floor(\dsa@bmmx/2)}%
+  \pgfmathtruncatemacro{\dsa@bmny}{floor(\dsa@bmmy/2)}%
+  \pgfmathtruncatemacro{\dsa@bmux}{-\dsa@bmnx-\dsa@bmvx}%
+  \pgfmathtruncatemacro{\dsa@bmuy}{-\dsa@bmny-\dsa@bmvy}%
+  \pgfmathsetmacro{\dsa@bmsx}{0.5*\dsa@bmvx}%
+  \pgfmathsetmacro{\dsa@bmsy}{0.5*\dsa@bmvy}%
+  \begin{scope}[
+      dsabmlinie/.style={color=\dsabmfarbe, opacity=\dsabmdeckung,
+                         line width=\dsabmstaerke,
+                         dash pattern=on \dsabmstrich off \dsabmluecke}]
+    % Beschnitt auf das Blatt. Ohne ihn ragen die Linien ueber die Kante
+    % hinaus, denn jede ist eine halbe Blattkante lang und beginnt in der
+    % Mitte — die aeusserste liegt damit ganz im Anschnitt.
+    \clip (current page.south west) rectangle (current page.north east);
+    % Jede Linie in zwei Haelften, beide von der Mitte nach aussen. Der
+    % Strichrhythmus beginnt damit in der Blattmitte und laeuft nach beiden
+    % Seiten gleich; von einer Kante aus gezeichnet, laege er spiegelbildlich
+    % falsch, und an den Kreuzungen traefe Strich auf Luecke.
+    \foreach \dsa@i in {\dsa@bmux,...,\dsa@bmnx}{%
+      \draw[dsabmlinie]
+        ([shift={({(\dsa@i+\dsa@bmsx)*\dsabmzoll},0pt)}]current page.center)
+        -- ++(0pt,\dsa@bmhalbhoehe);
+      \draw[dsabmlinie]
+        ([shift={({(\dsa@i+\dsa@bmsx)*\dsabmzoll},0pt)}]current page.center)
+        -- ++(0pt,-\dsa@bmhalbhoehe);}
+    \foreach \dsa@j in {\dsa@bmuy,...,\dsa@bmny}{%
+      \draw[dsabmlinie]
+        ([shift={(0pt,{(\dsa@j+\dsa@bmsy)*\dsabmzoll})}]current page.center)
+        -- ++(\dsa@bmhalbbreite,0pt);
+      \draw[dsabmlinie]
+        ([shift={(0pt,{(\dsa@j+\dsa@bmsy)*\dsabmzoll})}]current page.center)
+        -- ++(-\dsa@bmhalbbreite,0pt);}
+  \end{scope}}
+
+%%% ==================================================================
+%%% 3  Die Kartenseite
+%%% ==================================================================
+%
+% \dsaBattlemap{<Karte>}  — ein Blatt je Aufruf, mehrere Aufrufe sind erlaubt.
+%
+% Die Karte wird deckend skaliert, nicht gestreckt: \dsaBildDeckend der Klasse
+% vergleicht das Seitenverhaeltnis des Bildes mit dem des Blattes, skaliert an
+% der passenden Kante und beschneidet mittig. Eine Karte im Verhaeltnis 3:2 auf
+% A3 quer (Verhaeltnis 1,41) verliert also links und rechts je einen Streifen,
+% laesst aber nirgends Weiss stehen.
+
+\newcommand{\dsaBattlemap}[1]{%
+  \clearpage
+  \thispagestyle{empty}%
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=center, inner sep=0] at (current page.center)
+      {\dsaBildDeckend{\paperwidth}{\paperheight}{#1}};
+    \dsa@bmraster
+  \end{tikzpicture}%
+  \clearpage}
+
+\makeatother
+
+%%% ==================================================================
+
+% Blatt und Lage stehen hier, lassen sich aber beim Aufruf ueberschreiben,
+% ohne die Datei zu aendern — \providecommand laesst ein schon gesetztes Makro
+% stehen. Vier Formate zum Vergleich also aus einer Quelle:
+%
+%   TEXINPUTS="..;" xelatex -jobname=battlemap-a1 \
+%     "\def\dsablatt{a1}\def\dsalage{quer}\input{battlemap.tex}"
+\providecommand*{\dsablatt}{a2}     % a4, a3, a2 oder a1
+\providecommand*{\dsalage}{quer}    % hoch oder quer
+\dsaBattlemapBlatt{\dsablatt}{\dsalage}
+
+% Der Satzspiegel ist so hoch wie das Blatt. Bliebe \topskip auf seinen 10 pt,
+% waere der Seitenkasten um genau diese 10 pt zu hoch — „Overfull \vbox (10.0pt
+% too high) while \output is active" bei jedem Blatt. Auf der Karte steht keine
+% Zeile, die den Raum brauchte.
+\setlength{\topskip}{0pt}
+
+\begin{document}
+% Die Klasse setzt zweispaltig; eine Karte braucht das ganze Blatt.
+\onecolumn
+\pagestyle{empty}
+
+\dsaBattlemap{grafiken/battlemap-dorf}
+
+\end{document}

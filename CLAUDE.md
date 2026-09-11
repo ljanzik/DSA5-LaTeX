@@ -9,7 +9,7 @@ Wer nur ein Abenteuer schreiben soll, braucht Teil A.
 `dsa5latex.cls` setzt Abenteuer im Layout von *Das Schwarze Auge 5*, nach den Maßen des
 offiziellen *Scriptorium Aventuris – Layout Baukastens*: A4 hoch, zweispaltig, mit
 Grundlinienraster. Die Elementreferenz steht in `doku/ELEMENTE.md`. Dazu sechs
-Python-Werkzeuge in `werkzeuge/`, drei Dokumente in `doku/` und vier Beispieldokumente in
+Python-Werkzeuge in `werkzeuge/`, drei Dokumente in `doku/` und fünf Beispieldokumente in
 `beispiel/`.
 
 ---
@@ -65,6 +65,7 @@ Fließtext. Absätze durch Leerzeilen, kein Einzug, kein \verb|\vspace|.
 | Welche Kästen gibt es, wie groß sind sie? | `doku/ELEMENTE.md`, „Kästen“ — fünfzehn Umgebungen mit Maßen |
 | Wie setze ich eine Tabelle? | `doku/ELEMENTE.md`, „Tabellen und Raster“ |
 | Wie geht Textumfluss um ein Bild? | `doku/ELEMENTE.md`, „Textumfluss“ |
+| Wie setze ich eine Kampfkarte mit Zollraster? | `beispiel/battlemap.tex` — eigenes Dokument, eigenes Blattformat |
 | Woher kommt dieser Zahlenwert? | `doku/MASSE.md` |
 | Ist das geprüft? | `doku/PRUEFPLAN.md` |
 | Wie besorge ich Grafiken und Schriften? | `README.md`, „Grafiken und Schriften besorgen“ |
@@ -154,7 +155,7 @@ TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 `TEXINPUTS` ist nötig, weil `dsa5latex.cls` eine Ebene höher liegt und nicht installiert ist. Wer
 die Klasse nach `TEXMFHOME/tex/latex/dsa5latex/` legt, kann es weglassen.
 
-Vier Beispieldokumente, alle in `beispiel/`:
+Fünf Beispieldokumente, alle in `beispiel/`:
 
 | Datei | Klasse | wofür |
 |---|---|---|
@@ -162,6 +163,7 @@ Vier Beispieldokumente, alle in `beispiel/`:
 | `raster.tex` | `dsa5latex` | nur Text und Raster, baut in Sekunden — für schnelle Prüfungen |
 | `kaesten.tex` | `dsa5latex` | alle fünfzehn Kästen |
 | `rest.tex` | `dsa5latex` | Seitentypen, Umschlag, Rückseite |
+| `battlemap.tex` | `dsa5latex` | eine Kampfkarte auf A4, A3, A2 oder A1 mit Zollraster |
 
 Klassenoptionen zum Arbeiten: `entwurf` setzt Bilder als Rahmen und macht den Lauf um ein
 Vielfaches schneller, `ohnehintergrund` lässt die 7-MB-Seitenhintergründe weg, `rasterzeigen`
