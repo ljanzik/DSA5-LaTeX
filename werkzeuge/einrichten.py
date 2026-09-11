@@ -31,6 +31,7 @@ Copyright 2026 Leif Janzik. Apache License 2.0.
 """
 
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -64,6 +65,39 @@ def fehlende_pakete():
         except ImportError:
             fehlt.append((paket, wofuer))
     return fehlt
+
+
+def programme():
+    """(Name, Fundort oder None, wofuer, Rat) fuer die drei Programme, die
+    ausserhalb von Python gebraucht werden.
+
+    pdflatex und Ghostscript sucht bogen/bau/werkzeugpfad.py -- unter Windows
+    liegen beide in TeX Live und nicht zwingend im PATH. Diese Suche hier zu
+    wiederholen waere ein Duplikat; deshalb wird sie importiert, wenn bogen/
+    da ist. Wer nur die Klasse benutzt, braucht davon nichts."""
+    gefunden = [("xelatex", shutil.which("xelatex"),
+                 "die Abenteuerklasse; ohne das baut kein Beispiel",
+                 'macOS: brew install --cask mactex-no-gui')]
+
+    bau = PROJEKT / "bogen" / "bau"
+    if not (bau / "werkzeugpfad.py").exists():
+        return gefunden
+
+    sys.path.insert(0, str(bau))
+    import werkzeugpfad  # noqa: E402
+
+    for name, sucher, wofuer, rat in (
+            ("pdflatex", werkzeugpfad.pdflatex,
+             "bogen/, alle Fassungen des Heldenbogens",
+             "macOS: brew install --cask mactex-no-gui"),
+            ("ghostscript", lambda: werkzeugpfad.ghostscript()[0],
+             "bogen/: rendern, linien-lesen, Farbquelle normalisieren",
+             "macOS: brew install ghostscript  (nicht Teil von MacTeX)")):
+        try:
+            gefunden.append((name, sucher(), wofuer, rat))
+        except SystemExit:
+            gefunden.append((name, None, wofuer, rat))
+    return gefunden
 
 
 def heldendokumente():
@@ -100,7 +134,16 @@ def bestand():
     """Was ist da, was fehlt. Gibt die Zahl der fehlenden Stuecke zurueck."""
     fehlt = 0
 
-    print("Python-Pakete")
+    print("Programme")
+    for name, ort, wofuer, rat in programme():
+        if ort:
+            print(f"  da     {name:<12} {wofuer}")
+        else:
+            print(f"  FEHLT  {name:<12} {wofuer}")
+            print(f"         {rat}")
+            fehlt += 1
+
+    print("\nPython-Pakete")
     for paket, wofuer in fehlende_pakete():
         print(f"  FEHLT  {paket:<12} {wofuer}")
         fehlt += 1

@@ -165,6 +165,25 @@ Es braucht `Pillow`, `psd-tools` und `numpy`, für `nachmessen.py` außerdem `pd
 python3 -m pip install Pillow psd-tools numpy pdfplumber
 ```
 
+Dazu zwei Programme außerhalb von Python:
+
+| | wofür | woher |
+|---|---|---|
+| **XeLaTeX** | die Klasse; ohne das baut kein Beispiel | TeX Live / MacTeX |
+| **pdflatex** | `bogen/`, alle Fassungen des Heldenbogens | dieselbe Distribution |
+| **Ghostscript** | `bogen/`: `rendern`, `linien-lesen`, Farbquelle normalisieren | siehe unten |
+
+**Ghostscript ist unter Windows kostenlos dabei, anderswo nicht.** TeX Live bringt es dort in
+`tlpkg/tlgs` mit, ohne dass man etwas tun muss. Unter macOS gehört es **nicht** zu MacTeX:
+
+```sh
+brew install ghostscript          # macOS
+sudo apt install ghostscript      # Debian, Ubuntu
+```
+
+Ohne Ghostscript baut alles außer den drei genannten Werkzeugen. `einrichten.py --pruefen` sagt,
+was davon da ist.
+
 Die Werkzeuge lassen sich auch einzeln aufrufen, jedes mit demselben Baukastenpfad:
 
 ```sh
@@ -234,6 +253,10 @@ Kästen, `rest.tex` die Seitentypen.
 Gebraucht werden aus TeX Live oder MiKTeX: `geometry graphicx xcolor fontspec polyglossia tikz
 tcolorbox eso-pic fancyhdr enumitem wrapfig contour changepage intcalc array colortbl textcomp
 microtype hyperref tabularx environ`.
+
+Für `bogen/` kommen `pdfpages ifthen fontenc inputenc ebgaramond cinzel` dazu — und
+**Ghostscript**, das unter Windows in TeX Live steckt, unter macOS aber eigens zu installieren
+ist. Siehe „Schritt 2 — einrichten".
 
 ### Klassenoptionen
 

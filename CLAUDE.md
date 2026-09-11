@@ -14,7 +14,10 @@ Python-Werkzeuge in `werkzeuge/`, vier Dokumente in `doku/` und vier Beispieldok
 
 `werkzeuge/einrichten.py` ist die Klammer über alles, was aus dem Baukasten kommt: es ruft
 `aufbereiten.py`, `pergament.py` und `pruefen.py` mit **einem** Baukastenpfad auf. Wer wissen
-will, was fehlt, ruft es mit `--pruefen` ohne Argument auf.
+will, was fehlt, ruft es mit `--pruefen` ohne Argument auf — es prüft dann auch XeLaTeX,
+pdflatex und Ghostscript. Letzteres steckt unter Windows in TeX Live, unter macOS nicht
+(`brew install ghostscript`); ohne es fallen nur `bogen/bau/rendern`, `linien-lesen` und die
+Normalisierung der Farbquelle aus.
 
 ## Der Heldenbogen ist ein eigener Bereich
 
