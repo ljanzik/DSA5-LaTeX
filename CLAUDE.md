@@ -8,9 +8,13 @@ Wer nur ein Abenteuer schreiben soll, braucht Teil A.
 
 `dsa5latex.cls` setzt Abenteuer im Layout von *Das Schwarze Auge 5*, nach den Maßen des
 offiziellen *Scriptorium Aventuris – Layout Baukastens*: A4 hoch, zweispaltig, mit
-Grundlinienraster. Die Elementreferenz steht in `doku/ELEMENTE.md`. Dazu acht
-Python-Werkzeuge in `werkzeuge/`, vier Dokumente in `doku/` und vier Beispieldokumente in
-`beispiel/`.
+Grundlinienraster. Die Elementreferenz steht in `doku/ELEMENTE.md`, wie man einrichtet und baut
+in `doku/EINRICHTUNG.md`. Dazu acht Python-Werkzeuge in `werkzeuge/`, fünf Dokumente in `doku/`
+und vier Beispieldokumente in `beispiel/`.
+
+**Weitere Features** (eigene Klassen oder Erweiterungen wie Aufsteller, Battlemap, SL-Einleger)
+bekommen jeweils eine eigene Doku-Datei und einen eigenen Eintrag in der Feature-Liste in
+`README.md` — siehe „Dokumentation neuer Features“ in Teil B.
 
 `werkzeuge/einrichten.py` ist die Klammer über alles, was aus dem Baukasten kommt: es ruft
 `aufbereiten.py`, `pergament.py` und `pruefen.py` mit **einem** Baukastenpfad auf. Wer wissen
@@ -94,7 +98,7 @@ Fließtext. Absätze durch Leerzeilen, kein Einzug, kein \verb|\vspace|.
 | Wie geht Textumfluss um ein Bild? | `doku/ELEMENTE.md`, „Textumfluss“ |
 | Woher kommt dieser Zahlenwert? | `doku/MASSE.md` |
 | Ist das geprüft? | `doku/PRUEFPLAN.md` |
-| Wie besorge ich Grafiken und Schriften? | `README.md`, „Grafiken und Schriften besorgen“ |
+| Wie besorge ich Grafiken und Schriften? | `doku/EINRICHTUNG.md`, „Grafiken und Schriften besorgen“ |
 
 ## Die fünf Fallen beim Setzen
 
@@ -241,6 +245,29 @@ Eine Änderung an der Klasse ist erst vollständig, wenn diese vier Stellen zusa
 4. `beispiel/beispiel.tex` — das Element im Regellauf, damit es mitgebaut wird
 
 Kommt ein Maß aus dem Baukasten neu dazu, gehört es außerdem nach `werkzeuge/pruefen.py`.
+
+## Dokumentation neuer Features
+
+Ein neues Feature (eine eigene Klasse wie `dsa5einleger.cls` oder ein eigener Bereich wie der
+Heldenbogen oder eine Erweiterung der Kernklasse wie der Aufsteller) bekommt **eine eigene
+Doku-Datei**, `doku/<FEATURE>.md` in Großbuchstaben — zum Beispiel `doku/AUFSTELLER.md` oder
+`doku/BATTLEMAP.md` — statt eines Abschnitts in `doku/ELEMENTE.md`. `doku/ELEMENTE.md` bleibt
+der Kernklasse `dsa5latex.cls` vorbehalten; der Heldenbogen folgt diesem Muster bereits mit
+`doku/BOGEN.md`.
+
+Dazu gehört ein eigener Eintrag in der Feature-Liste in `README.md`: eine Zeile mit Kurzform,
+Klasse (falls eine eigene) und Verweis auf die neue Doku-Datei. Das Allgemeine — Grafiken und
+Schriften besorgen, Bauen, mit einer KI setzen — steht bereits in `doku/EINRICHTUNG.md` und
+muss nicht wiederholt werden; ein Feature ergänzt dort nur, was es zusätzlich braucht (eigene
+Beispieldokumente, eigene Klassenoptionen).
+
+`doku/MASSE.md` und `doku/PRUEFPLAN.md` bleiben **gemeinsame, projektweite Protokolle für alles,
+was sich am Baukasten misst** — nicht aufsplitten. Jedes Feature bekommt darin einen eigenen,
+klar abgegrenzten Abschnitt (wie Abschnitt 8 in `doku/MASSE.md` für den Einleger), damit
+Messungen an einem Ort auffindbar und über Features hinweg vergleichbar bleiben. Die einzige
+Ausnahme ist der Heldenbogen: seine Koordinaten stammen nicht aus dem Baukasten, sondern aus den
+PDF-Content-Streams des Verlagsbogens, und stehen deshalb eigenständig in `doku/BOGEN.md` — siehe
+„Der Heldenbogen ist ein eigener Bereich“ oben.
 
 ## Git
 
