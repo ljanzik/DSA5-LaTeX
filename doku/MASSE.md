@@ -141,14 +141,58 @@ Vier Effekte liegen im PSD auf der Titelebene, ein fünfter auf der Ebene *Rahme
 | Lage | PSD | in der Klasse |
 |---|---|---|
 | Fläche „Rahmen“ | Block mit harter Kante, 35 px um die Textbox, `2E2832` | Silhouette der Schrift, 13 pt Abstand |
-| Schlagschatten der Fläche | 21 px Abstand, 21 px Weichzeichnung, 75 % | **nicht enthalten** |
-| Schlagschatten der Schrift | 31 px Abstand, 18 px Weichzeichnung, 63 % | **nicht enthalten** |
+| Schlagschatten der Fläche | 21 px Abstand, 21 px Weichzeichnung, 75 % | sechzehn Lagen der Silhouette, 5,04 bp versetzt |
+| Schlagschatten der Schrift | 31 px Abstand, 18 px Weichzeichnung, 63 % | sechzehn Lagen des Schriftzugs, 7,44 bp versetzt |
 | Kontur | 3 px, Verlauf `A6A6A6` nach `2B2630` | 0,24 pt in `A6A6A6`, einfarbig |
 | Verlauf in der Schrift | senkrecht `C5B8CE` nach `28232D`, 42 % Skalierung | Schattierung mit vier Haltepunkten, vom Schriftzug maskiert |
 
-Beide Schlagschatten sind im PSD weichgezeichnet und teildeckend. Ohne Weichzeichnung nachgebildet
-bleibt von ihnen ein zweiter, versetzter Schriftzug, der den hellen Rand auf zwei Seiten überdeckt
-und selbst wie die Umrandung wirkt. Sie sind deshalb nicht enthalten.
+**Die beiden Schlagschatten.** Sie sind im PSD weichgezeichnet und teildeckend, und ein harter
+Versatz taugt nicht als Ersatz: davon bleibt ein zweiter, scharf begrenzter Schriftzug, der den
+hellen Rand auf zwei Seiten überdeckt und selbst wie die Umrandung wirkt. Weichgezeichnet werden
+sie deshalb über gestaffelte Lagen derselben Silhouette — von außen nach innen mit fallendem
+Radius und steigender Teildeckung. Das Profil ist eine Gaußkante, keine Rampe: im Abstand *x* von
+der harten Kante, *x* von 0 bis 1, hält der Schatten noch
+
+```
+G(x) = (exp(−2,5·x²) − exp(−2,5)) / (1 − exp(−2,5))
+```
+
+seiner Deckung *D*. Der abgezogene Sockel bringt das Profil bei *x* = 1 wirklich auf null, sonst
+hätte der Schatten außen eine Abbruchkante. Damit Lage *j* von außen kumuliert auf *D·G(x_j)*
+kommt, trägt sie selbst
+
+```
+a_j = 1 − (1 − D·G(x_j)) / (1 − D·G(x_{j−1}))
+```
+
+bei. Ein linearer Abfall war der erste Versuch und sah gestuft aus; den Unterschied macht der
+lange Ausklang außen.
+
+Drei Dinge waren dabei nicht offensichtlich:
+
+* **Jede Lage muss in eine PDF-Transparenzgruppe.** Die hundert und mehr `\contour`-Kopien einer
+  Lage überlappen einander, und ohne Gruppe multipliziert sich ihre Teildeckung an jeder
+  Überlappung auf: der Schatten wird in der Mitte fast deckend und am Rand fleckig.
+* **Der Saum reicht die volle Weichzeichnung weit nach außen, nicht die halbe.** Eine Gaußkante
+  läuft um die harte Kante herum, halb nach innen und halb nach außen; die innere Hälfte kann
+  `\contour` nicht, es bläht auf und schrumpft nicht. Mit der halben Spanne nach außen wurde der
+  Schatten deutlich härter als der im PSD.
+* **Der Perlabstand bleibt der feine der Fläche, 0,6 pt.** Ihn mit der Deckung wachsen zu lassen —
+  die äußere Lage ist ja der blasseste Teil — spart die Hälfte der Kopien, legt aber einen Kranz
+  Perlen um genau den Teil des Schattens, der weich sein soll. Zu sparen gibt es dabei ohnehin
+  wenig: gemessen kosten beide Schatten bei zwei Zeilen in 88 pt rund anderthalb Sekunden, bei
+  42,8 pt eine halbe — neben den Seitenhintergründen nichts. Wers beim Schreiben trotzdem eilig
+  hat, nimmt die Klassenoption `entwurf`; sie setzt vier Lagen und den vierfachen Abstand und
+  ersetzt ohnehin schon die Bilder durch Rahmen.
+
+Der Winkel steht im PSD nur beim Schatten der Fläche (120 Grad). Der Schriftschatten übernimmt
+ihn, weil Photoshop den Lichtwinkel per Voreinstellung global führt und beide Ebenen aus demselben
+Dokument stammen. Photoshop zählt den Winkel als die Richtung, *aus der* das Licht kommt, der
+Schatten fällt entgegengesetzt: dx = −Abstand·cos(Winkel), dy = −Abstand·sin(Winkel), bei 120 Grad
+also nach rechts unten. Eine Farbe nennt das PSD nicht, also die Voreinstellung von Photoshop:
+Schwarz, Modus Multiplizieren — auf einem Bild dasselbe wie Deckend mit Schwarz.
+
+Wer sie nicht will, schaltet sie mit `\dsaTitelSchattenAus` ab.
 
 Die Fläche ist im PSD ein Block, hier eine Silhouette: der Block müsste für jeden Titel neu
 gezeichnet werden, die Silhouette passt sich an. 13 pt statt der 35 px des PSD, damit die Flächen
@@ -214,6 +258,11 @@ Versuch, sie durch einen einzigen Konturstrich zu ersetzen, brachte 59 auf 59 Se
 Seitenhintergründe — 7 bis 8 MB je Seite, und jeder Lauf bettet sie neu ein. Die Klassenoption
 `ohnehintergrund` lässt sie weg und bringt den Lauf auf 6 bis 8 Sekunden, das PDF von 19 auf 4 MB.
 `entwurf` ersetzt darüber hinaus alle Grafiken durch Rahmen.
+
+Auch die beiden Schlagschatten sind es nicht: mit `ohnehintergrund` gemessen, je dreimal mit und
+ohne, kosten sie bei zwei Zeilen in 88 pt rund 1,7 Sekunden und bei 42,8 pt rund 0,5. Die
+Messungen streuen dabei stärker als der Unterschied, den eine einzelne Wiederholung zeigt — eine
+Zahl aus einem einzelnen Lauf ist hier wertlos.
 
 Der Konturstrich selbst wäre der elegantere Weg gewesen: PDF kann Text stricheln
 (Textrendermodus 2), und unter XeLaTeX geht das über ein dvipdfmx-Special — `pdfrender` kann es

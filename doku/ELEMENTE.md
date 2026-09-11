@@ -92,11 +92,11 @@ Alles einstellbar, in der Präambel:
 | `\dsaTitelVerlaufAus` | — | schlicht weiß mit Kontur |
 | `\dsaTitelFlaecheAus` | — | ohne graue Fläche |
 | `\dsaTitelRahmenAus` | — | ohne hellen Rand |
-| `\dsaTitelSchattenAus` | — | ohne die beiden Schlagschatten; halbiert die Zeit des Umschlaglaufs |
+| `\dsaTitelSchattenAus` | — | ohne die beiden Schlagschatten |
 
 Zwei Werte in der Klasse steuern, wie glatt der Rand der Fläche wird: `\dsatitelperlabstand`
 (0,6 pt) und `\dsatitelflaechenstufen` (5). Für die Schlagschatten gibt es dieselben Stellschrauben
-noch einmal — `\dsatitelschattenlagen` (5), `\dsatitelschattenperlabstand` (1,2 pt) — und je Schatten
+noch einmal — `\dsatitelschattenlagen` (16), `\dsatitelschattenperlabstand` (0,6 pt) — und je Schatten
 Abstand, Weichzeichnung und Deckung, etwa `\dsatitelschriftschattendeckung` (0,63). Warum, steht in
 `MASSE.md`.
 
