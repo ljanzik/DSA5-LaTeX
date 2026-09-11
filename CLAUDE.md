@@ -12,7 +12,7 @@ Grundlinienraster. Die Elementreferenz steht in `doku/ELEMENTE.md`, wie man einr
 in `doku/EINRICHTUNG.md`. Dazu sechs Python-Werkzeuge in `werkzeuge/`, vier Dokumente in `doku/`
 und fünf Beispieldokumente in `beispiel/`.
 
-Dazu kommen **Kampfkarten mit Zollraster**: kein eigener Seitentyp der Klasse, sondern ein
+Dazu kommt die **Battlemap mit Zollraster**: kein eigener Seitentyp der Klasse, sondern ein
 eigenes Dokument `beispiel/battlemap.tex` mit `\dsaBattlemapBlatt` und `\dsaBattlemap`,
 dokumentiert im Abschnitt „Seitentypen“ in `doku/ELEMENTE.md`.
 
@@ -73,7 +73,7 @@ Fließtext. Absätze durch Leerzeilen, kein Einzug, kein \verb|\vspace|.
 | Welche Kästen gibt es, wie groß sind sie? | `doku/ELEMENTE.md`, „Kästen“ — fünfzehn Umgebungen mit Maßen |
 | Wie setze ich eine Tabelle? | `doku/ELEMENTE.md`, „Tabellen und Raster“ |
 | Wie geht Textumfluss um ein Bild? | `doku/ELEMENTE.md`, „Textumfluss“ |
-| Wie setze ich eine Kampfkarte mit Zollraster? | `beispiel/battlemap.tex` — eigenes Dokument, eigenes Blattformat |
+| Wie setze ich eine Battlemap mit Zollraster? | `beispiel/battlemap.tex` — eigenes Dokument, eigenes Blattformat |
 | Woher kommt dieser Zahlenwert? | `doku/MASSE.md` |
 | Ist das geprüft? | `doku/PRUEFPLAN.md` |
 | Wie besorge ich Grafiken und Schriften? | `doku/EINRICHTUNG.md`, „Grafiken und Schriften besorgen“ |
@@ -171,7 +171,7 @@ Fünf Beispieldokumente, alle in `beispiel/`:
 | `raster.tex` | `dsa5latex` | nur Text und Raster, baut in Sekunden — für schnelle Prüfungen |
 | `kaesten.tex` | `dsa5latex` | alle fünfzehn Kästen |
 | `rest.tex` | `dsa5latex` | Seitentypen, Umschlag, Rückseite |
-| `battlemap.tex` | `dsa5latex` | eine Kampfkarte auf A4, A3, A2 oder A1 mit Zollraster |
+| `battlemap.tex` | `dsa5latex` | eine Battlemap auf A4, A3, A2 oder A1 mit Zollraster |
 
 Klassenoptionen zum Arbeiten: `entwurf` setzt Bilder als Rahmen und macht den Lauf um ein
 Vielfaches schneller, `ohnehintergrund` lässt die 7-MB-Seitenhintergründe weg, `rasterzeigen`

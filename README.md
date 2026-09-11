@@ -23,7 +23,7 @@ Jedes Feature ist eine eigene Klasse oder eine eigene Erweiterung, mit eigener E
 | Feature | Klasse | wofür | Doku |
 |---|---|---|---|
 | Abenteuer setzen | `dsa5latex.cls` | Zweispaltiger Satz auf A4 mit Grundlinienraster, Pergament- und Wertekästen in Produktionsgröße, Kapitelbanner, Meistermasken, Seitenhintergründe, Textumfluss | [Elementreferenz](doku/ELEMENTE.md) |
-| Kampfkarten mit Zollraster | — (`beispiel/battlemap.tex`, kein `.cls`) | Eigenes Blatt neben dem Heft (A4 bis A1, hoch oder quer) mit gestricheltem Zollraster über einer Karte, kein eigener Seitentyp der Klasse | [Elementreferenz](doku/ELEMENTE.md#seitentypen) |
+| Battlemap mit Zollraster | — (`beispiel/battlemap.tex`, kein `.cls`) | Eigenes Blatt neben dem Heft (A4 bis A1, hoch oder quer) mit gestricheltem Zollraster über der Battlemap, kein eigener Seitentyp der Klasse | [Elementreferenz](doku/ELEMENTE.md#seitentypen) |
 
 Einrichten, Grafiken und Schriften besorgen, bauen — das gilt featureübergreifend und steht in
 [Einrichten und Bauen](doku/EINRICHTUNG.md).
@@ -63,7 +63,7 @@ cd beispiel
 TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 ```
 
-Die Elementreferenz der Kernklasse steht in `doku/ELEMENTE.md`, dort auch die Kampfkarten mit
+Die Elementreferenz der Kernklasse steht in `doku/ELEMENTE.md`, dort auch die Battlemap mit
 Zollraster (`beispiel/battlemap.tex`, Abschnitt „Seitentypen“) — kein eigener Seitentyp der
 Klasse, sondern ein eigenes Blatt (A4 bis A1, hoch oder quer) neben dem Heft.
 
@@ -83,7 +83,7 @@ sind zehn erledigt, darunter zwei echte Fehler: der Kapiteltitel stand mit 23,5 
 kein gesetzter Band führt. Die vier verbliebenen heißen im Quelltext `% OFFEN:`: sie warten
 nicht auf eine Messung, sondern auf eine Quelle, die es nicht gibt. Welche das sind, steht
 in `doku/ELEMENTE.md` unter „Was noch nicht nachgemessen ist“, der Stand jeder Messung in
-`doku/PRUEFPLAN.md`. Das Zollraster der Kampfkarten ist dort ebenfalls nachgemessen: alle vier
+`doku/PRUEFPLAN.md`. Das Zollraster der Battlemap ist dort ebenfalls nachgemessen: alle vier
 Blattgrößen treffen ihr Sollmaß, der Linienabstand liegt auf 72,001 bp gegen ein Sollmaß von
 72 bp.
 

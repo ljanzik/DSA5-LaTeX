@@ -366,7 +366,7 @@ Gemessene Zahlen finden nicht alles. Diese Fehler waren erst am gerenderten Abzu
 | Kapitelseiten ohne Bildrahmen | die Klasse konnte ihn nur mit Bild setzen | `\dsakapitelbild`, mit Bild oder als Platzhalter |
 | Rückseite: Karte ganzseitig, Text dunkel darauf | es fehlte die Vorlage | Rückseiten-Karten-Paket, Aufbau am Vorbild vermessen |
 
-### Kampfkarten mit Zollraster (`beispiel/battlemap.tex`)
+### Battlemap mit Zollraster (`beispiel/battlemap.tex`)
 
 Kein Element der Klasse, sondern ein eigenes Dokument mit eigenem Blattformat — geprüft wird
 deshalb hier und nicht in der Statustabelle. Sollmaß ist der Zoll: 25,4 mm, und das sind 72 bp,

@@ -130,7 +130,7 @@ TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 
 Fünf Beispieldokumente liegen in `beispiel/`: `beispiel.tex` zeigt jedes Element genau einmal
 (22 Seiten), `raster.tex` nur Text und Raster und baut in Sekunden, `kaesten.tex` alle fünfzehn
-Kästen, `rest.tex` die Seitentypen, `battlemap.tex` eine Kampfkarte mit Zollraster auf eigenem
+Kästen, `rest.tex` die Seitentypen, `battlemap.tex` eine Battlemap mit Zollraster auf eigenem
 Blatt (A4 bis A1, hoch oder quer) statt einer Heftseite. Jedes weitere Feature bringt seine
 eigenen Beispieldokumente mit — welche das sind, steht in seiner eigenen Doku-Datei aus der
 Feature-Liste.

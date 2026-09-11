@@ -58,12 +58,13 @@ diese Aufteilung.
 | Ganzseitige Grafik | `\dsaGanzseite{Bild}` | — | nein | nein |
 | Querformat | `\dsaQuerAnfang` … `\dsaQuerEnde` | 1 | nein | nein |
 
-**Kampfkarten sind kein Seitentyp der Klasse.** Eine Karte mit Zollraster braucht ein anderes
-Blatt als das Heft — A4, A3, A2 oder A1 —, und das Blattformat setzt `geometry` in der Präambel.
-Sie steht deshalb als eigenes Dokument in `beispiel/battlemap.tex`: `\dsaBattlemapBlatt{a3}{quer}`
-wählt das Blatt, `\dsaBattlemap{grafiken/karte}` legt die Karte deckend darauf und zieht das
-Raster darüber. Aus der Klasse kommt dabei nur `\dsaBildDeckend`. Blatt und Lage lassen sich beim
-Aufruf überschreiben, ohne die Datei zu ändern — so kommen mehrere Formate aus einer Quelle:
+**Die Battlemap ist kein Seitentyp der Klasse.** Eine Battlemap mit Zollraster braucht ein
+anderes Blatt als das Heft — A4, A3, A2 oder A1 —, und das Blattformat setzt `geometry` in der
+Präambel. Sie steht deshalb als eigenes Dokument in `beispiel/battlemap.tex`:
+`\dsaBattlemapBlatt{a3}{quer}` wählt das Blatt, `\dsaBattlemap{grafiken/karte}` legt die
+Battlemap deckend darauf und zieht das Raster darüber. Aus der Klasse kommt dabei nur
+`\dsaBildDeckend`. Blatt und Lage lassen sich beim Aufruf überschreiben, ohne die Datei zu
+ändern — so kommen mehrere Formate aus einer Quelle:
 `xelatex -jobname=battlemap-a1 "\def\dsablatt{a1}\def\dsalage{quer}\input{battlemap.tex}"`.
 
 ### Der Titel auf dem Umschlag
