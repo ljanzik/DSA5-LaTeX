@@ -53,8 +53,8 @@ Die Maße in diesem Projekt sind kein Bildmaterial, sondern Messergebnisse. Sie 
 
 ## Einrichten und Bauen
 
-Grafiken und Schriften besorgen, XeLaTeX aufsetzen, die Beispieldokumente bauen und — wer will —
-mit einer KI setzen: **[Einrichten und Bauen](doku/EINRICHTUNG.md)**. Kurzfassung:
+Grafiken und Schriften besorgen, XeLaTeX aufsetzen, die Beispieldokumente bauen und, wer mag,
+auch mit einer KI setzen: **[Einrichten und Bauen](doku/EINRICHTUNG.md)**. Kurzfassung:
 
 ```sh
 python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
