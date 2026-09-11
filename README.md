@@ -165,9 +165,11 @@ TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 `TEXMFHOME/tex/latex/dsa5latex/` legt, kann es weglassen. Unter Windows in der PowerShell:
 `$env:TEXINPUTS = "..;"`.
 
-Vier Beispieldokumente liegen in `beispiel/`: `beispiel.tex` zeigt jedes Element genau einmal
+Fünf Beispieldokumente liegen in `beispiel/`: `beispiel.tex` zeigt jedes Element genau einmal
 (22 Seiten), `raster.tex` nur Text und Raster und baut in Sekunden, `kaesten.tex` alle fünfzehn
-Kästen, `rest.tex` die Seitentypen.
+Kästen, `rest.tex` die Seitentypen. `battlemap.tex` fällt aus der Reihe: es setzt keine Heftseite,
+sondern eine Kampfkarte auf ein eigenes Blatt — A4, A3, A2 oder A1, hoch oder quer, mit einem
+gestrichelten Zollraster über der Karte.
 
 Gebraucht werden aus TeX Live oder MiKTeX: `geometry graphicx xcolor fontspec polyglossia tikz
 tcolorbox eso-pic fancyhdr enumitem wrapfig contour changepage intcalc array colortbl textcomp
