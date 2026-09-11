@@ -14,9 +14,13 @@ Zwei LaTeX-Dokumentklassen im Layout von *Das Schwarze Auge 5*, nach den Maßen 
 | `dsa5latex.cls` | Abenteuer, A4 hoch, zweispaltig mit Grundlinienraster | `doku/ELEMENTE.md` |
 | `dsa5einleger.cls` | Einleger für den Spielleiterschirm, A4 quer, vier freie Spalten, kein Raster | `doku/EINLEGER.md` |
 
-`dsa5einleger` lädt `dsa5latex` und ändert nur, was ein Einleger anders macht. Dazu sieben
-Python-Werkzeuge in `werkzeuge/`, vier Dokumente in `doku/` und fünf Beispieldokumente in
-`beispiel/`.
+`dsa5einleger` lädt `dsa5latex` und ändert nur, was ein Einleger anders macht. Wie man einrichtet
+und baut, steht featureübergreifend in `doku/EINRICHTUNG.md`. Dazu sieben Python-Werkzeuge in
+`werkzeuge/`, fünf Dokumente in `doku/` und fünf Beispieldokumente in `beispiel/`.
+
+**Weitere Features** (eigene Klassen oder Erweiterungen wie Charakterbogen, Aufsteller,
+Battlemap) bekommen jeweils eine eigene Doku-Datei und einen eigenen Eintrag in der Feature-Liste
+in `README.md` — siehe „Dokumentation neuer Features“ in Teil B.
 
 ---
 
@@ -102,7 +106,7 @@ Drei Dinge, die im Einleger anders heißen als im Abenteuer: Abstand ist `\dsaLu
 | Einleger: Reihen, Kolumnen, Tabellen | `doku/EINLEGER.md`, Abschnitte 5 bis 7 |
 | Woher kommt dieser Zahlenwert? | `doku/MASSE.md` |
 | Ist das geprüft? | `doku/PRUEFPLAN.md` |
-| Wie besorge ich Grafiken und Schriften? | `README.md`, „Grafiken und Schriften besorgen“ |
+| Wie besorge ich Grafiken und Schriften? | `doku/EINRICHTUNG.md`, „Grafiken und Schriften besorgen“ |
 
 ## Die fünf Fallen beim Setzen
 
@@ -285,6 +289,25 @@ Kommt ein Maß aus dem Baukasten neu dazu, gehört es außerdem nach `werkzeuge/
 **Am Einleger arbeiten heißt fast immer, an `dsa5einleger.cls` zu arbeiten, nicht an
 `dsa5latex.cls`.** Die Einlegerklasse lädt die Abenteuerklasse; eine Änderung dort schlägt auf
 alle vier Abenteuer-Beispiele durch und muss dort nachgemessen werden.
+
+## Dokumentation neuer Features
+
+Ein neues Feature (eine eigene Klasse wie `dsa5einleger.cls` oder eine Erweiterung der
+Kernklasse wie der Aufsteller) bekommt **eine eigene Doku-Datei**, `doku/<FEATURE>.md` in
+Großbuchstaben — zum Beispiel `doku/AUFSTELLER.md` oder `doku/BATTLEMAP.md` — statt eines
+Abschnitts in `doku/ELEMENTE.md`. `doku/ELEMENTE.md` bleibt der Kernklasse `dsa5latex.cls`
+vorbehalten; der Einleger folgt diesem Muster bereits mit `doku/EINLEGER.md`.
+
+Dazu gehört ein eigener Eintrag in der Feature-Liste in `README.md`: eine Zeile mit Kurzform,
+Klasse (falls eine eigene) und Verweis auf die neue Doku-Datei. Das Allgemeine — Grafiken und
+Schriften besorgen, Bauen, mit einer KI setzen — steht bereits in `doku/EINRICHTUNG.md` und
+muss nicht wiederholt werden; ein Feature ergänzt dort nur, was es zusätzlich braucht (eigene
+Beispieldokumente, eigene Klassenoptionen).
+
+`doku/MASSE.md` und `doku/PRUEFPLAN.md` bleiben **gemeinsame, projektweite Protokolle** — nicht
+aufsplitten. Jedes Feature bekommt darin einen eigenen, klar abgegrenzten Abschnitt (wie
+Abschnitt 8 in `doku/MASSE.md` für den Einleger), damit Messungen an einem Ort auffindbar und
+über Features hinweg vergleichbar bleiben.
 
 ## Git
 

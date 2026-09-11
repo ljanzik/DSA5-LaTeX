@@ -1,29 +1,32 @@
-# dsa5-latex
-
 <p align="center">
   <img src="doku/bilder/titel.png" alt="LaTeX Layout" width="400">
 </p>
 
-Zwei LaTeX-Dokumentklassen im Layout von **Das Schwarze Auge 5** — nach den Maßen des offiziellen
-*Scriptorium Aventuris – Layout Baukastens* von Ulisses Spiele.
-
-**`dsa5latex.cls` setzt Abenteuer.** Zweispaltiger Satz auf A4 mit Grundlinienraster, Pergament-
-und Wertekästen in ihren Produktionsgrößen, Kapitelbanner, Meistermasken, Seitenhintergründe und
-die Werkzeuge für freigestellte Grafiken mit Textumfluss.
-
-**`dsa5einleger.cls` setzt Einleger für den Spielleiterschirm.** DIN A4 quer, vier freie Spalten,
-über die ein Block beliebig laufen darf, Tabellen mit Quellenmarke und Verlaufskopf, Pergament mit
-Schuppenleiste oben und unten. Sie lädt `dsa5latex.cls` und ändert nur, was ein Einleger anders
-macht. Vorbild und Maßquelle ist der offizielle *Universal Spielleiterschirm Einleger, Auflage 5*;
-das Querformat ist die eine bewusste Abweichung davon. Anleitung: `doku/EINLEGER.md`.
+Ein Baukasten aus LaTeX-Dokumentklassen im Layout von **Das Schwarze Auge 5**, nach den Maßen
+des offiziellen *Scriptorium Aventuris – Layout Baukastens* von Ulisses Spiele. Was das Toolset
+im Einzelnen kann, steht in der Feature-Liste unten.
 
 **Der Code steht unter Apache 2.0. Die Grafiken und Schriften sind nicht Teil dieses Projekts** und
-müssen selbst besorgt werden. Wie, steht im Abschnitt „Grafiken und Schriften besorgen“.
-Ohne sie kompiliert nichts.
+müssen selbst besorgt werden — siehe [Einrichten und Bauen](doku/EINRICHTUNG.md). Ohne sie
+kompiliert nichts.
 
 Die Vorlage ist mit Hilfe einer KI entstanden und dafür gedacht, auch mit einer KI benutzt zu
-werden: **LaTeX muss man dafür nicht (vollständig) lernen.** Wie das geht, steht unter
-„Mit einer KI setzen“.
+werden: **LaTeX muss man dafür nicht (vollständig) lernen.** Wie das geht, steht in
+[Einrichten und Bauen](doku/EINRICHTUNG.md) unter „Mit einer KI setzen“.
+
+---
+
+## Was das Toolset kann
+
+Jedes Feature ist eine eigene Klasse oder eine eigene Erweiterung, mit eigener Elementreferenz.
+
+| Feature | Klasse | wofür | Doku |
+|---|---|---|---|
+| Abenteuer setzen | `dsa5latex.cls` | Zweispaltiger Satz auf A4 mit Grundlinienraster, Pergament- und Wertekästen in Produktionsgröße, Kapitelbanner, Meistermasken, Seitenhintergründe, Textumfluss | [Elementreferenz](doku/ELEMENTE.md) |
+| Einleger für den Spielleiterschirm | `dsa5einleger.cls` | DIN A4 quer, vier freie Spalten, über die ein Block beliebig laufen darf, Tabellen mit Quellenmarke und Verlaufskopf, Pergament mit Schuppenleiste oben und unten. Lädt `dsa5latex.cls` und ändert nur, was ein Einleger anders macht; Vorbild und Maßquelle ist zusätzlich der offizielle *Universal Spielleiterschirm Einleger, Auflage 5* | [Elementreferenz](doku/EINLEGER.md) |
+
+Einrichten, Grafiken und Schriften besorgen, bauen — das gilt featureübergreifend und steht in
+[Einrichten und Bauen](doku/EINRICHTUNG.md).
 
 ---
 
@@ -49,167 +52,20 @@ Die Maße in diesem Projekt sind kein Bildmaterial, sondern Messergebnisse. Sie 
 
 ---
 
-## Grafiken und Schriften besorgen
+## Einrichten und Bauen
 
-### Schritt 1 — den Baukasten herunterladen
-
-**<https://www.ulisses-ebooks.de/de/product/197880/scriptorium-aventuris-layout-baukasten>**
-
-Der *Scriptorium Aventuris – Layout Baukasten* von Ulisses Spiele, kostenlos. Herunterladen und
-entpacken. Der Ordner heißt bei der hier verwendeten Fassung `Scriptorium Aventuris v4` und
-enthält unter anderem:
-
-```
-Scriptorium Aventuris v4/
-├── Document fonts/     die beiden Schriften
-├── Links/              die Quelldateien, PSD und JPG
-├── PNG innen/          die Layoutelemente als PNG
-└── PNG aussen/         Umschlag vorne und hinten
-```
-
-### Schritt 1b — das Rückseiten-Karten-Paket
-
-**<https://www.ulisses-ebooks.de/product/240903/Ruckseiten-Karten-Paket>**
-
-Das *Rückseiten Karten Paket* von Ulisses Spiele, ein eigenes Produkt (nicht kostenlos, rund
-einen Euro). Es liefert die letzte Seite eines Hefts: eine fertige Rückseite mit Zierrahmen,
-Banner und kleiner Aventurienkarte, dazu 28 Masken, die je eine Region hervorheben.
-
-```
-Rückseiten_Karten_Paket/
-├── ScriptoriumAventuris-hinten.png   die Rückseite mit heller Karte
-├── Aventurien_Mittelreich.png        28 Masken, je eine Region
-├── Aventurien_Thorwal.png            …
-├── KarteVerdunkelt.png               die Karte, ganz verdunkelt
-├── Grenzen.png                       das Netz der Regionsgrenzen
-└── Karte_mit_Grenzen_Paket.pdn       beide Ebenen als Arbeitsdatei
-```
-
-**Eine Maske ist keine fertige Seite.** Sie ist die verdunkelte Karte mit einem Loch an der Stelle
-der Region; bei `Aventurien_Mittelreich.png` sind das 2,3 Prozent der Fläche, mitten in der Karte.
-Sie sagt also nur, *wo* die Region liegt.
-
-**Gesetzt wird nicht die Verdunkelung des Pakets, sondern die Fassung der offiziellen Hefte:** die
-Karte in Sepia, allein die aktive Region in Farbe, ein weicher Schlagschatten darum. Das hebt die
-Region deutlich besser heraus. In einem dunkelgrünen Waldgebiet war die bloß abgedunkelte Fassung
-kaum zu erkennen. `aufbereiten.py --rueckseiten` rechnet das aus Maske und Rückseite aus und legt
-alle 29 Fassungen als `ruecken-neutral`, `ruecken-mittelreich`, `ruecken-thorwal` und so weiter ab.
-Die Sepiarampe ist an zwei gesetzten Rücktiteln gemessen; die Herleitung steht in `doku/MASSE.md`
-unter „Die Sepiakarte der Rückseite“.
-
-Für eine eigene Aufteilung gibt es `werkzeuge/regionsmaske.py`: es flutet von einem Saatpunkt
-aus innerhalb der Grenzlinien und rechnet aus der gefundenen Fläche dieselbe Sepiafassung wie
-`aufbereiten.py`. Das Grenznetz kennt allerdings nur die großen Regionen: eine Saat im Kosch
-flutet das ganze Mittelreich.
-
-### Schritt 2 — aufbereiten
-
-Der bequeme Weg. Das Werkzeug legt alles an, was die Klasse braucht, und benennt es passend:
+Grafiken und Schriften besorgen, XeLaTeX aufsetzen, die Beispieldokumente bauen und, wer mag,
+auch mit einer KI setzen: **[Einrichten und Bauen](doku/EINRICHTUNG.md)**. Kurzfassung:
 
 ```sh
 python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
-```
-
-Für die Rückseite gibt es ein zweites Paket, das Rückseiten-Karten-Paket. Es bringt eine
-fertige Rückseite mit Zierrahmen und 28 Masken, die je eine Region Aventuriens hervorheben:
-
-```sh
-python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4" \
-    --rueckseiten "/pfad/zum/Rueckseiten_Karten_Paket"
-```
-
-Es braucht `Pillow` und `psd-tools`:
-
-```sh
-python3 -m pip install Pillow psd-tools
-```
-
-Was es tut:
-
-- kopiert die benötigten PNG aus `PNG innen/` und `PNG aussen/` nach `grafiken/` und benennt sie
-  auf Namen ohne Leerzeichen und Umlaute um
-- schneidet die vier Doppelseiten aus `Links/` in je eine linke und eine rechte Einzelseite
-  (`seite-links-0` bis `-3`, `seite-rechts-0` bis `-3`); die Klasse rotiert über die ersten drei
-- holt aus `Links/DSA5-Kapitelstart-Beispielgrafik.psd` die Pergamentfläche und das
-  Drachenornament für den Kapitelanfang
-- rechnet mit `--rueckseiten` die 29 Rückseiten aus: Karte in Sepia, die aktive Region in
-  Farbe, Schlagschatten darum
-- kopiert die fünf Schriftdateien nach `schriften/`
-- schreibt am Ende eine Liste dessen, was fehlt
-
-### Schritt 3 — prüfen
-
-```sh
-python3 werkzeuge/pruefen.py
-```
-
-Vergleicht jede Datei in `grafiken/` gegen die erwarteten Pixelmaße aus `doku/MASSE.md`. Weicht
-eine ab, ist entweder eine andere Fassung des Baukastens im Umlauf oder beim Kopieren etwas
-schiefgegangen. Beides würde sonst erst im gesetzten PDF auffallen.
-
-### Der Weg von Hand
-
-Wer nicht skripten will: `werkzeuge/aufbereiten.py --liste` gibt die Zuordnung aus, Quelldatei nach
-Zieldatei. Die Umbenennung ist nötig, weil der Baukasten Leerzeichen und Umlaute in Dateinamen
-verwendet und LaTeX damit schlecht umgeht.
-
-Die Seitenhintergründe und die beiden Kapitelanfang-Teile lassen sich von Hand nicht sinnvoll
-herstellen. Dafür braucht es das Werkzeug oder ein Bildbearbeitungsprogramm.
-
----
-
-## Bauen
-
-**XeLaTeX ist Pflicht.** Die Klasse lädt `fontspec` und `polyglossia`.
-
-```sh
 cd beispiel
 TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 ```
 
-`TEXINPUTS` ist nötig, weil `dsa5latex.cls` eine Ebene höher liegt. Wer die Datei nach
-`TEXMFHOME/tex/latex/dsa5latex/` legt, kann es weglassen. Unter Windows in der PowerShell:
-`$env:TEXINPUTS = "..;"`.
-
-Vier Beispieldokumente liegen in `beispiel/`: `beispiel.tex` zeigt jedes Element genau einmal
-(22 Seiten), `raster.tex` nur Text und Raster und baut in Sekunden, `kaesten.tex` alle fünfzehn
-Kästen, `rest.tex` die Seitentypen, `einleger.tex` jedes Element der Einlegerklasse.
-
-Der Einleger braucht einmalig zwei eigene Hintergrundgrafiken. Der Baukasten hat kein Querformat;
-`werkzeuge/einleger.py` erzeugt Pergamentfläche und Zierleiste aus den Buchseiten, indem es deren
-Schuppenkante am Bund um 90 Grad dreht — dasselbe Motiv, das auch der offizielle Einleger oben und
-unten legt:
-
-```sh
-python3 werkzeuge/einleger.py
-cd beispiel && TEXINPUTS="..;" xelatex einleger.tex
-```
-
-Gebraucht werden aus TeX Live oder MiKTeX: `geometry graphicx xcolor fontspec polyglossia tikz
-tcolorbox eso-pic fancyhdr enumitem wrapfig contour changepage intcalc array colortbl textcomp
-microtype hyperref tabularx environ`.
-
-### Klassenoptionen
-
-```latex
-\documentclass[raster]{dsa5latex}              % Grundlinienraster ein, Standard
-\documentclass[ohneraster]{dsa5latex}          % Raster aus
-\documentclass[raster,rasterzeigen]{dsa5latex} % Grundlinien mitdrucken
-\documentclass[raster,entwurf]{dsa5latex}      % Bilder als Rahmen, schnelles Bauen
-```
-
-Für den Einleger:
-
-```latex
-\documentclass{dsa5einleger}                    % A4 quer, vier Spalten
-\documentclass[spaltenzeigen]{dsa5einleger}     % Spaltenkanten mitdrucken
-\documentclass[ohnehintergrund]{dsa5einleger}   % ohne Pergament und Leisten
-```
-
-Die Elementreferenz steht in `doku/ELEMENTE.md`, die des Einlegers in `doku/EINLEGER.md`. Wer mit
-**Claude Code** an den Klassen arbeitet,
-findet die Hausregeln des Projekts in `CLAUDE.md` — Quellen der Maße, Rasterregel, Bauweg,
-Prüfweg, Schreibweise.
+Die Elementreferenz der Kernklasse steht in `doku/ELEMENTE.md`, die des Einlegers in
+`doku/EINLEGER.md`. Was der Einleger zusätzlich braucht (eigene Hintergrundgrafiken,
+Klassenoptionen, eigenes Beispieldokument) steht ebenfalls in `doku/EINRICHTUNG.md`.
 
 ---
 
