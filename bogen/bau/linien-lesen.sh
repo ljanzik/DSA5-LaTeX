@@ -1,15 +1,13 @@
-# quelle-vorbereiten.ps1 -- Weiterleitung. Die Logik steht in quelle-vorbereiten.py.
+#!/bin/sh
+# linien-lesen.sh -- Weiterleitung. Die Logik steht in linien-lesen.py.
 #
 # Zwei Fassungen desselben Ablaufs zu pflegen ist genau die Sorte Duplikat,
 # die dieses Projekt anderswo schon eingeholt hat. Deshalb steht hier nichts
 # ausser dem Aufruf: dasselbe Python laeuft unter Windows, macOS und Linux,
 # und die Schalter sind ueberall dieselben (-Held dorle, -Alle, ...).
 #
-# Unter macOS und Linux: ./bau/quelle-vorbereiten.sh
+# Unter Windows: bau/linien-lesen.ps1
 #
 # Copyright 2026 Leif Janzik. Apache License 2.0.
 
-$ErrorActionPreference = 'Stop'
-$py = if (Get-Command python -ErrorAction SilentlyContinue) { 'python' } else { 'python3' }
-& $py (Join-Path $PSScriptRoot 'quelle-vorbereiten.py') @args
-exit $LASTEXITCODE
+exec python3 "$(dirname "$0")/linien-lesen.py" "$@"

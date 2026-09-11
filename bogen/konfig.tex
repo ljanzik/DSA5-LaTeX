@@ -2,11 +2,13 @@
 %
 % Die beiden Quell-PDF sind Verlagsmaterial und liegen absichtlich AUSSERHALB des
 % Projektverzeichnisses. Pfade mit Schrägstrich, nicht mit Backslash.
+%
+% Copyright 2026 Leif Janzik. Apache License 2.0.
 
 \def\quelleDF{C:/Users/LeifJanzik/Downloads/Heldendokument_druckerfreundlich.pdf}
 
 % Die Farbfassung, wie sie vom Verlag kommt. LaTeX selbst legt sie nie ein
-% (siehe unten), aber der Pfad gehoert trotzdem hierher: bau\quelle-vorbereiten.ps1
+% (siehe unten), aber der Pfad gehoert trotzdem hierher: bau/quelle-vorbereiten.py
 % las ihn frueher aus einer eigenen fest verdrahteten Zeile, und damit war die
 % Zusage im Kopf dieser Datei -- "die einzige Datei, die Pfade kennt" -- nicht
 % mehr wahr. Das Skript liest ihn jetzt hier heraus.
@@ -15,9 +17,9 @@
 % Die Farbfassung wird NICHT direkt eingelegt. Sie ist eine Druckdatei:
 % MediaBox 230.8 x 317.8 mm (A4 plus 11 mm Beschnitt), TrimBox 208.8 x 295.8 mm.
 % pdfpages wuerde sie um etwa +0,6 % auf A4 skalieren, und dann stimmt keine
-% gemessene Koordinate mehr. bau\quelle-vorbereiten.ps1 beschneidet sie
+% gemessene Koordinate mehr. bau/quelle-vorbereiten.py beschneidet sie
 % einmal auf die TrimBox und setzt sie unskaliert mittig auf A4; erst diese
-% abgeleitete Datei wird eingelegt. bauen.ps1 erzeugt sie bei Bedarf selbst.
+% abgeleitete Datei wird eingelegt. bauen.py erzeugt sie bei Bedarf selbst.
 \def\quelleFarbe{bau/ausgabe/quelle-farbe-a4.pdf}
 
 % --- Seitenzuordnung -------------------------------------------------------

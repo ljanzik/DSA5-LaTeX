@@ -24,6 +24,10 @@ Dazu kommt `bogen/`: ein Werkzeug, das das offizielle DSA5-Heldendokument mit Fo
 als Umschlag dazu setzt. Es läuft mit pdflatex statt XeLaTeX und folgt eigenen Regeln; alles
 darüber steht in [`doku/BOGEN.md`](doku/BOGEN.md).
 
+**Windows, macOS und Linux.** Die Klasse braucht nur XeLaTeX. Die Werkzeuge und die Bauskripte
+sind Python; zu jedem gibt es eine `.ps1` und eine `.sh`, beide dreizeilig und ohne eigene
+Logik, damit die Aufrufe auf allen Plattformen dieselben bleiben.
+
 ---
 
 ## Warum keine Grafiken im Projekt
@@ -121,7 +125,7 @@ hier Seite 4), und die Beschriftungen ebenso („Talente" gegen „FERTIGKEITEN"
 Fassung ihre eigene Koordinatentabelle. Die Farbfassung wird außerdem vor dem Einlegen einmal auf
 ihre TrimBox beschnitten und unskaliert auf A4 gesetzt — sonst skalierte `pdfpages` sie um etwa
 +0,6 Prozent, und keine gemessene Koordinate träfe mehr. Das erledigt
-`bogen/bau/quelle-vorbereiten.ps1` von selbst.
+`bogen/bau/quelle-vorbereiten.py` von selbst.
 
 **Die beiden PDF bleiben außerhalb des Projekts.** Sie sind Verlagsmaterial und stehen anders als
 der Baukasten nicht unter der Scriptorium-Vereinbarung. Ihre Pfade — und nur dort — stehen in

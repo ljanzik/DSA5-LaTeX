@@ -17,6 +17,8 @@ waagerechte Messung läuft deshalb nicht durch die Mitte, sondern bei
 
     python3 werkzeuge/innenraum.py
     python3 werkzeuge/innenraum.py grafiken/werte-mittel-portrait.png
+
+Copyright 2026 Leif Janzik. Apache License 2.0.
 """
 
 import os

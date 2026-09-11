@@ -30,6 +30,12 @@ in `schriften/`, die beide Seiten aus `werkzeuge/aufbereiten.py` bekommen, und d
 Wertedateien `bogen/helden/*.tex`. Die Maße des Bogens stehen in `doku/BOGEN.md`, nicht in
 `doku/MASSE.md` — dort bleibt die Dreier-Rangfolge des Baukastens unter sich.
 
+**Skripte sind Python, `.ps1` und `.sh` sind Weiterleitungen.** In `bogen/bau/` liegt zu jedem
+Ablauf eine `.py` mit der Logik und daneben zwei dreizeilige Aufrufer. Wer etwas ändert, ändert
+die `.py` — sonst hat man wieder zwei Fassungen desselben Ablaufs, und genau davon hatte dieses
+Projekt schon vier. Die Schalter sind in PowerShell-Schreibweise (`-Held dorle`, `-Alle`), damit
+derselbe Aufruf überall gilt.
+
 ---
 
 # Teil A — ein Dokument setzen

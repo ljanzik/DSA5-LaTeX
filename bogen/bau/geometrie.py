@@ -18,6 +18,8 @@ Das entpackte PDF erzeugt bau/linien-lesen.ps1, oder direkt:
     gswin64c -I<...> -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite \
         -dCompressStreams=false -dCompressPages=false \
         -dFirstPage=N -dLastPage=N -sOutputFile=roh.pdf quelle.pdf
+
+Copyright 2026 Leif Janzik. Apache License 2.0.
 """
 
 import argparse

@@ -4,6 +4,8 @@
 % Hier steht der ganze Trick des Projekts: dieselbe Feldtabelle wird je nach
 % \Modus einmal zu Formularfeldern, einmal zu festem Text, einmal zu einer
 % schlichten Werteliste ohne den Originalbogen.
+%
+% Copyright 2026 Leif Janzik. Apache License 2.0.
 
 % --- Werte ----------------------------------------------------------------
 % \wert, \wertvon, \wertdaP, \wertoder stehen in werte.tex — dieselbe Datei,
@@ -66,7 +68,7 @@
 \pdflinkmargin=0pt
 %
 % Mit diesen Optionen gilt: /Rect im PDF = die Werte der Feldtabelle, exakt.
-% Nachpruefbar mit bau\felder-pruefen.ps1.
+% Nachpruefbar mit bau/felder-pruefen.py.
 
 \newcommand{\feldWidget}[6]{% name x y breite hoehe zusatzoptionen
   \node[anchor=north west, inner sep=0pt, outer sep=0pt]

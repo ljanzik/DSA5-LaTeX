@@ -9,6 +9,8 @@ er eigenstaendig eingemessen werden.
 Erwartet die entpackten Einzelseiten unter %TEMP%:
     heldenbogen-roh-df-s<n>.pdf        (A4)
     heldenbogen-roh-farbe-a4-s<n>.pdf  (auf A4 normalisiert)
+
+Copyright 2026 Leif Janzik. Apache License 2.0.
 """
 import os
 import sys

@@ -79,14 +79,17 @@ Aufbau, alles unter `bogen/`:
 | `helden/<name>.tex` | Werte je Held (`leer.tex` ist die Probe auf den Leerfall) |
 | `werteliste.tex` | dritte Fassung: Werte ohne den Originalbogen |
 | `bau/` | Skripte; Ausgaben nach `bau/ausgabe/`, Bilder nach `bau/bilder/` |
+| `bau/*.py` | die Logik, plattformneutral |
+| `bau/*.ps1`, `bau/*.sh` | dreizeilige Weiterleitungen darauf |
+| `bau/werkzeugpfad.py` | findet pdflatex und Ghostscript; ersetzt das frühere `texpfad.ps1` |
 | `bau/geometrie.py` | der genaue Geometrie-Parser (siehe „Einmessen") |
 | `mappe/mappe.tex` | vierte Ausgabefassung: die Charaktermappe (Umschlag) |
 | `mappe/mechanik-mappe.tex` | Flechtbandrahmen, Pergament, Kästen, Titelsatz |
 | `mappe/blaetter.tex` | die vier Blätter der Mappe, mit allen Layoutmaßen |
 
-Die Skripte setzen das Arbeitsverzeichnis selbst auf `bogen/` (`$Projekt = Split-Path -Parent
-$PSScriptRoot`). Sie lassen sich deshalb von der Projektwurzel aus aufrufen, und alle Pfade
-darin — `felder/`, `helden/`, `bau/ausgabe/` — bleiben relativ zu `bogen/`.
+Die Skripte setzen das Arbeitsverzeichnis selbst auf `bogen/` (`PROJEKT` in
+`bau/werkzeugpfad.py`, eine Ebene über `bau/`). Sie lassen sich deshalb von überall aufrufen,
+und alle Pfade darin — `felder/`, `helden/`, `bau/ausgabe/` — bleiben relativ zu `bogen/`.
 
 `bogen/bau/ausgabe/` und `bogen/bau/bilder/` sind in `.gitignore`. Darin steckt
 Verlagsmaterial: jede überlagerte Fassung enthält die Quellseiten vollständig, und die
@@ -94,45 +97,66 @@ normalisierte Farbquelle ist eine Kopie der Verlagsdatei.
 
 ## Befehle
 
-Von der Projektwurzel aus:
+**Die Logik steht in `.py`, die `.ps1` und `.sh` sind dreizeilige Weiterleitungen.** Die Schalter
+sind deshalb überall dieselben — auch unter macOS und Linux heißt es `-Held dorle` und nicht
+`--held`. Von der Projektwurzel aus, Windows links, Unix rechts:
 
-```powershell
-.\bogen\bau\bauen.ps1                              # ausfüllbar, druckerfreundlich
-.\bogen\bau\bauen.ps1 -Quelle farbe                # Farbfassung
-.\bogen\bau\bauen.ps1 -Modus vorbefuellt -Held dorle
-.\bogen\bau\bauen.ps1 -Modus liste -Held dorle     # ohne Originalbogen
-.\bogen\bau\bauen.ps1 -Alle -Held dorle            # alle fünf Fassungen
-.\bogen\bau\bauen.ps1 -Messen                      # mit Messgitter
-.\bogen\bau\bauen.ps1 -Modus vorbefuellt -Held gorbas -OhneLeere   # leere Bögen weglassen
+| Windows | macOS und Linux |
+|---|---|
+| `.\bogen\bau\bauen.ps1 -Held dorle` | `./bogen/bau/bauen.sh -Held dorle` |
+| `.\bogen\bau\mappe-bauen.ps1 -Beide` | `./bogen/bau/mappe-bauen.sh -Beide` |
+| … und so für alle sechs | … |
 
-.\bogen\bau\felder-pruefen.ps1                     # /Rect gegen Feldtabelle, Namen eindeutig?
-.\bogen\bau\felder-pruefen.ps1 -Quelle farbe
-.\bogen\bau\linien-lesen.ps1 -Seite 2              # Linien und Kästchen aus der Quelle lesen
-.\bogen\bau\rendern.ps1 -Datei <pdf> -Seiten 1     # PNG zum Ansehen
-.\bogen\bau\quelle-vorbereiten.ps1                 # Farbquelle auf A4 normalisieren
+Wer den Umweg nicht braucht, ruft das Python direkt auf; das ist auf beiden Plattformen gleich
+und deshalb die Schreibweise im Folgenden.
 
-.\bogen\bau\mappe-bauen.ps1 -Held dorle                  # Charaktermappe, 4 x A4
-.\bogen\bau\mappe-bauen.ps1 -Held dorle -Fassung druck   # A3 quer, zweiseitig
-.\bogen\bau\mappe-bauen.ps1 -Held dorle -Beide
+```sh
+python3 bogen/bau/bauen.py                              # ausfüllbar, druckerfreundlich
+python3 bogen/bau/bauen.py -Quelle farbe                # Farbfassung
+python3 bogen/bau/bauen.py -Modus vorbefuellt -Held dorle
+python3 bogen/bau/bauen.py -Modus liste -Held dorle     # ohne Originalbogen
+python3 bogen/bau/bauen.py -Alle -Held dorle            # alle fünf Fassungen
+python3 bogen/bau/bauen.py -Messen                      # mit Messgitter
+python3 bogen/bau/bauen.py -Modus vorbefuellt -Held gorbas -OhneLeere
+
+python3 bogen/bau/felder-pruefen.py                     # /Rect gegen Feldtabelle
+python3 bogen/bau/felder-pruefen.py -Quelle farbe
+python3 bogen/bau/linien-lesen.py -Seite 2              # Linien und Kästchen der Quelle
+python3 bogen/bau/rendern.py -Datei <pdf> -Seiten 1     # PNG zum Ansehen
+python3 bogen/bau/quelle-vorbereiten.py                 # Farbquelle auf A4 normalisieren
+
+python3 bogen/bau/mappe-bauen.py -Held dorle                  # Charaktermappe, 4 x A4
+python3 bogen/bau/mappe-bauen.py -Held dorle -Fassung druck   # A3 quer, zweiseitig
+python3 bogen/bau/mappe-bauen.py -Held dorle -Beide
 ```
 
-Die Python-Werkzeuge erwarten `bogen/` als Arbeitsverzeichnis:
+Zwei Werkzeuge erwarten `bogen/` als Arbeitsverzeichnis, weil sie mit Dateinamen ohne Pfad
+umgehen:
 
-```powershell
+```sh
 cd bogen
-python bau\geometrie.py <roh.pdf> --waag --senk --rechteck --text
-python bau\fassungen-vergleichen.py          # deckt sich Farbfassung mit df?
+python3 bau/geometrie.py <roh.pdf> --waag --senk --rechteck --text
+python3 bau/fassungen-vergleichen.py         # deckt sich Farbfassung mit df?
 ```
 
 Das Pergament der Mappe liegt in `grafiken/` und kommt vom Einrichten, nicht vom Bauen:
 
-```powershell
+```sh
 python3 werkzeuge/einrichten.py "/pfad/zu/Scriptorium Aventuris v4"
 python3 werkzeuge/pergament.py  "/pfad/zu/Scriptorium Aventuris v4" --zeigen
 ```
 
-Die Skripte holen TeX Live selbst in den `PATH` (`bogen/bau/texpfad.ps1`) und lassen `pdflatex`
-zweimal laufen. Nichts davon von Hand nachbauen.
+`bogen/bau/werkzeugpfad.py` findet pdflatex und Ghostscript und lässt `pdflatex` zweimal laufen.
+Nichts davon von Hand nachbauen. Was es gefunden hat, sagt es selbst:
+
+```sh
+python3 bogen/bau/werkzeugpfad.py
+```
+
+**Ghostscript ist unter Windows kostenlos dabei, anderswo nicht.** TeX Live bringt es dort in
+`tlpkg/tlgs` mit; unter macOS gehört es nicht zu MacTeX und fehlt oft — `brew install
+ghostscript`. Ohne Ghostscript laufen `rendern`, `linien-lesen` und die Normalisierung der
+Farbquelle nicht, der Rest schon.
 
 ## Einmessen — die Werkzeugkette
 
@@ -142,7 +166,7 @@ Geometrie des Bogens lässt sich aus der Quelldatei **extrahieren**.
 Zwei Werkzeuge, beide auf demselben Weg: Ghostscript schreibt die Seite unkomprimiert neu, dann
 wird der Content-Stream gelesen und in Millimeter von links oben umgerechnet.
 
-- **`bau/linien-lesen.ps1`** — der schnelle Überblick. Regex über den Stream, rechnet den
+- **`bau/linien-lesen.py`** — der schnelle Überblick. Regex über den Stream, rechnet den
   1/10-bp-Faktor (`0.1 0 0 0.1 0 0 cm`) ein, den es selbst aus der Datei liest. Legt das
   entpackte PDF unter `%TEMP%` ab — von dort holt es der Python-Parser.
 - **`python bau/geometrie.py <roh.pdf>`** — der genaue. `--waag --senk --rechteck --text`,
@@ -182,10 +206,10 @@ Was sich **nicht** ermitteln lässt, und was daher am gerenderten Bogen abgelese
 
 Die drei Proben, in dieser Reihenfolge:
 
-1. `felder-pruefen.ps1` — rechnet jedes `/Rect` des Ausgabe-PDF zurück in mm. Bei richtigen
+1. `felder-pruefen.py` — rechnet jedes `/Rect` des Ausgabe-PDF zurück in mm. Bei richtigen
    Optionen ist es **exakt** der Tabellenwert. Findet außerdem doppelte Feldnamen, weißen
    Hintergrund und Rahmen.
-2. `rendern.ps1` + ansehen — sitzt der Wert auf der Linie, verdeckt er keine Beschriftung?
+2. `rendern.py` + ansehen — sitzt der Wert auf der Linie, verdeckt er keine Beschriftung?
 3. Ausfüllen und **Speichern** in zwei Betrachtern. Steht noch aus, siehe unten.
 
 Das Messgitter bleibt trotzdem im Projekt (`-Messen`); für Zweifelsfälle ist es das schnellste
@@ -302,9 +326,9 @@ skaliert `pdfpages` sie um etwa +0,6 % auf A4 — und dann stimmt **keine** im Q
 gemessene Koordinate mit der Seite überein. Das ist keine Kleinigkeit: es macht jede Messung für
 diese Fassung unbrauchbar, ohne einen Fehler zu melden.
 
-`bau/quelle-vorbereiten.ps1` beschneidet sie deshalb einmal auf die TrimBox und setzt sie
+`bau/quelle-vorbereiten.py` beschneidet sie deshalb einmal auf die TrimBox und setzt sie
 **unskaliert** mittig auf A4 (`bau/ausgabe/quelle-farbe-a4.pdf`). Erst diese abgeleitete Datei
-wird eingelegt und gemessen; `bauen.ps1` und `linien-lesen.ps1` erzeugen sie bei Bedarf selbst.
+wird eingelegt und gemessen; `bauen.py` und `linien-lesen.py` erzeugen sie bei Bedarf selbst.
 Zwei Nebenwirkungen, beide erwünscht: die Ausgabe schrumpft von 6,5 auf 3,9 MB, weil der
 Beschnitt wegfällt, und `Requested size` im Log ist danach für alle Seiten konstant 210 × 297 mm.
 
@@ -356,7 +380,7 @@ Drei Dinge, die daran nicht offensichtlich sind und jeweils einmal schiefgegange
    Werte; dort würde sie alle Bögen wegwerfen. Sie wird ignoriert, mit Hinweis im Log.
 3. **Fällt jeder Bogen weg**, entsteht ein Dokument ohne Seite, pdflatex schreibt gar kein PDF,
    und das sieht nach einem Absturz aus. Für diesen Fall bleibt Bogen 1 stehen
-   (`\bogenAuswahlPruefen`), und `bauen.ps1` meldet ein fehlendes PDF sauber statt abzustürzen.
+   (`\bogenAuswahlPruefen`), und `bauen.py` meldet ein fehlendes PDF sauber statt abzustürzen.
 
 Die Felder weggelassener Bögen verschwinden mit: geprüft an `-Held dorle-kurz -Modus ausfuellbar`
 — 744 statt 1256 Felder, Bogen 4 und 5 mit **0** Feldern, keine Waisen-Widgets.
@@ -395,11 +419,11 @@ Rahmen des Tierbogens) — dort ist noch kein Feld.
 unten. Ein Bezugspunkt, konsequent.
 
 **Das Messgitter** (TikZ, Linien alle 10 mm beschriftet, alle 5 mm fein) bleibt dauerhaft im
-Projekt, hinter `-Messen`. Seit `linien-lesen.ps1` ist es nicht mehr das Hauptwerkzeug, sondern
+Projekt, hinter `-Messen`. Seit `linien-lesen.py` ist es nicht mehr das Hauptwerkzeug, sondern
 das Mittel für Zweifelsfälle — siehe „Einmessen".
 
 **Tabellenseiten werden generiert, nicht einzeln eingemessen.** Auf den Tabellenseiten (Talente,
-Kampfwerte, Liturgien/Zauber, Ausrüstung) je Startwert und Zeilenhöhe aus `linien-lesen.ps1`
+Kampfwerte, Liturgien/Zauber, Ausrüstung) je Startwert und Zeilenhöhe aus `linien-lesen.py`
 nehmen, dann `\foreach`. Das senkt den Aufwand von mehreren Hundert Feldern auf einige Dutzend
 Werte. Bogen 1 zeigt das Muster: `\abgeleiteterwert` erzeugt 22 Felder aus sechs Zeilen.
 
@@ -501,7 +525,7 @@ gemessenen 18,12). Ein halbes Glied in der Ecke fällt auf, eine Abweichung von 
 `werkzeuge/pergament.py` leitet zwei Dateien nach `grafiken/` ab, wie jede andere
 Baukastengrafik: `mappe-pergament-a4.jpg` und `mappe-pergament-kasten.png`. Erzeugt werden sie
 beim Einrichten, nicht beim Bauen — `werkzeuge/einrichten.py` gibt ihnen denselben
-Baukastenpfad wie `aufbereiten.py`. `mappe-bauen.ps1` prüft nur noch, ob sie da sind, und
+Baukastenpfad wie `aufbereiten.py`. `mappe-bauen.py` prüft nur noch, ob sie da sind, und
 verweist sonst aufs Einrichten. Zwei Befunde, beide gemessen:
 
 1. **Die Baukasten-Doppelseiten sind als Textur wertlos** — Standardabweichung 1,0 von 255 in
@@ -542,7 +566,7 @@ Wertekästen, Absatztrenner, Ornamente, das Scriptorium-Banner und die Innenseit
 Erledigt und nachprüfbar:
 
 - Überlagerung trägt: AcroForm mit Textfeldern über der eingebetteten Originalseite
-- `/Rect` im Ausgabe-PDF ist **exakt** der Tabellenwert (`felder-pruefen.ps1`)
+- `/Rect` im Ausgabe-PDF ist **exakt** der Tabellenwert (`felder-pruefen.py`)
 - Feldnamen eindeutig, kein Feld mit Hintergrund, kein Feld mit Rahmen
 - alle sechs Bögen sichtgeprüft: jeder Wert auf seiner Linie bzw. in seiner Zelle, nichts
   verdeckt, nichts in der Nachbarspalte
@@ -587,17 +611,19 @@ alle **still** schief, ohne Fehlermeldung oder mit einer irreführenden.
    als **Makroargument** durchreichen, dann sind es echte Token.
 4. **`/Rect` steht im Objekt vor `/T`.** Wer den PDF-Tokenstrom flach nach Name-dann-Rechteck
    paart, verschiebt jedes Feld um eine Zeile und verliert eines. Je Objekt parsen.
-5. **PowerShell 5.1 und Kodierung.** `.ps1`-Dateien brauchen **UTF-8 mit BOM**. Ohne BOM liest
-   PS 5.1 als ANSI, ein `—` wird zu `”`, und PowerShell nimmt das als Zeichenkettenende — der
-   Parser meldet dann Fehler in einer ganz anderen Zeile. Nicht zweimal umkodieren, sonst
-   entsteht ein doppeltes BOM.
+5. **Sonderzeichen in Konsolenausgaben.** Sie haben zweimal Ärger gemacht, auf beiden
+   Plattformen anders. In PowerShell 5.1 brauchten `.ps1`-Dateien **UTF-8 mit BOM**: ohne BOM
+   las PS als ANSI, ein `—` wurde zu `”`, und der Parser meldete den Fehler in einer ganz
+   anderen Zeile. In Python schreibt `print` auf der Windows-Konsole in `cp1252`, und derselbe
+   Gedankenstrich kommt dort als `?` heraus. Beides ist umgangen, indem die Ausgaben nur ASCII
+   führen — `--` statt `—`. Die Kommentare in den Werkzeugen ebenso, wie überall im Projekt.
 6. **Doppelte Feldnamen** — AcroForm behandelt sie als ein Feld mit gespiegeltem Inhalt. Bei
    Tabellenschleifen über sechs bzw. zehn Seiten passiert das schnell. Namensschema einhalten
    (`s2_talent_fw_07`), und in beiden Quellfassungen dieselben Namen, damit die Wertedateien
-   austauschbar bleiben. `felder-pruefen.ps1` prüft es.
+   austauschbar bleiben. `felder-pruefen.py` prüft es.
 7. **`\TextField` außerhalb von `\begin{Form}`** — erzeugt kein Feld und keine Fehlermeldung.
    Genau **ein** `Form` um das ganze Dokument.
-8. **Nur ein Lauf** — `remember picture` braucht zwei. `bauen.ps1` macht das.
+8. **Nur ein Lauf** — `remember picture` braucht zwei. `bauen.py` macht das.
 9. **Feldhöhe gegen Schriftgröße** — 5 mm Feld mit 11 pt schneidet unten ab; `charsize` klein.
 10. **Mehrzeilige Felder** (Vorteile, Nachteile, Ausrüstungszeilen) brauchen `multiline=true` —
     dafür ist `art=mehrzeilig` in der Feldtabelle da.
@@ -641,11 +667,17 @@ Zwei weitere, die nur die Skripte betreffen:
 
 - **Ghostscript aus TeX Live** findet seine Initialisierungsdateien nicht von selbst. `lib`,
   `kanji` und `Resource` müssen per `-I` mitgegeben werden, sonst „Can't find initialization
-  file gs_init.ps". `bau/texpfad.ps1` erledigt das.
-- **Unquotierte Argumente mit Variablen** (`-r$Dpi`, `-dFirstPage=$s`) werden von PowerShell
-  falsch zerlegt und das Programm tut stillschweigend nichts. Immer `"-r$Dpi"` schreiben.
-- **PowerShell-Variablen sind nicht case-sensitiv.** `$quelle = ...` überschreibt einen
-  Parameter `$Quelle` und löst dessen `ValidateSet` erneut aus.
+  file gs_init.ps". `bau/werkzeugpfad.py` erledigt das — aber nur unter Windows, denn nur dort
+  ist Ghostscript Teil von TeX Live. Unter macOS und Linux kommt es aus dem `PATH` und braucht
+  die Zusatzargumente nicht.
+- **Ausgabe von Unterprozessen und `print`.** Unser `print` ist gepuffert, `pdflatex` und
+  Ghostscript schreiben direkt auf den Handle — ohne `flush=True` steht die Überschrift
+  hinter der Ausgabe, die sie ankündigen soll. Zweimal aufgetreten, in `bauen.py` und
+  `einrichten.py`.
+
+Die früheren PowerShell-Fallen — unquotierte Argumente mit Variablen (`-r$Dpi`), und dass
+`$quelle` denselben Parameter meint wie `$Quelle` — sind mit der Portierung weggefallen. Sie
+stehen hier, falls jemand die Wrapper doch wieder mit Logik füllen will: nicht tun.
 
 ## Ausdrücklich nicht tun
 
