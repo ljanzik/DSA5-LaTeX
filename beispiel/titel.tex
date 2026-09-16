@@ -1,0 +1,110 @@
+%%% titel.tex — eine Titelseite fuer dieses Projekt selbst: der Zwerg am
+%%% Setzkasten mit dem Titel „LaTeX Baukasten". Kein Beispieldokument der
+%%% Klasse, sondern ihr eigenes Aushaengeschild.
+%%%
+%%% Der Zweck ist ein Thumbnail. Was auf einer Vorschaukachel von 200 Pixeln
+%%% Breite noch zu lesen sein soll, muss deutlich groesser gesetzt sein als
+%%% auf einem gedruckten Umschlag: 88 pt statt der 42,8 pt des Baukastens.
+%%%
+%%% ---- Der Rand der Flaeche ----
+%%%
+%%% Die Klasse setzte lange 13 pt, mit Absicht breiter als die 35 px =
+%%% 8,4 pt des PSD: so laufen die Flaechen zweier Zeilen ineinander. Bei
+%%% 88 pt Grad werden daraus 34,9 pt, und das sieht klobig aus. An zwei gesetzten
+%%% Abenteuern nachgemessen, jeweils im Verhaeltnis zur Versalhoehe, weil
+%%% die Grade verschieden sind:
+%%%
+%%%   Ketten fuer die Ewigkeit, Zeile 1   29,5 pt Versal,  8,9 pt Rand  0,30
+%%%   Ketten fuer die Ewigkeit, Zeile 2   39,4 pt Versal, 13,2 pt Rand  0,34
+%%%   Schrecken aus der Tiefe, Zeile 1    39,4 pt Versal,  8,9 pt Rand  0,23
+%%%   PSD des Baukastens                  28,5 pt Versal,  8,4 pt Rand  0,29
+%%%   Klasse, frueher 13 pt               28,5 pt Versal, 13,0 pt Rand  0,46
+%%%   diese Seite, frueher 17 pt          58,6 pt Versal, 34,9 pt Rand  0,60
+%%%
+%%% Der Verlag liegt also bei 0,23 bis 0,34, der Baukasten bei 0,29. Diese
+%%% Seite steht deshalb auf \dsaTitelRand{8.4}: bei 88 pt Grad sind das
+%%% 17,3 pt Rand und damit 0,30 — der Wert von „Ketten fuer die Ewigkeit".
+%%% Die Klasse selbst ist inzwischen auf denselben Wert zurueckgesetzt, der
+%%% Befehl hier steht also nur noch zur Erinnerung an die Messung.
+%%%
+%%% ---- Der Schlagschatten der Schrift ----
+%%%
+%%% Sein Versatz stimmt NICHT mit den Heften ueberein, weder in der Laenge
+%%% noch im Winkel. Gemessen ueber die Kreuzkorrelation zwischen
+%%% Schriftmaske und Dunkelheitsbild — der Schatten ist eine
+%%% weichgezeichnete Kopie des Schriftzugs, also liegt das Maximum der
+%%% Korrelation genau auf seinem Versatz:
+%%%
+%%%                                dx      dy    Laenge   je Versalhoehe
+%%%   Ketten, Zeile 1            5,5 pt  5,8 pt   8,0 pt      0,270
+%%%   Ketten, Zeile 2            8,4 pt  4,6 pt   9,6 pt      0,243
+%%%   Schrecken, Zeile 1         8,4 pt  4,8 pt   9,7 pt      0,246
+%%%   diese Klasse (aus dem PSD) 8,6 pt 13,0 pt  15,6 pt      0,315
+%%%
+%%% Der Verlag liegt bei 0,24 bis 0,27 der Versalhoehe, die Klasse bei
+%%% 0,315 — rund ein Viertel zu lang. Deutlicher ist der Unterschied im
+%%% Winkel: die Hefte werfen den Schatten flach zur Seite (133 bis 151
+%%% Grad), die Klasse steil nach unten (120 Grad, der Wert des PSD). Nach
+%%% UNTEN sind es deshalb 13,0 pt statt 4,6 bis 5,8 pt, und genau das
+%%% sieht man: der Schatten steht als zweite Zeile unter der Schrift statt
+%%% als Kante an ihrer Flanke.
+%%%
+%%% Dazu kommt die Weichzeichnung: quer durch einen Stamm gemessen reicht
+%%% die dunkle Zone beim Verlag links des Buchstabens 0,10 der Versalhoehe
+%%% weit, hier gar nicht — dort laeuft der Schatten also um den Buchstaben
+%%% herum, hier bricht er an der linken Kante ab.
+%%%
+%%% Alle drei Werte stehen in der Klasse als interne Makros und folgen dem
+%%% PSD: \dsatitelschriftschattenweg 7,44 bp, \dsatitelschattenwinkel 120,
+%%% \dsatitelschriftschattenweich 4,32 bp. Ob die Klasse dem Musterbogen
+%%% oder den Heften folgen soll, ist nicht entschieden; oeffentliche
+%%% Stellbefehle gibt es dafuer noch nicht.
+%%%
+%%% ---- Die Zeilen ----
+%%%
+%%% Zweizeilig, nicht einzeilig: „LaTeX Baukasten" in einer Zeile waere bei
+%%% 88 pt breiter als das Papier. Gesetzt wird von unten, die letzte Zeile
+%%% sitzt auf \dsatitelunten — die erste schiebt also nach oben ins Bild.
+%%%
+%%% Der Zeilenvorschub rechnet mit dem Grad der UNTEREN Zeile, nicht der
+%%% oberen: 0,9 x 78 pt = 70,2 pt zwischen den Grundlinien.
+%%%
+%%% 0,9 und nicht 1,0, damit die beiden Flaechen zu einem durchgehenden
+%%% Block zusammenlaufen, wie ihn die Verlagsumschlaege zeigen. Bei 1,0
+%%% standen sie mit dem schmalen Rand 0,34 mm auseinander — fast, aber
+%%% eben nicht ganz getrennt, und das sah unruhig aus. Wer sie wirklich
+%%% getrennt haben will, braucht etwa 1,15.
+%%%
+%%% Zum Vergleich der Verlagswert: dort liegen zwischen der Grundlinie der
+%%% oberen Zeile und der Versalhoehe der unteren 12,7 pt, rund 0,35 der
+%%% Versalhoehe.
+%%%
+%%% ---- Bauen ----
+%%%
+%%%   cd beispiel
+%%%   TEXINPUTS="..;" xelatex titel.tex     # zweimal
+%%%
+%%% Zweimal, weil der Titel ueber remember picture an der Papierkante
+%%% haengt: im ersten Lauf steht die Marke noch nicht in der .aux.
+%%%
+%%% ACHTUNG beim Weitergeben: die Seite traegt den Zierrahmen
+%%% grafiken/umschlag-vorne, und der gehoert Ulisses Spiele. Das Bild
+%%% darunter — grafiken/titelbild.jpg, der Zwerg — ist mit einer KI erzeugt
+%%% und die einzige freigestellte Grafik im Repository. Ein Abzug DIESER
+%%% Seite darf deshalb nicht als Bilddatei eingecheckt werden, siehe
+%%% „Grafiken und Schriften gehoeren nicht ins Repository" in CLAUDE.md.
+
+\documentclass[ohnehintergrund]{dsa5latex}
+\graphicspath{{../}}
+
+\dsaTitelGrad{88}
+\dsaTitelRand{8.4}
+\dsaTitelZeilenfaktor{0.9}
+
+\begin{document}
+
+\dsaUmschlagVorne{grafiken/titelbild}{%
+  \dsaTitelZeile{LaTeX}%
+  \dsaTitelZeile[78]{BAUKASTEN}}
+
+\end{document}

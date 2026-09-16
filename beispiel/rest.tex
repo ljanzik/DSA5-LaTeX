@@ -1,13 +1,25 @@
 %%% rest.tex — die Elemente, die weder raster.tex noch kaesten.tex zeigen:
-%%% Kapitelanfang mit Bild, Kreis- und Freiformmaske, Inhaltsverzeichnis,
-%%% Rueckseite. Ohne Seitenhintergrund, damit ein Lauf kurz ist.
+%%% Umschlag vorne und hinten, Kapitelanfang mit Bild, Kreis- und
+%%% Freiformmaske, Inhaltsverzeichnis. Ohne Seitenhintergrund, damit ein
+%%% Lauf kurz ist.
+%%%
+%%% Der Umschlag traegt hier den ROTEN Titel (\dsaTitelRot). Den grauen des
+%%% Baukastens zeigt beispiel.tex; so wird jede der beiden Fassungen von
+%%% einem Lauf gebaut.
 %%%
 %%%   xelatex -output-directory=beispiel beispiel/rest.tex   (dreimal)
 %%%   python3 werkzeuge/nachmessen.py beispiel/rest.pdf --text
 
 \documentclass[raster,ohnehintergrund]{dsa5latex}
 
+% Die Farben des Titels gehoeren in die Praeambel, siehe dsa5latex.cls.
+\dsaTitelRot
+
 \begin{document}
+
+\dsaUmschlagVorne{grafiken/aventurienkarte}{%
+  \dsaTitelZeile{Ein roter Titel}%
+  \dsaTitelZeile[27.9]{in zwei Graden}}
 
 \dsaInhalt
 

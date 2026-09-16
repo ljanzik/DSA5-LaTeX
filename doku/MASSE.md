@@ -140,9 +140,9 @@ Vier Effekte liegen im PSD auf der Titelebene, ein fünfter auf der Ebene *Rahme
 
 | Lage | PSD | in der Klasse |
 |---|---|---|
-| Fläche „Rahmen“ | Block mit harter Kante, 35 px um die Textbox, `2E2832` | Silhouette der Schrift, 13 pt Abstand |
+| Fläche „Rahmen“ | Block mit harter Kante, 35 px um die Textbox, `2E2832` | Silhouette der Schrift, 8,4 pt Abstand |
 | Schlagschatten der Fläche | 21 px Abstand, 21 px Weichzeichnung, 75 % | sechzehn Lagen der Silhouette, 5,04 bp versetzt |
-| Schlagschatten der Schrift | 31 px Abstand, 18 px Weichzeichnung, 63 % | sechzehn Lagen des Schriftzugs, 7,44 bp versetzt |
+| Schlagschatten der Schrift | 31 px Abstand, 18 px Weichzeichnung, 63 % | sechzehn Lagen des Schriftzugs, **6,0 bp versetzt unter 150°, 6,8 bp weich** — die Werte der Hefte, siehe unten |
 | Kontur | 3 px, Verlauf `A6A6A6` nach `2B2630` | 0,24 pt in `A6A6A6`, einfarbig |
 | Verlauf in der Schrift | senkrecht `C5B8CE` nach `28232D`, 42 % Skalierung | Schattierung mit vier Haltepunkten, vom Schriftzug maskiert |
 
@@ -187,17 +187,66 @@ Drei Dinge waren dabei nicht offensichtlich:
 
 Der Winkel steht im PSD nur beim Schatten der Fläche (120 Grad). Der Schriftschatten übernimmt
 ihn, weil Photoshop den Lichtwinkel per Voreinstellung global führt und beide Ebenen aus demselben
-Dokument stammen. Photoshop zählt den Winkel als die Richtung, *aus der* das Licht kommt, der
+Dokument stammen — in der Klasse gilt derselbe Winkel deshalb ebenfalls für beide Schatten, und er
+steht auf den 150 Grad der Hefte. Photoshop zählt den Winkel als die Richtung, *aus der* das Licht kommt, der
 Schatten fällt entgegengesetzt: dx = −Abstand·cos(Winkel), dy = −Abstand·sin(Winkel), bei 120 Grad
 also nach rechts unten. Eine Farbe nennt das PSD nicht, also die Voreinstellung von Photoshop:
 Schwarz, Modus Multiplizieren — auf einem Bild dasselbe wie Deckend mit Schwarz.
 
 Wer sie nicht will, schaltet sie mit `\dsaTitelSchattenAus` ab.
 
+**Beim Schriftschatten folgt die Klasse nicht dem PSD, sondern den Heften.** Gemessen über die
+Kreuzkorrelation zwischen Schriftmaske und Dunkelheitsbild — der Schatten ist eine
+weichgezeichnete Kopie des Schriftzugs, also liegt das Maximum der Korrelation auf seinem Versatz.
+Alles im Verhältnis zur Versalhöhe, weil die Grade verschieden sind:
+
+| | dx | dy | Länge | je Versalhöhe | Winkel |
+|---|---|---|---|---|---|
+| *Ketten für die Ewigkeit*, Zeile 1 | 5,5 pt | 5,8 pt | 8,0 pt | 0,270 | 133° |
+| *Ketten für die Ewigkeit*, Zeile 2 | 8,4 pt | 4,6 pt | 9,6 pt | 0,243 | 151° |
+| *Schrecken aus der Tiefe*, Zeile 1 | 8,4 pt | 4,8 pt | 9,7 pt | 0,246 | 150° |
+| Klasse mit den PSD-Werten | 8,6 pt | 13,0 pt | 15,6 pt | 0,315 | 124° |
+| Klasse mit 6,0 bp unter 150° | 12,0 pt | 6,7 pt | 13,8 pt | 0,278 | 151° |
+
+Dieselbe Messung an der eigenen Ausgabe gibt 0,315, wo die Klasse nominal 7,44/28,5 = 0,261 setzt:
+die Korrelation zieht ihr Maximum um den Faktor 1,21 nach außen, weil der Teil des Schattens, der
+unter den Buchstaben liegt, nicht zu sehen ist. Um denselben Faktor bereinigt ergeben die 0,253 der
+Hefte (Mittel der drei Zeilen) 0,209 der Versalhöhe und damit 6,0 bp zum Bezugsgrad. Die
+Weichzeichnung trägt die Verzerrung nicht: quer durch einen Buchstabenstamm reicht die dunkle Zone
+bei den Heften 0,237 der Versalhöhe weit, mit den PSD-Werten 0,141 bei nominal 0,152 — 0,237 × 28,5
+sind die 6,8 bp.
+
+Der Anlass war handfest: mit dem Rand der Fläche auf seinen 8,4 pt passt der lange, steile Schatten
+des PSD nicht mehr unter die Fläche, er läuft über ihre Kante hinaus aufs Titelbild. Die Hefte lösen
+das nicht mit einer breiteren Fläche, sondern mit einem kürzeren, flacheren und weicheren Schatten.
+Wer den Musterbogen will, stellt ihn mit `\dsaTitelSchattenWinkel{120}`, `\dsaTitelSchattenWeg{7.44}`
+und `\dsaTitelSchattenWeich{4.32}` wieder her.
+
 Die Fläche ist im PSD ein Block, hier eine Silhouette: der Block müsste für jeden Titel neu
-gezeichnet werden, die Silhouette passt sich an. 13 pt statt der 35 px des PSD, damit die Flächen
-zweier Zeilen ineinanderlaufen — bei 42,8 pt Zeilenabstand und rund 31 pt hoher Tinte bleiben
-11,8 pt Luft, in denen sich zwei Ränder von je 13 pt um 14 pt überlappen.
+gezeichnet werden, die Silhouette passt sich an. Ihr Abstand zur Schrift sind die 35 px = 8,4 pt
+des PSD.
+
+Hier standen eine Zeit lang 13 pt, damit die Flächen zweier Zeilen sicher ineinanderlaufen — bei
+42,8 pt Zeilenabstand und rund 31 pt hoher Tinte bleiben 11,8 pt Luft, in denen sich zwei Ränder
+von je 13 pt um 14 pt überlappen. **Nachgemessen ist das zu breit.** An zwei gesetzten Abenteuern,
+Umschlag in 300 ppi, quer durch die Buchstabenstämme geschnitten, jeweils im Verhältnis zur
+Versalhöhe, weil die Grade verschieden sind:
+
+| gemessen an | Versalhöhe | Rand der Fläche | Verhältnis |
+|---|---|---|---|
+| *Ketten für die Ewigkeit*, Zeile 1 | 29,5 pt | 8,9 pt | 0,30 |
+| *Ketten für die Ewigkeit*, Zeile 2 | 39,4 pt | 13,2 pt | 0,34 |
+| *Schrecken aus der Tiefe*, Zeile 1 | 39,4 pt | 8,9 pt | 0,23 |
+| PSD des Baukastens | 28,5 pt | 8,4 pt | 0,29 |
+| diese Klasse mit 13 pt | 28,5 pt | 13,0 pt | 0,46 |
+
+Der Verlag liegt bei 0,23 bis 0,34, der Baukasten mittendrin bei 0,29; die 13 pt lagen mit 0,46
+weit darüber. Bei großen Graden fällt das doppelt auf, weil der Rand mitskaliert — auf einer
+Titelseite in 88 pt wurden daraus 26,7 pt. Dass zwei Zeilen damit nicht mehr sicher zu einem Block
+zusammenlaufen, ist kein Verlust: die Verlagsumschläge setzen ihre Zeilen enger, statt den Rand zu
+verbreitern. Gemessen liegen dort zwischen der Grundlinie der oberen Zeile und der Versalhöhe der
+unteren 12,7 pt, rund 0,35 der Versalhöhe — in den Begriffen dieser Klasse ein
+`\dsaTitelZeilenfaktor` von etwa 0,9.
 
 **Warum der Rand ausfranst, und was dagegen hilft.** `\contour` setzt seine Kopien auf einem
 *Kreisumfang* vom Radius R, nicht in der Fläche. Bei R = 8,4 pt und 24 Kopien liegen zwei
@@ -320,6 +369,37 @@ Seite 8, quer über die Leiste:
 | 70 % | 239, 226, 218 | 236, 222, 216 |
 
 Höchstens 5 von 255 Stufen Unterschied, im mittleren Drittel, auf Papier nicht zu sehen.
+
+### Der rote Covertitel
+
+Der Baukasten kennt nur die graue Fassung: `Cover_Buchtitel.psd` hat eine einzige Gruppe
+`Buchbeszeichnung` mit den Ebenen `Rahmen`, `Abenteuertitel` und `Untertitel`, keine farbige
+Alternative. Veröffentlichte Hefte tragen denselben Aufbau aber in Rot. **Die Quelle dieses
+Abschnitts ist deshalb kein Baukastenteil, sondern ein Heft:** der Umschlag des *Aufsteller-Sets
+für Das Schwarze Auge* (Ulisses Spiele, US25533PDF), Seite 1, Schriftzug „AUFSTELLER SET“. Mit
+`pdftoppm -r 300` ausgegeben und pixelweise abgetastet.
+
+| Lage | grau, wie die Klasse sie setzt | rot, gemessen | wo gemessen |
+|---|---|---|---|
+| Verlauf oben | `#C5B8CE` | `#B22526` | Mittel der Schriftfläche, Bildzeilen 170–190 |
+| Verlauf unten | `#3A3442` | `#741C16` | dieselbe Messung, Bildzeilen 290–320 |
+| Kontur | `#A6A6A6` | `#C08848` | häufigster Ton des Saums, auf 8 Stufen gerundet |
+| Fläche „Rahmen“ | `#2E2832` | `#5F1812` | innen an der Kante der Fläche, 21 Spalten |
+
+**Die Fläche ist deckend, nicht durchscheinend.** Das war die erste Vermutung — die Fläche liegt auf
+einem roten Umschlag, und Rot könnte durchscheinen. An 21 Spalten quer über die obere Kante
+gemessen: außerhalb liegt der Umschlag zwischen 14 und 90 in Rot, 8 Punkte innerhalb der Kante
+steht durchweg 88 bis 103, ohne jeden Zusammenhang mit dem Wert außen. Eine teildurchlässige Fläche
+müsste dem Untergrund folgen; diese tut es nicht.
+
+**Worin die Nachbildung noch abweicht.** In der Vorlage wird die Fläche zur Schrift hin dunkler,
+von `#5F1812` an der Kante auf etwa `#250600` neben den Buchstaben. Das ist der fünfte Effekt des
+PSD, der *Schein außen* (`341811`, 51 px Weichzeichnung), den diese Klasse nicht zeichnet — die
+Begründung im Quelltext, auf der deckenden Fläche sei er nicht zu sehen, gilt für die graue Fassung
+und ist an der roten widerlegt. Die Klasse setzt die Fläche einfarbig auf den Wert an der Kante;
+dadurch steht die rote Schrift flacher auf ihr als in der Vorlage. Der Schlagschatten des
+Schriftzugs, den die Klasse sehr wohl zeichnet, nimmt einen Teil dieser Abdunklung vorweg.
+
 
 ## Die Rautenskala
 

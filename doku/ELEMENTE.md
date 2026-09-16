@@ -73,9 +73,16 @@ Gesetzt wird von unten: die Grundlinie der **letzten** Zeile sitzt auf `\dsatite
 weitere Zeile schiebt nach oben. Ein dreizeiliger Titel wächst also in das Bild hinein und nicht in
 den unteren Rahmen.
 
-Der Aufbau hat fünf Lagen, von hinten nach vorn: der Schlagschatten der Fläche, die graue Fläche in
+Der Aufbau hat fünf Lagen, von hinten nach vorn: der Schlagschatten der Fläche, die Fläche in
 der Form des Schriftzugs, der Schlagschatten der Schrift, der helle Rand um die Schrift, der
-Verlauf in der Schrift. Beide Schlagschatten sind wie im PSD weichgezeichnet und teildeckend — sie
+Verlauf in der Schrift. Gezeichnet werden sie **in vier Stufen über alle Zeilen hinweg** — erst
+alle Flächenschatten, dann alle Flächen, dann alle Schriftschatten, dann alle Lettern —, nicht
+Zeile für Zeile mit allen fünf Lagen. Sonst legt sich die Fläche der unteren Zeile über den
+Schatten der oberen und schneidet ihn an einer waagerechten Kante ab; die Fläche greift bei engem
+Zeilenabstand nämlich in die Nachbarzeile. Und Fläche samt Schatten als *eine* Stufe genügt nicht:
+dann fällt der Schatten der unteren Fläche auf die obere und legt ein dunkles, geschupptes Band
+zwischen die Zeilen. Im PSD ist es genauso: eine Ebene „Rahmen“ unter dem ganzen Titelblock, die
+Textebene mit ihren Effekten als Ganzes darüber. Beide Schlagschatten sind wie im PSD weichgezeichnet und teildeckend — sie
 entstehen aus gestaffelten Lagen derselben Silhouette, weil ein harter Versatz sich als zweiter
 Schriftzug liest. Wie das gerechnet wird, steht in `MASSE.md`.
 
@@ -84,15 +91,41 @@ Alles einstellbar, in der Präambel:
 | Befehl | Voreinstellung | Wirkung |
 |---|---|---|
 | `\dsaTitelGrad{42.8}` | 42,8 pt | Schriftgrad aller Zeilen |
-| `\dsaTitelRand{13}` | 13 pt | Breite der grauen Fläche um die Schrift |
+| `\dsaTitelRand{8.4}` | 8,4 pt | Breite der Fläche um die Schrift; 35 px des PSD, gegen zwei gesetzte Abenteuer geprüft |
 | `\dsaTitelKontur{0.24}` | 0,24 pt | Breite des hellen Rands (1 px bei 300 ppi; das PSD gibt 0,72) |
-| `\dsaTitelZeilenfaktor{1.0}` | 1,0 | Zeilenabstand als Vielfaches des Grads; ab etwa 1,25 stehen die Flächen getrennt |
+| `\dsaTitelZeilenfaktor{1.0}` | 1,0 | Zeilenabstand als Vielfaches des Grads — und zwar des Grads der **unteren** Zeile; bei 0,9 laufen die Flächen zu einem Block zusammen, wie auf den Verlagsumschlägen |
 | `\dsaTitelUnten{31.3mm}` | 31,3 mm | Grundlinie der letzten Zeile über der Papierkante |
 | `\dsaTitelTiefer{6.4pt}` | 6,4 pt | Versatz der Fläche nach unten, Ausgleich für Oberlängen |
 | `\dsaTitelVerlaufAus` | — | schlicht weiß mit Kontur |
-| `\dsaTitelFlaecheAus` | — | ohne graue Fläche |
+| `\dsaTitelFlaecheAus` | — | ohne die Fläche |
 | `\dsaTitelRahmenAus` | — | ohne hellen Rand |
 | `\dsaTitelSchattenAus` | — | ohne die beiden Schlagschatten |
+| `\dsaTitelSchattenWinkel{150}` | 150° | Lichtwinkel, gilt für beide Schlagschatten |
+| `\dsaTitelSchattenWeg{6.0}` | 6,0 bp | Versatz des Schriftschattens |
+| `\dsaTitelSchattenWeich{6.8}` | 6,8 bp | Weichzeichnung des Schriftschattens |
+
+**Die Farben.** Voreinstellung ist der graue Titel des Baukastens. Alle vier sind einzeln
+umstellbar, jedes Argument ist ein Farbausdruck von xcolor — ein mit `\definecolor` angelegter
+Name, einer der Klasse oder eine Mischung wie `dsadunkelrot!70!black`:
+
+| Befehl | Voreinstellung | Wirkung |
+|---|---|---|
+| `\dsaTitelSchriftfarben{oben}{unten}` | `#C5B8CE` nach `#3A3442` | der Verlauf in der Schrift |
+| `\dsaTitelKonturfarbe{Farbe}` | `#A6A6A6` | der helle Rand um die Schrift |
+| `\dsaTitelFlaechenfarbe{Farbe}` | `#2E2832` | die Fläche dahinter |
+| `\dsaTitelSchattenfarbe{Farbe}` | Schwarz | beide Schlagschatten |
+| `\dsaTitelRot` | — | die drei ersten auf einmal, in der roten Fassung |
+
+`\dsaTitelRot` setzt den Titel, wie veröffentlichte Hefte ihn tragen: Schrift `#B22526` nach
+`#741C16`, Kontur `#C08848` in Gold, Fläche `#5F1812`. Die Werte sind am Umschlag des
+Aufsteller-Sets gemessen; die Herleitung steht in `MASSE.md` unter „Der rote Covertitel“, dort
+auch, worin die Nachbildung von der Vorlage noch abweicht. Zu sehen ist er auf dem Umschlag von
+`beispiel/rest.tex`.
+
+Die Farben gehören in die **Präambel**, nicht zwischen zwei Umschläge: die Schattierung des
+Schriftverlaufs wird beim ersten Gebrauch in ein PDF-Objekt gegossen und danach unter ihrem Namen
+wiederverwendet. Zwei verschieden gefärbte Titel in einem Dokument gibt es damit nicht — bei einem
+Umschlag je Heft ist das kein Fall.
 
 Zwei Werte in der Klasse steuern, wie glatt der Rand der Fläche wird: `\dsatitelperlabstand`
 (0,6 pt) und `\dsatitelflaechenstufen` (5). Für die Schlagschatten gibt es dieselben Stellschrauben
