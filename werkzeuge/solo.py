@@ -42,6 +42,7 @@ Copyright 2026 Leif Janzik. Apache License 2.0.
 """
 
 import argparse
+import collections
 import os
 import random
 import re
@@ -301,6 +302,64 @@ def loesen(hoehe, ziele, start, gesamt, mindestrueckhalt,
             n += 1
             nummer[m] = n
     return behaelter, nummer, nachbarn
+
+
+# ------------------------------------------------------------------- graph
+
+def erreichbar(von, kanten):
+    """Alle Knoten, die von einer Startmenge aus erreichbar sind."""
+    gesehen, rand = set(von), list(von)
+    while rand:
+        k = rand.pop()
+        for z in kanten.get(k, ()):  # noqa: E501
+            if z not in gesehen:
+                gesehen.add(z)
+                rand.append(z)
+    return gesehen
+
+
+def graph_pruefen(hoehe, ziele, start, ende):
+    """Haengt der Sprunggraph zusammen?
+
+    Drei Fragen, und nur die erste ist offensichtlich:
+
+    1. Kommt man vom Start ueberall hin? Ein Block, den niemand erreicht,
+       ist gedrucktes Papier, das nie gelesen wird.
+    2. Kommt man von ueberall zu einem Ende? Sonst gibt es Blockgruppen,
+       in denen der Leser ewig im Kreis laeuft -- eine Falle, die keine
+       sein soll. Das faellt beim Lesen nicht auf, weil jeder einzelne
+       Block einen Ausgang hat.
+    3. Zeigt ueberhaupt jemand auf den Block? Der Startblock darf als
+       einziger ohne eingehenden Verweis dastehen.
+    """
+    knoten = set(hoehe)
+    vorwaerts = {k: [z for z in ziele.get(k, ()) if z in knoten]
+                 for k in knoten}
+    rueckwaerts = {k: [] for k in knoten}
+    for a, zs in vorwaerts.items():
+        for b in zs:
+            rueckwaerts[b].append(a)
+
+    erreicht = erreichbar([start] if start in knoten else [], vorwaerts)
+
+    # Ein Ende ist, was sich als Ende ausweist oder keinen Ausgang hat.
+    endknoten = set(ende) | {k for k in knoten if not vorwaerts[k]}
+    findet_ende = erreichbar(endknoten, rueckwaerts)
+
+    eingehend = collections.Counter()
+    for a, zs in vorwaerts.items():
+        for b in zs:
+            eingehend[b] += 1
+
+    return {
+        'knoten': len(knoten),
+        'kanten': sum(len(z) for z in vorwaerts.values()),
+        'unerreichbar': sorted(knoten - erreicht),
+        'ohne_ausgang': sorted(knoten - findet_ende),
+        'ohne_zugang': sorted(k for k in knoten
+                              if eingehend[k] == 0 and k != start),
+        'enden': len(endknoten),
+    }
 
 
 # ------------------------------------------------------------------ pruefen
@@ -647,20 +706,32 @@ def main():
         for m in unbekannt:
             print('  %s' % m)
 
-    if start:
-        erreicht, rand_ = {start}, [start]
-        while rand_:
-            k = rand_.pop()
-            for z in ziele.get(k, []):
-                if z in hoehe and z not in erreicht:
-                    erreicht.add(z)
-                    rand_.append(z)
-        verwaist = sorted(set(hoehe) - erreicht)
-        if verwaist:
-            print()
-            print('VOM START NICHT ERREICHBAR (%d):' % len(verwaist))
-            for m in verwaist:
-                print('  %s' % m)
+    g = graph_pruefen(hoehe, ziele, start, ende)
+    print()
+    print('Sprunggraph         : %d Bloecke, %d Kanten, %d Enden'
+          % (g['knoten'], g['kanten'], g['enden']))
+    if not (g['unerreichbar'] or g['ohne_ausgang'] or g['ohne_zugang']):
+        print('                      haengt vollstaendig zusammen')
+
+    def liste(ueberschrift, marken, nachsatz):
+        if not marken:
+            return
+        print()
+        print('%s (%d):' % (ueberschrift, len(marken)))
+        for m in marken[:30]:
+            print('  %s' % m)
+        if len(marken) > 30:
+            print('  ... und %d weitere' % (len(marken) - 30))
+        print('  %s' % nachsatz)
+
+    liste('VOM START NICHT ERREICHBAR', g['unerreichbar'],
+          'Diese Bloecke werden gedruckt, aber nie gelesen.')
+    liste('OHNE WEG ZU EINEM ENDE', g['ohne_ausgang'],
+          'Von hier aus laeuft der Leser im Kreis: jeder einzelne Block '
+          'hat einen Ausgang, die Gruppe als ganze aber nicht.')
+    liste('OHNE EINGEHENDEN VERWEIS', g['ohne_zugang'],
+          'Auf diese Bloecke zeigt kein Verweis. Nur der Startblock darf '
+          'das.')
 
     # Ein Block ohne ausgehenden Verweis ist nur dann ein Fehler, wenn er
     # sich nicht selbst mit \soloEnde als Ende ausgewiesen hat.

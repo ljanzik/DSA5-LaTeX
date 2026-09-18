@@ -216,7 +216,11 @@ Spalte gruppiert, stieg die Trefferzahl im Regellauf von 6 auf 30 von 30.
 * **Block größer als eine Doppelseite** — er belegt zwei; die Regel hält trotzdem.
 * **Verweis auf unbekannte Marke** — im Satz erscheint ein rotes `??` in der Breite einer
   echten Zahl, damit der Umbruch derselbe bleibt wie im Messlauf.
-* **Vom Start nicht erreichbar** — dieser Block kann nie gelesen werden.
+* **Vom Start nicht erreichbar** — dieser Block wird gedruckt, aber nie gelesen.
+* **Ohne Weg zu einem Ende** — von hier aus läuft der Leser im Kreis. Das ist die Prüfung, die
+  beim Lesen am schwersten auffällt: jeder einzelne Block hat einen Ausgang, die Gruppe als
+  ganze aber nicht.
+* **Ohne eingehenden Verweis** — auf diesen Block zeigt niemand. Nur der Startblock darf das.
 * **Sackgasse ohne `\soloEnde`** — ein Block ohne ausgehenden Verweis, der sich nicht als Ende
   ausgewiesen hat.
 
