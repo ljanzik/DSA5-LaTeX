@@ -161,8 +161,7 @@
 % und die ersten beiden Zeilen zusammen.
 
 \newcommand*{\dsaSolo@kopf}[1]{%
-  \dsaabschnitt{#1}%
-  \@afterheading}
+  \dsaabschnitt{#1}}
 
 \newenvironment{soloBlock}[1]{%
   \xdef\dsaSolo@marke{\detokenize{#1}}%
@@ -188,6 +187,14 @@
     % Blockanfangs. hyperref ist von der Kernklasse geladen (:86).
     \phantomsection
     \label{solo:#1}%
+    % Die Sperre steht bewusst NACH der Marke, damit zwischen ihr und der
+    % ersten Textzeile nichts mehr liegt: \phantomsection setzt einen
+    % Anker in die vertikale Liste, und was dort einen Umbruchpunkt
+    % schafft, gehoert nicht zwischen die Zahl und ihren Block.
+    % \dsaabschnitt bringt sein eigenes \nobreak mit, das hier aber
+    % bereits hinter dem Anker laege.
+    \nobreak
+    \@afterheading
   \fi
 }{%
   \ifdsaSolo@messen

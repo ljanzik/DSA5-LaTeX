@@ -549,8 +549,9 @@ Zusagen des Features im Satz auch eintreten.
 | Nummernvergabe lückenlos | `beispiel/solo.tex`: 30 Blöcke, Nummern 1 bis 30, Startblock trägt die 1 | `ok` |
 | Verweise aufgelöst | 47 Sprungstellen im Regellauf, keine unbekannte Marke | `ok` |
 | **Doppelseitenregel**, Regellauf | `--pruefen solo.aux`: 47 von 47 Sprüngen wechseln die Doppelseite | `ok` |
-| **Doppelseitenregel**, Lasttest mit 239 Blöcken | `--pruefen solo-test.aux`: 315 von 315 Sprüngen | `ok` |
+| **Doppelseitenregel**, Lasttest mit 239 Blöcken | `--pruefen`: 382 von 382 Sprüngen | `ok` |
 | **Kopfregel** (Zahl nie letzte Zeile ihrer Spalte) | am PDF geprüft, 30 von 30 bzw. 239 von 239 Zahlen haben ihren Block unter sich | `ok` |
+| Stand von `.aux` und PDF | Zahl der Marken gegen Zahl der Blockzahlen im PDF | `ok` |
 | Behälterfüllung | Lasttest: 2 von 10 Behältern brauchen eine dritte Seite. Kostet Papier, nicht Richtigkeit — siehe Befund | `ok` |
 
 ### Befund: drei Fehler, alle erst am gesetzten Ergebnis sichtbar
@@ -573,6 +574,26 @@ Zusagen des Features im Satz auch eintreten.
 3. **Eine doppelt vergebene Marke verschwand stillschweigend.** Im Lasttest trug die Quelle
    zweimal dieselbe Nummer; das Werkzeug überschrieb den ersten Block kommentarlos und zählte
    238 statt 239. Behoben: doppelte Marken sind jetzt ein Abbruchgrund.
+
+### Befund: zwei falsche Zusagen des Prüfwerkzeugs
+
+Beide kamen erst heraus, als der Lasttest mit einem größeren Sprunggraphen wiederholt wurde.
+
+4. **„Alles in Ordnung" bei einer abgebrochenen `.aux`.** Unter Windows war das PDF in einem
+   Betrachter geöffnet; `xdvipdfmx` konnte es nicht schreiben, der Lauf brach ab, und das
+   Werkzeug verglich eine `.aux` mit **einer** Marke gegen ein PDF mit 239 Blockzahlen — und
+   meldete, es sei alles in Ordnung, weil die eine geprüfte Sprungstelle stimmte. Behoben:
+   passen die Zahl der Marken und die Zahl der Blockzahlen nicht zusammen, ist einer der
+   Stände veraltet, und das ist jetzt ein Fehler.
+
+5. **Eine Blockzahl von 239 wurde nicht erkannt.** `microtype` schiebt ein öffnendes
+   Anführungszeichen der Nachbarspalte per Randausgleich über die Blattmitte; es landete in
+   der Zeile der Zahl, und die Prüfung auf die ganze Zeile scheiterte daran. Behoben: die Zahl
+   wird aus ihren **eigenen** Zeichen gelesen (fett, 13 bp), nicht aus dem Zeilentext.
+
+Dazu eine Regel, die keine Verschärfung verträgt: Ein Block **ohne Text** ist von der Kopfregel
+auszunehmen. Unter einer Zahl, deren Block leer ist, kann nichts stehen — das ist kein
+abgetrennter Kopf, sondern ein leerer Block, und das Werkzeug meldet ihn beim Lösen als solchen.
 
 ### Falle bei eigenen Messungen am PDF
 

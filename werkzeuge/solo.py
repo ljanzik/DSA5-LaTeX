@@ -277,7 +277,31 @@ def aux_pruefen(pfad):
     return kopf, geprueft, verstoss
 
 
-def koepfe_pruefen(pdfdatei, hoehe=None):
+def leere_bloecke(auxpfad):
+    """Nummern der Bloecke, die ausser ihrer Zahl nichts enthalten.
+
+    Sie sind fuer die Kopfregel auszunehmen: unter einer Zahl, deren Block
+    leer ist, KANN nichts stehen. Gebraucht werden dafuer die
+    Nummernzuordnung und die gemessenen Hoehen, beide neben der .aux.
+    """
+    stamm = os.path.splitext(auxpfad)[0]
+    try:
+        nummern = open(stamm + '.solonummern', encoding='utf-8').read()
+        messung = open(stamm + '.solo', encoding='utf-8').read()
+    except IOError:
+        return set()
+
+    hoehe = {m.group(1): int(m.group(2)) for m in
+             re.finditer(r'\\soloblock\{([^}]*)\}\{(\d+)\}', messung)}
+    leer = set()
+    for m in re.finditer(r'\\soloNummer\{([^}]*)\}\{(\d+)\}', nummern):
+        # Hoehe 1 heisst: nur die Zeile mit der Zahl, kein Text darunter.
+        if hoehe.get(m.group(1), 99) <= 1:
+            leer.add(m.group(2))
+    return leer
+
+
+def koepfe_pruefen(pdfdatei, leer=frozenset()):
     """Prueft am gesetzten PDF: steht unter jeder Blockzahl noch Text?
 
     Die Zahl darf nie die letzte Zeile ihrer Spalte sein -- sonst stuende
@@ -315,13 +339,19 @@ def koepfe_pruefen(pdfdatei, hoehe=None):
             for (gl, sp), zs in zeilen.items():
                 zs.sort(key=lambda c: c['x0'])
                 txt = ''.join(c['text'] for c in zs).strip()
-                eintraege.append((gl, sp, txt,
-                                  'Bold' in zs[0]['fontname'],
-                                  round(zs[0]['size'], 1)))
+                # Die Blockzahl aus IHREN eigenen Zeichen lesen, nicht aus
+                # der ganzen Zeile: microtype schiebt ein oeffnendes
+                # Anfuehrungszeichen der Nachbarspalte per Randausgleich
+                # ueber die Blattmitte, es landet in dieser Zeile und eine
+                # Pruefung auf die ganze Zeile scheitert daran. Genau so
+                # ist hier eine von 239 Zahlen durchgerutscht.
+                zahl = ''.join(c['text'] for c in zs
+                               if 'Bold' in c['fontname']
+                               and round(c['size'], 1) == 13.0)
+                eintraege.append((gl, sp, txt, zahl))
 
-            for gl, sp, txt, fett, grad in eintraege:
-                if not (fett and grad == 13.0
-                        and re.fullmatch(r'\d{1,3}', txt)):
+            for gl, sp, txt, zahl in eintraege:
+                if not re.fullmatch(r'\d{1,3}', zahl):
                     continue
                 # Die Seitenzahl in der Fusszeile ist keine Blockzahl.
                 if gl * mm < 15:
@@ -330,10 +360,10 @@ def koepfe_pruefen(pdfdatei, hoehe=None):
                 darunter = [e for e in eintraege
                             if e[1] == sp and e[0] < gl - 1
                             and e[0] * mm > 15 and e[2]]
-                if not darunter:
+                if not darunter and zahl not in leer:
                     verstoss.append('Seite %d, Spalte %d: die Zahl %s ist '
                                     'die letzte Zeile ihrer Spalte'
-                                    % (nr, sp + 1, txt))
+                                    % (nr, sp + 1, zahl))
     return gefunden, verstoss
 
 
@@ -421,13 +451,29 @@ def main():
         # Spalte sein.
         pdfdatei = os.path.splitext(args.pruefen)[0] + '.pdf'
         if os.path.exists(pdfdatei):
-            gefunden, kopfverstoss = koepfe_pruefen(pdfdatei)
+            gefunden, kopfverstoss = koepfe_pruefen(
+                pdfdatei, leere_bloecke(args.pruefen))
             if gefunden is None:
                 print()
                 for z in kopfverstoss:
                     print(z)
             else:
                 print('Blockzahlen im PDF  : %d' % gefunden)
+                # Stimmen .aux und PDF nicht ueberein, ist einer von beiden
+                # veraltet -- unter Windows etwa, wenn das PDF im
+                # Betrachter offen war und xdvipdfmx es nicht schreiben
+                # konnte. Ohne diese Pruefung meldete das Werkzeug "alles
+                # in Ordnung", obwohl es eine abgebrochene .aux mit einem
+                # alten PDF verglich.
+                if gefunden != len(kopf):
+                    print()
+                    print('AUX UND PDF PASSEN NICHT ZUSAMMEN: %d Marken in '
+                          'der .aux, aber %d Blockzahlen im PDF.'
+                          % (len(kopf), gefunden))
+                    print('Einer der beiden Staende ist veraltet. War das '
+                          'PDF beim Bauen in einem Betrachter geoeffnet? '
+                          'Schliessen und erneut setzen.')
+                    return 1
                 if kopfverstoss:
                     print()
                     print('ZAHL OHNE BLOCK (%d):' % len(kopfverstoss))
@@ -527,6 +573,16 @@ def main():
                   % (m, hoehe[m], gesamt))
         print('  Er belegt zwei Doppelseiten. Die Regel haelt trotzdem, '
               'weil seine Ziele in anderen Behaeltern liegen.')
+
+    # Hoehe 1 heisst: nur die Zeile mit der Zahl. Im Satz steht die Zahl
+    # dann allein da, und das sieht wie ein abgetrennter Kopf aus.
+    leer = sorted(m for m in hoehe if hoehe[m] <= 1)
+    if leer:
+        print()
+        print('BLOCK OHNE TEXT (%d):' % len(leer))
+        for m in leer:
+            print('  %s' % m)
+        print('  Im Satz steht dort nur die Zahl.')
 
     unbekannt = sorted({z for zs in ziele.values() for z in zs
                         if z not in hoehe})
