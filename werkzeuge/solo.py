@@ -196,14 +196,67 @@ def packen(marken, hoehe, gesamt, mindestrueckhalt):
     for m in sorted(marken, key=lambda x: (-hoehe.get(x, 1), x)):
         h = hoehe.get(m, 1)
         for b in behaelter:
-            belegt = sum(hoehe.get(x, 1) for x in b) + h
-            r = max(mindestrueckhalt, rueckhalt(belegt, len(b) + 1))
-            if belegt + r <= gesamt:
+            if passt(b, h, hoehe, gesamt, mindestrueckhalt):
                 b.append(m)
                 break
         else:
             behaelter.append([m])
     return behaelter
+
+
+def passt(b, h, hoehe, gesamt, mindestrueckhalt):
+    """Passt ein Block der Hoehe h noch in den Behaelter b?"""
+    belegt = sum(hoehe.get(x, 1) for x in b) + h
+    r = max(mindestrueckhalt, rueckhalt(belegt, len(b) + 1))
+    return belegt + r <= gesamt
+
+
+def nachbessern(behaelter, hoehe, nachbarn, gesamt, mindestrueckhalt):
+    """Loest zu leere Behaelter auf und verteilt ihre Bloecke.
+
+    Noetig, weil beim Packen jede Farbklasse fuer sich behandelt wird und
+    dabei einen Rest hinterlaesst. Diese Reste sind es, die im Satz als
+    halb leere Doppelseiten auffallen: ein Behaelter mit 96 von 236
+    Einheiten belegt nur eine Seite, und die Paritaetskorrektur setzt eine
+    Fuellseite daneben.
+
+    Verschoben wird nur, wo kein Nachbar aus dem Sprunggraphen im
+    Zielbehaelter liegt -- die Seitenregel bleibt also unangetastet.
+    """
+    geaendert = True
+    while geaendert:
+        geaendert = False
+        # Den leersten zuerst: er laesst sich am ehesten ganz aufloesen.
+        for i in sorted(range(len(behaelter)),
+                        key=lambda k: sum(hoehe.get(x, 1)
+                                          for x in behaelter[k])):
+            quelle = behaelter[i]
+            if not quelle:
+                continue
+            plan = {}
+            for m in quelle:
+                for j, ziel in enumerate(behaelter):
+                    if j == i or not ziel:
+                        continue
+                    if nachbarn[m] & set(ziel):
+                        continue
+                    # Was in diesem Durchgang schon zugesagt wurde, zaehlt
+                    # mit, sonst wird derselbe Platz zweimal vergeben.
+                    belegt = [x for x in ziel]
+                    belegt += [x for x, k in plan.items() if k == j]
+                    if passt(belegt, hoehe.get(m, 1), hoehe, gesamt,
+                             mindestrueckhalt):
+                        plan[m] = j
+                        break
+                else:
+                    break
+            if len(plan) == len(quelle):
+                for m, j in plan.items():
+                    behaelter[j].append(m)
+                behaelter[i] = []
+                geaendert = True
+                break
+    return [b for b in behaelter if b]
 
 
 def loesen(hoehe, ziele, start, gesamt, mindestrueckhalt,
@@ -226,6 +279,8 @@ def loesen(hoehe, ziele, start, gesamt, mindestrueckhalt,
     for f in sorted(klassen):
         behaelter.extend(packen(klassen[f], hoehe, gesamt,
                                 mindestrueckhalt))
+    behaelter = nachbessern(behaelter, hoehe, nachbarn, gesamt,
+                            mindestrueckhalt)
 
     # Der Startblock steht immer am Anfang und traegt immer die 1: sein
     # Behaelter nach vorn, und er darin an die erste Stelle.

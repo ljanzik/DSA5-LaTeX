@@ -176,6 +176,19 @@ Der Rückhalt ist deshalb nicht fest, sondern `3 × mittlere Blockhöhe`, mindes
 von `--rueckhalt` (Standard 8). Das senkte im Lasttest die überlaufenden Behälter von fünf auf
 zwei und den Umfang von 33 auf 25 Seiten.
 
+### Der Rest jeder Farbklasse
+
+Der zweite Grund für halb leere Doppelseiten liegt nicht am Rückhalt, sondern am Packen selbst:
+Weil jede Farbklasse für sich gepackt wird, bleibt von jeder ein Rest übrig. Im Lasttest waren
+das Behälter mit 80 und 96 von 236 Einheiten — sie belegen nur **eine** Seite, und die
+Paritätskorrektur setzt eine Füllseite daneben. Im Satz stehen dann zwei Leerseiten dicht
+beieinander.
+
+Das Werkzeug löst solche Behälter deshalb nachträglich auf und verteilt ihre Blöcke auf die
+übrigen — aber nur dorthin, wo kein Nachbar aus dem Sprunggraphen liegt, die Seitenregel bleibt
+also unangetastet. Im Lasttest stieg der leerste Behälter dadurch von 80 auf 172 Einheiten, die
+Zahl der Doppelseiten sank von elf auf zehn und die der Füllseiten von vier auf drei.
+
 ## 9. Prüfen
 
 ```sh

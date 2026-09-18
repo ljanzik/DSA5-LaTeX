@@ -552,7 +552,8 @@ Zusagen des Features im Satz auch eintreten.
 | **Doppelseitenregel**, Lasttest mit 239 Blöcken | `--pruefen`: 382 von 382 Sprüngen | `ok` |
 | **Kopfregel** (Zahl nie letzte Zeile ihrer Spalte) | am PDF geprüft, 30 von 30 bzw. 239 von 239 Zahlen haben ihren Block unter sich | `ok` |
 | Stand von `.aux` und PDF | Zahl der Marken gegen Zahl der Blockzahlen im PDF | `ok` |
-| Behälterfüllung | Lasttest: 2 von 10 Behältern brauchen eine dritte Seite. Kostet Papier, nicht Richtigkeit — siehe Befund | `ok` |
+| Behälterfüllung | Lasttest: 10 Doppelseiten, Füllung 172 bis 216 von 236 Einheiten, drei Füllseiten. Zwei Behälter brauchen eine dritte Seite — kostet Papier, nicht Richtigkeit | `ok` |
+| Rasterlage der Blockzahlen | am vollen Satz gemessen: 239 von 239 auf 84 bp + k · 12 bp, Abweichung 0,00 bp — der erzwungene Doppelseitenumbruch verschiebt das Raster nirgends | `ok` |
 
 ### Befund: drei Fehler, alle erst am gesetzten Ergebnis sichtbar
 
