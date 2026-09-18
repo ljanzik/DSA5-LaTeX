@@ -1,0 +1,356 @@
+%%% solo-bloecke.tex — die Bloecke des Solos, in Autorenreihenfolge.
+%%%
+%%% Diese Datei wird nie unmittelbar gesetzt: werkzeuge/solo.py teilt sie
+%%% bytegetreu auf und schreibt die Reihenfolge, in der sie im Heft
+%%% erscheinen. Die Reihenfolge hier ist also allein die des Schreibens.
+%%%
+%%% Die Marken sind ASCII und ohne Leerzeichen; das Werkzeug prueft das.
+
+\begin{soloBlock}{start}
+Der Regen hat aufgehört, als du die letzte Anhöhe vor Havena erreichst. Unter dir
+liegt die Stadt im fahlen Licht des späten Nachmittags, und der Geruch von Salz und
+nassem Holz steigt dir entgegen. In deiner Gürteltasche steckt ein versiegelter
+Brief, den du bis Sonnenuntergang übergeben sollst — an wen, das steht auf dem
+Siegel, und das Siegel darfst du nicht brechen.
+
+Zwei Wege führen hinab. Der breite endet am Stadttor, wo die Wachen jeden Ankömmling
+mustern; der schmale verliert sich im Wald und kommt weiter unten wieder heraus.
+
+Nimmst du den breiten Weg zum Tor, lies bei Abschnitt \soloWeiter{tor} weiter.
+Willst du lieber ungesehen bleiben und durch den Wald gehen, so wende dich an
+Abschnitt \soloWeiter{wald}.
+\end{soloBlock}
+
+\begin{soloBlock}{tor}
+Das Stadttor von Havena ist so breit, dass drei Fuhrwerke nebeneinander hindurchpassen,
+und heute stehen sie alle drei still. Eine Schlange von Händlern, Bauern und Pilgern
+schiebt sich langsam voran. Vor dir streiten zwei Männer über den Preis eines Fasses.
+
+Als du endlich an der Reihe bist, hebt der Wachhabende die Hand. »Dein Geschäft in
+Havena?«, fragt er, und sein Blick wandert zu deiner Gürteltasche.
+
+Willst du ihm die Wahrheit sagen, so lies bei Abschnitt \soloWeiter{wache} weiter.
+Hast du ein paar Silbertaler übrig und willst sie ihm zustecken, gehe zu Abschnitt
+\soloWeiter{bestechen}.
+\end{soloBlock}
+
+\begin{soloBlock}{wald}
+Der schmale Pfad führt dich unter triefende Buchen. Es riecht nach Moder, und zweimal
+hörst du etwas im Unterholz, das größer ist als ein Fuchs. Nach einer halben Stunde
+teilt sich der Weg.
+
+Nach links geht es an einem Felsvorsprung entlang, in dem eine Höhle klafft; nach
+rechts hinunter zu einem Bach, dessen Rauschen du schon von weitem hörst.
+
+Zur Höhle: Abschnitt \soloWeiter{hoehle}. Zum Bach: Abschnitt \soloWeiter{bach}.
+\end{soloBlock}
+
+\begin{soloBlock}{wache}
+»Ein Brief«, sagst du. »Mehr weiß ich nicht.« Der Wachhabende nimmt dir die Tasche
+nicht ab, aber er sieht dich lange an. »Es kommen dieser Tage viele Briefe nach
+Havena«, sagt er schließlich, »und die wenigsten bringen Gutes.« Er tritt beiseite.
+
+Du bist in der Stadt. Der Lärm schlägt über dir zusammen: Rufe, Räder, das Kreischen
+von Möwen. Vor dir öffnet sich der Marktplatz, rechts führt eine enge Gasse in
+Richtung Hafen.
+
+Zum Markt: Abschnitt \soloWeiter{markt}. In die Gasse: Abschnitt \soloWeiter{gasse}.
+\end{soloBlock}
+
+\begin{soloBlock}{bestechen}
+Die Münzen wechseln den Besitzer so beiläufig, dass niemand hinter dir es bemerkt.
+Der Wachhabende sieht an dir vorbei und sagt laut: »Weiter, weiter, du hältst alle
+auf.« Leiser fügt er hinzu: »Und geh nicht über den Markt. Da fragt heute noch
+jemand anderes nach Briefen.«
+
+Du bist drinnen. Was er gesagt hat, klingt dir noch nach, aber der Markt ist der
+kürzeste Weg, und die Sonne steht schon tief.
+
+Weiter bei Abschnitt \soloWeiter{markt}.
+\end{soloBlock}
+
+\begin{soloBlock}{hoehle}
+Die Höhle ist niedriger, als sie von außen aussah, und sie riecht nach kaltem Rauch.
+Jemand hat hier gelagert, und das ist noch nicht lange her. In der Asche findest du
+ein Stück Siegellack — rot, wie das an deinem Brief.
+
+Weiter hinten fällt der Boden ab. Du kannst einen schmalen Gang hinabsteigen oder
+umkehren, solange es noch hell ist.
+
+Hinabsteigen: Abschnitt \soloWeiter{keller}. Wenn du lieber zurückgehst und dabei
+in etwas trittst, das sich um deinen Knöchel legt, lies Abschnitt \soloWeiter{falle}.
+\end{soloBlock}
+
+\begin{soloBlock}{bach}
+Der Bach ist über die Ufer getreten, und du watest bis zu den Knien. Auf der anderen
+Seite steht ein windschiefes Haus mit einem Schild, auf dem nichts mehr zu lesen ist.
+Durch die Ritzen fällt Licht, und es riecht nach Zwiebeln und gebratenem Fisch.
+
+Nach dem Regen und dem kalten Wasser wäre ein Feuer eine gute Sache.
+
+Weiter bei Abschnitt \soloWeiter{wirtshaus}.
+\end{soloBlock}
+
+\begin{soloBlock}{markt}
+Der Markt von Havena leert sich gerade. Händler schlagen ihre Stände zusammen, und
+zwischen den Kisten streiten sich Möwen um Fischköpfe. Du kommst gut voran, bis dir
+auffällt, dass ein Mann in einem grauen Umhang dreimal dieselbe Runde geht wie du.
+
+Beim vierten Mal bleibt er stehen und sieht dich an.
+
+Willst du dich in der Menge verlieren und zum Wirtshaus am Wasser durchschlagen,
+lies Abschnitt \soloWeiter{wirtshaus}. Nimmst du die nächste Gasse, gehe zu
+Abschnitt \soloWeiter{gasse}.
+\end{soloBlock}
+
+\begin{soloBlock}{gasse}
+Die Gasse ist so eng, dass du die Wände auf beiden Seiten berühren könntest, und so
+dunkel, dass du den Boden mehr ertastest als siehst. Hinter dir hallen Schritte. Sie
+werden nicht schneller, und genau das ist das Beunruhigende daran.
+
+Vor dir teilt sich der Weg: eine Treppe hinunter zum Wasser, ein Durchgang zu einem
+Hof, in dem jemand eine Laterne angezündet hat.
+
+Wenn du dich den Schritten stellst, lies Abschnitt \soloWeiter{verfolger}. Wenn du
+zur Laterne gehst, wo ein Junge auf dich zu warten scheint, geht es bei Abschnitt
+\soloWeiter{bote} weiter.
+\end{soloBlock}
+
+\begin{soloBlock}{wirtshaus}
+Im »Anker« ist es warm, laut und voll. Du bekommst einen Platz am Ende einer Bank
+und einen Krug, der nach mehr Wasser als Bier schmeckt. Neben dir erzählt ein alter
+Mann jedem, der nicht schnell genug wegsieht, von einem Schiff, das gestern ohne
+Mannschaft in den Hafen getrieben sei.
+
+Die Wirtin stellt dir wortlos einen zweiten Krug hin, den du nicht bestellt hast.
+»Von dem Jungen da hinten«, sagt sie. Als du dich umdrehst, ist da kein Junge mehr,
+nur eine Tür, die noch nachschwingt, und dahinter eine Treppe in den Keller.
+
+Dem Jungen nach: Abschnitt \soloWeiter{bote}. Die Kellertreppe hinunter: Abschnitt
+\soloWeiter{keller}.
+\end{soloBlock}
+
+\begin{soloBlock}{keller}
+Unten ist es trocken und still, und die Stille ist das Falsche daran — über dir
+müsste das Wirtshaus zu hören sein. Zwischen den Fässern steht eine Kiste, die zu
+sauber ist für diesen Ort.
+
+In der Kiste liegen Briefe. Viele Briefe, alle mit rotem Siegel, alle ungeöffnet.
+Deiner ist nicht der erste, der nach Havena gebracht wurde.
+
+Nimmst du einen davon an dich, lies Abschnitt \soloWeiter{brief}. Suchst du weiter
+und findest hinter der Kiste eine Truhe, so gehe zu Abschnitt \soloWeiter{schatz}.
+\end{soloBlock}
+
+\begin{soloBlock}{bote}
+Der Junge kann nicht älter als zwölf sein und hat die Augen von jemandem, der lange
+nicht geschlafen hat. »Du hast den Brief«, sagt er. Es ist keine Frage. »Sie haben
+schon drei vor dir geschickt. Keiner ist angekommen.«
+
+Er sieht über deine Schulter, und was er dort sieht, gefällt ihm nicht. »Nicht zum
+Hafen«, sagt er schnell. »Noch nicht.«
+
+Willst du wissen, was in dem Brief steht, lies Abschnitt \soloWeiter{brief}.
+\end{soloBlock}
+
+\begin{soloBlock}{brief}
+Das Siegel bricht leichter, als es sollte — jemand hat es schon einmal geöffnet und
+neu gesetzt. Der Bogen darin trägt drei Zeilen, und keine davon ergibt auf den ersten
+Blick einen Sinn. Erst beim zweiten fällt dir auf, dass es keine Wörter sind, sondern
+Namen. Der letzte ist deiner.
+
+Hinter dir fällt eine Tür ins Schloss.
+
+Wenn du dich umdrehst: Abschnitt \soloWeiter{verfolger}. Wenn du rennst und zwar
+zum Hafen, wo noch Licht ist: Abschnitt \soloWeiter{hafen}.
+\end{soloBlock}
+
+\begin{soloBlock}{verfolger}
+Der Mann im grauen Umhang steht drei Schritte vor dir und hat die Hände offen
+erhoben, was bei jemandem mit einem solchen Gesicht nichts zu bedeuten hat. »Du
+sollst mir nur den Brief geben«, sagt er. »Dann gehst du nach Hause.«
+
+Er lügt so schlecht, dass es beinahe höflich wirkt.
+
+Über die Dächer entkommst du vielleicht: Abschnitt \soloWeiter{dach}. Wenn du dich
+an ihm vorbeidrängst und einfach läufst, lies Abschnitt \soloWeiter{flucht}.
+\end{soloBlock}
+
+\begin{soloBlock}{dach}
+Die Ziegel sind nass und lose, und zweimal rutschst du so weit, dass du schon die
+Gasse unter dir siehst. Aber oben ist der Wind, oben ist niemand, und von hier aus
+liegt ganz Havena vor dir wie eine Karte.
+
+Am Hafen brennen Lichter. Eines davon bewegt sich: eine Laterne an einem Mast, und
+darunter macht jemand ein Schiff los.
+
+Weiter bei Abschnitt \soloWeiter{hafen}.
+\end{soloBlock}
+
+\begin{soloBlock}{hafen}
+Der Hafen von Havena riecht nach Teer, Tang und alten Netzen. Zwischen den Kais
+liegen Schiffe so dicht, dass man über die Decks bis ans andere Ende laufen könnte.
+
+An einem der hinteren Stege wird gearbeitet, obwohl es längst dunkel ist. Eine Frau
+in einem schweren Mantel steht am Fallreep und zählt jeden, der an Bord geht.
+
+Willst du unbemerkt an Bord gehen, lies Abschnitt \soloWeiter{schiff}. Sprichst du
+die Frau an, so geht es bei Abschnitt \soloWeiter{kapitaen} weiter.
+\end{soloBlock}
+
+\begin{soloBlock}{schiff}
+Zwischen zwei Fässern hindurch, über die Reling, hinter die Aufbauten — es ist
+leichter, als es sein dürfte, und darüber solltest du dir Gedanken machen.
+
+Unter Deck findest du einen Platz zwischen Tauen, der beinahe bequem ist. Irgendwann
+löst sich das Schiff vom Steg, und das Rollen beginnt.
+
+Weiter bei Abschnitt \soloWeiter{sturm}.
+\end{soloBlock}
+
+\begin{soloBlock}{kapitaen}
+»Du bist spät«, sagt die Frau, bevor du ein Wort gesagt hast. »Und du bist nicht der,
+den ich erwartet habe.« Sie hebt die Laterne und sieht dir ins Gesicht, lange.
+
+»Aber du hast den Brief. Das genügt.« Sie tritt beiseite. »An Bord. Wir laufen aus,
+bevor die Flut kippt, und ich erkläre unterwegs, wieso du besser nie in Havena
+angekommen wärst.«
+
+Gehst du an Bord: Abschnitt \soloWeiter{schiff}. Bleibst du stehen und verlangst
+zuerst eine Erklärung, so lies Abschnitt \soloWeiter{sturm}.
+\end{soloBlock}
+
+\begin{soloBlock}{sturm}
+Der Sturm kommt aus Südwest und kommt schnell. Das Schiff stampft, die Laterne am
+Mast erlischt, und irgendwo reißt Tuch. Zweimal geht Wasser über das Deck, und beim
+zweiten Mal hörst du, wie jemand über Bord geht, ohne dass du sagen könntest, wer.
+
+Gegen Morgen legt sich der Wind so plötzlich, wie er gekommen ist. Vor dir liegt
+Land, das auf keiner Karte steht.
+
+Wenn du an Land gehst, lies Abschnitt \soloWeiter{insel}. Wenn dich eine Welle
+erfasst, bevor du dich festhalten kannst, lies Abschnitt \soloWeiter{ende-tod}.
+\end{soloBlock}
+
+\begin{soloBlock}{insel}
+Die Insel ist kaum größer als der Marktplatz von Havena und besteht fast nur aus
+Fels. In der Mitte steht ein Turm, der dort nicht stehen kann: kein Schiff hätte
+die Steine hierher gebracht, und gewachsen ist er auch nicht.
+
+Die Tür am Fuß des Turms steht offen.
+
+Weiter bei Abschnitt \soloWeiter{turm}.
+\end{soloBlock}
+
+\begin{soloBlock}{turm}
+Im Turm ist es wärmer als draußen, und es riecht nach Staub und nach etwas Süßem,
+das du nicht zuordnen kannst. Eine Treppe windet sich an der Wand nach oben. Auf
+jeder dritten Stufe liegt ein Brief mit rotem Siegel.
+
+Oben brennt Licht. Auf halber Höhe führt eine niedrige Tür in eine Kammer.
+
+Nach oben zum Licht: Abschnitt \soloWeiter{magier}. In die Kammer: Abschnitt
+\soloWeiter{kammer}.
+\end{soloBlock}
+
+\begin{soloBlock}{magier}
+Der Mann am Tisch ist alt, aber nicht gebrechlich, und er schreibt, ohne aufzusehen.
+»Setz dich«, sagt er. »Du bist der Vierte. Die anderen drei haben das Siegel nicht
+gebrochen, deshalb sind sie noch unterwegs.« Er lächelt, und es ist kein böses
+Lächeln, was die Sache schlimmer macht.
+
+»Der Brief war nie für jemanden in Havena. Er war dafür da, dass du hierherkommst.«
+
+Willst du wissen, was in der Kammer unter dir liegt, lies Abschnitt
+\soloWeiter{kammer}. Willst du wissen, was dein Name auf dieser Liste zu suchen hat,
+und bekommst die Antwort, so lies Abschnitt \soloWeiter{ende-verrat}.
+\end{soloBlock}
+
+\begin{soloBlock}{kammer}
+Die Kammer ist niedrig, und du musst den Kopf einziehen. An den Wänden stehen Regale
+voller Kästen, und auf jedem Kasten steht ein Name. Auf dem vordersten steht deiner.
+
+Der Kasten ist nicht verschlossen.
+
+Öffnest du ihn und findest darin, was du dort befürchtet hast, lies Abschnitt
+\soloWeiter{schatz}. Trittst du zurück und stößt dabei gegen das Regal hinter dir,
+so lies Abschnitt \soloWeiter{falle}.
+\end{soloBlock}
+
+\begin{soloBlock}{schatz}
+Es ist kein Gold. In dem Kasten liegt ein Bündel Briefe, alle in deiner eigenen
+Handschrift, alle mit Daten, die noch nicht gewesen sind. Der oberste beschreibt,
+wie du diesen Kasten öffnest.
+
+Du liest bis zum Ende, und am Ende steht, was du jetzt tun wirst. Und du tust es,
+nicht weil es dort steht, sondern weil es das Richtige ist — und genau das, erkennst
+du, ist der Unterschied, auf den es die ganze Zeit angekommen ist.
+
+Weiter bei Abschnitt \soloWeiter{ende-gut}.
+\end{soloBlock}
+
+\begin{soloBlock}{falle}
+Das Seil zieht sich zu, bevor du begreifst, dass es ein Seil ist. Du hängst kopfüber,
+die Tasche fällt dir aus dem Gürtel, und der Brief liegt aufgeschlagen unter dir im
+Staub, wo du ihn lesen kannst und nicht erreichen.
+
+Schritte nähern sich, ohne Eile.
+
+Wenn du dich losschneidest, bevor sie da sind, lies Abschnitt \soloWeiter{flucht}.
+Wenn du es nicht schaffst, lies Abschnitt \soloWeiter{ende-tod}.
+\end{soloBlock}
+
+\begin{soloBlock}{flucht}
+Du läufst, und du läufst gut. Zweimal biegst du falsch ab und einmal richtig, und
+am Ende stehst du keuchend an einer Mauer, hinter der es nach Meer riecht.
+
+Hinter dir ist es still geworden. Das heißt nicht, dass niemand mehr da ist.
+
+Weiter bei Abschnitt \soloWeiter{ruecken}.
+\end{soloBlock}
+
+\begin{soloBlock}{ruecken}
+An der Mauer sitzt der Junge aus der Gasse, als hätte er dort die ganze Zeit
+gewartet. »Du hast ihn gelesen«, sagt er. »Das haben die anderen nicht.«
+
+Er streckt die Hand aus, nicht fordernd, nur offen. Was du hineinlegst, entscheidet,
+was aus dieser Nacht wird.
+
+Gibst du ihm den Brief, lies Abschnitt \soloWeiter{ende-gut}. Behältst du ihn und
+gehst allein weiter, so lies Abschnitt \soloWeiter{ende-verrat}.
+\end{soloBlock}
+
+\begin{soloBlock}{ende-gut}
+Am Morgen liegt Havena unter einem Himmel, der zum ersten Mal seit Tagen keine Farbe
+von Blei hat. Der Brief ist dort, wo er hingehört, und du bist es auch.
+
+Was in den drei Zeilen stand, wirst du nicht vergessen. Aber du hast entschieden,
+was daraus wird, und das ist mehr, als den meisten vergönnt ist, deren Namen auf
+solchen Listen stehen.
+
+\emph{Dieses Abenteuer ist zu Ende. Du hast es gut zu Ende gebracht.}
+\soloEnde
+\end{soloBlock}
+
+\begin{soloBlock}{ende-tod}
+Das Letzte, was du siehst, ist rot, und du hältst es für das Siegel, bis du merkst,
+dass es das nicht ist.
+
+Irgendwo in Havena wird morgen jemand einen vierten Boten losschicken.
+
+\emph{Dieses Abenteuer ist hier zu Ende. Beginne von vorn, wenn du magst — und geh
+diesmal den anderen Weg.}
+\soloEnde
+\end{soloBlock}
+
+\begin{soloBlock}{ende-verrat}
+Du behältst den Brief, und eine Zeit lang scheint das die kluge Entscheidung gewesen
+zu sein. Du kommst weit, du kommst gut unter, und niemand fragt nach deinem Namen.
+
+Erst viel später, in einer Stadt, die weit genug weg ist, findest du in deiner
+eigenen Tasche einen Brief mit rotem Siegel, den du nie hineingelegt hast. Darauf
+steht ein Name, und es ist nicht mehr deiner.
+
+\emph{Dieses Abenteuer ist zu Ende. Es gibt Enden, die später anfangen.}
+\soloEnde
+\end{soloBlock}

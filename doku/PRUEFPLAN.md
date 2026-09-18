@@ -536,6 +536,52 @@ Karte „Ork“ (M, x=15,00 mm): Rückseite bei x=166,46 mm — 180 mm (Nutzbrei
 118,95 mm, exakt. „Troll“ (L, x=100,00→61,41 mm): 180 − 85 − 48,59 = 46,41, plus 15 mm Rand =
 61,41 mm, exakt.
 
+## Solo-Abenteuer (dsa5solo.sty)
+
+Eigenständiges Feature auf der Kernklasse. Der Nummernkopf ist an einem offiziellen, gesetzten
+Solo des Verlags nachgemessen und erwies sich als identisch mit `\dsaabschnitt` — es kommt
+**kein neues Maß** hinzu, deshalb steht hier nichts in `MASSE.md`. Geprüft wird, ob die drei
+Zusagen des Features im Satz auch eintreten.
+
+| Prüfung | Ergebnis | Status |
+|---|---|---|
+| Nummernkopf gegen die Vorlage | 26 Köpfe an der Spaltenkante gemessen: Grundlinie mod 12 bp = 0,0 bei allen 23 Köpfen mit Grad 13; GentiumBasic-Bold 13,0 bp, Farbe (0,0,0); 24,0 bp Grundlinienabstand davor, 12,0 bp danach; linke Kante 24,00 / 105,50 mm. Deckt sich mit `\dsaabschnitt` (`dsa5latex.cls:954`) | `ok` |
+| Nummernvergabe lückenlos | `beispiel/solo.tex`: 30 Blöcke, Nummern 1 bis 30, Startblock trägt die 1 | `ok` |
+| Verweise aufgelöst | 47 Sprungstellen im Regellauf, keine unbekannte Marke | `ok` |
+| **Doppelseitenregel**, Regellauf | `--pruefen solo.aux`: 47 von 47 Sprüngen wechseln die Doppelseite | `ok` |
+| **Doppelseitenregel**, Lasttest mit 239 Blöcken | `--pruefen solo-test.aux`: 315 von 315 Sprüngen | `ok` |
+| **Kopfregel** (Zahl nie letzte Zeile ihrer Spalte) | am PDF geprüft, 30 von 30 bzw. 239 von 239 Zahlen haben ihren Block unter sich | `ok` |
+| Behälterfüllung | Lasttest: 2 von 10 Behältern brauchen eine dritte Seite. Kostet Papier, nicht Richtigkeit — siehe Befund | `ok` |
+
+### Befund: drei Fehler, alle erst am gesetzten Ergebnis sichtbar
+
+1. **Der Verweis aus der Einleitung verletzte die Regel.** Die erste Fassung setzte
+   `\soloBehaelterEnde` nur *zwischen* die Behälter. Damit lagen die Einleitung mit ihrem
+   „Beginne bei Abschnitt …“ und der Startblock auf derselben Doppelseite. Die Prüfung meldete
+   genau einen Verstoß von 315, und zwar diesen. Behoben durch eine Grenze auch **vor** dem
+   ersten Behälter.
+
+2. **Der Rückhalt war falsch modelliert.** Angenommen war ein fester Verlust von acht
+   Rastereinheiten je Doppelseite. Am Satz zeigte sich: der Überlauf wächst mit der **Zahl** der
+   Blöcke, nicht mit ihrer Gesamthöhe. Behälter mit 5 und 11 Blöcken passten auf ihre zwei
+   Seiten, die mit 27, 32, 50 und 55 Blöcken brauchten eine dritte — bei nahezu gleicher Summe
+   von 226 bis 228 Einheiten. Ursache ist die Bindung von Zahl und Blockanfang: was an einer
+   Spaltengrenze nicht mehr ganz hinpasst, rutscht vollständig weiter. Behoben durch einen
+   Rückhalt von `3 × mittlere Blockhöhe`; überlaufende Behälter fielen damit von fünf auf zwei,
+   der Umfang von 33 auf 25 Seiten.
+
+3. **Eine doppelt vergebene Marke verschwand stillschweigend.** Im Lasttest trug die Quelle
+   zweimal dieselbe Nummer; das Werkzeug überschrieb den ersten Block kommentarlos und zählte
+   238 statt 239. Behoben: doppelte Marken sind jetzt ein Abbruchgrund.
+
+### Falle bei eigenen Messungen am PDF
+
+Zeilen dürfen **nicht allein nach der Grundlinie** gruppiert werden. Im Raster sitzen die Zeilen
+beider Spalten auf gleicher Höhe und verschmelzen dabei zu einer Zeile — die Blockzahl wird dann
+nicht mehr als Zahl erkannt. Nach Grundlinie *und* Spalte gruppiert, stieg die Trefferzahl im
+Regellauf von 6 auf 30 von 30, im Lasttest von 58 auf 239 von 239. Dieselbe Falle traf die erste
+Messung an der Vorlage.
+
 ## Vorgehen
 
 Seriell von oben nach unten, je Block: `probeseiten.tex` bauen, mit `nachmessen.py` die Zahlen

@@ -1,0 +1,52 @@
+%%% solo.tex — der Regellauf fuer dsa5solo.
+%%%
+%%% Ein kleines Solo mit dreissig Bloecken: genug fuer mehrere
+%%% Doppelseiten, damit die Behaeltergrenzen und die Fuellseiten im Satz
+%%% zu sehen sind.
+%%%
+%%% Der Bau geht in drei Schritten. Erst messen -- das schreibt solo.solo
+%%% mit der Hoehe jedes Blocks und seinen Sprungzielen:
+%%%
+%%%   cd beispiel
+%%%   xelatex -jobname=solo '\PassOptionsToPackage{messen}{dsa5solo}\input{solo}'
+%%%
+%%% Dann loesen -- das verteilt die Bloecke auf Doppelseiten, vergibt die
+%%% Nummern und teilt solo-bloecke.tex bytegetreu auf:
+%%%
+%%%   python3 ../werkzeuge/solo.py solo.solo --bloecke solo-bloecke.tex
+%%%
+%%% Dann setzen (dreimal, wegen Inhalt und Marken) und pruefen:
+%%%
+%%%   xelatex solo.tex
+%%%   python3 ../werkzeuge/solo.py --pruefen solo.aux
+
+\documentclass[raster,ohnehintergrund]{dsa5latex}
+\usepackage{dsa5solo}
+
+\graphicspath{{../}}
+\dsaAbenteuertitel{Der Bote von Havena}
+
+\begin{document}
+
+\dsakapitel{Der Bote von Havena}
+
+\dsaEinfuehrung{Ein Solo-Abenteuer fuer einen Helden, der lesen kann und
+sich nicht dabei erwischen lassen sollte.}
+
+\dsaabschnitt{So wird gespielt}
+
+Dieses Abenteuer liest sich nicht von vorn nach hinten. Jeder Abschnitt
+traegt eine Zahl, und am Ende eines Abschnitts steht, wo es weitergeht.
+Lies immer nur den Abschnitt, auf den du verwiesen wirst — und nie den
+daneben.
+
+Dass das gelingt, dafuer ist gesorgt: kein Verweis fuehrt auf eine Zahl,
+die auf derselben Doppelseite steht. Du musst also immer blaettern, und
+was du dabei siehst, verraet nichts.
+
+Beginne bei Abschnitt \soloWeiter{start}.
+
+\soloStart{start}
+\soloBloecke{solo-bloecke}
+
+\end{document}

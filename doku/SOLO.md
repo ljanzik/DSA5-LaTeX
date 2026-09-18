@@ -1,0 +1,228 @@
+# Solo-Abenteuer
+
+*Nummerierte Blöcke, aufgelöste Verweise und ein garantierter Seitenwechsel bei jedem Sprung —
+`dsa5solo.sty` und `werkzeuge/solo.py`.*
+
+---
+
+## 1. Was das ist
+
+Ein Solo-Abenteuer liest sich nicht von vorn nach hinten. Es besteht aus nummerierten Blöcken;
+über jedem Block steht seine Zahl, und im Fließtext steht, wo es weitergeht. Drei Dinge müssen
+dabei stimmen, und alle drei nimmt dieses Feature dem Autor ab:
+
+1. **Die Nummerierung.** Der Autor schreibt sprechende Marken, keine Zahlen. Das Werkzeug
+   vergibt die Nummern.
+2. **Die Verweise.** `\soloWeiter{marke}` setzt die Zahl, die die Marke am Ende bekommen hat.
+3. **Der Seitenwechsel.** Quelle und Ziel eines Sprungs liegen nie auf derselben Doppelseite.
+   Wer bei 47 die Wahl trifft und 100 schon vor sich liegen hat, liest beides — und die
+   Entscheidung ist entwertet.
+
+Punkt 3 ist der eigentliche Grund für das Werkzeug. Von Hand ist er ab etwa dreißig Blöcken
+nicht mehr zu halten, weil jeder eingeschobene Block alles dahinter verschiebt.
+
+## 2. Vorbereiten
+
+`dsa5solo` setzt auf der Kernklasse auf und bringt kein eigenes Maß mit:
+
+```latex
+\documentclass[raster]{dsa5latex}
+\usepackage{dsa5solo}
+```
+
+Der Autor schreibt alle Blöcke in **eine** Datei, in beliebiger Reihenfolge:
+
+```latex
+\begin{soloBlock}{tor-der-stadt}
+Du stehst vor dem Tor. Die Wachen mustern dich unfreundlich.
+
+Gehst du hinein, lies bei Abschnitt \soloWeiter{markt} weiter. Wendest du dich ab,
+so geht es bei Abschnitt \soloWeiter{wald} weiter.
+\end{soloBlock}
+```
+
+Marken bestehen aus Buchstaben, Ziffern und Bindestrichen; das Werkzeug prüft das und meldet
+eine doppelt vergebene Marke als Fehler — sie wäre sonst ein stiller: der zweite Block
+überschriebe den ersten, und die Verweise zeigten auf den falschen Text.
+
+Im Hauptdokument stehen nur noch drei Zeilen:
+
+```latex
+\soloStart{tor-der-stadt}     % dieser Block trägt immer die 1
+\soloBloecke{solo-bloecke}    % die Datei mit allen Blöcken
+```
+
+## 3. Bauen
+
+Drei Schritte, weil LaTeX messen muss, bevor Python rechnen kann.
+
+**Messen** — schreibt `solo.solo` mit der Höhe jedes Blocks und seinen Sprungzielen:
+
+```sh
+cd beispiel
+xelatex -jobname=solo '\PassOptionsToPackage{messen}{dsa5solo}\input{solo}'
+```
+
+**Lösen** — verteilt die Blöcke auf Doppelseiten, vergibt die Nummern und teilt die
+Autorendatei auf:
+
+```sh
+python3 ../werkzeuge/solo.py solo.solo --bloecke solo-bloecke.tex
+```
+
+**Setzen und prüfen** — dreimal wegen Inhalt und Marken:
+
+```sh
+xelatex solo.tex
+python3 ../werkzeuge/solo.py --pruefen solo.aux
+```
+
+## 4. Die Befehle
+
+| Befehl | was er tut |
+|---|---|
+| `\begin{soloBlock}{marke} … \end{soloBlock}` | ein nummerierter Block; die Zahl steht als Überschrift darüber |
+| `\soloWeiter{marke}` | setzt die Zahl des Zielblocks, sonst nichts — die Einkleidung wählt der Autor |
+| `\soloEnde` | dieser Block ist ein gewolltes Ende, keine Sackgasse |
+| `\soloStart{marke}` | dieser Block steht am Anfang und trägt die 1 |
+| `\soloBloecke{datei}` | bindet die Blöcke ein, im Satzlauf in der berechneten Reihenfolge |
+| `\soloOrdner{pfad}` | wohin das Werkzeug geschrieben hat, falls nicht `solo-aus` neben der `.tex` |
+| `\soloStellen{n}` | Stellenzahl des Platzhalters im Messlauf; das Werkzeug setzt sie selbst |
+| `\soloBehaelterEnde` | Ende einer Doppelseite; steht in der erzeugten Reihenfolgedatei |
+
+`\soloWeiter` setzt bewusst nur die Zahl. „zu Abschnitt \soloWeiter{wald}" und
+„(\soloWeiter{wald})" sind damit gleichermaßen möglich.
+
+## 5. Der Nummernkopf
+
+Die Zahl steht **über** dem Block, nicht davor. Keine Einrückung, keine
+Aufzählungsnummerierung — die Vorlage kennt beides an keiner Stelle.
+
+An einem offiziellen, gesetzten Solo des Verlags nachgemessen, über 26 Köpfe an der
+Spaltenkante:
+
+| Größe | Messwert | Folgerung |
+|---|---|---|
+| Grundlinie mod 12 bp | 0,0 bei allen 23 Köpfen mit Grad 13 | sitzt exakt im Grundlinienraster |
+| Schrift | GentiumBasic-Bold 13,0 bp, Farbe (0,0,0) | |
+| Grundlinienabstand davor | 24,0 bp, einstimmig | 12 bp Zeile + **1 Rastereinheit** Luft |
+| Grundlinienabstand danach | 12,0 bp | **keine** Zusatzluft |
+| linke Kante | 24,00 mm bzw. 105,50 mm | Spaltenkante, kein Einzug |
+
+Das ist Zeichen für Zeichen `\dsaabschnitt` der Kernklasse (`dsa5latex.cls:954`). `dsa5solo`
+definiert deshalb keinen eigenen Kopf, sondern ruft ihn auf — und **es kommt kein einziges
+neues Maß hinzu**, weshalb `doku/MASSE.md` unberührt bleibt.
+
+## 6. Zahl und Block hängen zusammen
+
+Es darf nie vorkommen, dass die Zahl unten auf einer Seite steht und ihr Block erst auf der
+nächsten beginnt. Umbrüche sind nur **innerhalb** des Blocktextes erlaubt.
+
+`\dsaabschnitt` bringt dafür schon `\nobreak` mit, das verbietet den Bruch direkt hinter der
+Zahl. Das allein genügt nicht: der Bruch wäre dann nach der *ersten* Textzeile erlaubt, und
+eine einzelne Zeile bliebe bei ihrer Zahl zurück. Der Blockkopf ruft deshalb zusätzlich
+`\@afterheading` auf, das `\clubpenalty` sperrt und die Sperre nach dem ersten Absatz von
+selbst zurücknimmt.
+
+Geprüft wird das am fertigen PDF, nicht am Quelltext — siehe Abschnitt 9.
+
+## 7. Wie die Seitenregel zustande kommt
+
+Die Aufgabe ist zirkulär: Wo ein Block steht, folgt aus seiner Nummer, und ob die Bedingung
+hält, folgt daraus, wo er steht.
+
+Aufgelöst wird das über **Behälter, und ein Behälter ist genau eine Doppelseite**. Die Nummern
+werden behälterweise aufsteigend vergeben, an jeder Behältergrenze steht ein erzwungener
+Umbruch. Damit wird aus der Sichtbarkeitsbedingung eine reine Graphbedingung:
+
+> Für jede Sprungkante (a → b): Behälter(a) ≠ Behälter(b).
+
+Das Werkzeug färbt dafür den Sprunggraphen (DSATUR) und packt jede Farbklasse für sich in
+Behälter. Weil ein Behälter damit Teilmenge einer Farbklasse bleibt, ist die Bedingung nach dem
+Packen automatisch erfüllt.
+
+Eine Doppelseite ist links **gerade**, rechts ungerade (2|3, 4|5); `\soloBehaelterEnde`
+erzwingt deshalb eine gerade Folgeseite. `\dsa@aufrechteSeite` der Kernklasse macht das
+Gegenteil und ist hier nicht zu gebrauchen — es ist für Kapitelanfänge gebaut, die rechts
+beginnen.
+
+**Auch vor dem ersten Behälter steht eine Grenze.** Ohne sie läge die Einleitung, die auf den
+Startblock verweist, auf derselben Doppelseite wie dieser. Das ist keine Theorie: ohne diese
+Zeile meldete die Prüfung am Lasttest genau einen Verstoß, und zwar diesen.
+
+### Warum das ohne Nachbau des Seitenbauers auskommt
+
+Ein Messfehler kostet Papier, nicht Richtigkeit:
+
+* **Behälter zu voll** → er läuft auf eine dritte Seite über und belegt zwei Doppelseiten. Seine
+  Blöcke verteilen sich, aber jeder Sprung aus ihm heraus führt per Konstruktion in einen
+  *anderen* Behälter, und der liegt auf einer dritten Doppelseite. Die Regel hält.
+* **Behälter zu leer** → eine Füllseite. Die Regel hält.
+
+Deshalb genügen gemessene Rasterhöhen, und TeX' Seitenbauer muss nicht nachgebildet werden.
+
+## 8. Der Rückhalt
+
+Eine Doppelseite fasst 59 Grundlinien je Spalte mal vier Spalten, also 236 Rastereinheiten.
+Vollständig füllen lässt sie sich nicht: an den drei inneren Spaltengrenzen bleibt Platz
+liegen, weil `\nobreak` und `\clubpenalty` den Block zusammenhalten und was nicht mehr ganz
+hinpasst, vollständig in die nächste Spalte rutscht.
+
+Am Satz gemessen wächst dieser Verlust mit der **Zahl** der Blöcke, nicht mit ihrer
+Gesamthöhe. Im Lasttest brauchten Behälter mit 5 und mit 11 Blöcken ihre zwei Seiten, die mit
+27, 32, 50 und 55 Blöcken eine dritte — bei nahezu gleicher Summe von 226 bis 228 Einheiten.
+
+Der Rückhalt ist deshalb nicht fest, sondern `3 × mittlere Blockhöhe`, mindestens aber der Wert
+von `--rueckhalt` (Standard 8). Das senkte im Lasttest die überlaufenden Behälter von fünf auf
+zwei und den Umfang von 33 auf 25 Seiten.
+
+## 9. Prüfen
+
+```sh
+python3 werkzeuge/solo.py --pruefen beispiel/solo.aux
+```
+
+Geprüft wird zweierlei:
+
+**Die Doppelseitenregel, aus der `.aux`.** Am Blockkopf steht ein `\label`, an jeder
+Sprungstelle ein aufgeschobener Write mit `\thepage` — nur der kennt die Seitenzahl, weil sie
+erst beim Ausschießen feststeht. Maßgeblich ist die Seite, auf der **der Verweis** steht, nicht
+die des Blockkopfes: ein Block darf über die Grenze laufen.
+
+**Die Kopfregel, am PDF.** Liegt das gesetzte PDF neben der `.aux`, sieht das Werkzeug zusätzlich
+nach, ob unter jeder Blockzahl noch Text derselben Spalte steht.
+
+Eine Falle bei eigenen Messungen am PDF: Zeilen dürfen **nicht allein nach der Grundlinie**
+gruppiert werden. Im Raster sitzen die Zeilen beider Spalten auf gleicher Höhe, verschmelzen
+dabei zu einer Zeile, und die Zahl wird nicht mehr als Zahl erkannt. Nach Grundlinie *und*
+Spalte gruppiert, stieg die Trefferzahl im Regellauf von 6 auf 30 von 30.
+
+## 10. Was das Werkzeug sonst noch meldet
+
+* **Marke doppelt vergeben** — Abbruch, denn ein Block fiele sonst still aus dem Heft.
+* **Block größer als eine Doppelseite** — er belegt zwei; die Regel hält trotzdem.
+* **Verweis auf unbekannte Marke** — im Satz erscheint ein rotes `??` in der Breite einer
+  echten Zahl, damit der Umbruch derselbe bleibt wie im Messlauf.
+* **Vom Start nicht erreichbar** — dieser Block kann nie gelesen werden.
+* **Sackgasse ohne `\soloEnde`** — ein Block ohne ausgehenden Verweis, der sich nicht als Ende
+  ausgewiesen hat.
+
+## 11. Fallstricke
+
+* **Der Messlauf ist Pflicht.** Ohne `solo.solo` weiß das Werkzeug keine Höhen; ohne
+  `reihenfolge.tex` setzt `dsa5solo` die Blöcke in Autorenreihenfolge, warnt und die
+  Doppelseitenregel gilt dann **nicht**.
+* **Nach jeder Textänderung neu messen.** Ein längerer Block verschiebt die Aufteilung.
+* **Die Nummernbreite** ist im Messlauf ein Platzhalter mit der größtmöglichen Stellenzahl. Die
+  gemessene Höhe ist damit eine obere Schranke — die echte Zahl ist nie breiter, und zu groß
+  gemessen kostet nach Abschnitt 7 nur Papier.
+* **`\clearpage` in einem Block** zerreißt die Behälteraufteilung.
+* Die erzeugten Dateien (`*.solo`, `*.solonummern`, `solo-aus/`) sind abgeleitet und stehen in
+  `.gitignore`.
+
+## 12. Beispiele
+
+| Datei | wofür |
+|---|---|
+| `beispiel/solo.tex` | der Regellauf: 30 Blöcke, drei Doppelseiten |
+| `beispiel/solo-bloecke.tex` | die Blöcke dazu, in Autorenreihenfolge |
