@@ -189,6 +189,22 @@ Die vierte Grenze mitzuzählen macht das Heft deshalb nicht länger, sondern kü
 | Leerseiten | 3 | **keine** |
 | Seiten gesamt | 27 | **23** |
 
+### Die Untergrenze: so viele Doppelseiten wie Farben
+
+Ein kleines Solo kann Papier verschwenden, ohne dass daran etwas zu machen ist. Die Zahl der
+Doppelseiten ist **mindestens so groß wie die Zahl der Farben**, die der Sprunggraph braucht —
+zwei Blöcke mit einem Sprung dazwischen dürfen nie im selben Behälter liegen, und das gilt
+auch dann, wenn beide zusammen eine Seite füllen würden.
+
+Der Regellauf zeigt das: 30 Blöcke mit zusammen 322 Rastereinheiten passen rechnerisch auf zwei
+Doppelseiten (472 Einheiten Kapazität), brauchen aber drei Behälter, weil der Graph drei Farben
+verlangt. Im Schnitt bleiben 107 Einheiten je Behälter — weniger als die 118 einer einzelnen
+Seite. Der kleinste Behälter füllt deshalb nur eine Seite, endet auf einer geraden, und die
+Paritätskorrektur setzt eine Leerseite daneben.
+
+Bei 238 Blöcken tritt das nicht auf: dort ist genug Material da, um jede Doppelseite zu füllen.
+Die Regel lautet also — je kürzer das Solo, desto größer der Verschnitt.
+
 ### Der Rest jeder Farbklasse
 
 Der zweite Grund für halb leere Doppelseiten liegt nicht am Rückhalt, sondern am Packen selbst:
