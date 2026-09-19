@@ -596,6 +596,42 @@ Dazu eine Regel, die keine Verschärfung verträgt: Ein Block **ohne Text** ist 
 auszunehmen. Unter einer Zahl, deren Block leer ist, kann nichts stehen — das ist kein
 abgetrennter Kopf, sondern ein leerer Block, und das Werkzeug meldet ihn beim Lösen als solchen.
 
+### Befund: die Leerseiten kamen vom Rueckhalt, nicht von der Regel
+
+Im Satz standen drei Leerseiten, und sie sahen willkuerlich aus. Die Messung ordnete jede
+einer Ursache zu: Behaelter 4, 5 und 7 brauchten je eine dritte Seite und endeten dadurch auf
+einer geraden Seite. Ein uebergelaufener Behaelter reicht in die naechste Doppelseite hinein,
+der folgende darf dort nicht beginnen — die Fuellseite ist also zwingend, **sobald** ein
+Behaelter ueberlaeuft.
+
+Der Fehler lag eine Stufe davor, im Rueckhalt: gezaehlt wurden drei Spaltengrenzen, obwohl
+die vierte — das Behaelterende — darueber entscheidet, ob der Behaelter ueberlaeuft. Mit vier
+Grenzen verschwanden die Ueberlaeufe, und das Heft wurde dabei **kuerzer**:
+
+| Lasttest, 238 Blöcke | drei Grenzen | vier Grenzen |
+|---|---|---|
+| überlaufende Behälter | 3 von 10 | 0 |
+| Leerseiten | 3 | keine |
+| Seiten gesamt | 27 | 23 |
+
+### Befund: ein Regelverstoss in der Nachbesserung
+
+Beim Aufloesen zu leerer Behaelter prueft das Werkzeug fuer jeden Block, ob im Zielbehaelter
+ein Nachbar aus dem Sprunggraphen liegt. Diese Pruefung sah nur den **bestehenden** Inhalt,
+nicht die Bloecke, die im selben Durchgang mit dorthin wandern. Zwei Nachbarn aus demselben
+aufgeloesten Behaelter landeten dadurch gemeinsam im neuen, und der Sprung zwischen ihnen blieb
+auf einer Doppelseite. Aufgefallen am Satz, ein Verstoss unter 383 — die Regelpruefung hat ihn
+gefangen, bevor er ins PDF kam.
+
+### Befund: ungeteilte Bloecke vertragen keine Box
+
+Fuer die Option `zusammen` lag eine Box nahe: sie ist von sich aus unteilbar. Ihre Hoehe muss
+aber auf Rastervielfache gerundet und die Box um den gerundeten Wert abgesenkt werden, und
+diese Differenz verschiebt den gesamten Inhalt. Am Satz gemessen lagen so gesetzte Bloecke
+0,20 bp und 2,44 bp neben dem Raster — beide Male genau die gerundeten Bloecke, alle anderen
+28 sassen exakt. Mit Umbruchsperren statt einer Box bleibt die vertikale Liste unveraendert,
+und alle 30 Zahlen sitzen wieder auf 0,00 bp.
+
 ### Falle bei eigenen Messungen am PDF
 
 Zeilen dürfen **nicht allein nach der Grundlinie** gruppiert werden. Im Raster sitzen die Zeilen

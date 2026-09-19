@@ -130,7 +130,12 @@ Dem Jungen nach: Abschnitt \soloWeiter{bote}. Die Kellertreppe hinunter: Abschni
 \soloWeiter{keller}.
 \end{soloBlock}
 
-\begin{soloBlock}{keller}
+% Dieser Block führt die Option „zusammen“ vor: Bild und Text landen
+% gemeinsam in einer Spalte oder gemeinsam in der nächsten, nie getrennt.
+% Ohne die Option dürfte der Satz zwischen Bild und Text umbrechen.
+\begin{soloBlock}[zusammen]{keller}
+\dsaBildSpalte{grafiken/fiole}{6}
+
 Unten ist es trocken und still, und die Stille ist das Falsche daran — über dir
 müsste das Wirtshaus zu hören sein. Zwischen den Fässern steht eine Kiste, die zu
 sauber ist für diesen Ort.
@@ -309,7 +314,7 @@ Hinter dir ist es still geworden. Das heißt nicht, dass niemand mehr da ist.
 Weiter bei Abschnitt \soloWeiter{ruecken}.
 \end{soloBlock}
 
-\begin{soloBlock}{ruecken}
+\begin{soloBlock}[zusammen]{ruecken}
 An der Mauer sitzt der Junge aus der Gasse, als hätte er dort die ganze Zeit
 gewartet. »Du hast ihn gelesen«, sagt er. »Das haben die anderen nicht.«
 

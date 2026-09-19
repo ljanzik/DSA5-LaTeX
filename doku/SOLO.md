@@ -124,7 +124,7 @@ eine einzelne Zeile bliebe bei ihrer Zahl zurück. Der Blockkopf ruft deshalb zu
 `\@afterheading` auf, das `\clubpenalty` sperrt und die Sperre nach dem ersten Absatz von
 selbst zurücknimmt.
 
-Geprüft wird das am fertigen PDF, nicht am Quelltext — siehe Abschnitt 9.
+Geprüft wird das am fertigen PDF, nicht am Quelltext — siehe Abschnitt 10.
 
 ## 7. Wie die Seitenregel zustande kommt
 
@@ -172,9 +172,22 @@ Am Satz gemessen wächst dieser Verlust mit der **Zahl** der Blöcke, nicht mit 
 Gesamthöhe. Im Lasttest brauchten Behälter mit 5 und mit 11 Blöcken ihre zwei Seiten, die mit
 27, 32, 50 und 55 Blöcken eine dritte — bei nahezu gleicher Summe von 226 bis 228 Einheiten.
 
-Der Rückhalt ist deshalb nicht fest, sondern `3 × mittlere Blockhöhe`, mindestens aber der Wert
-von `--rueckhalt` (Standard 8). Das senkte im Lasttest die überlaufenden Behälter von fünf auf
-zwei und den Umfang von 33 auf 25 Seiten.
+Der Rückhalt ist deshalb nicht fest, sondern `4 × mittlere Blockhöhe`, mindestens aber der Wert
+von `--rueckhalt` (Standard 8).
+
+**Gezählt werden vier Grenzen, nicht drei** — obwohl eine Doppelseite nur drei innere
+Spaltengrenzen hat. Der Verlust an der vierten, dem Behälterende, entscheidet nämlich darüber,
+ob der Behälter auf eine dritte Seite überläuft, und das ist teuer: Ein übergelaufener Behälter
+reicht in die nächste Doppelseite hinein, der folgende darf dort nicht beginnen, und es
+entsteht eine **Leerseite**. Genau daher kamen die Leerseiten im Lasttest.
+
+Die vierte Grenze mitzuzählen macht das Heft deshalb nicht länger, sondern kürzer:
+
+| Lasttest, 238 Blöcke | drei Grenzen | vier Grenzen |
+|---|---|---|
+| überlaufende Behälter | 3 von 10 | **0** |
+| Leerseiten | 3 | **keine** |
+| Seiten gesamt | 27 | **23** |
 
 ### Der Rest jeder Farbklasse
 
@@ -189,7 +202,47 @@ Das Werkzeug löst solche Behälter deshalb nachträglich auf und verteilt ihre 
 also unangetastet. Im Lasttest stieg der leerste Behälter dadurch von 80 auf 172 Einheiten, die
 Zahl der Doppelseiten sank von elf auf zehn und die der Füllseiten von vier auf drei.
 
-## 9. Prüfen
+## 9. Bilder im Block
+
+Bilder kommen mit den Befehlen der Kernklasse in den Block, vor allem
+`\dsaBildSpalte{datei}{einheiten}`. Sie brauchen nichts Besonderes: der Messlauf setzt den
+ganzen Block in eine Box, misst ihn samt Bild und kennt die Höhe. Ein Bild darf also überall
+im Block stehen.
+
+```latex
+egin{soloBlock}[zusammen]{keller}
+\dsaBildSpalte{grafiken/fiole}{6}
+
+Unten ist es trocken und still …
+\end{soloBlock}
+```
+
+**Damit Bild und Text zusammenbleiben, braucht es die Option `zusammen`.** `\dsaBildRaster`
+bringt zwar ein eigenes `
+obreak` mit und klebt damit an seinen Nachbarzeilen, aber das bindet
+nicht den ganzen Block — der Satz darf weiter oben oder unten umbrechen, und dann steht das
+Bild allein. Mit `zusammen` landet der Block vollständig in einer Spalte oder vollständig in
+der nächsten.
+
+Am Regellauf gemessen, drei Blöcke im Vergleich:
+
+| Block | Höhe | Zahl auf Seite | Verweis auf Seite | |
+|---|---|---|---|---|
+| `dach`, gewöhnlich | 9 | 4 | 5 | umbrochen |
+| `keller`, mit Bild und `zusammen` | 18 | 6 | 6 | hält zusammen |
+| `ruecken`, `zusammen` | 9 | 7 | 7 | hält zusammen |
+
+Zwei Dinge sind dabei zu beachten:
+
+* **Der Block muss in eine Spalte passen**, also höchstens 59 Rastereinheiten hoch sein. Sonst
+  läuft er unten heraus; das Werkzeug meldet es beim Lösen, das Paket warnt im Satz.
+* **Umgesetzt ist das über Umbruchsperren, nicht über eine Box.** Eine Box wäre der
+  naheliegende Weg — sie ist von sich aus unteilbar. Ihre Höhe müsste aber auf Rastervielfache
+  gerundet und die Box um den gerundeten Wert abgesenkt werden, und diese Differenz verschiebt
+  den gesamten Inhalt. So gesetzte Blöcke lagen im Satz 0,20 und 2,44 bp neben dem Raster.
+  Penalties lassen die vertikale Liste unverändert, das Raster kann also gar nicht brechen.
+
+## 10. Prüfen
 
 ```sh
 python3 werkzeuge/solo.py --pruefen beispiel/solo.aux
@@ -210,7 +263,7 @@ gruppiert werden. Im Raster sitzen die Zeilen beider Spalten auf gleicher Höhe,
 dabei zu einer Zeile, und die Zahl wird nicht mehr als Zahl erkannt. Nach Grundlinie *und*
 Spalte gruppiert, stieg die Trefferzahl im Regellauf von 6 auf 30 von 30.
 
-## 10. Was das Werkzeug sonst noch meldet
+## 11. Was das Werkzeug sonst noch meldet
 
 * **Marke doppelt vergeben** — Abbruch, denn ein Block fiele sonst still aus dem Heft.
 * **Block größer als eine Doppelseite** — er belegt zwei; die Regel hält trotzdem.
@@ -224,7 +277,7 @@ Spalte gruppiert, stieg die Trefferzahl im Regellauf von 6 auf 30 von 30.
 * **Sackgasse ohne `\soloEnde`** — ein Block ohne ausgehenden Verweis, der sich nicht als Ende
   ausgewiesen hat.
 
-## 11. Fallstricke
+## 12. Fallstricke
 
 * **Der Messlauf ist Pflicht.** Ohne `solo.solo` weiß das Werkzeug keine Höhen; ohne
   `reihenfolge.tex` setzt `dsa5solo` die Blöcke in Autorenreihenfolge, warnt und die
@@ -237,7 +290,7 @@ Spalte gruppiert, stieg die Trefferzahl im Regellauf von 6 auf 30 von 30.
 * Die erzeugten Dateien (`*.solo`, `*.solonummern`, `solo-aus/`) sind abgeleitet und stehen in
   `.gitignore`.
 
-## 12. Beispiele
+## 13. Beispiele
 
 | Datei | wofür |
 |---|---|

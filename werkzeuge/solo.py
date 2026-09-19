@@ -75,6 +75,11 @@ def solo_lesen(pfad):
     if m:
         start = m.group(1).strip()
 
+    # Ungeteilte Bloecke: fuer sie ist nicht die Doppelseite die Grenze,
+    # sondern die Spalte.
+    zusammen = {m.group(1).strip() for m in
+                re.finditer(r'\\solozusammen\{([^}]*)\}', text)}
+
     doppelt = []
     for m in re.finditer(r'\\soloblock\{([^}]*)\}\{(\d+)\}\{([^}]*)\}', text):
         marke = m.group(1).strip()
@@ -99,7 +104,8 @@ def solo_lesen(pfad):
         ziele[marke] = sauber
         reihe.append(marke)
 
-    return hoehe, ziele, reihe, start, ende, doppelt, spalte, spalten
+    return (hoehe, ziele, reihe, start, ende, doppelt, zusammen,
+            spalte, spalten)
 
 
 def bloecke_teilen(quelle, ausordner):
@@ -118,7 +124,10 @@ def bloecke_teilen(quelle, ausordner):
     with open(quelle, encoding='utf-8') as f:
         zeilen = f.readlines()
 
-    anfang = re.compile(r'\\begin\{soloBlock\}\{([^}]*)\}')
+    # Das optionale Argument muss mit: \begin{soloBlock}[zusammen]{marke}.
+    # Ohne es fand die Teilung den Block nicht, schrieb seine Datei nicht,
+    # und der Satzlauf brach mit "File not found" ab.
+    anfang = re.compile(r'\\begin\{soloBlock\}(?:\[[^\]]*\])?\{([^}]*)\}')
     ende = re.compile(r'\\end\{soloBlock\}')
 
     os.makedirs(ausordner, exist_ok=True)
@@ -171,7 +180,7 @@ def faerben(knoten, nachbarn):
     return farbe
 
 
-def rueckhalt(belegt, anzahl, grenzen=3):
+def rueckhalt(belegt, anzahl, grenzen=4):
     """Was an den inneren Spaltengrenzen einer Doppelseite liegen bleibt.
 
     Am Satz gemessen: der Ueberlauf waechst mit der ZAHL der Bloecke, nicht
@@ -183,8 +192,15 @@ def rueckhalt(belegt, anzahl, grenzen=3):
     \\clubpenalty fuer die ersten Zeilen halten den Block zusammen. Was an
     einer Spaltengrenze nicht mehr ganz hinpasst, rutscht vollstaendig in
     die naechste Spalte und laesst seinen Platz leer. Der erwartete
-    Verlust je Grenze ist also etwa eine mittlere Blockhoehe, und eine
-    Doppelseite hat drei innere Grenzen.
+    Verlust je Grenze ist also etwa eine mittlere Blockhoehe.
+
+    Gezaehlt werden VIER Grenzen, nicht drei. Eine Doppelseite hat zwar nur
+    drei innere Spaltengrenzen, aber der Verlust an der vierten -- dem
+    Behaelterende -- entscheidet darueber, ob der Behaelter auf eine dritte
+    Seite ueberlaeuft. Und das ist teuer: ein uebergelaufener Behaelter
+    reicht in die naechste Doppelseite hinein, der folgende darf dort nicht
+    beginnen, und es entsteht eine Leerseite. Mit drei Grenzen liefen im
+    Lasttest drei von zehn Behaeltern ueber und erzeugten drei Leerseiten.
     """
     if anzahl <= 0:
         return 0
@@ -239,12 +255,17 @@ def nachbessern(behaelter, hoehe, nachbarn, gesamt, mindestrueckhalt):
                 for j, ziel in enumerate(behaelter):
                     if j == i or not ziel:
                         continue
-                    if nachbarn[m] & set(ziel):
-                        continue
                     # Was in diesem Durchgang schon zugesagt wurde, zaehlt
-                    # mit, sonst wird derselbe Platz zweimal vergeben.
+                    # mit -- fuer den Platz UND fuer die Nachbarschaft.
+                    # Nur gegen den bestehenden Inhalt zu pruefen war ein
+                    # Fehler: zwei Nachbarn aus demselben aufgeloesten
+                    # Behaelter landeten dann gemeinsam im neuen, und der
+                    # Sprung zwischen ihnen blieb auf einer Doppelseite.
+                    # Am Satz aufgefallen, ein Verstoss unter 383.
                     belegt = [x for x in ziel]
                     belegt += [x for x, k in plan.items() if k == j]
+                    if nachbarn[m] & set(belegt):
+                        continue
                     if passt(belegt, hoehe.get(m, 1), hoehe, gesamt,
                              mindestrueckhalt):
                         plan[m] = j
@@ -389,6 +410,22 @@ def aux_pruefen(pfad):
         if doppelseite(seite) == doppelseite(kopf[ziel]):
             verstoss.append((quelle, ziel, seite, kopf[ziel]))
     return kopf, geprueft, verstoss
+
+
+def soll_bloecke(auxpfad):
+    """Wie viele Bloecke das Heft haben MUSS, laut Nummernzuordnung.
+
+    Ohne diesen Sollwert ist die Pruefung blind gegen einen abgebrochenen
+    Lauf: bricht LaTeX mittendrin ab, sind .aux und PDF gemeinsam
+    unvollstaendig, stimmen also miteinander ueberein -- und das Werkzeug
+    meldete Erfolg fuer ein halbes Heft.
+    """
+    stamm = os.path.splitext(auxpfad)[0]
+    try:
+        nummern = open(stamm + '.solonummern', encoding='utf-8').read()
+    except IOError:
+        return None
+    return len(re.findall(r'\\soloNummer\{[^}]*\}\{\d+\}', nummern))
 
 
 def leere_bloecke(auxpfad):
@@ -539,8 +576,17 @@ def main():
         if not os.path.exists(args.pruefen):
             sys.exit('Datei nicht gefunden: %s' % args.pruefen)
         kopf, geprueft, verstoss = aux_pruefen(args.pruefen)
-        print('Bloecke mit Marke   : %d' % len(kopf))
+        soll = soll_bloecke(args.pruefen)
+        print('Bloecke mit Marke   : %d%s'
+              % (len(kopf), '' if soll is None else ' von %d' % soll))
         print('Sprungstellen       : %d' % geprueft)
+        if soll is not None and len(kopf) != soll:
+            print()
+            print('UNVOLLSTAENDIG: die Nummernzuordnung kennt %d Bloecke, '
+                  'die .aux nur %d.' % (soll, len(kopf)))
+            print('Der Satzlauf ist abgebrochen. Das Log auf "Emergency '
+                  'stop" oder "File not found" ansehen.')
+            return 1
         if not kopf:
             print()
             print('KEINE MARKEN GEFUNDEN. Wurde das Dokument mit '
@@ -613,8 +659,8 @@ def main():
                  'Erst den Messlauf machen: xelatex mit '
                  '\\usepackage[messen]{dsa5solo}' % args.solo)
 
-    hoehe, ziele, reihe, start, ende, doppelt, spalte, spalten = solo_lesen(
-        args.solo)
+    (hoehe, ziele, reihe, start, ende, doppelt, zusammen,
+     spalte, spalten) = solo_lesen(args.solo)
     if not hoehe:
         sys.exit('Die Messdatei enthaelt keinen Block.')
     if spalte is None:
@@ -677,6 +723,17 @@ def main():
     print('Nummern             : %s' % nummerndatei)
 
     # ---- Warnungen, die den Lauf nicht scheitern lassen
+
+    # Ein ungeteilter Block muss in eine SPALTE passen, nicht nur auf
+    # eine Doppelseite -- er wird als ganzes gesetzt oder gar nicht.
+    zu_hoch = sorted(m for m in zusammen if hoehe.get(m, 0) > spalte)
+    if zu_hoch:
+        print()
+        print('UNGETEILTER BLOCK PASST IN KEINE SPALTE (%d):' % len(zu_hoch))
+        for m in zu_hoch:
+            print('  %-24s %d von %d Rastereinheiten'
+                  % (m, hoehe[m], spalte))
+        print('  Die Option "zusammen" hier weglassen oder kuerzen.')
 
     zu_gross = [m for m in hoehe if hoehe[m] > gesamt]
     if zu_gross:

@@ -163,8 +163,21 @@
 \newcommand*{\dsaSolo@kopf}[1]{%
   \dsaabschnitt{#1}}
 
-\newenvironment{soloBlock}[1]{%
-  \xdef\dsaSolo@marke{\detokenize{#1}}%
+% \begin{soloBlock}[zusammen]{marke} haelt den Block ungeteilt: er landet
+% vollstaendig in einer Spalte oder gar nicht. Gedacht fuer Bloecke mit
+% Bild -- ein \dsaBildSpalte bringt zwar sein eigenes \nobreak mit und
+% klebt damit an den Nachbarzeilen, aber das bindet nicht den ganzen
+% Block. Wer will, dass Bild und Text zusammen auf einer Seite stehen,
+% nimmt diese Option.
+%
+% Preis: der Block muss in EINE Spalte passen, also hoechstens 59
+% Rastereinheiten hoch sein. Das Werkzeug prueft es und warnt sonst.
+\newif\ifdsaSolo@zusammen
+
+\newenvironment{soloBlock}[2][]{%
+  \dsaSolo@zusammenfalse
+  \if\relax\detokenize{#1}\relax\else\dsaSolo@zusammentrue\fi
+  \xdef\dsaSolo@marke{\detokenize{#2}}%
   \gdef\dsaSolo@ziele{}%
   \ifdsaSolo@messen
     \setbox\dsaSolo@box\vbox\bgroup
@@ -177,16 +190,28 @@
       \prevdepth=\z@
       \dsaSolo@kopf{\dsaSolo@platzhalter}%
   \else
-    \dsaSolo@kopf{%
-      \ifcsname dsaSolo@nr@#1\endcsname
-        \csname dsaSolo@nr@#1\endcsname
-      \else
-        \dsaSolo@fehlt{#1}%
-      \fi}%
+    % Ungeteilt heisst hier: Umbrueche verbieten, NICHT boxen. Eine Box
+    % waere verlockend, weil sie unteilbar ist -- aber ihre Hoehe muesste
+    % auf Rastervielfache gerundet und die Box um den gerundeten Wert
+    % abgesenkt werden, und die Differenz verschiebt den ganzen Inhalt.
+    % Am Satz gemessen lagen so gesetzte Bloecke 0,20 und 2,44 bp neben
+    % dem Raster. Penalties lassen die vertikale Liste unveraendert, also
+    % kann das Raster gar nicht erst brechen.
+    \ifdsaSolo@zusammen
+      \interlinepenalty=\@M
+      \clubpenalty=\@M
+      \widowpenalty=\@M
+      \brokenpenalty=\@M
+      % Zwischen zwei Absaetzen bleibt sonst ein Umbruchpunkt offen, den
+      % keine der Penalties oben abdeckt.
+      \let\dsaSolo@par\par
+      \def\par{\dsaSolo@par\nobreak}%
+    \fi
+    \dsaSolo@kopf{\dsaSolo@nummer{#2}}%
     % Marke fuer die Pruefung: \newlabel in der .aux traegt die Seite des
     % Blockanfangs. hyperref ist von der Kernklasse geladen (:86).
     \phantomsection
-    \label{solo:#1}%
+    \label{solo:#2}%
     % Die Sperre steht bewusst NACH der Marke, damit zwischen ihr und der
     % ersten Textzeile nichts mehr liegt: \phantomsection setzt einen
     % Anker in die vertikale Liste, und was dort einen Umbruchpunkt
@@ -205,7 +230,19 @@
     \egroup
     \dsaSolo@schreiben
   \else
-    \par
+    % Das urspruengliche \par, nicht das gesperrte: ein \nobreak am
+    % Blockende wuerde den Block an den folgenden binden, und gerade
+    % dort SOLL umbrochen werden duerfen.
+    \ifdsaSolo@zusammen\dsaSolo@par\else\par\fi
+    % Die Sperren galten nur in der Umgebungsgruppe und enden mit ihr.
+  \fi}
+
+% Der Nachschlag der Nummer, an zwei Stellen gebraucht.
+\newcommand*{\dsaSolo@nummer}[1]{%
+  \ifcsname dsaSolo@nr@#1\endcsname
+    \csname dsaSolo@nr@#1\endcsname
+  \else
+    \dsaSolo@fehlt{#1}%
   \fi}
 
 % Rundung wortgleich wie \dsa@tabellesetzen (dsa5latex.cls:1809): \numexpr
@@ -221,6 +258,12 @@
     \fi
     \immediate\write\dsaSolo@aus{%
       \string\soloblock{\dsaSolo@marke}{\dsaSolo@n}{\dsaSolo@ziele}}%
+    % Ungeteilte Bloecke muss das Werkzeug kennen: fuer sie gilt nicht die
+    % Doppelseite als Grenze, sondern die Spalte.
+    \ifdsaSolo@zusammen
+      \immediate\write\dsaSolo@aus{%
+        \string\solozusammen{\dsaSolo@marke}}%
+    \fi
   \endgroup
   \global\setbox\dsaSolo@box\box\voidb@x}
 
