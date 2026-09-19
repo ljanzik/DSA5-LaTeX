@@ -189,6 +189,29 @@ Die vierte Grenze mitzuzählen macht das Heft deshalb nicht länger, sondern kü
 | Leerseiten | 3 | **keine** |
 | Seiten gesamt | 27 | **23** |
 
+### Die Lücken am Spaltenfuß
+
+Im Satz bleibt am Fuß mancher Spalte Platz frei, am auffälligsten in der zweiten Spalte
+rechter Seiten — also am Ende jeder Doppelseite. Das sieht nach einem Fehler aus, ist aber der
+Rückhalt, sichtbar geworden: Was reserviert wird, damit der Behälter nicht überläuft, steht am
+Schluss leer.
+
+Am Lasttest gemessen sind 21 von 44 Spalten bis auf eine Rastereinheit gefüllt; die großen
+Lücken von 27 bis 38 Einheiten sitzen sämtlich am Behälterende. Zusammen sind das 449 von
+2716 Einheiten, also gut ein Sechstel.
+
+**Wegoptimieren lässt sich dieser Verschnitt nicht, nur verschieben.** Mit halbiertem Rückhalt
+füllen sich die Behälter zwar auf 200 statt 182 Einheiten — dafür laufen drei über, und der
+gewonnene Platz geht in Füllseiten wieder verloren:
+
+| Rückhalt | Füllung | Verschnitt | Leerseiten | Seiten |
+|---|---|---|---|---|
+| zwei Grenzen | 200 | 450 | 3 | 27 |
+| vier Grenzen | 182 | **449** | **keine** | **23** |
+
+Der Verschnitt ist in beiden Fällen derselbe. Die Frage ist nur, ob er als Lücke am Spaltenfuß
+erscheint oder sich zu ganzen Leerseiten ballt — und vier Grenzen sind dabei die bessere Wahl.
+
 ### Die Untergrenze: so viele Doppelseiten wie Farben
 
 Ein kleines Solo kann Papier verschwenden, ohne dass daran etwas zu machen ist. Die Zahl der
