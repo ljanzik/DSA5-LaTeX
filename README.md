@@ -23,6 +23,7 @@ Jedes Feature ist eine eigene Klasse oder eine eigene Erweiterung, mit eigener E
 | Feature | Klasse | wofür | Doku |
 |---|---|---|---|
 | Abenteuer setzen | `dsa5latex.cls` | Zweispaltiger Satz auf A4 mit Grundlinienraster, Pergament- und Wertekästen in Produktionsgröße, Kapitelbanner, Meistermasken, Seitenhintergründe, Textumfluss | [Elementreferenz](doku/ELEMENTE.md) |
+| Aufsteller (Standfiguren zum Ausschneiden) | `dsa5aufsteller.sty` | Kleine Standfiguren auf eigenen A4-Bögen in vier Größenklassen (S/M/L/XL), mit automatisch erzeugter Rückseite für den beidseitigen Druck | [Elementreferenz](doku/ELEMENTE.md#aufsteller) |
 | Einleger für den Spielleiterschirm | `dsa5einleger.cls` | DIN A4 quer, vier freie Spalten, über die ein Block beliebig laufen darf, Tabellen mit Quellenmarke und Verlaufskopf, Pergament mit Schuppenleiste oben und unten. Lädt `dsa5latex.cls` und ändert nur, was ein Einleger anders macht; Vorbild und Maßquelle ist zusätzlich der offizielle *Universal Spielleiterschirm Einleger, Auflage 5* | [Elementreferenz](doku/EINLEGER.md) |
 
 Einrichten, Grafiken und Schriften besorgen, bauen — das gilt featureübergreifend und steht in

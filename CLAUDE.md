@@ -18,7 +18,12 @@ Zwei LaTeX-Dokumentklassen im Layout von *Das Schwarze Auge 5*, nach den Maßen 
 und baut, steht featureübergreifend in `doku/EINRICHTUNG.md`. Dazu sieben Python-Werkzeuge in
 `werkzeuge/`, fünf Dokumente in `doku/` und fünf Beispieldokumente in `beispiel/`.
 
-**Weitere Features** (eigene Klassen oder Erweiterungen wie Charakterbogen, Aufsteller,
+Dazu kommt der **Aufsteller** (`dsa5aufsteller.sty`) — keine eigene Klasse, sondern eine
+Erweiterung: kleine Standfiguren zum Ausschneiden auf eigenen A4-Bögen in vier Größenklassen,
+dokumentiert im Abschnitt „Aufsteller“ in `doku/ELEMENTE.md`. Seine Maße stehen nicht in
+`doku/MASSE.md`, sondern als Kommentar direkt in der `.sty`-Datei — siehe dort.
+
+**Weitere Features** (eigene Klassen oder Erweiterungen wie Charakterbogen,
 Battlemap) bekommen jeweils eine eigene Doku-Datei und einen eigenen Eintrag in der Feature-Liste
 in `README.md` — siehe „Dokumentation neuer Features“ in Teil B.
 
@@ -293,10 +298,12 @@ alle vier Abenteuer-Beispiele durch und muss dort nachgemessen werden.
 ## Dokumentation neuer Features
 
 Ein neues Feature (eine eigene Klasse wie `dsa5einleger.cls` oder eine Erweiterung der
-Kernklasse wie der Aufsteller) bekommt **eine eigene Doku-Datei**, `doku/<FEATURE>.md` in
-Großbuchstaben — zum Beispiel `doku/AUFSTELLER.md` oder `doku/BATTLEMAP.md` — statt eines
-Abschnitts in `doku/ELEMENTE.md`. `doku/ELEMENTE.md` bleibt der Kernklasse `dsa5latex.cls`
-vorbehalten; der Einleger folgt diesem Muster bereits mit `doku/EINLEGER.md`.
+Kernklasse) bekommt **eine eigene Doku-Datei**, `doku/<FEATURE>.md` in Großbuchstaben — zum
+Beispiel `doku/BATTLEMAP.md` — statt eines Abschnitts in `doku/ELEMENTE.md`. `doku/ELEMENTE.md`
+bleibt der Kernklasse `dsa5latex.cls` vorbehalten; der Einleger folgt diesem Muster bereits mit
+`doku/EINLEGER.md`. Der Aufsteller (`dsa5aufsteller.sty`) ist älter als diese Konvention und
+dokumentiert sich noch als eigener Abschnitt in `doku/ELEMENTE.md` — wer ihn erweitert, kann ihn
+bei Gelegenheit nach `doku/AUFSTELLER.md` ziehen, muss es aber nicht in derselben Änderung tun.
 
 Dazu gehört ein eigener Eintrag in der Feature-Liste in `README.md`: eine Zeile mit Kurzform,
 Klasse (falls eine eigene) und Verweis auf die neue Doku-Datei. Das Allgemeine — Grafiken und
