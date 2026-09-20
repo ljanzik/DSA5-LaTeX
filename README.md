@@ -24,6 +24,7 @@ Jedes Feature ist eine eigene Klasse oder eine eigene Erweiterung, mit eigener E
 |---|---|---|---|
 | Abenteuer setzen | `dsa5latex.cls` | Zweispaltiger Satz auf A4 mit Grundlinienraster, Pergament- und Wertekästen in Produktionsgröße, Kapitelbanner, Meistermasken, Seitenhintergründe, Textumfluss | [Elementreferenz](doku/ELEMENTE.md) |
 | Aufsteller (Standfiguren zum Ausschneiden) | `dsa5aufsteller.sty` | Kleine Standfiguren auf eigenen A4-Bögen in vier Größenklassen (S/M/L/XL), mit automatisch erzeugter Rückseite für den beidseitigen Druck | [Elementreferenz](doku/ELEMENTE.md#aufsteller) |
+| Battlemap mit Zollraster | — (`beispiel/battlemap.tex`, kein `.cls`) | Eigenes Blatt neben dem Heft (A4 bis A1, hoch oder quer) mit gestricheltem Zollraster über der Battlemap, kein eigener Seitentyp der Klasse | [Elementreferenz](doku/ELEMENTE.md#seitentypen) |
 | Einleger für den Spielleiterschirm | `dsa5einleger.cls` | DIN A4 quer, vier freie Spalten, über die ein Block beliebig laufen darf, Tabellen mit Quellenmarke und Verlaufskopf, Pergament mit Schuppenleiste oben und unten. Lädt `dsa5latex.cls` und ändert nur, was ein Einleger anders macht; Vorbild und Maßquelle ist zusätzlich der offizielle *Universal Spielleiterschirm Einleger, Auflage 5* | [Elementreferenz](doku/EINLEGER.md) |
 
 Einrichten, Grafiken und Schriften besorgen, bauen — das gilt featureübergreifend und steht in
@@ -64,31 +65,35 @@ cd beispiel
 TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 ```
 
-Die Elementreferenz der Kernklasse steht in `doku/ELEMENTE.md`, die des Einlegers in
-`doku/EINLEGER.md`. Was der Einleger zusätzlich braucht (eigene Hintergrundgrafiken,
+Die Elementreferenz der Kernklasse steht in `doku/ELEMENTE.md`, dort auch die Battlemap mit
+Zollraster (`beispiel/battlemap.tex`, Abschnitt „Seitentypen“) — kein eigener Seitentyp der
+Klasse, sondern ein eigenes Blatt (A4 bis A1, hoch oder quer) neben dem Heft. Die des Einlegers
+steht in `doku/EINLEGER.md`; was er zusätzlich braucht (eigene Hintergrundgrafiken,
 Klassenoptionen, eigenes Beispieldokument) steht ebenfalls in `doku/EINRICHTUNG.md`.
 
 ---
 
 ## Stand
 
-**Beide Klassen laufen.** Alle fünf Beispieldokumente bauen mit XeLaTeX aus TeX Live 2026
+**Beide Klassen laufen.** Alle sechs Beispieldokumente bauen mit XeLaTeX aus TeX Live 2026
 fehlerfrei durch — `beispiel.tex` mit 22 Seiten, ohne eine einzige LaTeX-Warnung. Sechs
 `Overfull \hbox` sind der gewollte Überhang der Kästen, fünf `Underfull \hbox` sind lockere
-Umbrüche im 80,5-mm-Satz. `einleger.tex` baut drei Seiten ohne Warnung.
+Umbrüche im 80,5-mm-Satz. `einleger.tex` baut drei Seiten ohne Warnung, und `battlemap.tex`
+alle acht Kombinationen aus Blattformat (A4 bis A1) und Lage (hoch, quer) ohne Fehlermeldung.
 
 **Und beide sind nachgemessen.** Von den vierzehn Prüfmarken, die `dsa5latex.cls` einmal trug,
 sind zehn erledigt, darunter zwei echte Fehler: der Kapiteltitel stand mit 23,5 statt
 31,73 pt (die IDML skaliert ihn auf 135 %), und vor dem Titel stand ein „Kapitel N:“, das
 kein gesetzter Band führt. Die vier verbliebenen heißen im Quelltext `% OFFEN:`: sie warten
 nicht auf eine Messung, sondern auf eine Quelle, die es nicht gibt — Einzelheiten in
-`doku/ELEMENTE.md` unter „Was noch nicht nachgemessen ist“. Der Einleger ist ebenso
-nachgemessen: über 322 waagerechte Tabellenkanten der drei Seiten liegt die größte Abweichung
-von der Sollspalte bei 0,20 bp, die meisten unter 0,005 bp; jede einzeilige Tabellenzeile misst
-14,5600 bp gegen ein Sollmaß von 14,56 bp. Ungeprüft sind dort noch die Kästen der
-Abenteuerklasse im Querformat, und zwei Stellen in `dsa5einleger.cls` tragen weiter
-`% PRUEFEN:`, weil ihr Ergebnis noch niemand am PDF nachgemessen hat. Der Stand jeder Messung
-steht in `doku/PRUEFPLAN.md`.
+`doku/ELEMENTE.md` unter „Was noch nicht nachgemessen ist“. Das Zollraster der Battlemap ist
+nachgemessen: alle vier Blattgrößen treffen ihr Sollmaß, der Linienabstand liegt auf 72,001 bp
+gegen ein Sollmaß von 72 bp. Der Einleger ebenso: über 322 waagerechte Tabellenkanten der drei
+Seiten liegt die größte Abweichung von der Sollspalte bei 0,20 bp, die meisten unter 0,005 bp;
+jede einzeilige Tabellenzeile misst 14,5600 bp gegen ein Sollmaß von 14,56 bp. Ungeprüft sind
+dort noch die Kästen der Abenteuerklasse im Querformat, und zwei Stellen in `dsa5einleger.cls`
+tragen weiter `% PRUEFEN:`, weil ihr Ergebnis noch niemand am PDF nachgemessen hat. Der Stand
+jeder Messung steht in `doku/PRUEFPLAN.md`.
 
 ---
 

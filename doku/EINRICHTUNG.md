@@ -129,11 +129,12 @@ TEXINPUTS="..;" xelatex einleger.tex     # einmal genügt, kein Inhaltsverzeichn
 `TEXMFHOME/tex/latex/dsa5latex/` legt, kann es weglassen. Unter Windows in der PowerShell:
 `$env:TEXINPUTS = "..;"`.
 
-Fünf Beispieldokumente liegen in `beispiel/`: `beispiel.tex` zeigt jedes Element genau einmal
+Sechs Beispieldokumente liegen in `beispiel/`: `beispiel.tex` zeigt jedes Element genau einmal
 (22 Seiten), `raster.tex` nur Text und Raster und baut in Sekunden, `kaesten.tex` alle fünfzehn
-Kästen, `rest.tex` die Seitentypen, `einleger.tex` jedes Element der Einlegerklasse. Jedes
-weitere Feature bringt seine eigenen Beispieldokumente mit — welche das sind, steht in seiner
-eigenen Doku-Datei aus der Feature-Liste.
+Kästen, `rest.tex` die Seitentypen, `battlemap.tex` eine Battlemap mit Zollraster auf eigenem
+Blatt (A4 bis A1, hoch oder quer) statt einer Heftseite, `einleger.tex` jedes Element der
+Einlegerklasse. Jedes weitere Feature bringt seine eigenen Beispieldokumente mit — welche das
+sind, steht in seiner eigenen Doku-Datei aus der Feature-Liste.
 
 Der Einleger braucht einmalig zwei eigene Hintergrundgrafiken. Der Baukasten hat kein
 Querformat; `werkzeuge/einleger.py` erzeugt Pergamentfläche und Zierleiste aus den Buchseiten,

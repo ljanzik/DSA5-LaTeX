@@ -16,15 +16,19 @@ Zwei LaTeX-Dokumentklassen im Layout von *Das Schwarze Auge 5*, nach den Maßen 
 
 `dsa5einleger` lädt `dsa5latex` und ändert nur, was ein Einleger anders macht. Wie man einrichtet
 und baut, steht featureübergreifend in `doku/EINRICHTUNG.md`. Dazu sieben Python-Werkzeuge in
-`werkzeuge/`, fünf Dokumente in `doku/` und fünf Beispieldokumente in `beispiel/`.
+`werkzeuge/`, fünf Dokumente in `doku/` und sechs Beispieldokumente in `beispiel/`.
 
 Dazu kommt der **Aufsteller** (`dsa5aufsteller.sty`) — keine eigene Klasse, sondern eine
 Erweiterung: kleine Standfiguren zum Ausschneiden auf eigenen A4-Bögen in vier Größenklassen,
 dokumentiert im Abschnitt „Aufsteller“ in `doku/ELEMENTE.md`. Seine Maße stehen nicht in
 `doku/MASSE.md`, sondern als Kommentar direkt in der `.sty`-Datei — siehe dort.
 
-**Weitere Features** (eigene Klassen oder Erweiterungen wie Charakterbogen,
-Battlemap) bekommen jeweils eine eigene Doku-Datei und einen eigenen Eintrag in der Feature-Liste
+Dazu die **Battlemap mit Zollraster**: kein eigener Seitentyp der Klasse, sondern ein
+eigenes Dokument `beispiel/battlemap.tex` mit `\dsaBattlemapBlatt` und `\dsaBattlemap`,
+dokumentiert im Abschnitt „Seitentypen“ in `doku/ELEMENTE.md`.
+
+**Weitere Features** (eigene Klassen oder Erweiterungen wie Charakterbogen)
+bekommen jeweils eine eigene Doku-Datei und einen eigenen Eintrag in der Feature-Liste
 in `README.md` — siehe „Dokumentation neuer Features“ in Teil B.
 
 ---
@@ -108,6 +112,7 @@ Drei Dinge, die im Einleger anders heißen als im Abenteuer: Abstand ist `\dsaLu
 | Welche Kästen gibt es, wie groß sind sie? | `doku/ELEMENTE.md`, „Kästen“ — fünfzehn Umgebungen mit Maßen |
 | Wie setze ich eine Tabelle? | `doku/ELEMENTE.md`, „Tabellen und Raster“ |
 | Wie geht Textumfluss um ein Bild? | `doku/ELEMENTE.md`, „Textumfluss“ |
+| Wie setze ich eine Battlemap mit Zollraster? | `beispiel/battlemap.tex` — eigenes Dokument, eigenes Blattformat |
 | Einleger: Reihen, Kolumnen, Tabellen | `doku/EINLEGER.md`, Abschnitte 5 bis 7 |
 | Woher kommt dieser Zahlenwert? | `doku/MASSE.md` |
 | Ist das geprüft? | `doku/PRUEFPLAN.md` |
@@ -211,7 +216,7 @@ TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 `TEXINPUTS` ist nötig, weil `dsa5latex.cls` eine Ebene höher liegt und nicht installiert ist. Wer
 die Klasse nach `TEXMFHOME/tex/latex/dsa5latex/` legt, kann es weglassen.
 
-Fünf Beispieldokumente, alle in `beispiel/`:
+Sechs Beispieldokumente, alle in `beispiel/`:
 
 | Datei | Klasse | wofür |
 |---|---|---|
@@ -219,6 +224,7 @@ Fünf Beispieldokumente, alle in `beispiel/`:
 | `raster.tex` | `dsa5latex` | nur Text und Raster, baut in Sekunden — für schnelle Prüfungen |
 | `kaesten.tex` | `dsa5latex` | alle fünfzehn Kästen |
 | `rest.tex` | `dsa5latex` | Seitentypen, Umschlag, Rückseite |
+| `battlemap.tex` | `dsa5latex` | eine Battlemap auf A4, A3, A2 oder A1 mit Zollraster |
 | `einleger.tex` | `dsa5einleger` | jedes Element der Einlegerklasse, drei Seiten A4 quer |
 
 Klassenoptionen zum Arbeiten: `entwurf` setzt Bilder als Rahmen und macht den Lauf um ein
