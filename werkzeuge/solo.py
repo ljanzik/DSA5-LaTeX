@@ -48,11 +48,13 @@ import random
 import re
 import sys
 
-# Rueckhalt auf jede Doppelseite: an den drei inneren Spaltengrenzen
-# bleiben unter \raggedbottom Einheiten liegen, weil \nobreak nach dem
-# Blockkopf sowie Widow- und Clubpenalty den Bruch vorziehen. Gemessen ein
-# bis drei Einheiten je Grenze; acht ist die vorsichtige Summe.
-RUECKHALT = 8
+# Aufschlag auf den gemessenen Bedarf, siehe rueckhalt(). Ein
+# uebergelaufener Behaelter kostet eine Leerseite, ein paar Einheiten zu
+# viel Rueckhalt nur ein paar Zeilen -- deshalb etwas Luft nach oben.
+SICHERHEIT = 4
+
+# Untergrenze, die der Aufrufer ueber --rueckhalt anheben kann.
+RUECKHALT = 0
 
 MARKE = re.compile(r'^[A-Za-z0-9][A-Za-z0-9-]*$')
 
@@ -180,31 +182,32 @@ def faerben(knoten, nachbarn):
     return farbe
 
 
-def rueckhalt(belegt, anzahl, grenzen=4):
-    """Was an den inneren Spaltengrenzen einer Doppelseite liegen bleibt.
+def rueckhalt(belegt, anzahl, grenzen=None):
+    """Wie viel ein Behaelter ueber die Summe seiner Blockhoehen hinaus
+    braucht.
 
-    Am Satz gemessen: der Ueberlauf waechst mit der ZAHL der Bloecke, nicht
-    mit ihrer Gesamthoehe. Behaelter mit fuenf und mit elf Bloecken passten
-    auf ihre zwei Seiten, die mit 27, 32, 50 und 55 Bloecken brauchten eine
-    dritte -- bei nahezu gleicher Summe von 226 bis 228 Einheiten.
+    Am gesetzten Heft nachgemessen, ueber zehn Behaelter, als Differenz
+    zwischen belegten und geplanten Rastereinheiten:
 
-    Der Grund steht im Kopf des Pakets: \\nobreak nach der Zahl und
-    \\clubpenalty fuer die ersten Zeilen halten den Block zusammen. Was an
-    einer Spaltengrenze nicht mehr ganz hinpasst, rutscht vollstaendig in
-    die naechste Spalte und laesst seinen Platz leer. Der erwartete
-    Verlust je Grenze ist also etwa eine mittlere Blockhoehe.
+        Bloecke     5    10    22    24    25    34    43    44
+        Aufschlag   3     8    12    11    10    10    27    25
 
-    Gezaehlt werden VIER Grenzen, nicht drei. Eine Doppelseite hat zwar nur
-    drei innere Spaltengrenzen, aber der Verlust an der vierten -- dem
-    Behaelterende -- entscheidet darueber, ob der Behaelter auf eine dritte
-    Seite ueberlaeuft. Und das ist teuer: ein uebergelaufener Behaelter
-    reicht in die naechste Doppelseite hinein, der folgende darf dort nicht
-    beginnen, und es entsteht eine Leerseite. Mit drei Grenzen liefen im
-    Lasttest drei von zehn Behaeltern ueber und erzeugten drei Leerseiten.
+    Der Aufschlag waechst also mit der ZAHL der Bloecke, rund sechs
+    Zehntel Einheiten je Block. Jeder Block bringt einen Kopf mit, und um
+    den herum geht Platz verloren: \\dsaRasterluft davor, \\nobreak
+    dahinter, dazu Widow- und Clubpenalty, die den Umbruch vorziehen.
+
+    Zwei frueheren Fassungen lag jeweils eine falsche Annahme zugrunde:
+
+    * Ein fester Wert (16) traf die kleinen Behaelter, liess die grossen
+      aber ueberlaufen -- fuenf Leerseiten auf 29 Seiten.
+    * "Vier mal mittlere Blockhoehe" war genau verkehrt herum: bei fuenf
+      Bloecken haette es 176 Einheiten reserviert, bei vierundvierzig nur
+      20. Die Annahme, ein Block rutsche an der Spaltengrenze vollstaendig
+      weiter, stimmt nur fuer Kopf und erste zwei Zeilen; gewoehnlicher
+      Blocktext fliesst.
     """
-    if anzahl <= 0:
-        return 0
-    return grenzen * belegt // anzahl
+    return (8 * anzahl) // 10 + SICHERHEIT
 
 
 def packen(marken, hoehe, gesamt, mindestrueckhalt):

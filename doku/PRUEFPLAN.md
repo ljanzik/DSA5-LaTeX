@@ -596,7 +596,33 @@ Dazu eine Regel, die keine Verschärfung verträgt: Ein Block **ohne Text** ist 
 auszunehmen. Unter einer Zahl, deren Block leer ist, kann nichts stehen — das ist kein
 abgetrennter Kopf, sondern ein leerer Block, und das Werkzeug meldet ihn beim Lösen als solchen.
 
-### Befund: die Leerseiten kamen vom Rueckhalt, nicht von der Regel
+### Befund: der Rueckhalt war dreimal falsch bemessen
+
+Im Satz standen Leerseiten und halb leere rechte Spalten. Beides ging auf denselben Wert
+zurueck: den Rueckhalt, also den Platz, den ein Behaelter ueber die Summe seiner Blockhoehen
+hinaus braucht. Er wurde geschaetzt statt gemessen, und zwar dreimal falsch — als fester Wert,
+dann als Vielfaches der mittleren Blockhoehe (was die Abhaengigkeit genau umkehrte), dann als
+fester Wert aus einer Messung der falschen Groesse.
+
+Die richtige Messung ist die Differenz zwischen belegten und geplanten Rastereinheiten je
+Behaelter. Sie waechst mit der ZAHL der Bloecke:
+
+| Blöcke | 5 | 10 | 22 | 24 | 25 | 34 | 43 | 44 |
+|---|---|---|---|---|---|---|---|---|
+| Aufschlag | 3 | 8 | 12 | 11 | 10 | 10 | 27 | 25 |
+
+Mit `0,8 × Blockzahl + 4` gemessen am Lasttest, gegen die beiden Nachbarwerte geprueft:
+
+| Faktor | Seiten | Leerseiten | Verschnitt |
+|---|---|---|---|
+| 0,7 | 27 | 3 | 450 |
+| **0,8** | **21** | **keine** | **273** |
+| 0,9 | 23 | 1 | 332 |
+
+18 von 42 Spalten enden jetzt mit einer einzigen freien Rastereinheit. Die fruehere Aussage,
+der Verschnitt sei strukturell konstant, ist damit widerlegt.
+
+### Frueherer Befund: die Leerseiten kamen vom Rueckhalt, nicht von der Regel
 
 Im Satz standen drei Leerseiten, und sie sahen willkuerlich aus. Die Messung ordnete jede
 einer Ursache zu: Behaelter 4, 5 und 7 brauchten je eine dritte Seite und endeten dadurch auf

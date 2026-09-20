@@ -164,53 +164,52 @@ Deshalb genügen gemessene Rasterhöhen, und TeX' Seitenbauer muss nicht nachgeb
 ## 8. Der Rückhalt
 
 Eine Doppelseite fasst 59 Grundlinien je Spalte mal vier Spalten, also 236 Rastereinheiten.
-Vollständig füllen lässt sie sich nicht: an den drei inneren Spaltengrenzen bleibt Platz
-liegen, weil `\nobreak` und `\clubpenalty` den Block zusammenhalten und was nicht mehr ganz
-hinpasst, vollständig in die nächste Spalte rutscht.
+Vollständig füllen lässt sie sich nicht: rund um jeden Blockkopf geht Platz verloren —
+`\dsaRasterluft` davor, `
+obreak` dahinter, dazu Widow- und Clubpenalty, die den Umbruch
+vorziehen.
 
-Am Satz gemessen wächst dieser Verlust mit der **Zahl** der Blöcke, nicht mit ihrer
-Gesamthöhe. Im Lasttest brauchten Behälter mit 5 und mit 11 Blöcken ihre zwei Seiten, die mit
-27, 32, 50 und 55 Blöcken eine dritte — bei nahezu gleicher Summe von 226 bis 228 Einheiten.
+**Wie viel, ist gemessen, nicht geschätzt.** Am gesetzten Heft, als Differenz zwischen belegten
+und geplanten Rastereinheiten je Behälter:
 
-Der Rückhalt ist deshalb nicht fest, sondern `4 × mittlere Blockhöhe`, mindestens aber der Wert
-von `--rueckhalt` (Standard 8).
+| Blöcke | 5 | 10 | 22 | 24 | 25 | 34 | 43 | 44 |
+|---|---|---|---|---|---|---|---|---|
+| Aufschlag | 3 | 8 | 12 | 11 | 10 | 10 | 27 | 25 |
 
-**Gezählt werden vier Grenzen, nicht drei** — obwohl eine Doppelseite nur drei innere
-Spaltengrenzen hat. Der Verlust an der vierten, dem Behälterende, entscheidet nämlich darüber,
-ob der Behälter auf eine dritte Seite überläuft, und das ist teuer: Ein übergelaufener Behälter
-reicht in die nächste Doppelseite hinein, der folgende darf dort nicht beginnen, und es
-entsteht eine **Leerseite**. Genau daher kamen die Leerseiten im Lasttest.
+Der Aufschlag wächst mit der **Zahl** der Blöcke, nicht mit ihrer Höhe. Das Werkzeug rechnet
+deshalb mit `0,8 × Blockzahl + 4` — dem ungünstigsten gemessenen Verhältnis plus etwas Luft,
+denn ein übergelaufener Behälter kostet eine ganze Leerseite, ein zu großer Rückhalt nur ein
+paar Zeilen.
 
-Die vierte Grenze mitzuzählen macht das Heft deshalb nicht länger, sondern kürzer:
+### Was daran dreimal falsch war
 
-| Lasttest, 238 Blöcke | drei Grenzen | vier Grenzen |
-|---|---|---|
-| überlaufende Behälter | 3 von 10 | **0** |
-| Leerseiten | 3 | **keine** |
-| Seiten gesamt | 27 | **23** |
+Diese Formel ist der vierte Anlauf, und die drei davor sind lehrreich genug, um sie
+festzuhalten:
 
-### Die Lücken am Spaltenfuß
+1. **Ein fester Wert (8).** Traf die kleinen Behälter, ließ die großen überlaufen.
+2. **`4 × mittlere Blockhöhe`.** Genau verkehrt herum: bei fünf Blöcken hätte das 176 Einheiten
+   reserviert, bei vierundvierzig nur 20. Die Annahme dahinter — ein Block rutsche an der
+   Spaltengrenze vollständig weiter — stimmt nur für Kopf und erste zwei Zeilen. Gewöhnlicher
+   Blocktext **fließt** über die Grenze.
+3. **Ein fester Wert (16),** aus einer Messung der falschen Größe: Ich hatte gezählt, was vor
+   der letzten Spalte frei bleibt, statt wie viel der Behälter über die Summe seiner
+   Blockhöhen hinaus braucht.
 
-Im Satz bleibt am Fuß mancher Spalte Platz frei, am auffälligsten in der zweiten Spalte
-rechter Seiten — also am Ende jeder Doppelseite. Das sieht nach einem Fehler aus, ist aber der
-Rückhalt, sichtbar geworden: Was reserviert wird, damit der Behälter nicht überläuft, steht am
-Schluss leer.
+Der Unterschied ist erheblich:
 
-Am Lasttest gemessen sind 21 von 44 Spalten bis auf eine Rastereinheit gefüllt; die großen
-Lücken von 27 bis 38 Einheiten sitzen sämtlich am Behälterende. Zusammen sind das 449 von
-2716 Einheiten, also gut ein Sechstel.
+| Faktor | Seiten | Leerseiten | Verschnitt |
+|---|---|---|---|
+| 0,7 | 27 | 3 | 450 |
+| **0,8** | **21** | **keine** | **273** |
+| 0,9 | 23 | 1 | 332 |
 
-**Wegoptimieren lässt sich dieser Verschnitt nicht, nur verschieben.** Mit halbiertem Rückhalt
-füllen sich die Behälter zwar auf 200 statt 182 Einheiten — dafür laufen drei über, und der
-gewonnene Platz geht in Füllseiten wieder verloren:
+Im Lasttest enden damit 18 von 42 Spalten mit nur einer freien Rastereinheit, weitere 16 mit
+zwei bis acht. Die vier großen Lücken sind die Einleitungsseite und das Heftende — dort steht
+schlicht wenig, das ist kein Verschnitt.
 
-| Rückhalt | Füllung | Verschnitt | Leerseiten | Seiten |
-|---|---|---|---|---|
-| zwei Grenzen | 200 | 450 | 3 | 27 |
-| vier Grenzen | 182 | **449** | **keine** | **23** |
-
-Der Verschnitt ist in beiden Fällen derselbe. Die Frage ist nur, ob er als Lücke am Spaltenfuß
-erscheint oder sich zu ganzen Leerseiten ballt — und vier Grenzen sind dabei die bessere Wahl.
+**Eine frühere Fassung dieser Doku behauptete, der Verschnitt sei strukturell konstant und
+lasse sich nur zwischen Lücken und Leerseiten verschieben. Das war falsch** — er ließ sich um
+knapp vierzig Prozent senken, sobald die richtige Größe gemessen war.
 
 ### Die Untergrenze: so viele Doppelseiten wie Farben
 
