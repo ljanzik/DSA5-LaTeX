@@ -72,7 +72,12 @@ tiefer.
 |---|---|---|---|
 | Umschlag vorne, Rahmen randabfallend | 216 × 303 mm, mittig | PNG-Pixelmaß | `#` |
 | Covertitel: Grad, Zeilenabstand, Lage | 42,8 pt, 51,4 pt, 31,3 mm über der Kante | `Cover_Buchtitel.psd` | `#` |
-| Titel: Fläche, Rand, Verlauf | 13 pt / 0,24 pt / vier Haltepunkte | PSD, eigene Messung | `#` |
+| Titel: Fläche, Rand, Verlauf | 8,4 pt / 0,24 pt / vier Haltepunkte | PSD, gegen zwei gesetzte Abenteuer geprüft | `#` |
+| Titel: Versatz und Weichzeichnung des Schriftschattens | 6,0 bp unter 150°, 6,8 bp weich — 0,278 der Versalhöhe gegen 0,243–0,270 beim Verlag | US25324 und US25326, Umschlag | `#` |
+| Titel: Lagenfolge bei mehreren Zeilen | Flächenschatten, Flächen, Schriftschatten, Lettern — vier Stufen über alle Zeilen | PSD-Ebenenmodell, eigene Messung | `#` |
+| Titel: die beiden Schlagschatten | 5,04 bp / 5,04 bp / 75 % und 7,44 bp / 4,32 bp / 63 %, beide unter 120 Grad | `Cover_Buchtitel.psd` | `ok` |
+| Titel: Farben der grauen Fassung | `#C5B8CE` / `#3A3442` / `#A6A6A6` / `#2E2832` | `Cover_Buchtitel.psd` | `ok` |
+| Titel: Farben der roten Fassung | `#B22526` / `#741C16` / `#C08848` / `#5F1812` | US25533, Umschlag, 300 ppi abgetastet | `!` |
 | Impressum: Überschrift, Rubriken, Vermerk | 37,6 mm / 14 pt / 94,5 mm | gesetzte Veröffentlichung | `#` |
 | Seitenzahl | 18,4 mm von außen, 5,9 mm über der Kante, Andalus 13 pt | Musterbogen | `#` |
 | Kolumnentitel (Kapitelname neben der Zahl) | Andalus 14 bp schwarz, Grundlinie wie die Zahl, rechts 24,29 mm und links 40,35 mm von der Außenkante | gesetzte Veröffentlichung | `#` |
@@ -366,6 +371,108 @@ Gemessene Zahlen finden nicht alles. Diese Fehler waren erst am gerenderten Abzu
 | Kapitelseiten ohne Bildrahmen | die Klasse konnte ihn nur mit Bild setzen | `\dsakapitelbild`, mit Bild oder als Platzhalter |
 | Rückseite: Karte ganzseitig, Text dunkel darauf | es fehlte die Vorlage | Rückseiten-Karten-Paket, Aufbau am Vorbild vermessen |
 
+### Die beiden Schlagschatten am Titel
+
+Nachgebildet mit gestaffelten Lagen derselben Silhouette; die Rechnung dahinter steht in
+`MASSE.md`. Gemessen am 600-ppi-Auszug von `beispiel/_schattentest.tex` — dieselbe Zeile auf
+hellem und auf dunklem Grund, ohne Umschlagbild —, senkrechtes Profil unter der Unterkante der
+Fläche, 732 Spalten:
+
+| Abstand unter der Flächenkante | gemessene Deckung | Sollkurve |
+|---|---|---|
+| 0 bp | 0,79 | 0,75 |
+| 4,36 bp (harte Kante des Schattens) | 0,69 | 0,75 |
+| 6 bp | 0,32 | 0,56 |
+| 8 bp | 0,09 | 0,16 |
+| 9,4 bp (Ende des Ausklangs) | 0,04 | 0,00 |
+
+Die Kurve sitzt an der richtigen Stelle, fällt aber steiler und läuft weiter aus als gerechnet.
+Beides ist die Messung, nicht der Satz: der Schnitt läuft senkrecht, die Kante ist gekrümmt und
+seitlich um 2,52 bp versetzt, und die Spaltenstreuung von ±0,26 an der Flanke zeigt genau das.
+Der 50-Prozent-Punkt liegt im Median bei 5,8 bp gegen 6,9 bp rechnerisch.
+
+Die Lagenzahl ist am selben Auszug entschieden: bei acht Lagen laufen Wellen durch den Saum des
+Schriftschattens, bei sechzehn nicht mehr, zwischen sechzehn und vierundzwanzig ist kein
+Unterschied zu sehen.
+
+### Der Rand der Titelfläche, und der Schatten daneben
+
+Anlass war der Eindruck, die graue Fläche um den Schriftzug sei klobig. Sie war es: gemessen an den
+Umschlägen von *Ketten für die Ewigkeit* (US25324) und *Schrecken aus der Tiefe* (US25326), in
+300 ppi quer durch die Buchstabenstämme geschnitten, liegt der Rand dort bei 0,23 bis 0,34 der
+Versalhöhe, im PSD des Baukastens bei 0,29 — in dieser Klasse bei 0,46. Die 13 pt sind deshalb auf
+die 8,4 pt des PSD zurückgesetzt; die Tabelle steht in `MASSE.md` unter „Der Titeleffekt“.
+
+Beim selben Schnitt ist ein zweiter Befund aufgefallen, inzwischen behoben: der Schlagschatten der
+Schrift stand zu weit weg und fiel zu steil.
+
+Gemessen über die **Kreuzkorrelation** zwischen Schriftmaske und Dunkelheitsbild. Der Schatten ist
+eine weichgezeichnete Kopie des Schriftzugs, also liegt das Maximum der Korrelation auf seinem
+Versatz — anders als eine Messung der hellen und dunklen Zonen links und rechts des Stamms, die
+Versatz und Weichzeichnung vermischt und deshalb in einer ersten Fassung dieses Abschnitts zu einem
+falschen Ergebnis geführt hat.
+
+| | dx | dy | Länge | je Versalhöhe | Winkel |
+|---|---|---|---|---|---|
+| *Ketten*, Zeile 1 | 5,5 pt | 5,8 pt | 8,0 pt | 0,270 | 133° |
+| *Ketten*, Zeile 2 | 8,4 pt | 4,6 pt | 9,6 pt | 0,243 | 151° |
+| *Schrecken*, Zeile 1 | 8,4 pt | 4,8 pt | 9,7 pt | 0,246 | 150° |
+| Klasse mit den PSD-Werten | 8,6 pt | 13,0 pt | 15,6 pt | 0,315 | 124° |
+| **Klasse jetzt**, 6,0 bp unter 150° | 12,0 pt | 6,7 pt | 13,8 pt | **0,278** | **151°** |
+
+Die PSD-Werte lagen mit 0,315 der Versalhöhe rund ein Viertel über dem Verlag und mit 120° viel zu
+steil: nach unten waren es 13,0 pt statt 4,6 bis 5,8 pt, und der Schatten las sich als zweite Zeile
+unter der Schrift statt als Kante an ihrer Flanke. Mit 6,0 bp unter 150° und 6,8 bp Weichzeichnung
+liegt die Klasse bei 0,278 und 151°. Alle drei Werte sind jetzt über `\dsaTitelSchattenWeg`,
+`\dsaTitelSchattenWinkel` und `\dsaTitelSchattenWeich` stellbar; die Herleitung steht in
+`MASSE.md` unter „Der Titeleffekt“.
+
+### Die Lagenfolge bei mehreren Titelzeilen
+
+Aufgefallen ist es erst, als der Rand der Fläche auf 8,4 pt schmaler wurde: unter der oberen Zeile
+lief eine waagerechte Kante durch den Schatten. Ursache war die Zeichenfolge. Jede Zeile brachte
+alle fünf Lagen mit, also legte sich die **Fläche der unteren Zeile über den Schriftschatten der
+oberen**. Die Fläche reicht `\dsatitelrand` über ihre Tinte hinaus und greift bei engem
+Zeilenabstand in die Nachbarzeile: bei 88 pt oben, 78 pt unten und Zeilenfaktor 0,9 gemessene
+12,2 pt tiefer, als die Versalien der unteren Zeile beginnen.
+
+Die Zeichenfolge der beiden Zeilen einfach zu tauschen hilft nicht — dann verdeckt die Fläche der
+oberen Zeile die Oberkante der unteren Versalien, dieselben 12,2 pt. Gezeichnet wird deshalb in
+**vier Stufen über alle Zeilen hinweg**: alle Flächenschatten, alle Flächen, alle Schriftschatten,
+alle Lettern. Das ist auch das Ebenenmodell des PSD, wo „Rahmen“ eine Fläche unter dem ganzen
+Titelblock ist.
+
+Drei Stufen genügten nicht, und das war der zweite Anlauf: solange „Fläche samt ihrem Schatten“ als
+*eine* Stufe galt, fiel der Schlagschatten der unteren Fläche auf die obere und legte ein dunkles,
+geschupptes Band zwischen die Zeilen — dieselbe Kante, nur eine Lage tiefer. Jede Lage muss über
+**alle** Zeilen gezogen sein, bevor die nächste beginnt.
+
+Nachgewiesen am Helligkeitsprofil quer durch das Band, gemittelt über 218 letternfreie Spalten
+eines 300-ppi-Auszugs von `beispiel/titel.tex`: der größte Sprung von Bildzeile zu Bildzeile fällt
+von 11,0 auf 5,0 Helligkeitsstufen, und die Senke im Profil von 22 auf 29 — aus einer Kante wird
+das weiche Auslaufen des Schriftschattens, das dort hingehört. Der Vergleich der Abzüge vor und
+nach der Umstellung auf Stufen zeigt 2802 geänderte Pixel, alle in einem Band von 238,6 bis
+243,7 mm Höhe, in der Silhouette der Buchstabenunterkanten der oberen Zeile.
+
+### Die Farben des Covertitels
+
+Anlass war ein Vergleich mit einem veröffentlichten Heft: dort ist der Titel rot, hier grau. Der
+Vergleich geht aus, ohne dass an der grauen Fassung etwas zu ändern wäre — sie stimmt mit ihrer
+Quelle überein. `Cover_Buchtitel.psd` mit `psd-tools` geöffnet: eine Gruppe, drei Ebenen, keine
+farbige Alternative darin. Die vier Farben der Klasse sind die des PSD.
+
+Die rote Fassung ist am Umschlag des Aufsteller-Sets (US25533PDF, Seite 1) abgetastet und steht
+jetzt als `\dsaTitelRot` bereit; die Werte und die Methode stehen in `MASSE.md` unter „Der rote
+Covertitel“. Gebaut wird sie im Umschlag von `beispiel/rest.tex`.
+
+Der Status `!` steht für einen Unterschied, der bleibt und der nichts mit den Farben zu tun hat:
+in der Vorlage wird die Fläche zur Schrift hin dunkler, von `#5F1812` an der Kante auf etwa
+`#250600` neben den Buchstaben. Das ist der *Schein außen* des PSD (`341811`, 51 px), den die
+Klasse nicht zeichnet. An der grauen Fassung fällt das nicht auf, an der roten steht die Schrift
+dadurch flacher auf ihrer Fläche als in der Vorlage. Wer den Schein nachbaut, kann dieselbe
+Lagenroutine wie für die Schlagschatten nehmen, mit Versatz null — und muss damit rechnen, dass
+sich damit auch das Aussehen der grauen Voreinstellung ändert.
+
 ## Elemente mit eigenem Raster
 
 Nicht jede Zeile gehört auf das Grundlinienraster der Seite. Diese Elemente weichen bewusst ab —
@@ -389,6 +496,45 @@ Alles andere gehört auf das Raster. Der Prüfbefehl dazu:
 python3 werkzeuge/nachmessen.py <datei>.pdf --text \
   | awk '$2=="mm" && $4=="mm" && $10!="+0.00" {print $9, $10, $11}'
 ```
+
+## Aufsteller (dsa5aufsteller.sty)
+
+Eigenständiges Extra, kein Teil der Baukasten-Prüfung oben — die Maße kommen aus dem
+Ulisses-Produkt „Aufsteller-Set für Das Schwarze Auge“ (US25533PDF), nicht aus dem Scriptorium-
+Baukasten, und stehen deshalb auch nicht in `MASSE.md`. Geprüft wird hier nur, ob die eigene
+Umsetzung tut, was sie soll.
+
+| Prüfung | Ergebnis | Status |
+|---|---|---|
+| Kartenrahmen (Bogen oben, gerade Kante unten), vier Größenklassen S/M/L/XL | `beispiel/aufsteller.tex` gebaut und im PDF angesehen — Form, rote Linie, Namensstreifen wie vorgesehen | `ok` |
+| Gemischter Bogen (S+M+L+XL auf einem Bogen) | zweiter Bogen in `beispiel/aufsteller.tex`, keine Überlappung, alle vier Klassen sichtbar | `ok` |
+| **Duplex-Passung**, Formel `x' = Nutzbreite - x - Breite` | mit `werkzeuge/nachmessen.py` an `beispiel/aufsteller.pdf` (Seite 1↔2, Seite 3↔4) nachgerechnet, siehe Befund unten. Alle Treffer auf den Hundertstelmillimeter, y unverändert | `ok` |
+
+Wichtig beim Bauen: wie jede TikZ-`remember picture`-Seite braucht ein Aufstellerbogen die vollen
+drei `xelatex`-Durchläufe — nach nur einem Lauf ist `current page` in der Vorderseiten-Grafik noch
+nicht aufgelöst, und die erste Seite bleibt sichtbar leer (beim ersten Testlauf hier tatsächlich so
+aufgetreten, durch den dritten Lauf behoben).
+
+### Befund: zwei Fehler in der ersten Fassung, beide beim Ansehen des PDF gefunden
+
+1. **Größenklassen S/L/XL standen quer statt hochkant.** Ursache: die erste Fassung übernahm
+   Breite/Höhe direkt aus der Kartenkontur auf dem Stanzbogen der Vorlage. Dort liegen S, L und XL
+   aber gedreht — Platzersparnis beim Stanzen, erkennbar an der seitlich statt unten laufenden
+   Beschriftung auf den Seiten 6/7 und 10-13 der Vorlage. Die fertig ausgeschnittene Karte steht
+   danach hochkant, wie M. Behoben durch Vertauschen von Breite und Höhe bei S, L, XL (nicht bei
+   M, die stand schon richtig).
+2. **Die obere Rundung wirkte gestaucht.** Ursache: `\dsaAufstellerrundungx`/`...y` skalierten den
+   gemessenen Radius anteilig an Breite bzw. Höhe der jeweiligen Karte. Weil die Klassen
+   unterschiedliche Seitenverhältnisse haben, wuchsen x- und y-Anteil unterschiedlich stark
+   auseinander — sichtbar elliptisch bei L und XL. Behoben durch ein festes Maß
+   (`\dsaAufstellerRundungX/Y`, 10,34 × 9,06 mm, an der Vorlage gemessen) für alle Klassen
+   gleich, nur bei der kleinen Klasse S über `min()` auf 0,45 der eigenen Kartenmaße gekappt.
+
+Nach beiden Korrekturen erneut mit `nachmessen.py` an `beispiel/aufsteller.pdf` nachgerechnet:
+Karte „Ork“ (M, x=15,00 mm): Rückseite bei x=166,46 mm — 180 mm (Nutzbreite) − 15 mm − 28,54 mm =
+166,46 mm, exakt. „Drache“ (XL, x=15,00→118,95 mm): 180 − 0 − 76,05 = 103,95, plus 15 mm Rand =
+118,95 mm, exakt. „Troll“ (L, x=100,00→61,41 mm): 180 − 85 − 48,59 = 46,41, plus 15 mm Rand =
+61,41 mm, exakt.
 
 ## Vorgehen
 

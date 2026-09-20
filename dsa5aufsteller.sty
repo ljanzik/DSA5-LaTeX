@@ -1,0 +1,255 @@
+%%% dsa5aufsteller.sty — Aufsteller (Standfiguren zum Ausschneiden) fuer
+%%% Abenteuer, die mit dsa5latex gesetzt werden.
+%%%
+%%%   \documentclass{dsa5latex}
+%%%   \usepackage{dsa5aufsteller}
+%%%
+%%% Copyright 2026 Leif Janzik. Apache License 2.0, siehe LICENSE.
+%%%
+%%% Kartenmasse und Rahmenform sind am "Aufsteller-Set fuer Das Schwarze
+%%% Auge" (Ulisses Spiele, US25533PDF) gemessen -- an den Vektorpfaden der
+%%% PDF (pdfplumber/pymupdf get_drawings, Seiten 2/3 fuer S und M, 6/7 fuer
+%%% L, 10 fuer XL), nicht am Scriptorium-Baukasten. Die PDF liegt nicht in
+%%% diesem Projekt; sie diente nur zum Ausmessen. Anders als der Kern der
+%%% Klasse braucht dieses eigenstaendige Extra keinen Eintrag in
+%%% doku/MASSE.md -- das dokumentiert ausdruecklich nur die Baukasten-Treue
+%%% von dsa5latex.cls. Die Quelle jeder Zahl steht stattdessen direkt daneben.
+%%%
+%%% Die wichtigste Eigenschaft: Vorder- und Rueckseite eines Bogens passen
+%%% beim beidseitigen Druck exakt aufeinander. Begruendung bei
+%%% \dsaAufstellerbogen weiter unten.
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{dsa5aufsteller}[2026/09/10 v1.0 Aufsteller fuer dsa5latex]
+
+\@ifundefined{dsaBildDeckend}{%
+  \PackageError{dsa5aufsteller}{dsa5latex nicht geladen}{Vor
+    \string\usepackage{dsa5aufsteller} muss
+    \string\documentclass{dsa5latex} stehen -- dsa5aufsteller baut auf
+    \string\dsaBildDeckend, den Farben und den Schriften der Kernklasse
+    auf.}}{}
+
+%%% ==================================================================
+%%% Groessenklassen
+%%% ==================================================================
+%
+% Vier Groessenklassen S/M/L/XL, nach Flaeche benannt (User-Wunsch, nicht
+% die Namen der Vorlage). Kartenkontur je Klasse aus den Bezier-Pfaden der
+% Vorlage geclustert, 1 pt = 25,4/72 mm -- so, wie sie auf dem Stanzbogen
+% liegt:
+%
+%   Klasse  Vorbild in der Vorlage        Breite x Hoehe auf dem Bogen
+%   S       "Winzig" (Kleintier)           28,66 x 21,29 mm
+%   M       "Klein"  (stehende Person)     28,54 x 48,57 mm
+%   L       "Mittel" (Kreatur, quer)       63,43 x 48,59 mm
+%   XL      "Gross"  (grosse Kreatur)      99,02 x 76,05 mm
+%
+% Auf dem Bogen liegen S, L und XL quer: die Kunstgrafik ist dort um 90
+% Grad gedreht, Platzersparnis beim Stanzen (Namensstreifen seitlich statt
+% unten, im Original ablesbar an der gedrehten Beschriftung auf den Seiten
+% 6/7 und 10-13). Die fertig ausgeschnittene Karte steht danach hochkant,
+% wie M -- genau das bildet diese Klasse ab, deshalb Breite und Hoehe
+% gegenueber der Vorlage vertauscht:
+\newlength{\dsaAufstellerSBreite}   \setlength{\dsaAufstellerSBreite}{21.29mm}
+\newlength{\dsaAufstellerSHoehe}    \setlength{\dsaAufstellerSHoehe}{28.66mm}
+\newlength{\dsaAufstellerMBreite}   \setlength{\dsaAufstellerMBreite}{28.54mm}
+\newlength{\dsaAufstellerMHoehe}    \setlength{\dsaAufstellerMHoehe}{48.57mm}
+\newlength{\dsaAufstellerLBreite}   \setlength{\dsaAufstellerLBreite}{48.59mm}
+\newlength{\dsaAufstellerLHoehe}    \setlength{\dsaAufstellerLHoehe}{63.43mm}
+\newlength{\dsaAufstellerXLBreite}  \setlength{\dsaAufstellerXLBreite}{76.05mm}
+\newlength{\dsaAufstellerXLHoehe}   \setlength{\dsaAufstellerXLHoehe}{99.02mm}
+%
+% Fuer eigene Bogen ist die Herkunft ohne Belang: jede Karte wird einzeln
+% in mm platziert, siehe \dsaAufstellerbogen weiter unten -- auch das
+% macht gemischte Bogen erst moeglich, ohne ein Packalgorithmus-Problem zu
+% loesen.
+
+%%% ==================================================================
+%%% Rahmenform und Farben
+%%% ==================================================================
+%
+% Mit pymupdf get_drawings() an der ersten Karte auf Seite 2 exakt
+% ausgelesen (nicht geschaetzt): Randlinie kraeftiges Rot, RGB aus dem
+% PDF-Farbraum, Namensstreifen gruen-gelb.
+\definecolor{dsaAufstellerrot}{rgb}{0.930,0.111,0.141}
+\definecolor{dsaAufstellergruen}{rgb}{0.768,0.874,0.609}
+
+% Linienstaerke der Vorlage: 0,375 pt, eine Haarlinie.
+\newlength{\dsaAufstellerlinie}
+\setlength{\dsaAufstellerlinie}{0.375bp}
+
+% Die Rundung oben ist an der ersten Karte gemessen: waagerecht 10,34 mm,
+% senkrecht 9,06 mm in die Ecke -- fast, aber nicht ganz ein Kreisbogen.
+% Als festes Mass uebernommen (nicht anteilig an Breite/Hoehe skaliert):
+% eine erste Fassung skalierte anteilig und sah bei den hochkant stehenden
+% Klassen L und XL (schmaler im Verhaeltnis zur Hoehe als M) gestaucht aus,
+% weil x- und y-Anteil verschieden stark wuchsen. Einzige Ausnahme: an der
+% kleinen Klasse S (21,29 mm hoch) wird das feste Mass gekappt, sonst
+% wuerden sich die beiden oberen Ecken beruehren.
+\newlength{\dsaAufstellerRundungX}  \setlength{\dsaAufstellerRundungX}{10.34mm}
+\newlength{\dsaAufstellerRundungY}  \setlength{\dsaAufstellerRundungY}{9.06mm}
+
+% Hoehe des Namensstreifens am unteren Kartenrand, aus dem durchgehenden
+% Streifen der Vorlage uebernommen (9,6 mm). Anders als dort -- ein Band
+% hinter einer ganzen Zeile gleich hoher Karten -- sitzt er hier INNERHALB
+% jeder einzelnen Karte: eigene Karten werden frei platziert und gemischt,
+% oft ohne Nachbarn gleicher Hoehe, mit denen sie sich ein Band teilen
+% koennten.
+\newlength{\dsaAufstellernamenhoehe}
+\setlength{\dsaAufstellernamenhoehe}{9.6mm}
+
+%%% ==================================================================
+%%% Das Grundelement: eine einzelne Karte
+%%% ==================================================================
+
+% Pfad des Rahmens: unten zwei rechte Winkel (glatte Kante fuer den
+% separat erworbenen Fuss), oben zwei Rundungen mit den Radien rx, ry.
+% Wird sowohl zum Beschneiden des Bildinhalts als auch zum Zeichnen der
+% Randlinie verwendet, damit beide exakt zusammenpassen.
+\newcommand{\dsa@aufstellerpfad}[4]{%
+  (0,{-(#2)}) -- (0,{-(#4)})
+  arc[start angle=180, end angle=90, x radius=#3, y radius=#4]
+  -- ({(#1)-(#3)},0)
+  arc[start angle=90, end angle=0, x radius=#3, y radius=#4]
+  -- ({#1},{-(#2)}) -- cycle}
+
+% \dsa@aufstellerZeichne{Breite}{Hoehe}{x}{y}{Bild}{Name}
+%
+% Zeichnet eine einzelne Karte, obere linke Ecke bei (x, y) relativ zur
+% Koordinate (dsa@aufstellerursprung), die \dsaAufstellerbogen vor jedem
+% Aufruf anlegt. Reine Zeichenroutine ohne Merken fuer die Rueckseite --
+% das uebernimmt \dsaAufstellerKarte.
+\newcommand{\dsa@aufstellerZeichne}[6]{%
+  \begin{scope}[shift={($(dsa@aufstellerursprung)+(#3,{-(#4)})$)}]
+    % min(): das feste Mass gilt, ausser eine Karte ist zu klein dafuer --
+    % dann weicht nur sie ab, auf 0,45 der eigenen Breite/Hoehe gekappt.
+    \pgfmathsetlengthmacro{\dsa@arx}{min(\dsaAufstellerRundungX,0.45*(#1))}
+    \pgfmathsetlengthmacro{\dsa@ary}{min(\dsaAufstellerRundungY,0.45*(#2))}
+    \begin{scope}
+      \clip \dsa@aufstellerpfad{#1}{#2}{\dsa@arx}{\dsa@ary};
+      \node[anchor=north west, inner sep=0] at (0,0)
+        {\dsaBildDeckend{#1}{#2}{#5}};
+    \end{scope}
+    \fill[dsaAufstellergruen]
+      (0,{-(#2)+\dsaAufstellernamenhoehe}) rectangle ({#1},{-(#2)});
+    \pgfmathsetlengthmacro{\dsa@atextbreite}{(#1)-2mm}
+    \node[anchor=center, inner sep=0, align=center,
+          text width=\dsa@atextbreite]
+      at ({0.5*(#1)},{-(#2)+0.5*\dsaAufstellernamenhoehe})
+      {\dsaandalus\fontsize{8bp}{9.6bp}\selectfont #6};
+    \draw[dsaAufstellerrot, line width=\dsaAufstellerlinie]
+      \dsa@aufstellerpfad{#1}{#2}{\dsa@arx}{\dsa@ary};
+  \end{scope}}
+
+% Liste aller Karten eines Bogens, fuer die automatische Rueckseite.
+% \listgadd/\forlistloop kommen aus etoolbox, das dsa5latex schon laedt.
+\newcommand{\dsa@aufstellerliste}{}
+
+% \dsaAufstellerKarte{Breite}{Hoehe}{x}{y}{Bild}{Name}
+%
+% Wie \dsa@aufstellerZeichne, merkt die Karte aber zusaetzlich fuer die
+% automatisch erzeugte Rueckseite. Der oeffentliche Weg, eine Karte in
+% freier Groesse zu setzen; \dsaAufstellerS/M/L/XL sind duenne Wrapper
+% darum mit fester Breite/Hoehe.
+\newcommand{\dsaAufstellerKarte}[6]{%
+  \dsa@aufstellerZeichne{#1}{#2}{#3}{#4}{#5}{#6}%
+  \listgadd{\dsa@aufstellerliste}{{#1}{#2}{#3}{#4}{#5}{#6}}}
+
+\newcommand{\dsaAufstellerS}[4]{%
+  \dsaAufstellerKarte{\dsaAufstellerSBreite}{\dsaAufstellerSHoehe}{#1}{#2}{#3}{#4}}
+\newcommand{\dsaAufstellerM}[4]{%
+  \dsaAufstellerKarte{\dsaAufstellerMBreite}{\dsaAufstellerMHoehe}{#1}{#2}{#3}{#4}}
+\newcommand{\dsaAufstellerL}[4]{%
+  \dsaAufstellerKarte{\dsaAufstellerLBreite}{\dsaAufstellerLHoehe}{#1}{#2}{#3}{#4}}
+\newcommand{\dsaAufstellerXL}[4]{%
+  \dsaAufstellerKarte{\dsaAufstellerXLBreite}{\dsaAufstellerXLHoehe}{#1}{#2}{#3}{#4}}
+
+%%% ==================================================================
+%%% Der Bogen: Vorderseite, Karten sammeln, Rueckseite spiegeln
+%%% ==================================================================
+%
+% Wie die Vorlage es tut (an den Seiten 2/3 abgelesen): dieselbe Figur
+% steht auf Vorder- und Rueckseite an derselben PHYSISCHEN Blattposition,
+% aber die Grafik selbst ist nicht gespiegelt. Beim Wenden an der langen
+% Kante -- der Normalfall bei Hochkant-Duplexdruck -- dreht sich das Blatt
+% um die senkrechte Mittelachse: links und rechts vertauschen physisch.
+% Fuer jede Karte gilt deshalb einzeln, unabhaengig von einem Raster:
+%
+%   x' = Nutzbreite - x - Kartenbreite      (y bleibt gleich)
+%
+% Diese eine Formel ersetzt das "Spaltenreihenfolge je Zeile umdrehen" der
+% Vorlage und funktioniert auch bei frei gemischten Groessenklassen, weil
+% sie jede Karte fuer sich spiegelt statt eine Zeile umzusortieren. Bei
+% Option "kurz" (Wenden an der kurzen Kante) gilt statt dessen
+% y' = Nutzhoehe - y - Kartenhoehe.
+%
+% \begin{dsaAufstellerbogen}[kurz,ohnerueckseite]
+%   \dsaAufstellerM{0mm}{0mm}{ork.jpg}{Ork}
+%   ...
+% \end{dsaAufstellerbogen}
+%
+% Rand der Nutzflaeche, vor der Umgebung mit \setlength aenderbar.
+\newlength{\dsaAufstellerRand}  \setlength{\dsaAufstellerRand}{15mm}
+
+\newif\ifdsa@aufstellerkurz
+\newif\ifdsa@aufstellerohnerueck
+
+\newcommand{\dsa@aufstelleroptionen}[1]{%
+  \dsa@aufstellerkurzfalse
+  \dsa@aufstellerohnerueckfalse
+  \ifstrempty{#1}{}{%
+    \@for\dsa@e:=#1\do{%
+      \ifdefstring{\dsa@e}{kurz}{\dsa@aufstellerkurztrue}{%
+      \ifdefstring{\dsa@e}{ohnerueckseite}{\dsa@aufstellerohneruecktrue}{%
+        \PackageWarning{dsa5aufsteller}{Unbekannte Option '\dsa@e' bei
+          dsaAufstellerbogen -- erlaubt sind kurz, ohnerueckseite}}}}}}
+
+% Zeichnet eine gemerkte Karte auf der Rueckseite, an gespiegelter Stelle.
+\newcommand{\dsa@aufstellerrueckkarte}[1]{\dsa@aufstellerrueckkarteB#1}
+\newcommand{\dsa@aufstellerrueckkarteB}[6]{%
+  \ifdsa@aufstellerkurz
+    \pgfmathsetlengthmacro{\dsa@ax}{#3}%
+    \pgfmathsetlengthmacro{\dsa@ay}{\dsa@aufstellernutzhoehe-(#4)-(#2)}%
+  \else
+    \pgfmathsetlengthmacro{\dsa@ax}{\dsa@aufstellernutzbreite-(#3)-(#1)}%
+    \pgfmathsetlengthmacro{\dsa@ay}{#4}%
+  \fi
+  \dsa@aufstellerZeichne{#1}{#2}{\dsa@ax}{\dsa@ay}{#5}{#6}}
+
+\newlength{\dsa@aufstellernutzbreite}
+\newlength{\dsa@aufstellernutzhoehe}
+
+\newenvironment{dsaAufstellerbogen}[1][]{%
+  \dsa@aufstelleroptionen{#1}%
+  \renewcommand{\dsa@aufstellerliste}{}%
+  \setlength{\dsa@aufstellernutzbreite}{\paperwidth}
+  \addtolength{\dsa@aufstellernutzbreite}{-2\dsaAufstellerRand}
+  \setlength{\dsa@aufstellernutzhoehe}{\paperheight}
+  \addtolength{\dsa@aufstellernutzhoehe}{-2\dsaAufstellerRand}
+  \clearpage\dsaHintergrundAus\onecolumn
+  \thispagestyle{empty}%
+  \begin{tikzpicture}[remember picture, overlay]
+    \coordinate (dsa@aufstellerursprung) at
+      ([shift={(\dsaAufstellerRand,-\dsaAufstellerRand)}]current page.north west);
+}{%
+  \end{tikzpicture}%
+  \mbox{}%
+  \clearpage
+  \ifdsa@aufstellerohnerueck\else
+    \dsaHintergrundAus\onecolumn
+    \thispagestyle{empty}%
+    \begin{tikzpicture}[remember picture, overlay]
+      \coordinate (dsa@aufstellerursprung) at
+        ([shift={(\dsaAufstellerRand,-\dsaAufstellerRand)}]current page.north west);
+      \forlistloop{\dsa@aufstellerrueckkarte}{\dsa@aufstellerliste}
+    \end{tikzpicture}%
+    \mbox{}%
+    \clearpage
+  \fi
+  % Zweispaltig wiederherstellen, wie \dsaImpressumseite und \dsaInhalt es
+  % tun -- anders als \dsaUmschlagHinten/\dsaRueckseite steht ein
+  % Aufstellerbogen oft mitten im Heft, nicht als Letztes vor
+  % \end{document}.
+  \dsaHintergrundAn\twocolumn}
+
+\endinput

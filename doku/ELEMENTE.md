@@ -73,9 +73,16 @@ Gesetzt wird von unten: die Grundlinie der **letzten** Zeile sitzt auf `\dsatite
 weitere Zeile schiebt nach oben. Ein dreizeiliger Titel wächst also in das Bild hinein und nicht in
 den unteren Rahmen.
 
-Der Aufbau hat fünf Lagen, von hinten nach vorn: der Schlagschatten der Fläche, die graue Fläche in
+Der Aufbau hat fünf Lagen, von hinten nach vorn: der Schlagschatten der Fläche, die Fläche in
 der Form des Schriftzugs, der Schlagschatten der Schrift, der helle Rand um die Schrift, der
-Verlauf in der Schrift. Beide Schlagschatten sind wie im PSD weichgezeichnet und teildeckend — sie
+Verlauf in der Schrift. Gezeichnet werden sie **in vier Stufen über alle Zeilen hinweg** — erst
+alle Flächenschatten, dann alle Flächen, dann alle Schriftschatten, dann alle Lettern —, nicht
+Zeile für Zeile mit allen fünf Lagen. Sonst legt sich die Fläche der unteren Zeile über den
+Schatten der oberen und schneidet ihn an einer waagerechten Kante ab; die Fläche greift bei engem
+Zeilenabstand nämlich in die Nachbarzeile. Und Fläche samt Schatten als *eine* Stufe genügt nicht:
+dann fällt der Schatten der unteren Fläche auf die obere und legt ein dunkles, geschupptes Band
+zwischen die Zeilen. Im PSD ist es genauso: eine Ebene „Rahmen“ unter dem ganzen Titelblock, die
+Textebene mit ihren Effekten als Ganzes darüber. Beide Schlagschatten sind wie im PSD weichgezeichnet und teildeckend — sie
 entstehen aus gestaffelten Lagen derselben Silhouette, weil ein harter Versatz sich als zweiter
 Schriftzug liest. Wie das gerechnet wird, steht in `MASSE.md`.
 
@@ -84,19 +91,45 @@ Alles einstellbar, in der Präambel:
 | Befehl | Voreinstellung | Wirkung |
 |---|---|---|
 | `\dsaTitelGrad{42.8}` | 42,8 pt | Schriftgrad aller Zeilen |
-| `\dsaTitelRand{13}` | 13 pt | Breite der grauen Fläche um die Schrift |
+| `\dsaTitelRand{8.4}` | 8,4 pt | Breite der Fläche um die Schrift; 35 px des PSD, gegen zwei gesetzte Abenteuer geprüft |
 | `\dsaTitelKontur{0.24}` | 0,24 pt | Breite des hellen Rands (1 px bei 300 ppi; das PSD gibt 0,72) |
-| `\dsaTitelZeilenfaktor{1.0}` | 1,0 | Zeilenabstand als Vielfaches des Grads; ab etwa 1,25 stehen die Flächen getrennt |
+| `\dsaTitelZeilenfaktor{1.0}` | 1,0 | Zeilenabstand als Vielfaches des Grads — und zwar des Grads der **unteren** Zeile; bei 0,9 laufen die Flächen zu einem Block zusammen, wie auf den Verlagsumschlägen |
 | `\dsaTitelUnten{31.3mm}` | 31,3 mm | Grundlinie der letzten Zeile über der Papierkante |
 | `\dsaTitelTiefer{6.4pt}` | 6,4 pt | Versatz der Fläche nach unten, Ausgleich für Oberlängen |
 | `\dsaTitelVerlaufAus` | — | schlicht weiß mit Kontur |
-| `\dsaTitelFlaecheAus` | — | ohne graue Fläche |
+| `\dsaTitelFlaecheAus` | — | ohne die Fläche |
 | `\dsaTitelRahmenAus` | — | ohne hellen Rand |
-| `\dsaTitelSchattenAus` | — | ohne die beiden Schlagschatten; halbiert die Zeit des Umschlaglaufs |
+| `\dsaTitelSchattenAus` | — | ohne die beiden Schlagschatten |
+| `\dsaTitelSchattenWinkel{150}` | 150° | Lichtwinkel, gilt für beide Schlagschatten |
+| `\dsaTitelSchattenWeg{6.0}` | 6,0 bp | Versatz des Schriftschattens |
+| `\dsaTitelSchattenWeich{6.8}` | 6,8 bp | Weichzeichnung des Schriftschattens |
+
+**Die Farben.** Voreinstellung ist der graue Titel des Baukastens. Alle vier sind einzeln
+umstellbar, jedes Argument ist ein Farbausdruck von xcolor — ein mit `\definecolor` angelegter
+Name, einer der Klasse oder eine Mischung wie `dsadunkelrot!70!black`:
+
+| Befehl | Voreinstellung | Wirkung |
+|---|---|---|
+| `\dsaTitelSchriftfarben{oben}{unten}` | `#C5B8CE` nach `#3A3442` | der Verlauf in der Schrift |
+| `\dsaTitelKonturfarbe{Farbe}` | `#A6A6A6` | der helle Rand um die Schrift |
+| `\dsaTitelFlaechenfarbe{Farbe}` | `#2E2832` | die Fläche dahinter |
+| `\dsaTitelSchattenfarbe{Farbe}` | Schwarz | beide Schlagschatten |
+| `\dsaTitelRot` | — | die drei ersten auf einmal, in der roten Fassung |
+
+`\dsaTitelRot` setzt den Titel, wie veröffentlichte Hefte ihn tragen: Schrift `#B22526` nach
+`#741C16`, Kontur `#C08848` in Gold, Fläche `#5F1812`. Die Werte sind am Umschlag des
+Aufsteller-Sets gemessen; die Herleitung steht in `MASSE.md` unter „Der rote Covertitel“, dort
+auch, worin die Nachbildung von der Vorlage noch abweicht. Zu sehen ist er auf dem Umschlag von
+`beispiel/rest.tex`.
+
+Die Farben gehören in die **Präambel**, nicht zwischen zwei Umschläge: die Schattierung des
+Schriftverlaufs wird beim ersten Gebrauch in ein PDF-Objekt gegossen und danach unter ihrem Namen
+wiederverwendet. Zwei verschieden gefärbte Titel in einem Dokument gibt es damit nicht — bei einem
+Umschlag je Heft ist das kein Fall.
 
 Zwei Werte in der Klasse steuern, wie glatt der Rand der Fläche wird: `\dsatitelperlabstand`
 (0,6 pt) und `\dsatitelflaechenstufen` (5). Für die Schlagschatten gibt es dieselben Stellschrauben
-noch einmal — `\dsatitelschattenlagen` (5), `\dsatitelschattenperlabstand` (1,2 pt) — und je Schatten
+noch einmal — `\dsatitelschattenlagen` (16), `\dsatitelschattenperlabstand` (0,6 pt) — und je Schatten
 Abstand, Weichzeichnung und Deckung, etwa `\dsatitelschriftschattendeckung` (0,63). Warum, steht in
 `MASSE.md`.
 
@@ -782,3 +815,73 @@ sichtbar.
 Alles andere ist echt. Ein `Underfull \hbox` in laufendem Text heißt: die Zeile ist zu locker, und
 zu ändern ist sie nur redaktionell — `\emergencystretch`, `\hyphenpenalty` und `\hbadness`
 wurden über das Ganter-Heft durchgemessen und bewegen die Zahl nicht.
+
+---
+
+## Aufsteller
+
+*Eigenständiges Extra in `dsa5aufsteller.sty`, nicht Teil von `dsa5latex.cls`. Die Maße dahinter
+stehen nicht in [MASSE.md](MASSE.md) — das dokumentiert ausschließlich die Baukasten-Treue der
+Kernklasse. Quelle und Messverfahren jeder Zahl stehen als Kommentar direkt in der `.sty`-Datei.*
+
+Vorführung: `beispiel/aufsteller.tex`.
+
+```latex
+\documentclass{dsa5latex}
+\usepackage{dsa5aufsteller}
+```
+
+Setzt kleine Standfiguren zum Ausschneiden (Fuß wird separat erworben) auf eigenen A4-Bögen, mit
+automatisch erzeugter Rückseite für den beidseitigen Druck.
+
+### Größenklassen
+
+| Klasse | Breite × Höhe (fertige Karte, hochkant) | Kurzbefehl |
+|---|---|---|
+| S | 21,29 × 28,66 mm | `\dsaAufstellerS{x}{y}{Bild}{Name}` |
+| M | 28,54 × 48,57 mm | `\dsaAufstellerM{x}{y}{Bild}{Name}` |
+| L | 48,59 × 63,43 mm | `\dsaAufstellerL{x}{y}{Bild}{Name}` |
+| XL | 76,05 × 99,02 mm | `\dsaAufstellerXL{x}{y}{Bild}{Name}` |
+
+Alle vier Klassen stehen hochkant, Bogen oben, gerade Kante unten — wie M. Auf dem Stanzbogen der
+Vorlage liegen S, L und XL quer (Platzersparnis beim Stanzen, Kunstgrafik dort um 90° gedreht);
+Breite und Höhe sind hier gegenüber der Vorlage vertauscht, damit die Klasse die fertig
+ausgeschnittene Karte beschreibt, nicht ihre Lage auf dem Bogen.
+
+`x`/`y` sind Längen (z. B. `40mm`): die obere linke Ecke der Karte, gemessen von der oberen linken
+Ecke der Nutzfläche des Bogens (Rand `\dsaAufstellerRand`, Standard 15 mm). Jede Karte wird einzeln
+platziert — kein Spaltenraster, kein Packalgorithmus. Das erlaubt gemischte Bögen: Karten
+verschiedener Größenklassen frei nebeneinander, wie im Beispiel `beispiel/aufsteller.tex`.
+
+`\dsaAufstellerKarte{Breite}{Höhe}{x}{y}{Bild}{Name}` setzt eine Karte in freier Größe; die vier
+Kurzbefehle sind dünne Wrapper darum.
+
+### Der Bogen
+
+```latex
+\begin{dsaAufstellerbogen}[kurz,ohnerueckseite]
+\dsaAufstellerM{0mm}{0mm}{grafiken/ork}{Ork}
+\dsaAufstellerXL{40mm}{0mm}{grafiken/drache}{Drache}
+\end{dsaAufstellerbogen}
+```
+
+Öffnet eine eigene A4-Seite ohne Kolumnentitel oder Seitenzahl, sammelt alle
+`\dsaAufsteller...`-Aufrufe und erzeugt danach automatisch die Rückseite.
+
+**Die Duplex-Formel:** dieselbe Karte muss auf Vorder- und Rückseite an derselben physischen
+Blattstelle stehen. Beim Wenden an der langen Kante (Standardfall, Hochkant-Duplexdruck) dreht sich
+das Blatt um die senkrechte Mittelachse — für jede Karte gilt einzeln:
+
+```
+x' = Nutzbreite - x - Kartenbreite      (y bleibt gleich)
+```
+
+Rechnerisch geprüft (`werkzeuge/nachmessen.py` an `beispiel/aufsteller.pdf`, siehe
+[PRUEFPLAN.md](PRUEFPLAN.md)): für jede Karte beider Beispielbögen, auch im gemischten Bogen,
+stimmt die gespiegelte Position auf den Bruchteilmillimeter. Bei Option `kurz` (Wenden an der
+kurzen Kante) gilt statt dessen `y' = Nutzhoehe - y - Kartenhoehe`. Option `ohnerueckseite`
+unterdrückt die automatische Rückseite, falls eine eigene gebraucht wird.
+
+Nach `\end{dsaAufstellerbogen}` steht das Dokument wieder zweispaltig (wie vor der Umgebung), auch
+wenn ein Bogen mitten im Heft steht — anders als `\dsaUmschlagHinten`/`\dsaRueckseite`, die nur am
+Heftende stehen und deshalb nicht zurückschalten.
