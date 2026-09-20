@@ -536,6 +536,53 @@ Karte „Ork“ (M, x=15,00 mm): Rückseite bei x=166,46 mm — 180 mm (Nutzbrei
 118,95 mm, exakt. „Troll“ (L, x=100,00→61,41 mm): 180 − 85 − 48,59 = 46,41, plus 15 mm Rand =
 61,41 mm, exakt.
 
+## Battlemap mit Zollraster (`beispiel/battlemap.tex`)
+
+Kein Element der Klasse, sondern ein eigenes Dokument mit eigenem Blattformat — geprüft wird
+deshalb hier und nicht in der Statustabelle. Sollmaß ist der Zoll: 25,4 mm, und das sind 72 bp,
+also genau sechs Rastereinheiten der Klasse.
+
+Gemessen am Abzug, 100 ppi gerastert, Linien über die Spalten- und Zeilendichte gefunden
+(`pdftoppm -r 100 -gray`, Schwelle 230 von 255, 40 Prozent der Blattkante):
+
+| Blatt | Blattmaß im PDF | ganze Kästchen | Soll | Rand quer | Soll | Rand hoch | Soll |
+|---|---|---|---|---|---|---|---|
+| A4 quer | 297,2 × 210,1 mm | 11 × 8 | 11 × 8 | 8,64 / 9,14 mm | 8,80 mm | 3,30 / 3,56 mm | 3,40 mm |
+| A3 quer | 420,1 × 297,2 mm | 16 × 11 | 16 × 11 | 6,60 / 6,86 mm | 6,80 mm | 8,64 / 9,14 mm | 8,80 mm |
+| A2 quer | 594,1 × 420,1 mm | 23 × 16 | 23 × 16 | 4,83 / 5,08 mm | 4,90 mm | 6,60 / 6,86 mm | 6,80 mm |
+| A1 quer | 841,2 × 594,1 mm | 33 × 23 | 33 × 23 | 1,27 / 1,78 mm | 1,40 mm | 4,83 / 5,08 mm | 4,90 mm |
+
+Die Zahl ganzer Kästchen ist in jeder Richtung die Blattkante durch einen Zoll, abgerundet, und
+der Rand die Hälfte dessen, was übrig bleibt. Beides trifft auf allen vier Blättern zu.
+
+Der Linienabstand ist im Inhaltsstrom 72,001 bp, das Strichmuster `[4,50003 4,50003]` — ein
+Sechzehntel Zoll Strich und Lücke, acht Striche je Kästchenkante. Die Ränder weichen um bis zu
+0,15 mm vom Sollmaß ab, und das ist die Messauflösung: ein Pixel bei 100 ppi sind 0,25 mm, und der
+Schwerpunkt einer Linie von 0,4 pt fällt zwischen zwei Pixel. Die beiden Werte je Feld sind die
+gegenüberliegenden Ränder; dass sie sich um ein Pixel unterscheiden, ist dieselbe Auflösung.
+
+Alle acht Kombinationen — A4, A3, A2 und A1, hoch und quer — bauen ohne eine LaTeX-Fehlermeldung,
+und `pdfinfo` nennt für jede das erwartete DIN-Format. Die vier Blätter oben kommen aus derselben
+Quelldatei: Blatt und Lage lassen sich beim Aufruf überschreiben.
+
+```sh
+TEXINPUTS="..;" xelatex -jobname=battlemap-a1 \
+  "\def\dsablatt{a1}\def\dsalage{quer}\input{battlemap.tex}"
+```
+
+**Ein Fund beim Messen.** Zuerst saß in der Blattmitte immer eine Kreuzung. Bei einer ungeraden
+Zahl ganzer Kästchen bleibt dann am Rand fast ein ganzes ungenutzt: auf A3 quer (11,69 Zoll hoch)
+passten nur zehn Reihen aufs Blatt statt elf, gemessen 21,5 mm Rand oben und unten statt 8,8 mm.
+Jetzt entscheidet die Parität der Kästchenzahl je Richtung, ob in der Mitte eine Kreuzung oder
+eine Kästchenmitte liegt. Symmetrisch bleibt beides, und mehr als ein halbes Kästchen kann am
+Rand nicht mehr verlorengehen.
+
+**Zwei Fallen, die LaTeX nicht meldet.** `\newcommand*{\dsa@bm@a4}{…}` definiert `\dsa@bm@a` und
+setzt die `4` in den Text — eine Ziffer ist kein Buchstabe; über `\@namedef` gebaut, darf der Name
+Ziffern tragen. Und eine Zahl ohne Einheit ist in einer TikZ-Koordinate ein Vielfaches der
+Achseneinheit: `0.5*\paperheight` wären dort 420 Zentimeter, nicht die halbe Blatthöhe. Beides
+fiel erst am Abzug auf.
+
 ## Vorgehen
 
 Seriell von oben nach unten, je Block: `probeseiten.tex` bauen, mit `nachmessen.py` die Zahlen

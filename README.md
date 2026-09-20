@@ -24,6 +24,7 @@ Jedes Feature ist eine eigene Klasse oder eine eigene Erweiterung, mit eigener E
 |---|---|---|---|
 | Abenteuer setzen | `dsa5latex.cls` | Zweispaltiger Satz auf A4 mit Grundlinienraster, Pergament- und Wertekästen in Produktionsgröße, Kapitelbanner, Meistermasken, Seitenhintergründe, Textumfluss | [Elementreferenz](doku/ELEMENTE.md) |
 | Aufsteller (Standfiguren zum Ausschneiden) | `dsa5aufsteller.sty` | Kleine Standfiguren auf eigenen A4-Bögen in vier Größenklassen (S/M/L/XL), mit automatisch erzeugter Rückseite für den beidseitigen Druck | [Elementreferenz](doku/ELEMENTE.md#aufsteller) |
+| Battlemap mit Zollraster | — (`beispiel/battlemap.tex`, kein `.cls`) | Eigenes Blatt neben dem Heft (A4 bis A1, hoch oder quer) mit gestricheltem Zollraster über der Battlemap, kein eigener Seitentyp der Klasse | [Elementreferenz](doku/ELEMENTE.md#seitentypen) |
 
 Einrichten, Grafiken und Schriften besorgen, bauen — das gilt featureübergreifend und steht in
 [Einrichten und Bauen](doku/EINRICHTUNG.md).
@@ -63,16 +64,19 @@ cd beispiel
 TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 ```
 
-Die Elementreferenz der Kernklasse steht in `doku/ELEMENTE.md`.
+Die Elementreferenz der Kernklasse steht in `doku/ELEMENTE.md`, dort auch die Battlemap mit
+Zollraster (`beispiel/battlemap.tex`, Abschnitt „Seitentypen“) — kein eigener Seitentyp der
+Klasse, sondern ein eigenes Blatt (A4 bis A1, hoch oder quer) neben dem Heft.
 
 ---
 
 ## Stand
 
-**Die Klasse läuft.** Alle vier Beispieldokumente bauen mit XeLaTeX aus TeX Live 2026
+**Die Klasse läuft.** Alle fünf Beispieldokumente bauen mit XeLaTeX aus TeX Live 2026
 fehlerfrei durch, `beispiel.tex` mit 22 Seiten und ohne eine einzige LaTeX-Warnung. Sechs
 `Overfull \hbox` sind der gewollte Überhang der Kästen, fünf `Underfull \hbox` sind lockere
-Umbrüche im 80,5-mm-Satz.
+Umbrüche im 80,5-mm-Satz. `battlemap.tex` baut alle acht Kombinationen aus Blattformat
+(A4 bis A1) und Lage (hoch, quer) ohne Fehlermeldung.
 
 **Und sie ist nachgemessen.** Von den vierzehn Prüfmarken, die der Quelltext einmal trug,
 sind zehn erledigt, darunter zwei echte Fehler: der Kapiteltitel stand mit 23,5 statt
@@ -80,7 +84,9 @@ sind zehn erledigt, darunter zwei echte Fehler: der Kapiteltitel stand mit 23,5 
 kein gesetzter Band führt. Die vier verbliebenen heißen im Quelltext `% OFFEN:`: sie warten
 nicht auf eine Messung, sondern auf eine Quelle, die es nicht gibt. Welche das sind, steht
 in `doku/ELEMENTE.md` unter „Was noch nicht nachgemessen ist“, der Stand jeder Messung in
-`doku/PRUEFPLAN.md`.
+`doku/PRUEFPLAN.md`. Das Zollraster der Battlemap ist dort ebenfalls nachgemessen: alle vier
+Blattgrößen treffen ihr Sollmaß, der Linienabstand liegt auf 72,001 bp gegen ein Sollmaß von
+72 bp.
 
 ---
 
