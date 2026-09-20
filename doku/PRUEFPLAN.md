@@ -540,78 +540,35 @@ Karte „Ork“ (M, x=15,00 mm): Rückseite bei x=166,46 mm — 180 mm (Nutzbrei
 
 Eigenständiges Feature auf der Kernklasse. Der Nummernkopf ist an einem offiziellen, gesetzten
 Solo des Verlags nachgemessen und erwies sich als identisch mit `\dsaabschnitt` — es kommt
-**kein neues Maß** hinzu, deshalb steht hier nichts in `MASSE.md`. Geprüft wird, ob die drei
+**kein neues Maß** hinzu, deshalb steht dazu nichts in `MASSE.md`. Geprüft wird, ob die drei
 Zusagen des Features im Satz auch eintreten.
 
 | Prüfung | Ergebnis | Status |
 |---|---|---|
 | Nummernkopf gegen die Vorlage | 26 Köpfe an der Spaltenkante gemessen: Grundlinie mod 12 bp = 0,0 bei allen 23 Köpfen mit Grad 13; GentiumBasic-Bold 13,0 bp, Farbe (0,0,0); 24,0 bp Grundlinienabstand davor, 12,0 bp danach; linke Kante 24,00 / 105,50 mm. Deckt sich mit `\dsaabschnitt` (`dsa5latex.cls:954`) | `ok` |
-| Nummernvergabe lückenlos | `beispiel/solo.tex`: 30 Blöcke, Nummern 1 bis 30, Startblock trägt die 1 | `ok` |
+| Nummernvergabe lückenlos | Regellauf: 30 Blöcke, Nummern 1 bis 30, Startblock trägt die 1 | `ok` |
 | Verweise aufgelöst | 47 Sprungstellen im Regellauf, keine unbekannte Marke | `ok` |
 | **Doppelseitenregel**, Regellauf | `--pruefen solo.aux`: 47 von 47 Sprüngen wechseln die Doppelseite | `ok` |
-| **Doppelseitenregel**, Lasttest mit 239 Blöcken | `--pruefen`: 382 von 382 Sprüngen | `ok` |
-| **Kopfregel** (Zahl nie letzte Zeile ihrer Spalte) | am PDF geprüft, 30 von 30 bzw. 239 von 239 Zahlen haben ihren Block unter sich | `ok` |
-| Stand von `.aux` und PDF | Zahl der Marken gegen Zahl der Blockzahlen im PDF | `ok` |
-| Behälterfüllung | Lasttest: 10 Doppelseiten, Füllung 172 bis 216 von 236 Einheiten, drei Füllseiten. Zwei Behälter brauchen eine dritte Seite — kostet Papier, nicht Richtigkeit | `ok` |
-| Rasterlage der Blockzahlen | am vollen Satz gemessen: 239 von 239 auf 84 bp + k · 12 bp, Abweichung 0,00 bp — der erzwungene Doppelseitenumbruch verschiebt das Raster nirgends | `ok` |
+| **Doppelseitenregel**, Lasttest mit 238 Blöcken | 383 von 383 Sprüngen | `ok` |
+| **Kopfregel** (Zahl nie letzte Zeile ihrer Spalte) | am PDF geprüft: 30 von 30 bzw. 238 von 238 Zahlen haben ihren Block unter sich | `ok` |
+| Stand von `.aux` und PDF | Zahl der Marken gegen die Nummernzuordnung und gegen die Blockzahlen im PDF — erkennt einen abgebrochenen Satzlauf | `ok` |
+| Sprunggraph | Regellauf hängt vollständig zusammen: alles erreichbar, überall ein Weg zu einem Ende, kein Block ohne eingehenden Verweis | `ok` |
+| Rasterlage der Blockzahlen | 30 von 30 bzw. 238 von 238 auf 84 bp + k · 12 bp, Abweichung **0,00 bp** — der erzwungene Doppelseitenumbruch verschiebt das Raster nirgends | `ok` |
+| Behälterfüllung, Lasttest | 10 Doppelseiten, Füllung 189 bis 208 von 236 Einheiten, **keine Leerseite**; von 42 Spalten enden 18 mit einer einzigen freien Rastereinheit | `ok` |
+| Behälterfüllung, Regellauf | 3 Doppelseiten, Füllung 75 bis 136 — eine Leerseite, strukturell unvermeidbar (siehe unten) | `ok` |
 
-### Befund: drei Fehler, alle erst am gesetzten Ergebnis sichtbar
+### Der Rückhalt ist gemessen, nicht geschätzt
 
-1. **Der Verweis aus der Einleitung verletzte die Regel.** Die erste Fassung setzte
-   `\soloBehaelterEnde` nur *zwischen* die Behälter. Damit lagen die Einleitung mit ihrem
-   „Beginne bei Abschnitt …“ und der Startblock auf derselben Doppelseite. Die Prüfung meldete
-   genau einen Verstoß von 315, und zwar diesen. Behoben durch eine Grenze auch **vor** dem
-   ersten Behälter.
-
-2. **Der Rückhalt war falsch modelliert.** Angenommen war ein fester Verlust von acht
-   Rastereinheiten je Doppelseite. Am Satz zeigte sich: der Überlauf wächst mit der **Zahl** der
-   Blöcke, nicht mit ihrer Gesamthöhe. Behälter mit 5 und 11 Blöcken passten auf ihre zwei
-   Seiten, die mit 27, 32, 50 und 55 Blöcken brauchten eine dritte — bei nahezu gleicher Summe
-   von 226 bis 228 Einheiten. Ursache ist die Bindung von Zahl und Blockanfang: was an einer
-   Spaltengrenze nicht mehr ganz hinpasst, rutscht vollständig weiter. Behoben durch einen
-   Rückhalt von `3 × mittlere Blockhöhe`; überlaufende Behälter fielen damit von fünf auf zwei,
-   der Umfang von 33 auf 25 Seiten.
-
-3. **Eine doppelt vergebene Marke verschwand stillschweigend.** Im Lasttest trug die Quelle
-   zweimal dieselbe Nummer; das Werkzeug überschrieb den ersten Block kommentarlos und zählte
-   238 statt 239. Behoben: doppelte Marken sind jetzt ein Abbruchgrund.
-
-### Befund: zwei falsche Zusagen des Prüfwerkzeugs
-
-Beide kamen erst heraus, als der Lasttest mit einem größeren Sprunggraphen wiederholt wurde.
-
-4. **„Alles in Ordnung" bei einer abgebrochenen `.aux`.** Unter Windows war das PDF in einem
-   Betrachter geöffnet; `xdvipdfmx` konnte es nicht schreiben, der Lauf brach ab, und das
-   Werkzeug verglich eine `.aux` mit **einer** Marke gegen ein PDF mit 239 Blockzahlen — und
-   meldete, es sei alles in Ordnung, weil die eine geprüfte Sprungstelle stimmte. Behoben:
-   passen die Zahl der Marken und die Zahl der Blockzahlen nicht zusammen, ist einer der
-   Stände veraltet, und das ist jetzt ein Fehler.
-
-5. **Eine Blockzahl von 239 wurde nicht erkannt.** `microtype` schiebt ein öffnendes
-   Anführungszeichen der Nachbarspalte per Randausgleich über die Blattmitte; es landete in
-   der Zeile der Zahl, und die Prüfung auf die ganze Zeile scheiterte daran. Behoben: die Zahl
-   wird aus ihren **eigenen** Zeichen gelesen (fett, 13 bp), nicht aus dem Zeilentext.
-
-Dazu eine Regel, die keine Verschärfung verträgt: Ein Block **ohne Text** ist von der Kopfregel
-auszunehmen. Unter einer Zahl, deren Block leer ist, kann nichts stehen — das ist kein
-abgetrennter Kopf, sondern ein leerer Block, und das Werkzeug meldet ihn beim Lösen als solchen.
-
-### Befund: der Rueckhalt war dreimal falsch bemessen
-
-Im Satz standen Leerseiten und halb leere rechte Spalten. Beides ging auf denselben Wert
-zurueck: den Rueckhalt, also den Platz, den ein Behaelter ueber die Summe seiner Blockhoehen
-hinaus braucht. Er wurde geschaetzt statt gemessen, und zwar dreimal falsch — als fester Wert,
-dann als Vielfaches der mittleren Blockhoehe (was die Abhaengigkeit genau umkehrte), dann als
-fester Wert aus einer Messung der falschen Groesse.
-
-Die richtige Messung ist die Differenz zwischen belegten und geplanten Rastereinheiten je
-Behaelter. Sie waechst mit der ZAHL der Bloecke:
+Ein Behälter braucht mehr Platz als die Summe seiner Blockhöhen: rund um jeden Kopf geht etwas
+verloren. Der Aufschlag wächst mit der **Zahl** der Blöcke, am gesetzten Heft gemessen als
+Differenz zwischen belegten und geplanten Rastereinheiten:
 
 | Blöcke | 5 | 10 | 22 | 24 | 25 | 34 | 43 | 44 |
 |---|---|---|---|---|---|---|---|---|
 | Aufschlag | 3 | 8 | 12 | 11 | 10 | 10 | 27 | 25 |
 
-Mit `0,8 × Blockzahl + 4` gemessen am Lasttest, gegen die beiden Nachbarwerte geprueft:
+Das Werkzeug rechnet mit `0,8 × Blockzahl + 4`. Gegen die Nachbarwerte geprüft, jeweils voll
+gebaut und am PDF gemessen:
 
 | Faktor | Seiten | Leerseiten | Verschnitt |
 |---|---|---|---|
@@ -619,52 +576,27 @@ Mit `0,8 × Blockzahl + 4` gemessen am Lasttest, gegen die beiden Nachbarwerte g
 | **0,8** | **21** | **keine** | **273** |
 | 0,9 | 23 | 1 | 332 |
 
-18 von 42 Spalten enden jetzt mit einer einzigen freien Rastereinheit. Die fruehere Aussage,
-der Verschnitt sei strukturell konstant, ist damit widerlegt.
+### Eine Leerseite kann strukturell sein
 
-### Frueherer Befund: die Leerseiten kamen vom Rueckhalt, nicht von der Regel
-
-Im Satz standen drei Leerseiten, und sie sahen willkuerlich aus. Die Messung ordnete jede
-einer Ursache zu: Behaelter 4, 5 und 7 brauchten je eine dritte Seite und endeten dadurch auf
-einer geraden Seite. Ein uebergelaufener Behaelter reicht in die naechste Doppelseite hinein,
-der folgende darf dort nicht beginnen — die Fuellseite ist also zwingend, **sobald** ein
-Behaelter ueberlaeuft.
-
-Der Fehler lag eine Stufe davor, im Rueckhalt: gezaehlt wurden drei Spaltengrenzen, obwohl
-die vierte — das Behaelterende — darueber entscheidet, ob der Behaelter ueberlaeuft. Mit vier
-Grenzen verschwanden die Ueberlaeufe, und das Heft wurde dabei **kuerzer**:
-
-| Lasttest, 238 Blöcke | drei Grenzen | vier Grenzen |
-|---|---|---|
-| überlaufende Behälter | 3 von 10 | 0 |
-| Leerseiten | 3 | keine |
-| Seiten gesamt | 27 | 23 |
-
-### Befund: ein Regelverstoss in der Nachbesserung
-
-Beim Aufloesen zu leerer Behaelter prueft das Werkzeug fuer jeden Block, ob im Zielbehaelter
-ein Nachbar aus dem Sprunggraphen liegt. Diese Pruefung sah nur den **bestehenden** Inhalt,
-nicht die Bloecke, die im selben Durchgang mit dorthin wandern. Zwei Nachbarn aus demselben
-aufgeloesten Behaelter landeten dadurch gemeinsam im neuen, und der Sprung zwischen ihnen blieb
-auf einer Doppelseite. Aufgefallen am Satz, ein Verstoss unter 383 — die Regelpruefung hat ihn
-gefangen, bevor er ins PDF kam.
-
-### Befund: ungeteilte Bloecke vertragen keine Box
-
-Fuer die Option `zusammen` lag eine Box nahe: sie ist von sich aus unteilbar. Ihre Hoehe muss
-aber auf Rastervielfache gerundet und die Box um den gerundeten Wert abgesenkt werden, und
-diese Differenz verschiebt den gesamten Inhalt. Am Satz gemessen lagen so gesetzte Bloecke
-0,20 bp und 2,44 bp neben dem Raster — beide Male genau die gerundeten Bloecke, alle anderen
-28 sassen exakt. Mit Umbruchsperren statt einer Box bleibt die vertikale Liste unveraendert,
-und alle 30 Zahlen sitzen wieder auf 0,00 bp.
+Die Zahl der Doppelseiten ist mindestens so groß wie die Zahl der Farben, die der Sprunggraph
+braucht. Im Regellauf passen 30 Blöcke mit 322 Rastereinheiten rechnerisch auf zwei
+Doppelseiten, verlangen aber drei Behälter; der kleinste füllt nur eine Seite, endet auf einer
+geraden, und die Paritätskorrektur setzt eine Leerseite daneben. Bei 238 Blöcken tritt das
+nicht auf.
 
 ### Falle bei eigenen Messungen am PDF
 
 Zeilen dürfen **nicht allein nach der Grundlinie** gruppiert werden. Im Raster sitzen die Zeilen
 beider Spalten auf gleicher Höhe und verschmelzen dabei zu einer Zeile — die Blockzahl wird dann
 nicht mehr als Zahl erkannt. Nach Grundlinie *und* Spalte gruppiert, stieg die Trefferzahl im
-Regellauf von 6 auf 30 von 30, im Lasttest von 58 auf 239 von 239. Dieselbe Falle traf die erste
-Messung an der Vorlage.
+Regellauf von 6 auf 30 von 30, im Lasttest von 58 auf 238 von 238.
+
+Zweitens liest man die Zahl aus **ihren eigenen Zeichen** (fett, 13 bp), nicht aus dem Text der
+Zeile: `microtype` schiebt ein öffnendes Anführungszeichen der Nachbarspalte per Randausgleich
+über die Blattmitte, und eine Prüfung auf die ganze Zeile scheitert daran.
+
+Drittens zählt eine **völlig leere Spalte** als Lücke und darf beim Messen des Verschnitts nicht
+übersprungen werden — sie ist der schlimmste Fall, nicht der unauffälligste.
 
 ## Vorgehen
 

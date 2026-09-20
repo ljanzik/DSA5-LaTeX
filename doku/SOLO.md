@@ -273,8 +273,7 @@ Deshalb genügen gemessene Rasterhöhen, und TeX' Seitenbauer muss nicht nachgeb
 
 Eine Doppelseite fasst 59 Grundlinien je Spalte mal vier Spalten, also 236 Rastereinheiten.
 Vollständig füllen lässt sie sich nicht: rund um jeden Blockkopf geht Platz verloren —
-`\dsaRasterluft` davor, `
-obreak` dahinter, dazu Widow- und Clubpenalty, die den Umbruch
+`\dsaRasterluft` davor, `\nobreak` dahinter, dazu Widow- und Clubpenalty, die den Umbruch
 vorziehen.
 
 **Wie viel, ist gemessen, nicht geschätzt.** Am gesetzten Heft, als Differenz zwischen belegten
@@ -289,21 +288,7 @@ deshalb mit `0,8 × Blockzahl + 4` — dem ungünstigsten gemessenen Verhältnis
 denn ein übergelaufener Behälter kostet eine ganze Leerseite, ein zu großer Rückhalt nur ein
 paar Zeilen.
 
-### Was daran dreimal falsch war
-
-Diese Formel ist der vierte Anlauf, und die drei davor sind lehrreich genug, um sie
-festzuhalten:
-
-1. **Ein fester Wert (8).** Traf die kleinen Behälter, ließ die großen überlaufen.
-2. **`4 × mittlere Blockhöhe`.** Genau verkehrt herum: bei fünf Blöcken hätte das 176 Einheiten
-   reserviert, bei vierundvierzig nur 20. Die Annahme dahinter — ein Block rutsche an der
-   Spaltengrenze vollständig weiter — stimmt nur für Kopf und erste zwei Zeilen. Gewöhnlicher
-   Blocktext **fließt** über die Grenze.
-3. **Ein fester Wert (16),** aus einer Messung der falschen Größe: Ich hatte gezählt, was vor
-   der letzten Spalte frei bleibt, statt wie viel der Behälter über die Summe seiner
-   Blockhöhen hinaus braucht.
-
-Der Unterschied ist erheblich:
+Gegen die Nachbarwerte geprüft, jeweils voll gebaut und am PDF gemessen:
 
 | Faktor | Seiten | Leerseiten | Verschnitt |
 |---|---|---|---|
@@ -312,45 +297,35 @@ Der Unterschied ist erheblich:
 | 0,9 | 23 | 1 | 332 |
 
 Im Lasttest enden damit 18 von 42 Spalten mit nur einer freien Rastereinheit, weitere 16 mit
-zwei bis acht. Die vier großen Lücken sind die Einleitungsseite und das Heftende — dort steht
-schlicht wenig, das ist kein Verschnitt.
-
-**Eine frühere Fassung dieser Doku behauptete, der Verschnitt sei strukturell konstant und
-lasse sich nur zwischen Lücken und Leerseiten verschieben. Das war falsch** — er ließ sich um
-knapp vierzig Prozent senken, sobald die richtige Größe gemessen war.
+zwei bis acht. Die verbliebenen großen Lücken sind die Einleitungsseite und das Heftende —
+dort steht schlicht wenig, das ist kein Verschnitt.
 
 ### Der Ausgleich
 
-Das Packen fuellt gierig: die ersten Behaelter werden randvoll, der letzte bekommt den Rest.
-Im Satz ist genau das der schlimmste Fall — ein Behaelter mit 95 von 236 Einheiten fuellt eine
-Seite, und die zweite seiner Doppelseite bleibt **vollstaendig leer**.
+Das Packen füllt gierig: Die ersten Behälter werden randvoll, der letzte bekommt den Rest. Im
+Satz ist genau das der schlimmste Fall — ein Behälter mit 95 von 236 Einheiten füllt eine
+Seite, und die zweite seiner Doppelseite bleibt **vollständig leer**.
 
-Das Werkzeug gleicht die Fuellung deshalb nachtraeglich an, und zwar nur dorthin, wo kein
-Nachbar aus dem Sprunggraphen liegt. Am Lasttest sank die Spanne von 95–228 auf 189–208
-Einheiten, und die leere Spalte verschwand.
+Das Werkzeug gleicht die Füllung deshalb nachträglich an, und zwar nur dorthin, wo kein
+Nachbar aus dem Sprunggraphen liegt. Im Lasttest sank die Spanne dadurch von 95–228 auf
+189–208 Einheiten.
 
-**Bei kurzen Solos ist das Gegenteil richtig.** Fuellt ein Behaelter ohnehin keine ganze Seite,
-macht Gleichverteilung alles schlimmer: statt weniger voller Behaelter und eines mageren gibt
-es dann lauter Behaelter, die je eine Seite fuellen und die zweite leer lassen. Am Regellauf
-gemessen stieg der Verschnitt durch den Ausgleich von 262 auf 400 Einheiten. Er greift deshalb
-nur, wenn die mittlere Fuellung mindestens eine Seite betraegt.
+**Bei kurzen Solos ist das Gegenteil richtig.** Füllt ein Behälter ohnehin keine ganze Seite,
+macht Gleichverteilung alles schlimmer: Statt weniger voller Behälter und eines mageren gibt
+es dann lauter Behälter, die je eine Seite füllen und die zweite leer lassen. Der Ausgleich
+greift deshalb nur, wenn die mittlere Füllung mindestens eine Seite beträgt.
 
 ### Warum zehn Doppelseiten und nicht neun
 
-Naheliegend waere, den Rueckhalt weiter zu senken, bis eine Doppelseite weniger reicht: 2002
-Rastereinheiten Inhalt passen rechnerisch auf neun Doppelseiten (2124 Kapazitaet). Ausprobiert
-und am Satz gemessen — es geht nicht:
+2002 Rastereinheiten Inhalt passen rechnerisch auf neun Doppelseiten (2124 Kapazität). Es geht
+trotzdem nicht: Bei neun Behältern müssten alle auf 222 von 236 Einheiten gefüllt werden, der
+gemessene Aufschlag beträgt aber 3 bis 26. Jeder Behälter am oberen Ende läuft über, reicht in
+die nächste Doppelseite hinein und erzwingt dort eine Füllseite — am Satz nachgerechnet 32
+Seiten mit sechs Leerseiten statt 21 ohne.
 
-| Behaelter | Rückhalt | Seiten | Leerseiten | Verschnitt |
-|---|---|---|---|---|
-| 9 | fest 13 | 32 | **6** | 1561 |
-| **10** | 0,8 × Blockzahl + 4 | **21** | **keine** | **262** |
+Zehn Doppelseiten sind das Minimum, und die 358 Einheiten Überkapazität verteilen sich als
+Luft an den zehn Behälterenden.
 
-Bei neun Behaeltern muessten alle auf 222 von 236 Einheiten gefuellt werden. Der gemessene
-Aufschlag betraegt aber 3 bis 26 — jeder Behaelter am oberen Ende laeuft ueber, reicht in die
-naechste Doppelseite hinein und erzwingt dort eine Fuellseite. Zehn Doppelseiten sind das
-Minimum, und die 358 Einheiten Ueberkapazitaet verteilen sich als Luft an den zehn
-Behaelterenden.
 
 ### Die Untergrenze: so viele Doppelseiten wie Farben
 
@@ -368,19 +343,6 @@ Paritätskorrektur setzt eine Leerseite daneben.
 Bei 238 Blöcken tritt das nicht auf: dort ist genug Material da, um jede Doppelseite zu füllen.
 Die Regel lautet also — je kürzer das Solo, desto größer der Verschnitt.
 
-### Der Rest jeder Farbklasse
-
-Der zweite Grund für halb leere Doppelseiten liegt nicht am Rückhalt, sondern am Packen selbst:
-Weil jede Farbklasse für sich gepackt wird, bleibt von jeder ein Rest übrig. Im Lasttest waren
-das Behälter mit 80 und 96 von 236 Einheiten — sie belegen nur **eine** Seite, und die
-Paritätskorrektur setzt eine Füllseite daneben. Im Satz stehen dann zwei Leerseiten dicht
-beieinander.
-
-Das Werkzeug löst solche Behälter deshalb nachträglich auf und verteilt ihre Blöcke auf die
-übrigen — aber nur dorthin, wo kein Nachbar aus dem Sprunggraphen liegt, die Seitenregel bleibt
-also unangetastet. Im Lasttest stieg der leerste Behälter dadurch von 80 auf 172 Einheiten, die
-Zahl der Doppelseiten sank von elf auf zehn und die der Füllseiten von vier auf drei.
-
 ## 9. Bilder im Block
 
 Bilder kommen mit den Befehlen der Kernklasse in den Block, vor allem
@@ -397,8 +359,7 @@ Unten ist es trocken und still …
 ```
 
 **Damit Bild und Text zusammenbleiben, braucht es die Option `zusammen`.** `\dsaBildRaster`
-bringt zwar ein eigenes `
-obreak` mit und klebt damit an seinen Nachbarzeilen, aber das bindet
+bringt zwar ein eigenes `\nobreak` mit und klebt damit an seinen Nachbarzeilen, aber das bindet
 nicht den ganzen Block — der Satz darf weiter oben oder unten umbrechen, und dann steht das
 Bild allein. Mit `zusammen` landet der Block vollständig in einer Spalte oder vollständig in
 der nächsten.
@@ -416,10 +377,10 @@ Zwei Dinge sind dabei zu beachten:
 * **Der Block muss in eine Spalte passen**, also höchstens 59 Rastereinheiten hoch sein. Sonst
   läuft er unten heraus; das Werkzeug meldet es beim Lösen, das Paket warnt im Satz.
 * **Umgesetzt ist das über Umbruchsperren, nicht über eine Box.** Eine Box wäre der
-  naheliegende Weg — sie ist von sich aus unteilbar. Ihre Höhe müsste aber auf Rastervielfache
-  gerundet und die Box um den gerundeten Wert abgesenkt werden, und diese Differenz verschiebt
-  den gesamten Inhalt. So gesetzte Blöcke lagen im Satz 0,20 und 2,44 bp neben dem Raster.
-  Penalties lassen die vertikale Liste unverändert, das Raster kann also gar nicht brechen.
+  naheliegende Weg, weil sie von sich aus unteilbar ist — sie verträgt sich aber nicht mit dem
+  Raster: Ihre Höhe müsste auf Rastervielfache gerundet und die Box um den gerundeten Wert
+  abgesenkt werden, und diese Differenz verschiebt den gesamten Inhalt. Penalties lassen die
+  vertikale Liste unverändert, das Raster kann also gar nicht erst brechen.
 
 ## 10. Prüfen
 
