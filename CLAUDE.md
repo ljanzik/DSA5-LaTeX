@@ -12,11 +12,16 @@ Grundlinienraster. Die Elementreferenz steht in `doku/ELEMENTE.md`, wie man einr
 in `doku/EINRICHTUNG.md`. Dazu sechs Python-Werkzeuge in `werkzeuge/`, vier Dokumente in `doku/`
 und fünf Beispieldokumente in `beispiel/`.
 
-Dazu kommt die **Battlemap mit Zollraster**: kein eigener Seitentyp der Klasse, sondern ein
+Dazu kommt der **Aufsteller** (`dsa5aufsteller.sty`): kleine Standfiguren zum Ausschneiden auf
+eigenen A4-Bögen in vier Größenklassen, dokumentiert im Abschnitt „Aufsteller“ in
+`doku/ELEMENTE.md`. Seine Maße stehen nicht in `doku/MASSE.md`, sondern als Kommentar direkt in
+der `.sty`-Datei — siehe dort.
+
+Dazu die **Battlemap mit Zollraster**: kein eigener Seitentyp der Klasse, sondern ein
 eigenes Dokument `beispiel/battlemap.tex` mit `\dsaBattlemapBlatt` und `\dsaBattlemap`,
 dokumentiert im Abschnitt „Seitentypen“ in `doku/ELEMENTE.md`.
 
-**Weitere Features** (eigene Klassen oder Erweiterungen wie Charakterbogen, Aufsteller,
+**Weitere Features** (eigene Klassen oder Erweiterungen wie Charakterbogen,
 SL-Einleger) bekommen jeweils eine eigene Doku-Datei und einen eigenen Eintrag in der
 Feature-Liste in `README.md` — siehe „Dokumentation neuer Features“ in Teil B.
 
@@ -228,10 +233,12 @@ Kommt ein Maß aus dem Baukasten neu dazu, gehört es außerdem nach `werkzeuge/
 ## Dokumentation neuer Features
 
 Ein neues Feature (eine eigene Klasse wie `dsa5einleger.cls` oder eine Erweiterung der
-Kernklasse wie der Aufsteller) bekommt **eine eigene Doku-Datei**, `doku/<FEATURE>.md` in
-Großbuchstaben — zum Beispiel `doku/AUFSTELLER.md` oder `doku/BATTLEMAP.md` — statt eines
-Abschnitts in `doku/ELEMENTE.md`. `doku/ELEMENTE.md` bleibt der Kernklasse `dsa5latex.cls`
-vorbehalten.
+Kernklasse) bekommt **eine eigene Doku-Datei**, `doku/<FEATURE>.md` in Großbuchstaben — zum
+Beispiel `doku/BATTLEMAP.md` — statt eines Abschnitts in `doku/ELEMENTE.md`. `doku/ELEMENTE.md`
+bleibt der Kernklasse `dsa5latex.cls` vorbehalten. Der Aufsteller (`dsa5aufsteller.sty`) ist
+älter als diese Konvention und dokumentiert sich noch als eigener Abschnitt in
+`doku/ELEMENTE.md` — wer ihn erweitert, kann ihn bei Gelegenheit nach `doku/AUFSTELLER.md`
+ziehen, muss es aber nicht in derselben Änderung tun.
 
 Dazu gehört ein eigener Eintrag in der Feature-Liste in `README.md`: eine Zeile mit Kurzform,
 Klasse (falls eine eigene) und Verweis auf die neue Doku-Datei. Das Allgemeine — Grafiken und

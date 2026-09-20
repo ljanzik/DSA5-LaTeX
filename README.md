@@ -23,6 +23,7 @@ Jedes Feature ist eine eigene Klasse oder eine eigene Erweiterung, mit eigener E
 | Feature | Klasse | wofür | Doku |
 |---|---|---|---|
 | Abenteuer setzen | `dsa5latex.cls` | Zweispaltiger Satz auf A4 mit Grundlinienraster, Pergament- und Wertekästen in Produktionsgröße, Kapitelbanner, Meistermasken, Seitenhintergründe, Textumfluss | [Elementreferenz](doku/ELEMENTE.md) |
+| Aufsteller (Standfiguren zum Ausschneiden) | `dsa5aufsteller.sty` | Kleine Standfiguren auf eigenen A4-Bögen in vier Größenklassen (S/M/L/XL), mit automatisch erzeugter Rückseite für den beidseitigen Druck | [Elementreferenz](doku/ELEMENTE.md#aufsteller) |
 | Battlemap mit Zollraster | — (`beispiel/battlemap.tex`, kein `.cls`) | Eigenes Blatt neben dem Heft (A4 bis A1, hoch oder quer) mit gestricheltem Zollraster über der Battlemap, kein eigener Seitentyp der Klasse | [Elementreferenz](doku/ELEMENTE.md#seitentypen) |
 
 Einrichten, Grafiken und Schriften besorgen, bauen — das gilt featureübergreifend und steht in
