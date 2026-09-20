@@ -21,36 +21,123 @@ dabei stimmen, und alle drei nimmt dieses Feature dem Autor ab:
 Punkt 3 ist der eigentliche Grund für das Werkzeug. Von Hand ist er ab etwa dreißig Blöcken
 nicht mehr zu halten, weil jeder eingeschobene Block alles dahinter verschiebt.
 
-## 2. Vorbereiten
+## 2. Ein Solo anlegen
 
-`dsa5solo` setzt auf der Kernklasse auf und bringt kein eigenes Maß mit:
+Ein Solo besteht aus **zwei** Dateien, die der Autor schreibt. Alles Weitere erzeugt das
+Werkzeug.
+
+| Datei | Inhalt |
+|---|---|
+| `meinsolo.tex` | Umschlag, Impressum, Spielanleitung, Rückseite — das Gerüst |
+| `meinsolo-bloecke.tex` | alle nummerierten Blöcke, in beliebiger Reihenfolge |
+
+### Die Blockdatei
+
+Hier steht das Abenteuer. Jeder Block bekommt eine **sprechende Marke** statt einer Zahl:
+
+```latex
+\begin{soloBlock}{tor-der-stadt}
+Du stehst vor dem Tor. Die Wachen mustern dich unfreundlich und verlangen
+einen Wegzoll.
+
+Zahlst du, lies bei Abschnitt \soloWeiter{markt} weiter. Wendest du dich ab,
+so geht es bei Abschnitt \soloWeiter{wald} weiter.
+\end{soloBlock}
+
+\begin{soloBlock}[zusammen]{hoehle}
+\dsaBildSpalte{grafiken/hoehle}{6}
+
+Die Höhle riecht nach kaltem Rauch. Jemand hat hier gelagert.
+
+Weiter bei Abschnitt \soloWeiter{keller}.
+\end{soloBlock}
+
+\begin{soloBlock}{ende-gut}
+Du hast es geschafft.
+\soloEnde
+\end{soloBlock}
+```
+
+Die Reihenfolge in dieser Datei ist **gleichgültig** — schreib die Blöcke so, wie es beim
+Schreiben am leichtesten fällt. Das Werkzeug vergibt die Nummern später und mischt dabei
+ohnehin um.
+
+Marken bestehen aus Buchstaben, Ziffern und Bindestrichen. Eine doppelt vergebene Marke meldet
+das Werkzeug als Fehler — sie wäre sonst ein stiller: der zweite Block überschriebe den ersten,
+und die Verweise zeigten auf den falschen Text.
+
+### Das Gerüst
 
 ```latex
 \documentclass[raster]{dsa5latex}
 \usepackage{dsa5solo}
+
+\graphicspath{{../}}                       % wenn die .tex in beispiel/ liegt
+\dsaAbenteuertitel{Der Bote von Havena}    % steht im Kolumnentitel
+
+\begin{document}
+
+\dsaUmschlagVorne{grafiken/titelbild}{%
+  \dsaTitelZeile{DER BOTE}%
+  \dsaTitelZeile{VON HAVENA}%
+  \dsaTitelZeile[27.9]{Ein Solo-Abenteuer}}
+
+\begin{dsaImpressumseite}
+\dsaImpressumsblock{Autor}{[Name]}
+\dsaImpressumsblock{Satz, Layout und Gestaltung}{[Name]}
+\dsaImpressumsblock{Coverbild}{[Name]}
+\dsaImpressumsblock{Version}{v1.0 vom [Datum]}
+\dsaRechtevermerk{2026}{[Name]}
+\end{dsaImpressumseite}
+
+\dsakapitel{Der Bote von Havena}
+
+\dsaEinfuehrung{Ein kursiver Vorspann.}
+
+\dsaabschnitt{So wird gespielt}
+
+Dieses Abenteuer liest sich nicht von vorn nach hinten …
+
+\dsaabschnitt{Was du brauchst}
+
+Einen Helden, Papier und Stift, zwei Würfel …
+
+Beginne bei Abschnitt \soloWeiter{tor-der-stadt}.
+
+\soloStart{tor-der-stadt}          % dieser Block trägt immer die 1
+\soloBloecke{meinsolo-bloecke}     % die Datei mit allen Blöcken
+
+\dsaRueckseite{ruecken-mittelreich}{Der Bote von Havena}{von [Name]}{%
+  Klappentext, Absätze durch Leerzeilen getrennt.
+}{%
+  \dsaRueckKopf{Ein DSA-Soloabenteuer\für einen Helden}
+  \dsaRueckFeld{Genre}{Ermittlung}
+  \dsaRueckStrich
+  \dsaAnforderungen{2}{3}{1}{2}
+}
+
+\end{document}
 ```
 
-Der Autor schreibt alle Blöcke in **eine** Datei, in beliebiger Reihenfolge:
+Umschlag, Impressum und Rückseite kommen unverändert aus der Kernklasse; sie stehen in
+[der Elementreferenz](ELEMENTE.md). Die Rückenkarten liegen als `ruecken-bornland`,
+`ruecken-thorwal` und so weiter bereit — eine je Region.
 
-```latex
-\begin{soloBlock}{tor-der-stadt}
-Du stehst vor dem Tor. Die Wachen mustern dich unfreundlich.
+**Die Spielanleitung lohnt sich.** Sie steht auf Seite 1, und der erste Block beginnt
+zwangsläufig auf einer neuen Doppelseite — sonst läge er neben dem Verweis, der auf ihn zeigt.
+Was die Einleitung an Text nicht hergibt, bleibt dort leer. Zwei Absätze füllen keine Seite;
+eine ordentliche Anleitung mit Proben, Kämpfen und einem Bild schon.
 
-Gehst du hinein, lies bei Abschnitt \soloWeiter{markt} weiter. Wendest du dich ab,
-so geht es bei Abschnitt \soloWeiter{wald} weiter.
-\end{soloBlock}
-```
+### Was dabei entsteht
 
-Marken bestehen aus Buchstaben, Ziffern und Bindestrichen; das Werkzeug prüft das und meldet
-eine doppelt vergebene Marke als Fehler — sie wäre sonst ein stiller: der zweite Block
-überschriebe den ersten, und die Verweise zeigten auf den falschen Text.
+Nichts davon gehört ins Versionsverwaltungssystem, alles wird bei jedem Lauf neu erzeugt:
 
-Im Hauptdokument stehen nur noch drei Zeilen:
-
-```latex
-\soloStart{tor-der-stadt}     % dieser Block trägt immer die 1
-\soloBloecke{solo-bloecke}    % die Datei mit allen Blöcken
-```
+| Datei | woher |
+|---|---|
+| `meinsolo.solo` | Messlauf: Höhe und Sprungziele je Block |
+| `meinsolo.solonummern` | Werkzeug: die Zuordnung Marke → Nummer |
+| `solo-aus/<marke>.tex` | Werkzeug: die Blöcke, bytegetreu einzeln |
+| `solo-aus/reihenfolge.tex` | Werkzeug: `\input`-Liste mit den Doppelseitengrenzen |
 
 ## 3. Bauen
 
@@ -358,6 +445,15 @@ Spalte gruppiert, stieg die Trefferzahl im Regellauf von 6 auf 30 von 30.
   gemessene Höhe ist damit eine obere Schranke — die echte Zahl ist nie breiter, und zu groß
   gemessen kostet nach Abschnitt 7 nur Papier.
 * **`\clearpage` in einem Block** zerreißt die Behälteraufteilung.
+* **Das PDF im Betrachter schließen, bevor gebaut wird.** Unter Windows sperrt ein geöffnetes
+  PDF die Datei; `xdvipdfmx` kann dann nicht schreiben, meldet `Error 1 (driver return code)`
+  und der Lauf bricht ab. Tückisch daran: `.aux` und PDF sind danach gemeinsam unvollständig,
+  stimmen also miteinander überein. Das Prüfwerkzeug erkennt das an der Nummernzuordnung und
+  meldet „UNVOLLSTAENDIG“ — ohne diesen Abgleich meldete es Erfolg für ein halbes Heft. Wer von
+  Hand prüfen will, ob eine Datei frei ist: Umbenennen zeigt es zuverlässig, Anhängen von
+  leerem Inhalt gelingt auch bei gesperrten Dateien.
+* **Die Kette bricht mit dem ersten Fehler ab.** Scheitert der Messlauf, läuft das Werkzeug gar
+  nicht erst, und der Satzlauf arbeitet mit der alten Zuordnung weiter — ohne Warnung.
 * Die erzeugten Dateien (`*.solo`, `*.solonummern`, `solo-aus/`) sind abgeleitet und stehen in
   `.gitignore`.
 
