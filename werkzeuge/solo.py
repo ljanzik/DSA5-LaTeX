@@ -53,6 +53,7 @@ import sys
 # viel Rueckhalt nur ein paar Zeilen -- deshalb etwas Luft nach oben.
 SICHERHEIT = 4
 
+
 # Untergrenze, die der Aufrufer ueber --rueckhalt anheben kann.
 RUECKHALT = 0
 
@@ -231,6 +232,58 @@ def passt(b, h, hoehe, gesamt, mindestrueckhalt):
     return belegt + r <= gesamt
 
 
+def ausgleichen(behaelter, hoehe, nachbarn, gesamt, mindestrueckhalt):
+    """Gleicht die Fuellung der Behaelter an.
+
+    Das Packen fuellt greedy: die ersten Behaelter werden randvoll, der
+    letzte bekommt den Rest. Im Satz ist das der schlimmste Fall -- ein
+    Behaelter mit 95 von 236 Einheiten fuellt eine Seite, und die zweite
+    seiner Doppelseite bleibt vollstaendig leer.
+
+    Gleichmaessig verteilt faellt derselbe Verschnitt nicht auf: statt
+    einer leeren Spalte hat jede Doppelseite ein paar Zeilen Luft am
+    Fuss. Verschoben wird nur, wo kein Nachbar aus dem Sprunggraphen im
+    Zielbehaelter liegt -- die Seitenregel bleibt unangetastet.
+    """
+    def fuellung(b):
+        return sum(hoehe.get(x, 1) for x in b)
+
+    # Nur ausgleichen, wenn die Behaelter ueberhaupt mehr als eine Seite
+    # fuellen. Bei einem kurzen Solo ist das Gegenteil richtig: lieber
+    # wenige volle Behaelter und einen mageren, als lauter Behaelter, die
+    # je eine Seite fuellen und die zweite ihrer Doppelseite leer lassen.
+    # Am Regellauf gemessen -- 30 Bloecke auf drei Behaelter -- stieg der
+    # Verschnitt durch den Ausgleich von 164 auf 400 Einheiten.
+    seite = gesamt // 2
+    if sum(fuellung(b) for b in behaelter) // max(1, len(behaelter)) < seite:
+        return behaelter
+
+    for _ in range(500):
+        voll = sorted(range(len(behaelter)),
+                      key=lambda i: fuellung(behaelter[i]))
+        leerster, vollster = voll[0], voll[-1]
+        spanne = fuellung(behaelter[vollster]) - fuellung(behaelter[leerster])
+        if spanne <= 12:
+            break
+        # Den kleinsten Block suchen, der die Spanne verringert und passt.
+        bewegt = False
+        for m in sorted(behaelter[vollster], key=lambda x: hoehe.get(x, 1)):
+            if hoehe.get(m, 1) * 2 > spanne:
+                continue
+            if nachbarn[m] & set(behaelter[leerster]):
+                continue
+            if not passt(behaelter[leerster], hoehe.get(m, 1), hoehe,
+                         gesamt, mindestrueckhalt):
+                continue
+            behaelter[vollster].remove(m)
+            behaelter[leerster].append(m)
+            bewegt = True
+            break
+        if not bewegt:
+            break
+    return behaelter
+
+
 def nachbessern(behaelter, hoehe, nachbarn, gesamt, mindestrueckhalt):
     """Loest zu leere Behaelter auf und verteilt ihre Bloecke.
 
@@ -305,6 +358,8 @@ def loesen(hoehe, ziele, start, gesamt, mindestrueckhalt,
         behaelter.extend(packen(klassen[f], hoehe, gesamt,
                                 mindestrueckhalt))
     behaelter = nachbessern(behaelter, hoehe, nachbarn, gesamt,
+                            mindestrueckhalt)
+    behaelter = ausgleichen(behaelter, hoehe, nachbarn, gesamt,
                             mindestrueckhalt)
 
     # Der Startblock steht immer am Anfang und traegt immer die 1: sein
@@ -568,6 +623,13 @@ def main():
                         'sieht (Standard: der Ordnername selbst). Noetig, '
                         'wenn die Bloecke nicht neben der .tex liegen; '
                         'muss dann zu \\soloOrdner passen')
+    p.add_argument('--doppelseiten', type=int, default=1,
+                   help='wie viele Doppelseiten ein Behaelter umfassen '
+                        'darf (Standard 2). Groessere Behaelter haben '
+                        'weniger Grenzen und damit weniger Verschnitt; '
+                        'die Seitenregel bleibt gleich, weil Bloecke im '
+                        'selben Behaelter ohnehin keine Spruenge '
+                        'untereinander haben')
     p.add_argument('--rueckhalt', type=int, default=RUECKHALT,
                    help='Rastereinheiten Rueckhalt je Doppelseite '
                         '(Standard %d)' % RUECKHALT)
@@ -669,7 +731,13 @@ def main():
     if spalte is None:
         sys.exit('Die Messdatei nennt kein Satzspiegelmass (\\solomass).')
 
-    gesamt = spalte * spalten
+    # Ein Behaelter darf mehrere Doppelseiten umfassen. Das senkt den
+    # Verschnitt erheblich: bei 2002 Rastereinheiten Inhalt und einer
+    # Doppelseite je Behaelter braucht es zehn Behaelter mit zusammen 2360
+    # Einheiten Kapazitaet -- 358 bleiben zwangslaeufig frei, und ein
+    # Rest davon wird zur halb leeren Spalte. Mit zwei Doppelseiten je
+    # Behaelter halbiert sich die Zahl der Grenzen.
+    gesamt = spalte * spalten * args.doppelseiten
 
     if doppelt:
         print('MARKE DOPPELT VERGEBEN (%d):' % len(doppelt))

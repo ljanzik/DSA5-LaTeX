@@ -211,6 +211,39 @@ schlicht wenig, das ist kein Verschnitt.
 lasse sich nur zwischen Lücken und Leerseiten verschieben. Das war falsch** — er ließ sich um
 knapp vierzig Prozent senken, sobald die richtige Größe gemessen war.
 
+### Der Ausgleich
+
+Das Packen fuellt gierig: die ersten Behaelter werden randvoll, der letzte bekommt den Rest.
+Im Satz ist genau das der schlimmste Fall — ein Behaelter mit 95 von 236 Einheiten fuellt eine
+Seite, und die zweite seiner Doppelseite bleibt **vollstaendig leer**.
+
+Das Werkzeug gleicht die Fuellung deshalb nachtraeglich an, und zwar nur dorthin, wo kein
+Nachbar aus dem Sprunggraphen liegt. Am Lasttest sank die Spanne von 95–228 auf 189–208
+Einheiten, und die leere Spalte verschwand.
+
+**Bei kurzen Solos ist das Gegenteil richtig.** Fuellt ein Behaelter ohnehin keine ganze Seite,
+macht Gleichverteilung alles schlimmer: statt weniger voller Behaelter und eines mageren gibt
+es dann lauter Behaelter, die je eine Seite fuellen und die zweite leer lassen. Am Regellauf
+gemessen stieg der Verschnitt durch den Ausgleich von 262 auf 400 Einheiten. Er greift deshalb
+nur, wenn die mittlere Fuellung mindestens eine Seite betraegt.
+
+### Warum zehn Doppelseiten und nicht neun
+
+Naheliegend waere, den Rueckhalt weiter zu senken, bis eine Doppelseite weniger reicht: 2002
+Rastereinheiten Inhalt passen rechnerisch auf neun Doppelseiten (2124 Kapazitaet). Ausprobiert
+und am Satz gemessen — es geht nicht:
+
+| Behaelter | Rückhalt | Seiten | Leerseiten | Verschnitt |
+|---|---|---|---|---|
+| 9 | fest 13 | 32 | **6** | 1561 |
+| **10** | 0,8 × Blockzahl + 4 | **21** | **keine** | **262** |
+
+Bei neun Behaeltern muessten alle auf 222 von 236 Einheiten gefuellt werden. Der gemessene
+Aufschlag betraegt aber 3 bis 26 — jeder Behaelter am oberen Ende laeuft ueber, reicht in die
+naechste Doppelseite hinein und erzwingt dort eine Fuellseite. Zehn Doppelseiten sind das
+Minimum, und die 358 Einheiten Ueberkapazitaet verteilen sich als Luft an den zehn
+Behaelterenden.
+
 ### Die Untergrenze: so viele Doppelseiten wie Farben
 
 Ein kleines Solo kann Papier verschwenden, ohne dass daran etwas zu machen ist. Die Zahl der
