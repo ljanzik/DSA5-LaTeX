@@ -141,6 +141,27 @@ Nichts davon gehört ins Versionsverwaltungssystem, alles wird bei jedem Lauf ne
 
 ## 3. Bauen
 
+**In einem Aufruf:**
+
+```sh
+python3 werkzeuge/solo-bauen.py beispiel/solo.tex --bloecke solo-bloecke.tex
+```
+
+Unter Windows `werkzeuge\solo-bauen.ps1`, sonst `werkzeuge/solo-bauen.sh` — beide reichen nur
+an dasselbe Python weiter. Das Skript führt die vier Schritte nacheinander aus und **bricht bei
+jedem ab, der nicht durchläuft**. Das ist der eigentliche Zweck: Scheitert der Messlauf und man
+tippt die Schritte einzeln, läuft das Werkzeug gar nicht erst, der Satzlauf arbeitet mit der
+alten Zuordnung weiter, und niemand merkt es.
+
+Vor dem ersten Schritt prüft es außerdem, ob sich das PDF überhaupt schreiben lässt — ein im
+Betrachter geöffnetes sperrt die Datei, und was danach entsteht, sieht stimmig aus, ist es aber
+nicht.
+
+Liegen die Blöcke nicht neben der `.tex`, kommen `--aus` und `--praefix` dazu; sie werden
+unverändert an `solo.py` durchgereicht.
+
+### Die vier Schritte einzeln
+
 Drei Schritte, weil LaTeX messen muss, bevor Python rechnen kann.
 
 **Messen** — schreibt `solo.solo` mit der Höhe jedes Blocks und seinen Sprungzielen:
