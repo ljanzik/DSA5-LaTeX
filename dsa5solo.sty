@@ -4,6 +4,7 @@
 %%%   \documentclass{dsa5latex}
 %%%   \usepackage{dsa5solo}            % Satzlauf
 %%%   \usepackage[messen]{dsa5solo}    % Messlauf
+%%%   \usepackage[klickbar]{dsa5solo}  % Satzlauf mit Sprungzielen
 %%%
 %%% Copyright 2026 Leif Janzik. Apache License 2.0, siehe LICENSE.
 %%%
@@ -47,6 +48,14 @@
 
 \newif\ifdsaSolo@messen  \dsaSolo@messenfalse
 \DeclareOption{messen}{\dsaSolo@messentrue}
+
+% Die klickbare Fassung ist derselbe Satz mit Sprungzielen darauf, nicht
+% ein zweites Layout: gleiche Nummern, gleicher Umbruch, gleiche
+% Seitenzahlen wie im Druck. Deshalb eine Option auf demselben Lauf und
+% kein eigenes Verfahren -- Naeheres bei \dsaSolo@ziel.
+\newif\ifdsaSolo@klickbar  \dsaSolo@klickbarfalse
+\DeclareOption{klickbar}{\dsaSolo@klickbartrue}
+
 \ProcessOptions\relax
 
 \newsavebox{\dsaSolo@box}
@@ -128,11 +137,40 @@
     \protected@write\@auxout{}{%
       \string\soloSprungLage{\dsaSolo@marke}{\detokenize{#1}}{\thepage}}%
     \ifcsname dsaSolo@nr@#1\endcsname
-      \csname dsaSolo@nr@#1\endcsname
+      \dsaSolo@sprung{#1}{\csname dsaSolo@nr@#1\endcsname}%
     \else
       \dsaSolo@fehlt{#1}%
     \fi
   \fi}
+
+% Sprung und Ziel der klickbaren Fassung. Beide stehen hier beieinander,
+% obwohl das Ziel erst im Block gebraucht wird: sie sind ein Paar und
+% muessen denselben Namen bilden.
+%
+% Ohne die Option geben beide ihr Argument unveraendert aus -- kein
+% Zeichen mehr, kein Zeichen weniger. Das ist die Bedingung dafuer, dass
+% die klickbare Fassung Seite fuer Seite dieselbe ist wie der Druck; an
+% einem Abzug beider Fassungen nachgemessen, siehe PRUEFPLAN.md.
+%
+% An einer gesetzten Vorlage des Verlags abgelesen: dort traegt je ein
+% Ziel die Kopfzahl des Blocks (/FitH auf ihre Zeilenhoehe), der Link
+% liegt auf der Zahl im Verweis und sonst nirgends, und beide Zahlen sind
+% schwarz und fett wie jede andere im Satz. Gemessen an 420 Links: Breite
+% im Mittel 17,3 bp, also genau die Zahl und nicht der Satz darum.
+%
+% \hypertarget statt \phantomsection\label: der Anker sitzt damit IN der
+% Kopfzeile und nicht darunter, und der Sprung landet auf der Zahl statt
+% auf der ersten Textzeile. Der \label{solo:...} des Blocks bleibt davon
+% unberuehrt -- er traegt die Seite fuer die Pruefung, nicht den Sprung.
+%
+% hyperref kommt aus der Kernklasse und steht dort auf hidelinks
+% (dsa5latex.cls:87). Ein Rahmen wird also nicht gezeichnet, und die
+% Fassung sieht aus wie der Druck.
+\newcommand*{\dsaSolo@sprung}[2]{%
+  \ifdsaSolo@klickbar\hyperlink{solo.#1}{#2}\else#2\fi}
+
+\newcommand*{\dsaSolo@ziel}[2]{%
+  \ifdsaSolo@klickbar\hypertarget{solo.#1}{#2}\else#2\fi}
 
 % Der Platzhalter fuer eine unbekannte Marke ist absichtlich genauso breit
 % wie eine echte Nummer: sonst bricht der Absatz anders um als im Messlauf
@@ -207,7 +245,9 @@
       \let\dsaSolo@par\par
       \def\par{\dsaSolo@par\nobreak}%
     \fi
-    \dsaSolo@kopf{\dsaSolo@nummer{#2}}%
+    % Die Zahl ist zugleich das Sprungziel der klickbaren Fassung, siehe
+    % \dsaSolo@ziel. Ohne die Option steht hier nur die Zahl.
+    \dsaSolo@kopf{\dsaSolo@ziel{#2}{\dsaSolo@nummer{#2}}}%
     % Marke fuer die Pruefung: \newlabel in der .aux traegt die Seite des
     % Blockanfangs. hyperref ist von der Kernklasse geladen (:86).
     \phantomsection

@@ -185,6 +185,50 @@ xelatex solo.tex
 python3 ../werkzeuge/solo.py --pruefen solo.aux
 ```
 
+### Die klickbare Fassung
+
+```sh
+python3 werkzeuge/solo-bauen.py beispiel/solo.tex --bloecke solo-bloecke.tex --klickbar
+```
+
+Das legt **zusätzlich** `solo-klickbar.pdf` neben `solo.pdf`: dasselbe Heft, aber jede Zahl in
+einem Verweis springt auf ihren Block. Zum Lesen am Bildschirm; zum Drucken bleibt die Fassung
+ohne Sprünge.
+
+Beide Fassungen sind **derselbe Satz**. Gleiche Nummern, gleicher Umbruch, gleiche Seitenzahlen —
+man kann mitten im Spiel von der einen auf die andere wechseln, und Abschnitt 42 steht in beiden
+an derselben Stelle. Auch die Doppelseitenregel gilt weiter: wer blättert statt zu klicken, sieht
+das Ziel nicht vorab.
+
+Technisch ist es ein zweiter Satzlauf mit der Paketoption `klickbar`, der in einen eigenen Ordner
+schreibt und dessen PDF daneben kopiert wird:
+
+```sh
+cd beispiel
+xelatex -output-directory=solo-klickbar-bau -jobname=solo \
+  '\PassOptionsToPackage{klickbar}{dsa5solo}\input{solo}'
+```
+
+Der **Jobname bleibt `solo`**, und das ist kein Schönheitsfehler: die Nummern stehen in
+`solo.solonummern`, und die liest das Paket unter `\jobname`. Mit `-jobname=solo-klickbar` suchte
+es eine Datei, die es nicht gibt, und jeder Verweis erschiene als rotes `??`. Deshalb trennt der
+Ausgabeordner die beiden Läufe und nicht der Name — so bleiben `.aux` und `.log` des Druckes auch
+unberührt.
+
+Wie die Sprünge aussehen, ist an einem gesetzten, offiziellen Solo des Verlags abgelesen (es liegt
+nicht im Projekt und diente nur zum Ausmessen): dort liegt der Link auf der **Zahl** und sonst
+nirgends — über 420 Links im Mittel 17,3 bp breit —, das Ziel trägt die Kopfzahl des Blocks, und
+beide Zahlen sind schwarz und fett wie jede andere im Satz. Genau das tut diese Fassung. Sie sieht
+aus wie der Druck; `dsa5latex.cls` lädt hyperref mit `hidelinks`, also zeichnet nichts einen
+Rahmen. Einen Rücksprung gibt es nicht, im Vorbild ebenso wenig.
+
+Nachgemessen an beiden Abzügen des Regellaufs: 7 Seiten hier wie dort, 2674 Wörter in gleicher
+Folge, senkrecht **0,0000 bp** Abweichung — das Grundlinienraster ist unberührt. Waagerecht
+verschieben sich 138 Wörter um höchstens 0,025 bp, das sind 0,0088 mm und damit weniger, als
+`nachmessen.py` überhaupt auflöst; sie kommt daher, dass `\hyperlink` seine Zahl in eine Box
+setzt. Alle 47 Sprünge lösen auf und landen auf der Kopfzahl ihres Blocks, das gedruckte PDF trägt
+keinen einzigen Link. Einzelheiten in [PRUEFPLAN.md](PRUEFPLAN.md).
+
 ## 4. Die Befehle
 
 | Befehl | was er tut |
@@ -445,3 +489,4 @@ Spalte gruppiert, stieg die Trefferzahl im Regellauf von 6 auf 30 von 30.
 |---|---|
 | `beispiel/solo.tex` | der Regellauf: 30 Blöcke, drei Doppelseiten |
 | `beispiel/solo-bloecke.tex` | die Blöcke dazu, in Autorenreihenfolge |
+| `beispiel/solo-klickbar.pdf` | derselbe Regellauf mit `--klickbar`, 47 Sprünge |

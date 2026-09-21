@@ -16,6 +16,7 @@ Copyright 2026 Leif Janzik. Apache License 2.0.
 
 import argparse
 import os
+import shutil
 import subprocess
 import sys
 
@@ -79,6 +80,9 @@ def main():
                                      'an solo.py durchgereicht')
     p.add_argument('--laeufe', type=int, default=3,
                    help='Satzlaeufe (Standard 3, wegen Inhalt und Marken)')
+    p.add_argument('--klickbar', action='store_true',
+                   help='zusaetzlich <name>-klickbar.pdf setzen: derselbe '
+                        'Satz mit Sprung von jedem Verweis auf seinen Block')
     args = p.parse_args()
 
     tex = os.path.abspath(args.dokument)
@@ -93,6 +97,12 @@ def main():
     if gesperrt(pdf):
         sys.exit('%s.pdf ist gesperrt -- vermutlich in einem Betrachter\n'
                  'geoeffnet. Schliessen und erneut starten.' % name)
+
+    klickpdf = os.path.join(ordner, name + '-klickbar.pdf')
+    if args.klickbar and gesperrt(klickpdf):
+        sys.exit('%s-klickbar.pdf ist gesperrt -- vermutlich in einem\n'
+                 'Betrachter geoeffnet. Schliessen und erneut starten.'
+                 % name)
 
     klasse = os.path.dirname(HIER)
     umgebung = dict(os.environ)
@@ -131,6 +141,27 @@ def main():
         for i in range(args.laeufe):
             if not lauf(setzen, ordner, 'setzen, Lauf %d' % (i + 1)):
                 return 1
+
+        # 4. Die klickbare Fassung: derselbe Satz, nur mit Sprungzielen.
+        #    Ein eigener Ausgabeordner und NICHT ein eigener Jobname --
+        #    die Nummern stehen in <name>.solonummern, und die liest das
+        #    Paket unter \jobname. Mit -jobname=<name>-klickbar suchte es
+        #    eine Datei, die es nicht gibt, und saetze alle Verweise als
+        #    ??. Eingelesen wird aus dem Arbeitsverzeichnis, geschrieben
+        #    in den Ordner: .aux und .log des Druckes bleiben unberuehrt.
+        if args.klickbar:
+            bau = os.path.join(ordner, name + '-klickbar-bau')
+            os.makedirs(bau, exist_ok=True)
+            klickbar = ['xelatex', '-interaction=nonstopmode',
+                        '-output-directory=' + bau, '-jobname=' + name,
+                        '\\PassOptionsToPackage{klickbar}{dsa5solo}'
+                        '\\input{%s}' % name]
+            for i in range(args.laeufe):
+                if not lauf(klickbar, ordner,
+                            'klickbar setzen, Lauf %d' % (i + 1)):
+                    return 1
+            shutil.copyfile(os.path.join(bau, name + '.pdf'), klickpdf)
+            print('  %s-klickbar.pdf geschrieben' % name, flush=True)
     finally:
         if alt is None:
             os.environ.pop('TEXINPUTS', None)

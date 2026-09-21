@@ -603,6 +603,46 @@ Zusagen des Features im Satz auch eintreten.
 | Rasterlage der Blockzahlen | 30 von 30 bzw. 238 von 238 auf 84 bp + k · 12 bp, Abweichung **0,00 bp** — der erzwungene Doppelseitenumbruch verschiebt das Raster nirgends | `ok` |
 | Behälterfüllung, Lasttest | 10 Doppelseiten, Füllung 189 bis 208 von 236 Einheiten, **keine Leerseite**; von 42 Spalten enden 18 mit einer einzigen freien Rastereinheit | `ok` |
 | Behälterfüllung, Regellauf | 3 Doppelseiten, Füllung 75 bis 136 — eine Leerseite, strukturell unvermeidbar (siehe unten) | `ok` |
+| **Klickbare Fassung**, Sprünge | `solo-klickbar.pdf` des Regellaufs: 47 Links, alle auflösbar, jeder landet auf der Kopfzahl seines Blocks; 69 benannte Ziele. Im gedruckten `solo.pdf` **kein einziger** Link | `ok` |
+| **Klickbare Fassung**, gleicher Satz | gegen `solo.pdf` verglichen: 7 Seiten hier wie dort, 2674 Wörter in gleicher Folge, senkrechte Abweichung **0,0000 bp** | `ok` |
+
+### Die klickbare Fassung ist derselbe Satz
+
+Die Zusage lautet: beide Fassungen tragen dieselben Nummern auf denselben Seiten, man kann
+mitten im Spiel wechseln. Sie hält nur, wenn die Sprungziele den Umbruch nicht anfassen —
+deshalb geben `\dsaSolo@sprung` und `\dsaSolo@ziel` ohne die Paketoption ihr Argument
+unverändert aus, Zeichen für Zeichen.
+
+Gemessen Wort für Wort über beide Abzüge des Regellaufs, 2674 Wörter:
+
+| | Druck gegen klickbar |
+|---|---|
+| Seiten | 7 gegen 7 |
+| Wortfolge | gleich, kein Wort mehr oder weniger |
+| Verschiebung **senkrecht** | 0,0000 bp bei allen 2674 |
+| Verschiebung waagerecht | 138 Wörter, höchstens 0,0250 bp |
+
+Senkrecht null ist der Wert, auf den es hier ankommt: das Grundlinienraster ist unberührt, und
+damit auch die Rasterlage der Blockzahlen eine Zeile weiter oben in dieser Tabelle.
+
+Die waagerechten 0,0250 bp sind 0,0088 mm und liegen unter dem, was `nachmessen.py` mit seinen
+Hundertstelmillimetern überhaupt auflöst. Ursache ist `\hyperlink`, das seine Zahl in eine Box
+setzt; damit entfällt das Kerning zwischen der Zahl und dem Zeichen daneben. Betroffen sind nur
+die verlinkten Zahlen und ihre unmittelbaren Nachbarn.
+
+Das Vorbild dafür ist ein gesetztes, offizielles Solo des Verlags — es liegt nicht im Projekt
+und diente nur zum Ausmessen. Daraus abgelesen, über 420 Links:
+
+| | Vorbild | hier |
+|---|---|---|
+| Link liegt auf | der Zahl, Breite im Mittel 17,3 bp | der Zahl, Breite im Mittel 9,4 bp (zweistellige Nummern) |
+| Ziel | Kopfzahl des Blocks, `/FitH` auf ihre Zeilenhöhe | Kopfzahl des Blocks |
+| Schrift der Zahl | schwarz und fett wie der Fließtext | unverändert `\dsaabschnitt` |
+| Rücksprung | keiner | keiner |
+| Links auf Blockköpfen | keine | keine |
+
+Nichts davon ist ein Maß im Sinne von `MASSE.md`: Der Verlag setzt keine Länge fest, die man
+nachbauen müsste — die Linkbreite ist schlicht die Breite der jeweiligen Zahl.
 
 ### Der Rückhalt ist gemessen, nicht geschätzt
 

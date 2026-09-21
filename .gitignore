@@ -40,6 +40,10 @@ __pycache__/
 beispiel/solo-aus/
 beispiel/*/solo-aus/
 
+# Der Bauordner der klickbaren Fassung. Dort landen aux, log und das PDF
+# des zweiten Satzlaufs; das Ergebnis kopiert das Bauskript daneben.
+*-klickbar-bau/
+
 # Testdaten aus fremder Quelle: nur zum Lasttest des Loesers und zum
 # Messen des Layouts, kein Material dieses Projekts.
 beispiel/solo-test/
