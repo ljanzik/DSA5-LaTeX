@@ -186,7 +186,35 @@ def main():
 
     print('Alles da. Weiter mit:')
     print('    cd beispiel && xelatex beispiel.tex')
+    einleger_hinweis(zg)
     return 0
+
+
+def einleger_hinweis(zg):
+    """Sagt, ob die Grafiken fuer den Einleger im Querformat da sind.
+
+    Geprueft wird nur die Anwesenheit, nicht das Pixelmass: diese Dateien
+    kommen nicht aus dem Baukasten, sondern werden von werkzeuge/einleger.py
+    daraus erzeugt, und ihre Groesse haengt an dessen --ppi und --leiste. Was
+    sich pruefen laesst — die Quellen und die Breite der Schuppenkante —,
+    prueft dieses Werkzeug selbst mit --pruefen.
+    """
+    noetig = ['einleger-flaeche-0', 'einleger-flaeche-1', 'einleger-flaeche-2',
+              'einleger-leiste-oben', 'einleger-leiste-unten']
+    fehlt = []
+    for name in noetig:
+        if not any(os.path.exists(os.path.join(zg, name + e))
+                   for e in ('.jpg', '.jpeg', '.png')):
+            fehlt.append(name)
+    print()
+    if fehlt:
+        print('Fuer den Spielleiterschirm-Einleger fehlen %d von %d Grafiken.'
+              % (len(fehlt), len(noetig)))
+        print('Nur noetig fuer dsa5einleger.cls. Erzeugen mit:')
+        print('    python3 werkzeuge/einleger.py')
+    else:
+        print('Die Grafiken fuer den Einleger sind auch da:')
+        print('    cd beispiel && xelatex einleger.tex')
 
 
 if __name__ == '__main__':

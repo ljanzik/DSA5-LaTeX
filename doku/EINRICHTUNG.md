@@ -122,18 +122,28 @@ herstellen. Dafür braucht es das Werkzeug oder ein Bildbearbeitungsprogramm.
 ```sh
 cd beispiel
 TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
+TEXINPUTS="..;" xelatex einleger.tex     # einmal genügt, kein Inhaltsverzeichnis
 ```
 
 `TEXINPUTS` ist nötig, weil `dsa5latex.cls` eine Ebene höher liegt. Wer die Datei nach
 `TEXMFHOME/tex/latex/dsa5latex/` legt, kann es weglassen. Unter Windows in der PowerShell:
 `$env:TEXINPUTS = "..;"`.
 
-Fünf Beispieldokumente liegen in `beispiel/`: `beispiel.tex` zeigt jedes Element genau einmal
+Sechs Beispieldokumente liegen in `beispiel/`: `beispiel.tex` zeigt jedes Element genau einmal
 (22 Seiten), `raster.tex` nur Text und Raster und baut in Sekunden, `kaesten.tex` alle fünfzehn
 Kästen, `rest.tex` die Seitentypen, `battlemap.tex` eine Battlemap mit Zollraster auf eigenem
-Blatt (A4 bis A1, hoch oder quer) statt einer Heftseite. Jedes weitere Feature bringt seine
-eigenen Beispieldokumente mit — welche das sind, steht in seiner eigenen Doku-Datei aus der
-Feature-Liste.
+Blatt (A4 bis A1, hoch oder quer) statt einer Heftseite, `einleger.tex` jedes Element der
+Einlegerklasse. Jedes weitere Feature bringt seine eigenen Beispieldokumente mit — welche das
+sind, steht in seiner eigenen Doku-Datei aus der Feature-Liste.
+
+Der Einleger braucht einmalig zwei eigene Hintergrundgrafiken. Der Baukasten hat kein
+Querformat; `werkzeuge/einleger.py` erzeugt Pergamentfläche und Zierleiste aus den Buchseiten,
+indem es deren Schuppenkante am Bund um 90 Grad dreht — dasselbe Motiv, das auch der offizielle
+Einleger oben und unten legt:
+
+```sh
+python3 werkzeuge/einleger.py            # nach aufbereiten.py, einmal
+```
 
 Gebraucht werden aus TeX Live oder MiKTeX: `geometry graphicx xcolor fontspec polyglossia tikz
 tcolorbox eso-pic fancyhdr enumitem wrapfig contour changepage intcalc array colortbl textcomp
@@ -148,7 +158,15 @@ microtype hyperref tabularx environ`.
 \documentclass[raster,entwurf]{dsa5latex}      % Bilder als Rahmen, schnelles Bauen
 ```
 
-Die Elementreferenz steht in `doku/ELEMENTE.md`.
+Für den Einleger:
+
+```latex
+\documentclass{dsa5einleger}                    % A4 quer, vier Spalten
+\documentclass[spaltenzeigen]{dsa5einleger}     % Spaltenkanten mitdrucken
+\documentclass[ohnehintergrund]{dsa5einleger}   % ohne Pergament und Leisten
+```
+
+Die Elementreferenz steht in `doku/ELEMENTE.md`, die des Einlegers in `doku/EINLEGER.md`.
 
 ---
 

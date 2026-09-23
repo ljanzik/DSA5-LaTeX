@@ -5,6 +5,11 @@
 
 Vollständiges Beispiel: `beispiel/beispiel.tex`.
 
+**Für den Spielleiterschirm-Einleger gilt eine eigene Klasse und eine eigene Referenz:**
+`dsa5einleger.cls`, dokumentiert in [EINLEGER.md](EINLEGER.md). Sie lädt diese hier, setzt aber
+A4 quer in vier freien Spalten und **ohne Grundlinienraster**. Alles, was unten mit `\dsaRaster`
+zu tun hat, gilt dort nicht; Zahlen, Marken, Aufzählungen und Kästen dagegen schon.
+
 ---
 
 ## Klassenoptionen

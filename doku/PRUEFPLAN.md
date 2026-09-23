@@ -583,6 +583,61 @@ Ziffern tragen. Und eine Zahl ohne Einheit ist in einer TikZ-Koordinate ein Viel
 Achseneinheit: `0.5*\paperheight` wären dort 420 Zentimeter, nicht die halbe Blatthöhe. Beides
 fiel erst am Abzug auf.
 
+## Der Einleger
+
+Eigene Klasse, eigene Quelle: `dsa5einleger.cls`, gemessen am *Universal Spielleiterschirm
+Einleger, Auflage 5*, Seiten 4 bis 6. Die Maße stehen in [MASSE.md](MASSE.md), Abschnitt 8, die
+Anleitung in [EINLEGER.md](EINLEGER.md). Gemessen wurde am Regellauf `beispiel/einleger.pdf`.
+
+| Prüfung | Sollmaß | Quelle | Status |
+|---|---|---|---|
+| Papierformat | 297 × 210 mm | Vorgabe A4 quer | `ok` |
+| Spaltenkanten, alle acht | 31,18 / 217,06 / 229,06 / 414,95 / 426,94 / 612,83 / 624,83 / 810,71 bp | gerechnet aus Rand 31,181 bp und 12 bp Abstand | `ok` |
+| Zeilenhöhe, einzeilig | 14,56 bp | Original, Tabelle „Regeneration“ | `#` |
+| Kopfband, einzeilig | 14,56 bp hoch | dito | `ok` |
+| Kopfband, zweizeilig | 25,36 bp hoch | 14,56 + 10,8 | `ok` |
+| Grundschrift | 9,0 bp auf 10,8 bp | Original, alle Spans | `ok` |
+| Quellenmarke: Höhe, Grundlinie, Innenluft | 8,79 / 1,85 / 3,8 bp | Original, Rechteck und Textlage | — |
+| Farbe der Kopflinie | `#646363` | Original | — |
+| Verlauf des Kopfbands über Pergament | links `#B47D62` | Original | — |
+| Blöcke sitzen auf ihren Spalten | — | `spaltenzeigen` | — |
+| Stimmungsbildseite: Bild randfüllend | 303 × 216 mm | Original, Seiten 1 bis 3 | `ok` |
+| Stimmungsbild: Rahmen nur oben und unten | senkrechte Ränder ohne Leiste | Original, Ränder ausgeschnitten und angesehen | `#` |
+| Stimmungsbild: deckender Zuschnitt statt Streckung | — | `\dsaBildDeckend` | `ok` |
+| Umbau von `dsa5latex` bricht den Abenteuersatz nicht | Textlagen unverändert | Vergleich gegen die alten PDF | `ok` |
+| Kästen der Abenteuerklasse im Querformat | — | ungeprüft, siehe MASSE.md „Was offen ist“ | — |
+
+**Spaltenkanten, gemessen.** Über 322 waagerechte Linienkanten der drei Seiten des Regellaufs ist
+die größte Abweichung von der Sollkante **0,20 bp**; der häufigste Wert ist 0,003 bp, und alle
+außer einer Handvoll liegen unter 0,005 bp.
+
+**Zeilenhöhe, Befund und Behebung.** Gemessen waren zunächst 14,684 statt 14,560 bp je Zeile,
+gleichmäßig über alle Tabellen und alle Spaltentypen. Ursache: `array` rechnet
+`Höhe = rraystretch × (0,7 × Durchschuss + \extrarowheight)`, die Zugabe wird also mit
+gestreckt. Die Klasse hatte sie nach der Multiplikation gerechnet und bekam den gestreckten Anteil
+doppelt — nach acht Zeilen ein Millimeter. Behoben mit `\extrarowheight = \dp\strutbox` und
+`rraystretch = 1,037037`; nachgemessen liegt jede Zeile jetzt auf 14,5600 bp.
+
+**Der Rahmen der Bildseiten, Befund und Behebung.** Die Klasse legte um eine Stimmungsbildseite
+zuerst einen umlaufenden Rahmen. Das war aus einem 100-dpi-Abzug der Originalseiten geschlossen,
+in dem die senkrechten Ränder dunkel wirkten — es war der dunkle Bildinhalt. Ausgeschnitten und
+bei 300 dpi angesehen steht an beiden Rändern der Seiten 1 bis 3 Wiese und Wald bis zur
+Papierkante, keine Leiste. Die Vorgabe ist jetzt der waagerechte Rahmen wie auf den
+Tabellenseiten; `\dsaRahmenRundum` schaltet die seitlichen Leisten zu.
+
+**Der Umbau von `dsa5latex`, gemessen.** Für den Einleger sind vier Bausteine der Abenteuerklasse
+geöffnet worden, statt sie zu verdoppeln: `\dsa@tabellenband` bekam seine Maße in ein eigenes Makro
+`\dsa@bandmasse`, und `L{}` bekam eine Tiefenstütze über die neue Länge `\dsazellstuetze`, die dort
+0 pt ist. Beides ist im Abenteuersatz wirkungslos, und das ist nachgemessen: in `raster.pdf`
+(2 Seiten), `kaesten.pdf` (15) und `rest.pdf` (5) liegt nach dem Umbau **jede** Textzeile auf
+±0,0000 bp ihrer alten Stelle, bei gleicher Zahl und gleichem Inhalt der Spans. `beispiel.pdf` baut
+weiter mit 21 Seiten ohne Fehlermeldung.
+
+**Was hier nicht gilt.** Die Regel „jede Grundlinie auf 84 bp + k × 12 bp“ gilt für den Einleger
+**nicht**. Er hat kein Grundlinienraster, und das ist am Original nachgewiesen: von 371
+Grundlinien treffen gegen ein 12-bp-Raster 17. An seine Stelle tritt die Prüfung der
+Spaltenkanten.
+
 ## Vorgehen
 
 Seriell von oben nach unten, je Block: `probeseiten.tex` bauen, mit `nachmessen.py` die Zahlen
