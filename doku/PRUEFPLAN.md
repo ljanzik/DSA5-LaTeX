@@ -620,6 +620,45 @@ wer sie in einer Messung als Abweichung findet, hat nichts gefunden:
 Das Querformat gehört **nicht** dazu: seine Zeilen sitzen auf demselben Raster, gerechnet ab der
 Papierkante.
 
+### Befund: Kästen im Fließtext haben das Raster verschoben
+
+Nur der Text **im** Kasten hat ein eigenes Maß. Der Text **unter** ihm gehört aufs Raster, und
+dort lag er nicht: gemessen an einem Abzug mit Text vor und nach einem Kasten lagen die Zeilen
+danach **3,44 bp** neben dem Raster (`dsaPergamentMittel`) und **3,97 bp** (`dsaWerteMittel`).
+Im Solo, wo Kästen mitten im Satz stehen, traf es 101 Zeilen und vier Blockzahlen.
+
+Ursache ist die Regel, die in `CLAUDE.md` unter Punkt 2 steht. Die Kästen haben rastertreue
+Höhen — `height=\dsaRaster{24}` —, standen aber als gewöhnliche Box in der vertikalen Liste.
+Eine Box, die höher ist als `\baselineskip`, bekommt keinen Durchschuss davor, TeX fällt auf
+`\lineskip` zurück, und alles darunter liegt daneben. Der Kasten selbst saß richtig, deshalb fiel
+es am Kasten nicht auf.
+
+**Warum es so lange unentdeckt blieb:** `beispiel/kaesten.tex` setzt jeden Kasten allein auf eine
+Seite und schließt mit `\clearpage` ab. Hinter keinem Kasten steht dort eine Zeile, die daneben
+liegen könnte. Erst ein Kasten mitten im Fließtext bringt es ans Licht.
+
+Behoben nach dem Muster von `\dsaProbe`: `\dsa@kastenauf` und `\dsa@kastenzu` setzen jeden Kasten
+in eine Box ohne Höhe und liefern seinen Raum mit `\dsaRasterluft`. Das gilt für alle Kästen aus
+`\dsaKastenNeu` ebenso wie für `dsaKastenFrei` und `dsaWerteFreiPortrait`, die ihre `tcolorbox`
+selbst bauen — die Regel gilt für alle oder für keinen.
+
+Nachgemessen:
+
+| | vorher | nachher |
+|---|---|---|
+| Zeilen nach einem Kasten (Minimaltest) | 3,44 und 3,97 bp daneben | **0,000 bp** |
+| Solo, Fließtext außerhalb der Kästen | 101 von 1061 daneben | **0 von 951** |
+| Solo, Blockzahlen | 4 daneben | **0 von 25** |
+| Kastengrafiken, Größe | — | **unverändert**, alle fünfzehn auf ±0,00 mm |
+| Regellauf `beispiel.tex` | 123 Abweichungen | **123**, dieselben Seiten |
+
+Die Kästen rücken dabei **5,63 mm nach unten**: sie hängen jetzt an der Grundlinie statt an der
+Textoberkante. Das ist die Korrektur, nicht ihr Preis — vorher saß die Oberkante nicht auf dem
+Raster, jetzt auf 0,20 bp genau. Die 0,20 bp sind der durchsichtige Rand der Vorlagengrafik.
+
+Im Regellauf ändert sich nichts, weil dort hinter den Kästen kein Fließtext steht; seine 123
+Abweichungen sind Impressum und Umschlagrückseite und damit die Ausnahmen aus der Tabelle oben.
+
 Alles andere gehört auf das Raster. Der Prüfbefehl dazu:
 
 ```sh

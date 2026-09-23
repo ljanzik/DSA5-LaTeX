@@ -1149,9 +1149,52 @@
 % \dsaKastenNeu{<Umgebung>}{<Breite>}{<Grafikhoehe>}{<Rastereinheiten>}
 %              {<Grafik>}{<weitere Schluessel>}
 \newlength{\dsa@kastenbreite}
+\newsavebox{\dsa@kastenbox}
+
+% Der Kasten steht in einer Box OHNE Hoehe und Tiefe, und seinen Raum
+% liefert \dsaRasterluft -- dieselbe Bauform wie \dsaProbe.
+%
+% Vorher stand er als gewoehnliche Box in der vertikalen Liste. Seine Hoehe
+% ist zwar ein Vielfaches von 12 bp, aber sie ist groesser als
+% \baselineskip, und dann legt TeX keinen Durchschuss mehr davor, sondern
+% faellt auf \lineskip zurueck. Der Kasten sass damit richtig, alles unter
+% ihm nicht mehr: gemessen an einem Abzug mit Text vor und nach dem Kasten
+% lagen die Zeilen danach 3,44 bp neben dem Raster (dsaPergamentMittel) und
+% 3,97 bp (dsaWerteMittel).
+%
+% Aufgefallen ist es lange nicht, weil beispiel/kaesten.tex jeden Kasten
+% allein auf eine Seite setzt und mit \clearpage abschliesst — dort steht
+% hinter keinem Kasten eine Zeile, die daneben liegen koennte. Erst ein
+% Kasten mitten im Fliesstext bringt es ans Licht, und im Solo ist das der
+% Regelfall.
+%
+% Die Box wird erst gesetzt und dann gehoben: \raisebox nimmt ein Argument,
+% keine Umgebung, und tcolorbox laeuft ueber \begin und \end. Deshalb der
+% Umweg ueber die savebox.
+%
+% \dsa@kastenauf und \dsa@kastenzu{<Einheiten>} klammern jeden Kasten der
+% Klasse ein -- die fertigen aus \dsaKastenNeu ebenso wie die beiden in
+% freier Hoehe, die ihre tcolorbox selbst bauen. Die Regel gilt fuer alle
+% oder fuer keinen: ein Kasten, der sie nicht befolgt, verschiebt den Satz
+% unter sich genauso wie vorher.
+% Die Einheitenzahl wird beim Oeffnen gemerkt, weil der Schlussteil einer
+% \newenvironment die Argumente der Umgebung nicht mehr sieht.
+\newcommand*{\dsa@kasteneinheiten}{0}
+
+\newcommand{\dsa@kastenauf}[1]{%
+  \gdef\dsa@kasteneinheiten{#1}%
+  \par\nobreak
+  \begin{lrbox}{\dsa@kastenbox}}
+
+\newcommand{\dsa@kastenzu}{%
+  \end{lrbox}%
+  \noindent\makebox[\linewidth][l]{%
+    \raisebox{-\dsaRaster{\dsa@kasteneinheiten}}[0pt][0pt]{%
+      \usebox{\dsa@kastenbox}}}%
+  \par\dsaRasterluft{\dsa@kasteneinheiten}\nobreak}
 
 \newcommand{\dsaKastenNeu}[6]{%
-  \newtcolorbox{#1}[1][]{%
+  \newtcolorbox{dsa@kasten@#1}[1][]{%
     dsa@grundkasten,
     % Die Breite der Kastengrafik merken: das Portraitmedaillon braucht sie,
     % weil es an der Grafik haengt und nicht am Rahmen.
@@ -1159,7 +1202,13 @@
     width=#2, height=\dsaRaster{#4},
     underlay={\node[anchor=north west, inner sep=0] at (frame.north west)
       {\includegraphics[width=#2,height=#3]{\dsagrafik{#5}}};},
-    #6, ##1}}
+    #6, ##1}%
+  \newenvironment{#1}[1][]{%
+    \dsa@kastenauf{#4}%
+    \begin{dsa@kasten@#1}[##1]%
+  }{%
+    \end{dsa@kasten@#1}%
+    \dsa@kastenzu}}
 
 % ---- Pergament ----
 \dsaKastenNeu{dsaPergamentKlein} {85.5mm} {50.7mm} {12}{pergament-klein} {dsaueberhang=2.5mm}
@@ -1287,6 +1336,7 @@
 % Objekte haben wir nicht." Die fertigen Kaesten sind Bequemlichkeit, nicht
 % das Verfahren.
 \newenvironment{dsaKastenFrei}[2][]{%
+  \dsa@kastenauf{#2}%
   \begin{tcolorbox}[
     dsa@grundkasten,
     width=85.5mm, height=\dsaRaster{#2},
@@ -1306,7 +1356,7 @@
       % Maskenleiste (trenner-maske) gehoert an einen Meisterhinweis, die
       % Buchleiste (trenner-buch) an einen Vorlesetext.
     #1]%
-}{\end{tcolorbox}}
+}{\end{tcolorbox}\dsa@kastenzu}
 % Die Pergamentflaeche wird beschnitten statt gestreckt, und
 % pergament-lang hat auch in der Flaeche eine gezeichnete Kante. Sauberer
 % waere ein Mittelstreifen zum Kacheln.
@@ -1352,7 +1402,7 @@
 % Kopf und Fuss brauchen zusammen 48,40 mm, also 11,43 Rastereinheiten --
 % unter 12 gibt es keine Flaeche mehr fuer die Mitte. Nach oben ist bei 47
 % Schluss, dort ist die Grafik zu Ende; das ist genau dsaWerteGrossPortrait.
-\newtcolorbox{dsaWerteFreiPortrait}[2][]{%
+\newtcolorbox{dsa@kasten@wfp}[2][]{%
   dsa@grundkasten,
   /utils/exec={%
     \setlength{\dsa@kastenbreite}{94.0mm}%
@@ -1390,6 +1440,15 @@
   dsaportraitlage, dsaportraitlagen={17.57mm}{16.62mm},
   left=7mm, right=\dsaportraitfrei, top=8.9mm, bottom=9.6mm,
   #1}
+
+% Wie jeder Kasten der Klasse in eine Box ohne Hoehe, damit der Satz unter
+% ihm auf dem Raster bleibt -- siehe \dsa@kastenauf.
+\newenvironment{dsaWerteFreiPortrait}[2][]{%
+  \dsa@kastenauf{#2}%
+  \begin{dsa@kasten@wfp}[#1]{#2}%
+}{%
+  \end{dsa@kasten@wfp}%
+  \dsa@kastenzu}
 
 %%% ==================================================================
 %%% 14  Vorlesetext, Meistermaske, NSC-Kopf

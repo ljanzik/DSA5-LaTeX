@@ -421,6 +421,12 @@ Formelsatz, und ein Times-Mathefont neben Gentium fällt bei jeder Ziffer auf.
 Die Spalte ist 80,5 mm, die Kästen sind breiter — sie ragen bewusst darüber hinaus, weil der
 Zierrand außerhalb des Textbereichs liegt.
 
+**Jeder Kasten belegt eine ganze Zahl Rastereinheiten und hält damit das Raster**, auch mitten
+im Fließtext: er steht in einer Box ohne Höhe, seinen Raum liefert `\dsaRasterluft`. Die Zeilen
+unter ihm sitzen dadurch wieder auf 84 bp + k · 12 bp. Der Text **im** Kasten folgt weiterhin
+seinem eigenen Raster, das ist gewollt und steht in `PRUEFPLAN.md` unter „Elemente mit eigenem
+Raster“.
+
 | Umgebung | mm | in einer Spalte |
 |---|---|---|
 | `dsaPergamentKlein` | 85,5 × 50,7 | ja, +2,5 mm je Seite |
@@ -484,9 +490,11 @@ Die ersten acht Zeilen bleiben schmal, ab der neunten läuft der Satz auf die vo
 \end{dsaWerteMittelPortrait}
 ```
 
-Gemessen: Zeile 1 bis 8 enden bei 74,9 mm, Zeile 9 und die folgenden bei 101,5 mm; der Kranz
-beginnt bei 76,6 mm und endet 58,9 mm unter der Papierkante; die erste breite Zeile liegt bei
-64,7 mm, also 5,8 mm darunter.
+Gemessen an `beispiel/kaesten.pdf`, **relativ zur Kastenoberkante** statt zur Papierkante — der
+Kasten sitzt je nach Stelle im Satz woanders, seine Innenmaße nicht: der Kranz reicht 34,3 mm
+unter die Oberkante, die erste breite Zeile liegt 39,5 mm darunter, also 5,2 mm unter dem Kranz.
+Die schmalen Zeilen folgen dem Kreis und enden zwischen 73,7 und 82,3 mm, die breiten bei
+96,7 mm.
 
 Acht Zeilen, und zwar so gerechnet: der Kranz reicht 34,9 mm unter die Kastenoberkante, der Text
 beginnt 6 mm darunter, eine Zeile ist 11,4 bp = 4,02 mm hoch. Unter dem Kranz liegen muss nicht die
