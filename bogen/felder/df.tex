@@ -1,0 +1,728 @@
+% felder/df.tex — Koordinatentabelle fuer Heldendokument_druckerfreundlich.pdf
+%
+% Nur Daten, kein Layout. Eine Zeile ein Feld:
+%   \feld{bogen}{name}{x}{y}{breite}{hoehe}{art}
+%
+% bogen  = LOGISCHER Bogen 1..6 (nicht die physische Seite!). Siehe konfig.tex.
+% x, y   = linke OBERE Ecke des Feldes, in mm von der linken oberen Papierecke.
+% art    = text | zahl | mehrzeilig
+%
+% ACHTUNG: Feldnamen muessen dokumentweit EINDEUTIG sein. AcroForm behandelt
+% zwei Felder gleichen Namens als EIN Feld mit gespiegeltem Inhalt.
+% Schema: s<bogen>_<sache>[_<nr>]
+%
+% ACHTUNG: Die Namen muessen in felder/farbe.tex GLEICH lauten, damit eine
+% Heldendatei durch beide Quellfassungen laeuft.
+%
+% ---------------------------------------------------------------------------
+% HERKUNFT DER MASSE
+% Alle Koordinaten dieser Datei sind aus der Quelldatei EXTRAHIERT, nicht am
+% Bildschirm geschaetzt:  bau\linien-lesen.ps1 -Seite 1
+% Die Schreiblinien des Bogens sind waagerechte Pfade, die Kaestchen sind
+% Rechtecke; beide stehen im Content-Stream und wurden von dort gelesen.
+% Nachgeprueft mit bau\felder-pruefen.ps1 (Soll gegen /Rect im Ausgabe-PDF)
+% und mit bau\rendern.ps1 (Sichtprobe gegen den Originalbogen).
+%
+% Ausnahme, ausdruecklich: die x-Startwerte und Breiten der Zeilenfelder.
+% Die Linie laeuft unter der Beschriftung durch, das Feld darf erst dahinter
+% beginnen. Wo die Beschriftung endet, ist am gerenderten Bogen abgelesen
+% (auf etwa einen halben Millimeter). Fuer Text ist das unkritisch; wer es
+% genauer braucht, liest die Textpositionen aus dem Content-Stream nach.
+% ---------------------------------------------------------------------------
+%
+% Copyright 2026 Leif Janzik. Apache License 2.0.
+
+% ===========================================================================
+% BOGEN 1 — Persönliche Daten
+% ===========================================================================
+
+% --- Linke Spalte ----------------------------------------------------------
+% Schreiblinien: x 13.0, Breite 60.3, y 37.3 45.1 52.9 60.7 68.4 76.2 84.3 92.1
+% Beschriftung endet spaetestens bei 33 mm ("Sozialstatus"), Feld ab 35 mm.
+% Feldhoehe 5.5 mm, Unterkante auf der Linie.
+\feld{1}{s1_name}          {35}{31.8}{38}{5.5}{text}
+\feld{1}{s1_geschlecht}    {35}{39.6}{38}{5.5}{text}
+\feld{1}{s1_spezies}       {35}{47.4}{38}{5.5}{text}
+\feld{1}{s1_kultur}        {35}{55.2}{38}{5.5}{text}
+\feld{1}{s1_profession}    {35}{62.9}{38}{5.5}{text}
+\feld{1}{s1_sozialstatus}  {35}{70.7}{38}{5.5}{text}
+\feld{1}{s1_heimatort}     {35}{78.8}{38}{5.5}{text}
+\feld{1}{s1_familie}       {35}{86.6}{38}{5.5}{text}
+
+% --- Rechte Spalte ---------------------------------------------------------
+% Schreiblinien: x 135.3, Breite 60.3, dieselben acht y-Werte.
+% Beschriftung endet spaetestens bei 169.4 mm ("Alter / Geburtsdatum").
+% Die beiden letzten Zeilen sind unbeschriftet — dort steht die ganze Breite
+% zur Verfuegung.
+\feld{1}{s1_alter}         {171}{31.8}{24}{5.5}{text}
+\feld{1}{s1_haarfarbe}     {171}{39.6}{24}{5.5}{text}
+\feld{1}{s1_augenfarbe}    {171}{47.4}{24}{5.5}{text}
+\feld{1}{s1_groesse}       {171}{55.2}{24}{5.5}{text}
+\feld{1}{s1_gewicht}       {171}{62.9}{24}{5.5}{text}
+\feld{1}{s1_charakter_1}   {171}{70.7}{24}{5.5}{text}
+\feld{1}{s1_charakter_2}   {137}{78.8}{58}{5.5}{text}
+\feld{1}{s1_charakter_3}   {137}{86.6}{58}{5.5}{text}
+
+% --- Abgeleitete Werte: Wert / Bonus-Malus / Zukauf / Max ------------------
+% Kaestchen 7.1 x 7.1 mm. Spalten-x 160.6 169.4 178.1 186.8.
+% Reihen-y 125 (LeP) 139.8 (AsP) 154.6 (KaP) 169.4 (SK) 184.1 (ZK) 198.9 (AW).
+% Zukauf ist bei SK, ZK und AW im Original durchgestrichen — dort kein Feld.
+
+\newcommand{\abgeleiteterwert}[3]{% kurzname y zukauf(0/1)
+  \feld{1}{s1_#1_wert}  {160.6}{#2}{7.1}{7.1}{zahl}
+  \feld{1}{s1_#1_bonus} {169.4}{#2}{7.1}{7.1}{zahl}
+  \ifnum#3=1 \feld{1}{s1_#1_zukauf}{178.1}{#2}{7.1}{7.1}{zahl}\fi
+  \feld{1}{s1_#1_max}   {186.8}{#2}{7.1}{7.1}{zahl}}
+
+\abgeleiteterwert{lep}{125}{1}
+\abgeleiteterwert{asp}{139.8}{1}
+\abgeleiteterwert{kap}{154.6}{1}
+\abgeleiteterwert{sk}{169.4}{0}
+\abgeleiteterwert{zk}{184.1}{0}
+\abgeleiteterwert{aw}{198.9}{0}
+
+% --- Schicksalspunkte ------------------------------------------------------
+% Drei Kaestchen 7.1 x 6.0 mm bei y 231.4.
+\feld{1}{s1_schips_wert} {129.8}{231.4}{7.1}{6}{zahl}
+\feld{1}{s1_schips_bonus}{138.5}{231.4}{7.1}{6}{zahl}
+\feld{1}{s1_schips_max}  {147.3}{231.4}{7.1}{6}{zahl}
+
+% ===========================================================================
+% STAND: alle sechs Boegen eingemessen
+% ===========================================================================
+% Reihenfolge in dieser Datei ist die des Einmessens, nicht die der Seiten:
+% Bogen 1, dann 3, dann 4 und 5, dann 6, dann 2.
+%
+% Wie eingemessen wurde, falls eine Seite nachgearbeitet werden muss:
+%   1. bau\linien-lesen.ps1 -Seite <n>   erster Ueberblick; legt das
+%      entpackte PDF unter %TEMP% ab
+%   2. python bau/geometrie.py <jenes.pdf> --waag --senk --rechteck --text
+%      Der genaue Parser. --text liefert die Grundlinien der eingedruckten
+%      Beschriftungen und damit exakte Zeilenanker.
+%   3. Muster in ein Zeilenmakro fassen, nicht Feld fuer Feld eintragen.
+%      Vorbilder: \ktlinks, \nahkampfzeile, \talentlinks.
+%   4. bau\felder-pruefen.ps1            Soll gegen /Rect, Namen eindeutig?
+%   5. bau\rendern.ps1                   Sichtprobe gegen das Original
+%
+% Wie die Boegen gezeichnet sind, aus dieser Arbeit:
+%   - Schreiblinien sind waagerechte Pfade; Kaestchen sind Rechtecke.
+%   - SPALTENgrenzen von Tabellen sind meist die Kanten der Schattierungs-
+%     rechtecke, dazu einzelne Striche.
+%   - Die Eigenschaftsleiste MU..KK und das Zellenraster der Eigenschafts-
+%     modifikationen stecken in Grafiken bzw. Form-XObjects mit eigenem
+%     Koordinatensystem. Beides ist NICHT extrahierbar und am Bild
+%     abgelesen; an den betreffenden Stellen steht das dabei.
+%
+% Offen bleibt felder/farbe.tex - die Farbfassung hat eigene Koordinaten,
+% aber dieselben Feldnamen.
+
+% ===========================================================================
+% BOGEN 3 — Kampfwerte
+% ===========================================================================
+% Vollstaendig eingemessen mit python bau/geometrie.py und sichtgeprueft:
+% Kopfwerte, Kampftechniken, Kampfsonderfertigkeiten, die vier Waffen-
+% und Ruestungstabellen, Lebensenergie, Zustandsmatrix.
+
+% --- Kopfwerte GS LE AW INI SK ZK -----------------------------------------
+% Sechs Kästchen 11.9 x 6 mm bei y 19, Abstand 17.25 mm.
+\newcommand{\kopfwert}[2]{\feld{3}{s3_#1}{#2}{19}{11.9}{6}{zahl}}
+\kopfwert{gs}{98.6}
+\kopfwert{le}{115.9}
+\kopfwert{aw}{133.1}
+\kopfwert{ini}{150.4}
+\kopfwert{sk}{167.7}
+\kopfwert{zk}{184.9}
+
+% --- Kampftechniken --------------------------------------------------------
+% Zwei Spalten, je acht Zeilen. Zeilen-y: 40.4 45.2 50 54.7 59.5 64.3 69.1 73.8,
+% Zellenhöhe 4.8 mm.
+% Spaltengrenzen links:  62.2 | 73.2 | 83.9 | 94.6 | 105.2
+% Spaltengrenzen rechts: 154.2 | 165.3 | 176 | 186.6 | 196.8
+% Die erste Spalte (StF) ist eingedruckt — dort kein Feld. Ebenso
+% Kampftechnik und Leiteigenschaft. Felder nur für KTW, AT/FK und PA.
+%
+% PA ist bei VIER Techniken durchgestrichen (Armbrüste, Bögen, Kettenwaffen,
+% Wurfwaffen) — dort kein Feld. Letztes Argument: 1 = PA-Feld, 0 = kein PA.
+
+% Nicht rechnen: \the\dimexpr haengt die Einheit mit an ("83.9ptmm") und
+% bricht die tikz-Koordinate. Die Spalten-x stehen je Tabellenhaelfte fest.
+
+\newcommand{\ktlinks}[3]{% slug y pa(0/1)
+  \feld{3}{s3_kt_#1_ktw} {73.2}{#2}{10.7}{4.8}{zahl}
+  \feld{3}{s3_kt_#1_atfk}{83.9}{#2}{10.7}{4.8}{zahl}
+  \ifnum#3=1 \feld{3}{s3_kt_#1_pa}{94.6}{#2}{10.7}{4.8}{zahl}\fi}
+
+\newcommand{\ktrechts}[3]{% slug y pa(0/1)
+  \feld{3}{s3_kt_#1_ktw} {165.3}{#2}{10.7}{4.8}{zahl}
+  \feld{3}{s3_kt_#1_atfk}{176}{#2}{10.7}{4.8}{zahl}
+  \ifnum#3=1 \feld{3}{s3_kt_#1_pa}{186.6}{#2}{10.7}{4.8}{zahl}\fi}
+
+% Welche PA-Zellen durchgestrichen sind, ist an den DIAGONALEN im Content-
+% Stream abgelesen, nicht am Bild: bei 150 dpi verschmelzen die X von
+% Armbrueste und Boegen optisch, und Boegen bekam zuerst faelschlich ein
+% PA-Feld. Vier sind es: Armbrueste, Boegen, Kettenwaffen, Wurfwaffen.
+\ktlinks{armbrueste}  {40.4}{0}
+\ktlinks{boegen}      {45.2}{0}
+\ktlinks{dolche}      {50}{1}
+\ktlinks{fechtwaffen} {54.7}{1}
+\ktlinks{hiebwaffen}  {59.5}{1}
+\ktlinks{kettenwaffen}{64.3}{0}
+\ktlinks{lanzen}      {69.1}{1}
+\ktlinks{raufen}      {73.8}{1}
+
+% Die letzten zwei Zeilen rechts sind unbeschriftet und stehen für weitere
+% Techniken frei.
+\ktrechts{schilde}      {40.4}{1}
+\ktrechts{schwerter}    {45.2}{1}
+\ktrechts{stangenwaffen}{50}{1}
+\ktrechts{wurfwaffen}   {54.7}{0}
+\ktrechts{zhhiebwaffen} {59.5}{1}
+\ktrechts{zhschwerter}  {64.3}{1}
+\ktrechts{frei_1}       {69.1}{1}
+\ktrechts{frei_2}       {73.8}{1}
+
+% --- Kampfsonderfertigkeiten ----------------------------------------------
+% Vier Schreiblinien bei y 91.3 97.7 104.2 110.6, x 18.9, Breite 173.4.
+% Auf der ersten Linie steht die Beschriftung bis etwa x 58 (abgelesen).
+\feld{3}{s3_ksf_1}{60}{85.8}{132}{5.5}{text}
+\feld{3}{s3_ksf_2}{20}{92.2}{172}{5.5}{text}
+\feld{3}{s3_ksf_3}{20}{98.7}{172}{5.5}{text}
+\feld{3}{s3_ksf_4}{20}{105.1}{172}{5.5}{text}
+
+% --- Lebensenergie ---------------------------------------------------------
+% Max 7.1 x 6 bei (24.1, 242.7), Aktuell 63.8 x 6 bei (35.3, 242.7),
+% vier Schwellenkästchen 11.9 x 6 bei y 250.2, x 24.1 45.2 66.3 87.4.
+\feld{3}{s3_lep_max}    {24.1}{242.7}{7.1}{6}{zahl}
+\feld{3}{s3_lep_aktuell}{35.3}{242.7}{63.8}{6}{text}
+\feld{3}{s3_lep_schwelle_1}{24.1}{250.2}{11.9}{6}{zahl}
+\feld{3}{s3_lep_schwelle_2}{45.2}{250.2}{11.9}{6}{zahl}
+\feld{3}{s3_lep_schwelle_3}{66.3}{250.2}{11.9}{6}{zahl}
+\feld{3}{s3_lep_schwelle_4}{87.4}{250.2}{11.9}{6}{zahl}
+
+
+% --- Nahkampfwaffen --------------------------------------------------------
+% Spaltengrenzen: 13.2 | 47.1 | 70.0 | 94.3 | 106.2 | 119.4 | 138.2 | 155.0
+%                 | 166.3 | 176.7 | 196.9
+% Zeilen-y: 136.9 141.7 146.6 151.1, Zellenhöhe rund 4.8 mm.
+% Felder 0.5 mm eingerückt, damit Text die Trennlinie nicht berührt.
+
+% ACHTUNG: Die erste Spalte beginnt NICHT am Rahmen. Links davor sitzt das
+% Emblem der Tabelle; die eingedruckte Kopfzeile "Waffen" bzw. "Ruestung"
+% beginnt deshalb erst bei x 25.4..25.9 (gemessen). Ein Feld am Rahmen liegt
+% hinter dem Emblem und ist unlesbar. Felder starten daher bei 26.5.
+\newcommand{\nahkampfzeile}[2]{% nr y
+  \feld{3}{s3_nk_#1_waffe}     {26.5}{#2}{20.1}{4.5}{text}
+  \feld{3}{s3_nk_#1_technik}   {47.6}{#2}{21.9}{4.5}{text}
+  \feld{3}{s3_nk_#1_schaden}   {70.5}{#2}{22.8}{4.5}{text}
+  \feld{3}{s3_nk_#1_tp_basis}  {94.8}{#2}{10.4}{4.5}{zahl}
+  \feld{3}{s3_nk_#1_tp_gesamt} {106.7}{#2}{11.7}{4.5}{zahl}
+  \feld{3}{s3_nk_#1_mod}       {119.9}{#2}{17.3}{4.5}{text}
+  \feld{3}{s3_nk_#1_reichweite}{138.7}{#2}{15.3}{4.5}{text}
+  \feld{3}{s3_nk_#1_at}        {155.5}{#2}{9.8}{4.5}{zahl}
+  \feld{3}{s3_nk_#1_pa}        {166.8}{#2}{8.9}{4.5}{zahl}
+  \feld{3}{s3_nk_#1_gewicht}   {177.2}{#2}{18.7}{4.5}{text}}
+
+\nahkampfzeile{1}{137.1}
+\nahkampfzeile{2}{141.9}
+\nahkampfzeile{3}{146.8}
+\nahkampfzeile{4}{151.3}
+
+% --- Fernkampfwaffen -------------------------------------------------------
+% Spaltengrenzen: 13.1 | 47.0 | 69.9 | 91.7 | 104.4 | 128.9 | 155.8 | 176.6 | 196.9
+% Zeilen-y: 173.3 178.1 183.0 187.5
+
+\newcommand{\fernkampfzeile}[2]{% nr y
+  \feld{3}{s3_fk_#1_waffe}     {26.5}{#2}{20}{4.5}{text}
+  \feld{3}{s3_fk_#1_technik}   {47.5}{#2}{21.9}{4.5}{text}
+  \feld{3}{s3_fk_#1_ladezeit}  {70.4}{#2}{20.8}{4.5}{text}
+  \feld{3}{s3_fk_#1_tp}        {92.2}{#2}{11.7}{4.5}{zahl}
+  \feld{3}{s3_fk_#1_reichweite}{104.9}{#2}{23.5}{4.5}{text}
+  \feld{3}{s3_fk_#1_fernkampf} {129.4}{#2}{25.4}{4.5}{text}
+  \feld{3}{s3_fk_#1_munition}  {156.3}{#2}{19.3}{4.5}{text}
+  \feld{3}{s3_fk_#1_gewicht}   {177.1}{#2}{18.8}{4.5}{text}}
+
+\fernkampfzeile{1}{173.5}
+\fernkampfzeile{2}{178.3}
+\fernkampfzeile{3}{183.2}
+\fernkampfzeile{4}{187.7}
+
+% --- Rüstungen -------------------------------------------------------------
+% Spaltengrenzen: 13.1 | 47.0 | 55.9 | 64.7 | 83.0 | 97.0 | 112.2
+% Zeilen-y: 209.2 213.9 218.8
+
+\newcommand{\ruestungszeile}[2]{% nr y
+  \feld{3}{s3_ru_#1_name}   {26.5}{#2}{20}{4.5}{text}
+  \feld{3}{s3_ru_#1_rs}     {47.5}{#2}{7.9}{4.5}{zahl}
+  \feld{3}{s3_ru_#1_be}     {56.4}{#2}{7.8}{4.5}{zahl}
+  \feld{3}{s3_ru_#1_abzuege}{65.2}{#2}{17.3}{4.5}{text}
+  \feld{3}{s3_ru_#1_gewicht}{83.5}{#2}{13}{4.5}{text}
+  \feld{3}{s3_ru_#1_wo}     {97.5}{#2}{13.7}{4.5}{text}}
+
+\ruestungszeile{1}{209.4}
+\ruestungszeile{2}{214.1}
+\ruestungszeile{3}{219}
+
+% --- Schild / Parierwaffe --------------------------------------------------
+% Spaltengrenzen: 114.9 | 142.2 | 159.2 | 176.6 | 196.9
+% Zeilen-y: 209.3 214.0 218.9
+
+\newcommand{\schildzeile}[2]{% nr y
+  \feld{3}{s3_sch_#1_name}    {115.4}{#2}{26.3}{4.5}{text}
+  \feld{3}{s3_sch_#1_struktur}{142.7}{#2}{16}{4.5}{zahl}
+  \feld{3}{s3_sch_#1_mod}     {159.7}{#2}{16.4}{4.5}{text}
+  \feld{3}{s3_sch_#1_gewicht} {177.1}{#2}{18.8}{4.5}{text}}
+
+\schildzeile{1}{209.5}
+\schildzeile{2}{214.2}
+\schildzeile{3}{219.1}
+
+% --- Zustandsmatrix --------------------------------------------------------
+% Elf Zeilen. Die Feldnamen sind INHALTLICH, nicht nach Position: die
+% Farbfassung hat nur sieben Zustaende, und positionsbasierte Namen wuerden
+% dort Berauscht auf Betaeubung abbilden. Zehn beschriftet: Belastung, Berauscht, Betäubung, Entrückung,
+% Furcht, Paralyse, Schmerz, Trance, Überanstrengung, Verwirrung; die letzte
+% ist frei), vier Stufen. Die Beschriftungsspalte ist eingedruckt.
+% Zeilen-y: 237.3 241.8 246.1 250.2 254.5 258.8 262.9 267.2 271.5 275.7 279.9
+% Stufenspalten: 146.1 | 157.9 | 167.8 | 179.6 | 196.9
+%
+% ACHTUNG: Nur die Blöcke 146.1..157.9 und 167.8..179.6 sind gemessen
+% (Schattierungsrechtecke). Die Grenzen 157.9 und 179.6 folgen daraus, sind
+% aber nicht selbst belegt — an der Sichtprobe kontrolliert, nicht extrahiert.
+
+\newcommand{\zustandszeile}[2]{% nr y
+  \feld{3}{s3_zu_#1_stufe1}{146.6}{#2}{10.8}{4}{zahl}
+  \feld{3}{s3_zu_#1_stufe2}{158.4}{#2}{8.9}{4}{zahl}
+  \feld{3}{s3_zu_#1_stufe3}{168.3}{#2}{10.8}{4}{zahl}
+  \feld{3}{s3_zu_#1_stufe4}{180.1}{#2}{16.3}{4}{zahl}}
+
+\zustandszeile{belastung}{237.5}
+\zustandszeile{berauscht}{242}
+\zustandszeile{betaeubung}{246.3}
+\zustandszeile{entrueckung}{250.4}
+\zustandszeile{furcht}{254.7}
+\zustandszeile{paralyse}{259}
+\zustandszeile{schmerz}{263.1}
+\zustandszeile{trance}{267.4}
+\zustandszeile{ueberanstrengung}{271.7}
+\zustandszeile{verwirrung}{275.9}
+\zustandszeile{frei}{280.1}
+
+% --- Bogen 1, Nachtrag: die acht Eigenschaften ----------------------------
+% Die Leiste MU KL IN CH FF GE KO KK ist im Bogen eine GRAFIK, kein Vektor-
+% raster — geometrie.py findet dort nichts. Die Zellgrenzen sind deshalb am
+% gerenderten Bogen abgelesen. Damit der unvermeidliche Fehler von etwa einem
+% Millimeter nicht auffaellt, sitzt das Feld mit Abstand in der Zelle
+% (15.5 mm breit in einer 19.5 mm breiten Zelle).
+% Die Leiste kommt auf Bogen 4 und 5 gleich wieder vor, dort mit eigenen
+% Feldnamen — wer sie spiegeln will, gibt ihnen denselben Namen; AcroForm
+% verknuepft sie dann. Bewusst nicht getan: gleiche Namen sind sonst der
+% haeufigste Fehler.
+
+\newcommand{\eigenschaftsleiste}[2]{% bogen ycenter
+  % Die acht Eigenschaften zaehlen bei -OhneLeere nicht als Inhalt:
+  % sonst gilt jeder Bogen als gefuellt, sobald sie gesetzt sind.
+  \zaehltnicht{s#1_mu}
+  \zaehltnicht{s#1_kl}
+  \zaehltnicht{s#1_in}
+  \zaehltnicht{s#1_ch}
+  \zaehltnicht{s#1_ff}
+  \zaehltnicht{s#1_ge}
+  \zaehltnicht{s#1_ko}
+  \zaehltnicht{s#1_kk}
+  \feld{#1}{s#1_mu}{27.5}{#2}{15.5}{6}{zahl}
+  \feld{#1}{s#1_kl}{47}{#2}{15.5}{6}{zahl}
+  \feld{#1}{s#1_in}{66.6}{#2}{15.5}{6}{zahl}
+  \feld{#1}{s#1_ch}{86.1}{#2}{15.5}{6}{zahl}
+  \feld{#1}{s#1_ff}{105.6}{#2}{15.5}{6}{zahl}
+  \feld{#1}{s#1_ge}{125.2}{#2}{15.5}{6}{zahl}
+  \feld{#1}{s#1_ko}{144.7}{#2}{15.5}{6}{zahl}
+  \feld{#1}{s#1_kk}{164.2}{#2}{15.5}{6}{zahl}}
+
+\eigenschaftsleiste{1}{104}
+
+% ===========================================================================
+% BOGEN 4 — Liturgien & Zeremonien
+% ===========================================================================
+% Gemessen mit python bau/geometrie.py, Ausnahme Eigenschaftsleiste (s. o.).
+% Bogen 5 (Zauber & Rituale) ist baugleich — dieselben Maße, andere Namen.
+
+\feld{4}{s4_kap_max}    {133.8}{20.4}{17.4}{7.8}{zahl}
+\feld{4}{s4_kap_aktuell}{155.5}{20.3}{41.3}{7.9}{text}
+
+\eigenschaftsleiste{4}{43}
+
+% --- Die große Tabelle -----------------------------------------------------
+% Elf Spalten, zwanzig Zeilen. Spaltengrenzen:
+%   13.0 | 50.3 | 64.0 | 68.6 | 81.5 | 96.7 | 113.2 | 128.7 | 147.7 | 155.1
+%   | 191.7 | 196.8
+% Zeilenoberkanten: 64.2 69.0 73.8 78.4 83.0 87.9 92.4 97.0 101.9 106.4
+%   111.0 115.9 120.5 125.0 129.9 134.5 139.0 143.9 148.5 153.1
+% Zellhöhe rund 4.6 mm, Felder 0.5 mm eingerückt.
+% Nichts in dieser Tabelle ist eingedruckt — jede Spalte braucht Felder.
+
+\newcommand{\liturgiezeile}[2]{% nr y
+  \feld{4}{s4_lit_#1_name}       {14.2}{#2}{35.6}{4.2}{text}
+  \feld{4}{s4_lit_#1_probe}      {50.8}{#2}{12.7}{4.2}{text}
+  \feld{4}{s4_lit_#1_fw}         {64.2}{#2}{4.2}{4.2}{zahl}
+  \feld{4}{s4_lit_#1_kosten}     {69.1}{#2}{11.9}{4.2}{text}
+  \feld{4}{s4_lit_#1_dauer}      {82}{#2}{14.2}{4.2}{text}
+  \feld{4}{s4_lit_#1_reichweite} {97.2}{#2}{15.5}{4.2}{text}
+  \feld{4}{s4_lit_#1_wirkdauer}  {113.7}{#2}{14.5}{4.2}{text}
+  \feld{4}{s4_lit_#1_aspekt}     {129.2}{#2}{18}{4.2}{text}
+  \feld{4}{s4_lit_#1_stf}        {148.2}{#2}{6.4}{4.2}{text}
+  \feld{4}{s4_lit_#1_wirkung}    {155.6}{#2}{35.6}{4.2}{text}
+  \feld{4}{s4_lit_#1_seite}      {192.2}{#2}{4.1}{4.2}{zahl}}
+
+\foreach \nr [count=\i] in {64.4, 69.2, 74, 78.6, 83.2, 88.1, 92.6, 97.2,
+                            102.1, 106.6, 111.2, 116.1, 120.7, 125.2, 130.1,
+                            134.7, 139.2, 144.1, 148.7, 153.3}{%
+  \liturgiezeile{\i}{\nr}}
+
+% --- Tradition / Leiteigenschaft / Aspekt / Wohlgefällige Talente ---------
+% Schreiblinien y 171.3 179.1 187.1 194.9 202.9, x 16.6.
+% Die Zeilenlängen sind unterschiedlich: das runde Emblem in der Blattmitte
+% beschneidet die letzte Zeile der oberen und die ersten Zeilen der unteren
+% Kästen. Die gemessenen Breiten beruecksichtigen das schon.
+% Beschriftungsenden abgelesen: Tradition 31.5, Leiteigenschaft 41.5,
+% Aspekt 28, Wohlgefällige Talente 52.5.
+\feld{4}{s4_tradition}       {33}{165.8}{66.6}{5.5}{text}
+\feld{4}{s4_leiteigenschaft} {43}{173.6}{56.6}{5.5}{text}
+\feld{4}{s4_aspekt}          {29.5}{181.6}{70.1}{5.5}{text}
+\feld{4}{s4_talente_1}       {54}{189.4}{45.6}{5.5}{text}
+\feld{4}{s4_talente_2}       {17.2}{197.4}{71.3}{5.5}{text}
+
+% --- Zeremonialgegenstand --------------------------------------------------
+% Beschriftung oben RECHTS, ab x 154. Erste Zeile also nur bis dahin.
+\feld{4}{s4_zeremonialgegenstand_1}{111.1}{165.7}{42.4}{5.5}{text}
+\feld{4}{s4_zeremonialgegenstand_2}{111.1}{173.5}{81.8}{5.5}{text}
+\feld{4}{s4_zeremonialgegenstand_3}{111.3}{181.6}{81.8}{5.5}{text}
+\feld{4}{s4_zeremonialgegenstand_4}{111.2}{189.4}{81.8}{5.5}{text}
+\feld{4}{s4_zeremonialgegenstand_5}{121.4}{197.4}{71.6}{5.5}{text}
+
+% --- Klerikale Sonderfertigkeiten -----------------------------------------
+% Beschriftung auf der ersten Zeile, endet bei etwa x 62 (abgelesen).
+\feld{4}{s4_ksf_1}{63}{218.5}{22.3}{5.5}{text}
+\feld{4}{s4_ksf_2}{17.1}{226.2}{74}{5.5}{text}
+\feld{4}{s4_ksf_3}{17.1}{234}{82.1}{5.5}{text}
+\feld{4}{s4_ksf_4}{17.1}{241.8}{82.1}{5.5}{text}
+\feld{4}{s4_ksf_5}{17.3}{248.9}{82.1}{5.5}{text}
+\feld{4}{s4_ksf_6}{16.7}{256.6}{82.1}{5.5}{text}
+\feld{4}{s4_ksf_7}{16.7}{264.4}{82.1}{5.5}{text}
+\feld{4}{s4_ksf_8}{16.7}{272.2}{82.1}{5.5}{text}
+
+% --- Segnungen -------------------------------------------------------------
+% Beschriftung oben RECHTS, ab x 176.
+\feld{4}{s4_segnungen_1}{124.5}{218.3}{51}{5.5}{text}
+\feld{4}{s4_segnungen_2}{118.5}{226.1}{74.5}{5.5}{text}
+\feld{4}{s4_segnungen_3}{111}{233.9}{82.1}{5.5}{text}
+\feld{4}{s4_segnungen_4}{111}{241.6}{82.1}{5.5}{text}
+\feld{4}{s4_segnungen_5}{111.1}{248.7}{82.1}{5.5}{text}
+\feld{4}{s4_segnungen_6}{110.5}{256.4}{82.1}{5.5}{text}
+\feld{4}{s4_segnungen_7}{110.5}{264.2}{82.1}{5.5}{text}
+\feld{4}{s4_segnungen_8}{110.5}{272}{82.1}{5.5}{text}
+
+% ===========================================================================
+% BOGEN 5 — Zauber & Rituale
+% ===========================================================================
+% Baugleich mit Bogen 4. Das ist nicht uebernommen, sondern nachgemessen:
+% geometrie.py liefert fuer Seite 5 dieselben Rechtecke und dieselben zwanzig
+% Zeilenlinien wie fuer Seite 4. Andere Beschriftungen, gleiche Geometrie.
+
+\feld{5}{s5_asp_max}    {133.8}{20.4}{17.4}{7.8}{zahl}
+\feld{5}{s5_asp_aktuell}{155.5}{20.3}{41.3}{7.9}{text}
+
+\eigenschaftsleiste{5}{43}
+
+% --- Die große Tabelle -----------------------------------------------------
+% Spalten wie Bogen 4; nur die Kopfzeilen heissen anders (Zauber/Ritual,
+% Zauberdauer, Merkmal statt Liturgie/Zeremonie, Liturgiedauer, Aspekt).
+
+\newcommand{\zauberzeile}[2]{% nr y
+  \feld{5}{s5_zau_#1_name}       {14.2}{#2}{35.6}{4.2}{text}
+  \feld{5}{s5_zau_#1_probe}      {50.8}{#2}{12.7}{4.2}{text}
+  \feld{5}{s5_zau_#1_fw}         {64.2}{#2}{4.2}{4.2}{zahl}
+  \feld{5}{s5_zau_#1_kosten}     {69.1}{#2}{11.9}{4.2}{text}
+  \feld{5}{s5_zau_#1_dauer}      {82}{#2}{14.2}{4.2}{text}
+  \feld{5}{s5_zau_#1_reichweite} {97.2}{#2}{15.5}{4.2}{text}
+  \feld{5}{s5_zau_#1_wirkdauer}  {113.7}{#2}{14.5}{4.2}{text}
+  \feld{5}{s5_zau_#1_merkmal}    {129.2}{#2}{18}{4.2}{text}
+  \feld{5}{s5_zau_#1_stf}        {148.2}{#2}{6.4}{4.2}{text}
+  \feld{5}{s5_zau_#1_wirkung}    {155.6}{#2}{35.6}{4.2}{text}
+  \feld{5}{s5_zau_#1_seite}      {192.2}{#2}{4.1}{4.2}{zahl}}
+
+\foreach \nr [count=\i] in {64.4, 69.2, 74, 78.6, 83.2, 88.1, 92.6, 97.2,
+                            102.1, 106.6, 111.2, 116.1, 120.7, 125.2, 130.1,
+                            134.7, 139.2, 144.1, 148.7, 153.3}{%
+  \zauberzeile{\i}{\nr}}
+
+% --- Tradition / Leiteigenschaft / Merkmal --------------------------------
+% Nur drei beschriftete Zeilen, dann zwei freie.
+\feld{5}{s5_tradition}      {33}{165.8}{66.6}{5.5}{text}
+\feld{5}{s5_leiteigenschaft}{43}{173.6}{56.6}{5.5}{text}
+\feld{5}{s5_merkmal}        {33}{181.6}{66.6}{5.5}{text}
+\feld{5}{s5_frei_1}         {17.2}{189.4}{82.4}{5.5}{text}
+\feld{5}{s5_frei_2}         {17.2}{197.4}{71.3}{5.5}{text}
+
+% --- Traditionsartefakt ----------------------------------------------------
+% Beschriftung oben RECHTS, ab x 161.7 (abgelesen).
+\feld{5}{s5_artefakt_1}{111.1}{165.7}{50}{5.5}{text}
+\feld{5}{s5_artefakt_2}{111.1}{173.5}{81.8}{5.5}{text}
+\feld{5}{s5_artefakt_3}{111.3}{181.6}{81.8}{5.5}{text}
+\feld{5}{s5_artefakt_4}{111.2}{189.4}{81.8}{5.5}{text}
+\feld{5}{s5_artefakt_5}{121.4}{197.4}{71.6}{5.5}{text}
+
+% --- Magische Sonderfertigkeiten ------------------------------------------
+% Beschriftung auf der ersten Zeile, endet bei etwa x 62 (abgelesen).
+\feld{5}{s5_msf_1}{63}{218.5}{22.3}{5.5}{text}
+\feld{5}{s5_msf_2}{17.1}{226.2}{74}{5.5}{text}
+\feld{5}{s5_msf_3}{17.1}{234}{82.1}{5.5}{text}
+\feld{5}{s5_msf_4}{17.1}{241.8}{82.1}{5.5}{text}
+\feld{5}{s5_msf_5}{17.3}{248.9}{82.1}{5.5}{text}
+\feld{5}{s5_msf_6}{16.7}{256.6}{82.1}{5.5}{text}
+\feld{5}{s5_msf_7}{16.7}{264.4}{82.1}{5.5}{text}
+\feld{5}{s5_msf_8}{16.7}{272.2}{82.1}{5.5}{text}
+
+% --- Zaubertricks ----------------------------------------------------------
+% Beschriftung oben RECHTS, ab x 172.7 (abgelesen).
+\feld{5}{s5_tricks_1}{124.5}{218.3}{47.5}{5.5}{text}
+\feld{5}{s5_tricks_2}{118.5}{226.1}{74.5}{5.5}{text}
+\feld{5}{s5_tricks_3}{111}{233.9}{82.1}{5.5}{text}
+\feld{5}{s5_tricks_4}{111}{241.6}{82.1}{5.5}{text}
+\feld{5}{s5_tricks_5}{111.1}{248.7}{82.1}{5.5}{text}
+\feld{5}{s5_tricks_6}{110.5}{256.4}{82.1}{5.5}{text}
+\feld{5}{s5_tricks_7}{110.5}{264.2}{82.1}{5.5}{text}
+\feld{5}{s5_tricks_8}{110.5}{272}{82.1}{5.5}{text}
+
+% ===========================================================================
+% BOGEN 6 — Ausrüstung
+% ===========================================================================
+% Gemessen mit python bau/geometrie.py -- Ausnahmen ausgewiesen.
+
+% --- Ausrüstungstabelle, zwei Spalten à 30 Zeilen -------------------------
+% Rahmen 13.2..196.9, Mitteltrennung x 105.1.
+% Links:  Gegenstand 13.2..61.5 | Gewicht 61.5..79.9 | Wo getragen 79.9..105.1
+% Rechts: Gegenstand 105.1..153.4 | Gewicht 153.4..171.8 | Wo 171.8..196.9
+% Zeilenoberkanten 35.5 bis 170.2, Schritt rund 4.63 mm; darunter beginnt
+% bei 174.5 die Gesamtgewichtszeile.
+
+\newcommand{\ausruestungszeile}[2]{% nr y
+  \feld{6}{s6_gg_l_#1_gegenstand}{14.4}{#2}{46.6}{4.2}{text}
+  \feld{6}{s6_gg_l_#1_gewicht}   {62}{#2}{17.4}{4.2}{text}
+  \feld{6}{s6_gg_l_#1_wo}        {80.4}{#2}{24.2}{4.2}{text}
+  \feld{6}{s6_gg_r_#1_gegenstand}{105.6}{#2}{47.3}{4.2}{text}
+  \feld{6}{s6_gg_r_#1_gewicht}   {153.9}{#2}{17.4}{4.2}{text}
+  \feld{6}{s6_gg_r_#1_wo}        {172.3}{#2}{24.1}{4.2}{text}}
+
+\foreach \y [count=\i] in {35.7, 40.5, 45.4, 49.9, 54.5, 59.4, 63.9, 68.5,
+                           73.4, 78, 82.5, 87.4, 92, 96.5, 101.4, 106,
+                           110.6, 115.4, 120, 124.6, 129.5, 134, 138.6,
+                           143.5, 148, 152.6, 157.2, 161.7, 166.1, 170.4}{%
+  \ausruestungszeile{\i}{\y}}
+
+% --- Gesamtgewicht und Tragkraft je Spalte --------------------------------
+% Die Gesamtgewichtszeile laeuft 174.5..184.9. Die Beschriftung steht links,
+% das Gewicht gehoert in die Gewichtsspalte.
+\feld{6}{s6_gesamtgewicht_l}{62}{177}{17.4}{6}{text}
+\feld{6}{s6_gesamtgewicht_r}{153.9}{177}{17.4}{6}{text}
+\feld{6}{s6_tragkraft_l}{92.2}{174.6}{12.8}{9.6}{zahl}
+\feld{6}{s6_tragkraft_r}{184.2}{174.6}{11.6}{9.6}{zahl}
+
+% --- Tragkraftkasten -------------------------------------------------------
+% Ein breites Kaestchen (KK x 2 Stein) und vier Belastungsstufen.
+\feld{6}{s6_tk_basis}{18.1}{205.8}{20.3}{6}{zahl}
+\feld{6}{s6_tk_4}    {46.3}{205.8}{6.6}{6}{zahl}
+\feld{6}{s6_tk_8}    {60.9}{205.8}{6.6}{6}{zahl}
+\feld{6}{s6_tk_12}   {75.7}{205.8}{6.6}{6}{zahl}
+\feld{6}{s6_tk_16}   {90.4}{205.8}{6.6}{6}{zahl}
+
+% --- Geldbeutel ------------------------------------------------------------
+\feld{6}{s6_dukaten}    {113.2}{199.8}{16.9}{8.5}{zahl}
+\feld{6}{s6_silbertaler}{133.2}{199.8}{16.9}{8.5}{zahl}
+\feld{6}{s6_heller}     {153}{199.8}{16.9}{8.5}{zahl}
+\feld{6}{s6_kreuzer}    {172.8}{199.8}{16.9}{8.5}{zahl}
+
+% --- Tierbogen -------------------------------------------------------------
+% Acht Schreiblinien, alle x 30.0 bis 158.0:
+%   235.3 240.4 245.5 250.8 255.7  |  267.0 271.8 276.9
+% Auf jeder Linie stehen mehrere eingedruckte Beschriftungen. Wo sie enden,
+% ist am gerenderten Bogen abgelesen (auf etwa einen Millimeter) — die
+% Linien selbst sind gemessen.
+
+\feld{6}{s6_tier_name} {42}{230.7}{62}{4.6}{text}
+\feld{6}{s6_tier_lo}   {112}{230.7}{18}{4.6}{zahl}
+\feld{6}{s6_tier_ap}   {138}{230.7}{20}{4.6}{zahl}
+
+\feld{6}{s6_tier_typus}{43}{235.8}{36}{4.6}{text}
+\feld{6}{s6_tier_lep}  {88}{235.8}{16}{4.6}{zahl}
+\feld{6}{s6_tier_asp}  {114}{235.8}{44}{4.6}{zahl}
+
+\feld{6}{s6_tier_mu}{37}{240.9}{17}{4.6}{zahl}
+\feld{6}{s6_tier_kl}{60}{240.9}{19}{4.6}{zahl}
+\feld{6}{s6_tier_in}{85}{240.9}{19}{4.6}{zahl}
+\feld{6}{s6_tier_ch}{111}{240.9}{47}{4.6}{zahl}
+
+\feld{6}{s6_tier_ff}{35}{246.2}{19}{4.6}{zahl}
+\feld{6}{s6_tier_ge}{60}{246.2}{19}{4.6}{zahl}
+\feld{6}{s6_tier_ko}{86}{246.2}{18}{4.6}{zahl}
+\feld{6}{s6_tier_kk}{111}{246.2}{47}{4.6}{zahl}
+
+\feld{6}{s6_tier_sk} {35}{251.1}{19}{4.6}{zahl}
+\feld{6}{s6_tier_zk} {60}{251.1}{19}{4.6}{zahl}
+\feld{6}{s6_tier_rs} {86}{251.1}{18}{4.6}{zahl}
+\feld{6}{s6_tier_ini}{112}{251.1}{18}{4.6}{zahl}
+\feld{6}{s6_tier_gs} {137}{251.1}{21}{4.6}{zahl}
+
+\feld{6}{s6_tier_angriff}{44}{262.4}{23}{4.6}{text}
+\feld{6}{s6_tier_at}     {74}{262.4}{18}{4.6}{zahl}
+\feld{6}{s6_tier_vw}     {100}{262.4}{18}{4.6}{zahl}
+\feld{6}{s6_tier_tp}     {125}{262.4}{18}{4.6}{text}
+\feld{6}{s6_tier_rw}     {151.5}{262.4}{6.5}{4.6}{text}
+
+\feld{6}{s6_tier_aktionen}{47.5}{267.2}{110.5}{4.6}{text}
+\feld{6}{s6_tier_sf}      {65}{272.3}{93}{4.6}{text}
+
+% ===========================================================================
+% BOGEN 2 — Talente
+% ===========================================================================
+% Die Talentnamen und ihre Grundlinien sind aus dem PDF gelesen, nicht am
+% Bild abgezaehlt: python bau/geometrie.py <roh.pdf> --text
+% Damit stimmt die Zuordnung Name -> Zeile garantiert; ein Verrutschen um
+% eine Zeile, der wahrscheinlichste Fehler in einer 59-zeiligen Tabelle,
+% ist ausgeschlossen.
+%
+% Talent, Probe, BE und StF sind eingedruckt — dort KEINE Felder.
+% Nur Fw, RPr und Anmerkung. Das halbiert die Feldzahl dieser Seite.
+%
+% Spaltengrenzen (Kanten der Schattierungsbloecke):
+%   links:  BE 58.5..67.3 | StF 67.3..70.1 | Fw 70.1..74.7 | RPr 74.7..79.7
+%           | Anmerkung 79.7..104.6
+%   rechts: BE 154.8..162.1 | StF 162.1..165.1 | Fw 165.1..169.7
+%           | RPr 169.7..174.7 | Anmerkung 174.7..196.9
+% Zeilenabstand 4.6 mm, Feld = Grundlinie minus 3.9, Hoehe 4.2.
+
+\feld{2}{s2_belastung}{168.8}{20.1}{14.4}{8}{zahl}
+
+\eigenschaftsleiste{2}{43}
+
+\newcommand{\talentlinks}[2]{% slug y
+  \feld{2}{s2_#1_fw}  {70.3}{#2}{4.2}{4.2}{zahl}
+  \feld{2}{s2_#1_rpr} {74.9}{#2}{4.6}{4.2}{zahl}
+  \feld{2}{s2_#1_anm} {80.2}{#2}{24}{4.2}{text}}
+
+\newcommand{\talentrechts}[2]{% slug y
+  \feld{2}{s2_#1_fw}  {165.3}{#2}{4.2}{4.2}{zahl}
+  \feld{2}{s2_#1_rpr} {169.9}{#2}{4.6}{4.2}{zahl}
+  \feld{2}{s2_#1_anm} {175.2}{#2}{21.5}{4.2}{text}}
+
+% Körpertalente, Gesellschaftstalente, Naturtalente
+\foreach \slug/\y in {%
+  fliegen/67.5, gaukeleien/72.1, klettern/76.7, koerperbeherrschung/81.3,
+  kraftakt/85.8, reiten/90.4, schwimmen/95, selbstbeherrschung/99.6,
+  singen/104.2, sinnesschaerfe/108.8, tanzen/113.3, taschendiebstahl/117.9,
+  verbergen/122.5, zechen/127.1,
+  bekehren/136.6, betoeren/140.9, einschuechtern/145.4, etikette/150,
+  gassenwissen/154.6, menschenkenntnis/159.2, ueberreden/163.8,
+  verkleiden/168.4, willenskraft/173,
+  faehrtensuchen/182.5, fesseln/186.7, fischen/191.3, orientierung/195.9,
+  pflanzenkunde/200.5, tierkunde/205, wildnisleben/209.6}{%
+  \talentlinks{\slug}{\y}}
+
+% Wissenstalente, Handwerkstalente
+\foreach \slug/\y in {%
+  brettspiel/67.2, geographie/71.8, geschichtswissen/76.4, goetterkulte/81,
+  kriegskunst/85.6, magiekunde/90.1, mechanik/94.7, rechnen/99.3,
+  rechtskunde/103.9, sagen/108.5, sphaerenkunde/113.1, sternkunde/117.7,
+  alchimie/126.8, boote/131.4, fahrzeuge/136, handel/140.6,
+  heilkunde_gift/145.2, heilkunde_krankheiten/149.7, heilkunde_seele/154.3,
+  heilkunde_wunden/158.9, holzbearbeitung/163.5, lebensmittel/168.1,
+  lederbearbeitung/172.7, malen/177.3, metallbearbeitung/181.8,
+  musizieren/186.4, schloesserknacken/191, steinbearbeitung/195.6,
+  stoffbearbeitung/200.2}{%
+  \talentrechts{\slug}{\y}}
+
+% --- Eigenschaftsmodifikationen -------------------------------------------
+% Acht Zeilen (MU..KK), sieben Spalten (-3 bis +3).
+% Rahmen 13.4..80.1 x 240.3..284.0. Zeilengrundlinien 252.6 257.0 261.4
+% 265.8 270.2 274.6 279.0 283.4 (Abstand 4.4).
+%
+% ACHTUNG: Das Zellenraster dieser Matrix steckt in einem Form-XObject mit
+% eigenem Koordinatensystem — geometrie.py findet es nicht (dafuer muesste
+% es "Do" aufloesen). Die sieben Spalten sind daher als gleich breite
+% Teilung von 20.7 bis 79.6 angenommen und an der Sichtprobe kontrolliert,
+% nicht gemessen. Die Kopfmarken (-3 bei x 23.7, +1 bei 57.2, +2 bei 65.2)
+% stuetzen die Annahme auf etwa einen Millimeter.
+
+\newcommand{\eigmodzeile}[2]{% slug y
+  \feld{2}{s2_mod_#1_m3}{21.3}{#2}{7.2}{4}{zahl}
+  \feld{2}{s2_mod_#1_m2}{29.7}{#2}{7.2}{4}{zahl}
+  \feld{2}{s2_mod_#1_m1}{38.1}{#2}{7.2}{4}{zahl}
+  \feld{2}{s2_mod_#1_0} {46.5}{#2}{7.2}{4}{zahl}
+  \feld{2}{s2_mod_#1_p1}{55}{#2}{7.2}{4}{zahl}
+  \feld{2}{s2_mod_#1_p2}{63.4}{#2}{7.2}{4}{zahl}
+  \feld{2}{s2_mod_#1_p3}{71.8}{#2}{7.2}{4}{zahl}}
+
+\foreach \slug/\y in {mu/249.2, kl/253.6, in/258, ch/262.4,
+                      ff/266.8, ge/271.2, ko/275.6, kk/280}{%
+  \eigmodzeile{\slug}{\y}}
+
+% --- Sprachen und Schriften -----------------------------------------------
+% Schreiblinien x 124.2, Breite 69.1, y 222.7 230.5 238.3 246.1 (Sprachen)
+% und 253.1 260.9 268.7 276.5 (Schriften).
+% Beide Beschriftungen stehen auf der jeweils ersten Zeile und enden bei
+% etwa x 140 (aus Textmarke plus Schriftgroesse geschaetzt).
+\feld{2}{s2_sprachen_1}{141}{217.2}{52.3}{5.5}{text}
+\feld{2}{s2_sprachen_2}{124.7}{225}{68.6}{5.5}{text}
+\feld{2}{s2_sprachen_3}{124.7}{232.8}{68.6}{5.5}{text}
+\feld{2}{s2_sprachen_4}{124.7}{240.6}{68.6}{5.5}{text}
+
+\feld{2}{s2_schriften_1}{141}{247.6}{52.3}{5.5}{text}
+\feld{2}{s2_schriften_2}{124.8}{255.4}{68.6}{5.5}{text}
+\feld{2}{s2_schriften_3}{124.8}{263.2}{68.6}{5.5}{text}
+\feld{2}{s2_schriften_4}{124.8}{271}{68.6}{5.5}{text}
+
+% --- Bogen 1, Nachtrag: Textblöcke und Erfahrungsgrad --------------------
+% Schreiblinien x 17.3, Breite 96.3. Die Beschriftung steht auf der ersten
+% Zeile des jeweiligen Kastens; wo sie endet, ist abgelesen
+% (Vorteile 32, Nachteile 34, Allgemeine Sonderfertigkeiten 66).
+
+% Vorteile: Linien 131.5 139.3 147.1 154.8
+\feld{1}{s1_vorteile_1}{33}{126}{80.6}{5.5}{text}
+\feld{1}{s1_vorteile_2}{17.8}{133.8}{95.8}{5.5}{text}
+\feld{1}{s1_vorteile_3}{17.8}{141.6}{95.8}{5.5}{text}
+\feld{1}{s1_vorteile_4}{17.8}{149.3}{95.8}{5.5}{text}
+
+% Nachteile: Linien 181.3 189.1 196.9 204.7
+\feld{1}{s1_nachteile_1}{35}{175.8}{78.6}{5.5}{text}
+\feld{1}{s1_nachteile_2}{17.8}{183.6}{95.8}{5.5}{text}
+\feld{1}{s1_nachteile_3}{17.8}{191.4}{95.8}{5.5}{text}
+\feld{1}{s1_nachteile_4}{17.8}{199.2}{95.8}{5.5}{text}
+
+% Allgemeine Sonderfertigkeiten: Linien 229.5 237.2 245 252.8 260.6 268.4 276.5
+\feld{1}{s1_sf_1}{67}{224}{46.6}{5.5}{text}
+\feld{1}{s1_sf_2}{17.8}{231.7}{95.8}{5.5}{text}
+\feld{1}{s1_sf_3}{17.8}{239.5}{95.8}{5.5}{text}
+\feld{1}{s1_sf_4}{17.8}{247.3}{95.8}{5.5}{text}
+\feld{1}{s1_sf_5}{17.8}{255.1}{95.8}{5.5}{text}
+\feld{1}{s1_sf_6}{17.8}{262.9}{95.8}{5.5}{text}
+\feld{1}{s1_sf_7}{17.8}{271}{95.8}{5.5}{text}
+
+% Schicksalspunkte, Spalte "Aktuell" (Kästchen 34.9 x 6.0)
+\feld{1}{s1_schips_aktuell}{157}{231.4}{32.9}{6}{text}
+
+% Erfahrungsgrad: breites Kästchen 60.1 x 7.4, darunter drei AP-Kästchen
+\feld{1}{s1_erfahrungsgrad}{131}{254.2}{57.9}{7.4}{text}
+\feld{1}{s1_ap_gesamt}    {130}{270.2}{15.9}{7.3}{zahl}
+\feld{1}{s1_ap_gesammelt} {152}{270.2}{15.9}{7.3}{zahl}
+\feld{1}{s1_ap_ausgegeben}{174}{270.2}{15.9}{7.3}{zahl}
+
+% --- Bogen 1: Heldenbild ---------------------------------------------------
+% Der Rahmen ist eine Klammerform: die waagerechten Kanten laufen von
+% x 83.1 bis 126.4 (y 33.5 und 97.7), die senkrechten von y 38.5 bis 92.7
+% (x 78.1 und 131.4). Die Ecken sind ausgespart. Das groesste Rechteck, das
+% VOLLSTAENDIG innerhalb der Klammer liegt, ist die Schnittmenge:
+%   x 83.1..126.4, y 38.5..92.7  =  43.3 x 54.2 mm
+% Genau das ist der Bildkasten — so schneidet keine Ecke ins Bild.
+%
+% art=bild wirkt nur in der vorbefuellten Fassung. AcroForm kennt kein
+% Bildfeld; in der ausfuellbaren Fassung bleibt der Rahmen leer.
+\feld{1}{s1_bild}{83.1}{38.5}{43.3}{54.2}{bild}

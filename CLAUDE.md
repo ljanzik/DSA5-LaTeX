@@ -9,7 +9,7 @@ Wer nur ein Abenteuer schreiben soll, braucht Teil A.
 `dsa5latex.cls` setzt Abenteuer im Layout von *Das Schwarze Auge 5*, nach den Maßen des
 offiziellen *Scriptorium Aventuris – Layout Baukastens*: A4 hoch, zweispaltig, mit
 Grundlinienraster. Die Elementreferenz steht in `doku/ELEMENTE.md`, wie man einrichtet und baut
-in `doku/EINRICHTUNG.md`. Dazu sechs Python-Werkzeuge in `werkzeuge/`, vier Dokumente in `doku/`
+in `doku/EINRICHTUNG.md`. Dazu acht Python-Werkzeuge in `werkzeuge/`, fünf Dokumente in `doku/`
 und fünf Beispieldokumente in `beispiel/`.
 
 Dazu kommt der **Aufsteller** (`dsa5aufsteller.sty`): kleine Standfiguren zum Ausschneiden auf
@@ -21,9 +21,36 @@ Dazu die **Battlemap mit Zollraster**: kein eigener Seitentyp der Klasse, sonder
 eigenes Dokument `beispiel/battlemap.tex` mit `\dsaBattlemapBlatt` und `\dsaBattlemap`,
 dokumentiert im Abschnitt „Seitentypen“ in `doku/ELEMENTE.md`.
 
-**Weitere Features** (eigene Klassen oder Erweiterungen wie Charakterbogen,
-SL-Einleger) bekommen jeweils eine eigene Doku-Datei und einen eigenen Eintrag in der
-Feature-Liste in `README.md` — siehe „Dokumentation neuer Features“ in Teil B.
+**Weitere Features** (eigene Klassen oder Erweiterungen wie SL-Einleger)
+bekommen jeweils eine eigene Doku-Datei und einen eigenen Eintrag in der Feature-Liste in
+`README.md` — siehe „Dokumentation neuer Features“ in Teil B.
+
+`werkzeuge/einrichten.py` ist die Klammer über alles, was aus dem Baukasten kommt: es ruft
+`aufbereiten.py`, `pergament.py` und `pruefen.py` mit **einem** Baukastenpfad auf. Wer wissen
+will, was fehlt, ruft es mit `--pruefen` ohne Argument auf — es prüft dann auch XeLaTeX,
+pdflatex und Ghostscript. Letzteres steckt unter Windows in TeX Live, unter macOS nicht
+(`brew install ghostscript`); ohne es fallen nur `bogen/bau/rendern`, `linien-lesen` und die
+Normalisierung der Farbquelle aus.
+
+## Der Heldenbogen ist ein eigener Bereich
+
+`bogen/` ist die Ausnahme von allem, was in dieser Datei steht: es überlagert das offizielle
+DSA5-Heldendokument mit AcroForm-Feldern, läuft deshalb **zwingend mit pdflatex** statt
+XeLaTeX, kennt kein Grundlinienraster und misst seine 1255 Koordinaten nicht am Baukasten,
+sondern aus den PDF-Content-Streams des Verlagsbogens. Dazu gehört die Charaktermappe
+(`bogen/mappe/`), der Umschlag für die Bögen.
+
+**Die Regeln von Teil B gelten dort nicht.** Wer an `bogen/` arbeitet, liest `doku/BOGEN.md`;
+wer an der Klasse arbeitet, braucht ihn nicht. Berührungspunkte sind heute zwei: die Schriften
+in `schriften/`, die beide Seiten aus `werkzeuge/aufbereiten.py` bekommen, und die
+Wertedateien `bogen/helden/*.tex`. Die Maße des Bogens stehen in `doku/BOGEN.md`, nicht in
+`doku/MASSE.md` — dort bleibt die Dreier-Rangfolge des Baukastens unter sich.
+
+**Skripte sind Python, `.ps1` und `.sh` sind Weiterleitungen.** In `bogen/bau/` liegt zu jedem
+Ablauf eine `.py` mit der Logik und daneben zwei dreizeilige Aufrufer. Wer etwas ändert, ändert
+die `.py` — sonst hat man wieder zwei Fassungen desselben Ablaufs, und genau davon hatte dieses
+Projekt schon vier. Die Schalter sind in PowerShell-Schreibweise (`-Held dorle`, `-Alle`), damit
+derselbe Aufruf überall gilt.
 
 ---
 
@@ -232,13 +259,14 @@ Kommt ein Maß aus dem Baukasten neu dazu, gehört es außerdem nach `werkzeuge/
 
 ## Dokumentation neuer Features
 
-Ein neues Feature (eine eigene Klasse wie `dsa5einleger.cls` oder eine Erweiterung der
-Kernklasse) bekommt **eine eigene Doku-Datei**, `doku/<FEATURE>.md` in Großbuchstaben — zum
-Beispiel `doku/BATTLEMAP.md` — statt eines Abschnitts in `doku/ELEMENTE.md`. `doku/ELEMENTE.md`
-bleibt der Kernklasse `dsa5latex.cls` vorbehalten. Der Aufsteller (`dsa5aufsteller.sty`) ist
-älter als diese Konvention und dokumentiert sich noch als eigener Abschnitt in
-`doku/ELEMENTE.md` — wer ihn erweitert, kann ihn bei Gelegenheit nach `doku/AUFSTELLER.md`
-ziehen, muss es aber nicht in derselben Änderung tun.
+Ein neues Feature (eine eigene Klasse wie `dsa5einleger.cls`, ein eigener Bereich wie der
+Heldenbogen oder eine Erweiterung der Kernklasse) bekommt **eine eigene Doku-Datei**,
+`doku/<FEATURE>.md` in Großbuchstaben — zum Beispiel `doku/BATTLEMAP.md` — statt eines
+Abschnitts in `doku/ELEMENTE.md`. `doku/ELEMENTE.md` bleibt der Kernklasse `dsa5latex.cls`
+vorbehalten; der Heldenbogen folgt diesem Muster bereits mit `doku/BOGEN.md`. Der Aufsteller
+(`dsa5aufsteller.sty`) ist älter als diese Konvention und dokumentiert sich noch als eigener
+Abschnitt in `doku/ELEMENTE.md` — wer ihn erweitert, kann ihn bei Gelegenheit nach
+`doku/AUFSTELLER.md` ziehen, muss es aber nicht in derselben Änderung tun.
 
 Dazu gehört ein eigener Eintrag in der Feature-Liste in `README.md`: eine Zeile mit Kurzform,
 Klasse (falls eine eigene) und Verweis auf die neue Doku-Datei. Das Allgemeine — Grafiken und
@@ -246,10 +274,13 @@ Schriften besorgen, Bauen, mit einer KI setzen — steht bereits in `doku/EINRIC
 muss nicht wiederholt werden; ein Feature ergänzt dort nur, was es zusätzlich braucht (eigene
 Beispieldokumente, eigene Klassenoptionen).
 
-`doku/MASSE.md` und `doku/PRUEFPLAN.md` bleiben **gemeinsame, projektweite Protokolle** — nicht
-aufsplitten. Jedes Feature bekommt darin einen eigenen, klar abgegrenzten Abschnitt (wie
-Abschnitt 8 in `doku/MASSE.md` für den Einleger), damit Messungen an einem Ort auffindbar und
-über Features hinweg vergleichbar bleiben.
+`doku/MASSE.md` und `doku/PRUEFPLAN.md` bleiben **gemeinsame, projektweite Protokolle für alles,
+was sich am Baukasten misst** — nicht aufsplitten. Jedes Feature bekommt darin einen eigenen,
+klar abgegrenzten Abschnitt (wie Abschnitt 8 in `doku/MASSE.md` für den Einleger), damit
+Messungen an einem Ort auffindbar und über Features hinweg vergleichbar bleiben. Die einzige
+Ausnahme ist der Heldenbogen: seine Koordinaten stammen nicht aus dem Baukasten, sondern aus den
+PDF-Content-Streams des Verlagsbogens, und stehen deshalb eigenständig in `doku/BOGEN.md` — siehe
+„Der Heldenbogen ist ein eigener Bereich“ oben.
 
 ## Git
 

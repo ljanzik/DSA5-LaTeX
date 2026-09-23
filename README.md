@@ -25,6 +25,7 @@ Jedes Feature ist eine eigene Klasse oder eine eigene Erweiterung, mit eigener E
 | Abenteuer setzen | `dsa5latex.cls` | Zweispaltiger Satz auf A4 mit Grundlinienraster, Pergament- und Wertekästen in Produktionsgröße, Kapitelbanner, Meistermasken, Seitenhintergründe, Textumfluss | [Elementreferenz](doku/ELEMENTE.md) |
 | Aufsteller (Standfiguren zum Ausschneiden) | `dsa5aufsteller.sty` | Kleine Standfiguren auf eigenen A4-Bögen in vier Größenklassen (S/M/L/XL), mit automatisch erzeugter Rückseite für den beidseitigen Druck | [Elementreferenz](doku/ELEMENTE.md#aufsteller) |
 | Battlemap mit Zollraster | — (`beispiel/battlemap.tex`, kein `.cls`) | Eigenes Blatt neben dem Heft (A4 bis A1, hoch oder quer) mit gestricheltem Zollraster über der Battlemap, kein eigener Seitentyp der Klasse | [Elementreferenz](doku/ELEMENTE.md#seitentypen) |
+| Ausfüllbarer Heldenbogen samt Charaktermappe | — (`bogen/`, kein `.cls`) | Überlagert das offizielle DSA5-Heldendokument mit echten Formularfeldern (leer zum Ausfüllen oder mit den Werten eines Helden vorbefüllt) und setzt eine Charaktermappe als Umschlag dazu. Läuft mit `pdflatex` statt XeLaTeX, eigene Bauregeln, Windows/macOS/Linux | [Elementreferenz](doku/BOGEN.md) |
 
 Einrichten, Grafiken und Schriften besorgen, bauen — das gilt featureübergreifend und steht in
 [Einrichten und Bauen](doku/EINRICHTUNG.md).
@@ -56,17 +57,20 @@ Die Maße in diesem Projekt sind kein Bildmaterial, sondern Messergebnisse. Sie 
 ## Einrichten und Bauen
 
 Grafiken und Schriften besorgen, XeLaTeX aufsetzen, die Beispieldokumente bauen und, wer mag,
-auch mit einer KI setzen: **[Einrichten und Bauen](doku/EINRICHTUNG.md)**. Kurzfassung:
+auch mit einer KI setzen: **[Einrichten und Bauen](doku/EINRICHTUNG.md)**. Für den Heldenbogen
+kommen die Heldendokumente und Ghostscript dazu, siehe dort. Kurzfassung:
 
 ```sh
-python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
+python3 werkzeuge/einrichten.py "/pfad/zu/Scriptorium Aventuris v4"
 cd beispiel
 TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 ```
 
 Die Elementreferenz der Kernklasse steht in `doku/ELEMENTE.md`, dort auch die Battlemap mit
 Zollraster (`beispiel/battlemap.tex`, Abschnitt „Seitentypen“) — kein eigener Seitentyp der
-Klasse, sondern ein eigenes Blatt (A4 bis A1, hoch oder quer) neben dem Heft.
+Klasse, sondern ein eigenes Blatt (A4 bis A1, hoch oder quer) neben dem Heft. Die des
+Heldenbogens steht in `doku/BOGEN.md`; der Bogen läuft mit `pdflatex` statt XeLaTeX und hat
+eigene Bauskripte in `bogen/bau/`, dokumentiert ebenfalls dort.
 
 ---
 

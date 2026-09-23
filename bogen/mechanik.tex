@@ -1,0 +1,293 @@
+\makeatletter
+% mechanik.tex — die Darstellungsebene. Kennt keine Koordinaten und keine Werte.
+%
+% Hier steht der ganze Trick des Projekts: dieselbe Feldtabelle wird je nach
+% \Modus einmal zu Formularfeldern, einmal zu festem Text, einmal zu einer
+% schlichten Werteliste ohne den Originalbogen.
+%
+% Copyright 2026 Leif Janzik. Apache License 2.0.
+
+% --- Werte ----------------------------------------------------------------
+% \wert, \wertvon, \wertdaP, \wertoder stehen in werte.tex — dieselbe Datei,
+% die die Charaktermappe einbindet. Nur so laeuft helden/<name>.tex
+% unveraendert durch beide Dokumente, und zwar dauerhaft.
+\input{werte}
+
+% --- Feldtabelle einsammeln ------------------------------------------------
+% Beim Einlesen wird nicht gesetzt, sondern gesammelt. Gesetzt wird erst je
+% Seite, damit jede Seite nur ihre eigenen Felder bekommt.
+
+% Die Argumente werden beim Einsammeln EXPANDIERT. Das ist der Grund, warum
+% Tabellenzeilen mit \foreach erzeugt werden koennen: die Laufvariable (\i,
+% \y) existiert nur waehrend der Schleife. Unexpandiert gespeichert waere sie
+% spaeter weg, und das Feld hiesse "s4_lit_\i_probe" mit undefiniertem \i.
+
+\newcommand{\feldliste}{}
+\newcommand{\feld}[7]{%
+  \begingroup
+  \edef\feld@zeile{\endgroup
+    \noexpand\g@addto@macro\noexpand\feldliste{%
+      \noexpand\feldeintrag{#1}{#2}{#3}{#4}{#5}{#6}{#7}}}%
+  \feld@zeile}
+
+% Was mit einem gesammelten Eintrag geschieht, entscheidet der Verbraucher:
+% \felderDerSeite setzt Widgets, werteliste.tex setzt Zeilen. Ohne Verbraucher
+% tut ein Eintrag nichts — deshalb hier als Leerlauf vordefiniert.
+\newcommand{\feldeintrag}[7]{}
+
+% --- Feldarten -------------------------------------------------------------
+% art = text | zahl | mehrzeilig
+% zahl wird zentriert, mehrzeilig bekommt multiline. Alles andere wie text.
+%
+% Die Zusatzoptionen werden als ARGUMENT durchgereicht, nicht in einem Makro
+% abgelegt. Zwei Fallgruben stecken hier drin:
+%   1. \ifthenelse ist nicht expandierbar und darf nicht in der Optionsliste
+%      von \TextField stehen  -> "Undefined control sequence <argument> \equal"
+%   2. kvsetkeys zerlegt die Optionsliste auf Token-Ebene, BEVOR es
+%      expandiert. Ein Makro, das zu "align=1" expandiert, kommt dort als ein
+%      einzelnes Token an  -> "Undefined key `align=0'".
+% Als Makroargument eingesetzt sind die Zeichen dagegen echte Token.
+
+% --- Ein Feld setzen: ausfüllbare Fassung ----------------------------------
+% Drei Optionen sind nicht Geschmack, sondern Pflicht:
+%   bordercolor=      kein Rahmen. Das Original hat seine Linien schon.
+%   backgroundcolor=  KEIN Hintergrund. Ohne das setzt hyperref /MK<</BG[1 1 1]>>
+%                     und malt jedes Feld weiss ueber den Originalbogen —
+%                     Linien und Beschriftungen verschwinden darunter.
+%   borderwidth=0     sonst steht das Feld auf einem Rahmen.
+%   bordersep=0pt     hyperrefs Vorgabe ist \Fld@bordersep = 1pt.
+% charsize klein halten, sonst schneidet ein 5 mm hohes Feld unten ab.
+%
+% Und der eigentliche Grund fuer verschobene Rechtecke: der pdftex-Treiber
+% baut Formularfelder mit \pdfstartlink, und pdfTeX blaeht JEDES Link-
+% Rechteck um \pdflinkmargin auf — hyperref setzt die auf 1pt. Das sind
+% 0,35 mm nach allen Seiten, auf jedem einzelnen Feld. Keine der Feldoptionen
+% aendert daran etwas; es muss \pdflinkmargin selbst sein. Das Dokument hat
+% keine Verweise, die Einstellung kostet also nichts.
+
+\pdflinkmargin=0pt
+%
+% Mit diesen Optionen gilt: /Rect im PDF = die Werte der Feldtabelle, exakt.
+% Nachpruefbar mit bau/felder-pruefen.py.
+
+\newcommand{\feldWidget}[6]{% name x y breite hoehe zusatzoptionen
+  \node[anchor=north west, inner sep=0pt, outer sep=0pt]
+    at ([shift={(#2mm,-#3mm)}]current page.north west)
+    {\TextField[name=#1, width=#4mm, height=#5mm,
+                bordercolor=, backgroundcolor=, borderwidth=0, bordersep=0pt,
+                charsize=\feldschrift, #6]{}};}
+
+\newcommand{\setzeFeldFormular}[6]{% name x y breite hoehe art
+  \ifthenelse{\equal{#6}{bild}}{}{%
+  \ifthenelse{\equal{#6}{mehrzeilig}}{\feldWidget{#1}{#2}{#3}{#4}{#5}{multiline=true}}{%
+  \ifthenelse{\equal{#6}{zahl}}{\feldWidget{#1}{#2}{#3}{#4}{#5}{align=1}}{%
+  \feldWidget{#1}{#2}{#3}{#4}{#5}{align=0}}}}}
+
+% --- Ein Feld setzen: vorbefuellte Fassung ---------------------------------
+
+% Einzeilige Felder duerfen NICHT umbrechen. Eine Tabellenzelle ist hier
+% 4,2 mm hoch; ein Umbruch darin laeuft in die Nachbarzeile und zerstoert
+% die Tabelle. Und ein zu breiter Wert darf nicht in die Nachbarspalte
+% laufen ("MU/KL/CH" in einer 12,7 mm breiten Probe-Spalte). Beides wird
+% verhindert, indem der Wert erst in eine Box gesetzt und, wenn er zu breit
+% ist, gestaucht wird. So bleibt jeder Wert in seiner Zelle und auf einer
+% Zeile — auch wenn er dann etwas schmaler laeuft.
+
+\newsavebox{\feldbox}
+
+\newcommand{\einzeilig}[4]{% breite hoehe art inhalt
+  \sbox\feldbox{\feldtextstil #4}%
+  \ifdim\wd\feldbox>#1mm\relax
+    \sbox\feldbox{\resizebox{#1mm}{!}{\usebox\feldbox}}%
+  \fi
+  \ifthenelse{\equal{#3}{zahl}}{%
+    \parbox[t][#2mm][c]{#1mm}{\centering\usebox\feldbox}}{%
+    \parbox[t][#2mm][c]{#1mm}{\raggedright\usebox\feldbox}}}
+
+% --- Bildfelder ------------------------------------------------------------
+% art=bild. Der Wert ist ein Dateipfad, nicht Text:
+%   \wert{s1_bild}{helden/bilder/dorle.jpg}
+% Das Bild wird in den Kasten eingepasst, Seitenverhaeltnis bleibt erhalten;
+% ist es schmaler, wird es mittig gesetzt. Fehlt der Wert oder die Datei,
+% bleibt der Rahmen leer — kein Abbruch, wie bei jedem anderen Feld.
+%
+% NUR in der vorbefuellten Fassung. AcroForm kennt kein Bildfeld; in der
+% ausfuellbaren Fassung bleibt der Rahmen deshalb leer. Siehe CLAUDE.md.
+
+\newcommand{\bildkasten}[3]{% name breite hoehe
+  \ifcsname wert@#1\endcsname
+    \edef\bild@pfad{\csname wert@#1\endcsname}%
+    \IfFileExists{\bild@pfad}{%
+      \parbox[t][#3mm][c]{#2mm}{\centering
+        \includegraphics[width=#2mm, height=#3mm, keepaspectratio]{\bild@pfad}}%
+    }{%
+      \message{^^JHINWEIS: Bilddatei nicht gefunden: \bild@pfad^^J}%
+    }%
+  \fi}
+
+\newcommand{\setzeFeldFest}[6]{%
+  \node[anchor=north west, inner sep=0pt, outer sep=0pt]
+    at ([shift={(#2mm,-#3mm)}]current page.north west)
+    {\ifthenelse{\equal{#6}{bild}}{\bildkasten{#1}{#4}{#5}}{%
+      \ifthenelse{\equal{#6}{mehrzeilig}}{%
+       \parbox[t][#5mm][t]{#4mm}{\feldtextstil\raggedright\wertvon{#1}}}{%
+       \einzeilig{#4}{#5}{#6}{\wertvon{#1}}}}};}
+
+\newcommand{\feldschrift}{8pt}
+\newcommand{\feldtextstil}{\fontsize{8pt}{9pt}\selectfont}
+
+% --- Umschaltung -----------------------------------------------------------
+\ifx\Modus\undefined \def\Modus{ausfuellbar}\fi
+
+\ifthenelse{\equal{\Modus}{vorbefuellt}}{%
+  \let\setzeFeld\setzeFeldFest
+}{%
+  \let\setzeFeld\setzeFeldFormular
+}
+
+% --- Felder einer Seite ----------------------------------------------------
+% Der erste Wert der Tabellenzeile ist der LOGISCHE Bogen (1..6), nicht die
+% physische Seite. Nur so heissen die Felder in beiden Quellfassungen gleich
+% und dieselbe Heldendatei laeuft durch beide.
+
+\newcommand{\aktuellerbogen}{0}
+
+\newcommand{\feldeintragSetzen}[7]{%
+  \ifnum#1=\aktuellerbogen\relax
+    \setzeFeld{#2}{#3}{#4}{#5}{#6}{#7}%
+  \fi}
+
+\newcommand{\felderDerSeite}[1]{%
+  \renewcommand{\aktuellerbogen}{#1}%
+  \begin{tikzpicture}[remember picture, overlay]
+    \let\feldeintrag\feldeintragSetzen
+    \feldliste
+    \ifmessen\messgitterinhalt\fi
+  \end{tikzpicture}}
+
+% --- Das Messgitter --------------------------------------------------------
+% Der Kern der Machbarkeit: ohne Gitter muessten ~200 Positionen geraten
+% werden, mit ihm werden sie abgelesen. Bleibt dauerhaft im Projekt.
+% Alle Koordinaten in Millimeter von der LINKEN OBEREN Papierecke.
+
+\newif\ifmessen
+\ifx\Messen\undefined\messenfalse\else\messentrue\fi
+
+\newcommand{\messgitterinhalt}{%
+  \foreach \x in {0,10,...,210}{%
+    \draw[cyan!40, line width=0.1pt]
+      ([shift={(\x mm,0)}]current page.north west) --
+      ([shift={(\x mm,0)}]current page.south west);
+    \node[cyan, font=\tiny, anchor=north]
+      at ([shift={(\x mm,-2mm)}]current page.north west) {\x};}
+  \foreach \y in {0,10,...,290}{%
+    \draw[cyan!40, line width=0.1pt]
+      ([shift={(0,-\y mm)}]current page.north west) --
+      ([shift={(0,-\y mm)}]current page.north east);
+    \node[cyan, font=\tiny, anchor=west]
+      at ([shift={(2mm,-\y mm)}]current page.north west) {\y};}
+  % Feinlinien alle 5 mm, unbeschriftet — fuer das genaue Ablesen
+  \foreach \x in {5,15,...,205}{%
+    \draw[cyan!15, line width=0.05pt]
+      ([shift={(\x mm,0)}]current page.north west) --
+      ([shift={(\x mm,0)}]current page.south west);}
+  \foreach \y in {5,15,...,285}{%
+    \draw[cyan!15, line width=0.05pt]
+      ([shift={(0,-\y mm)}]current page.north west) --
+      ([shift={(0,-\y mm)}]current page.north east);}}
+
+% --- Leere Boegen weglassen -----------------------------------------------
+% Fuer einen unmagischen Helden ist Bogen 5 (Zauber) eine leere Seite, fuer
+% einen Weltlichen ebenso Bogen 4 (Liturgien). Drei Wege, sie loszuwerden;
+% der erste, der etwas sagt, gewinnt:
+%
+%   1. \bogennur{1,2,3,6}       in der Heldendatei - nur diese Boegen
+%   2. \bogenweglassen{4,5}     in der Heldendatei - alle ausser diesen
+%   3. Bauoption -OhneLeere     automatisch: ein Bogen ohne einen einzigen
+%                               gesetzten Wert faellt weg
+%
+% Weg 3 wirkt NUR in der vorbefuellten Fassung. In der ausfuellbaren gibt es
+% keine Werte; dort wuerde er alle Boegen wegwerfen. Er wird deshalb dort
+% ignoriert, mit Hinweis im Log.
+%
+% Die Eigenschaftsleiste MU..KK zaehlt bei Weg 3 NICHT als Inhalt. Sonst
+% haette jeder Bogen Werte, sobald die acht Eigenschaften gesetzt sind, und
+% die Automatik liefe leer - genau der Fall, der bei Dorle aufgetreten waere.
+
+\newcommand{\zaehltnicht}[1]{\expandafter\gdef\csname zaehltnicht@#1\endcsname{}}
+
+\newcommand{\werteZaehlen}{%
+  \begingroup
+    \def\feldeintrag##1##2##3##4##5##6##7{%
+      \ifcsname wert@##2\endcsname
+        \ifcsname zaehltnicht@##2\endcsname\else
+          \expandafter\gdef\csname bogenhat@##1\endcsname{}%
+        \fi
+      \fi}%
+    \feldliste
+  \endgroup}
+
+\newcommand{\bogenauswahl}{}      % leer = keine explizite Auswahl
+\newcommand{\bogennur}[1]{\gdef\bogenauswahl{,#1,}\gdef\bogenmodus{nur}}
+\newcommand{\bogenweglassen}[1]{\gdef\bogenauswahl{,#1,}\gdef\bogenmodus{ohne}}
+\newcommand{\bogenmodus}{}
+
+\newif\ifbogenzeigen
+
+\newcommand{\bogenpruefen}[1]{%
+  \bogenzeigentrue
+  \ifx\bogenmodus\@empty
+    % keine explizite Auswahl: nur die Automatik kann noch etwas wegnehmen
+    \ifx\OhneLeere\undefined\else
+      \ifthenelse{\equal{\Modus}{ausfuellbar}}{%
+        \message{^^JHINWEIS: -OhneLeere wirkt nur in der vorbefuellten Fassung.^^J}%
+      }{%
+        \ifcsname bogenhat@#1\endcsname\else\bogenzeigenfalse\fi
+      }%
+    \fi
+  \else
+    % \in@ durchsucht sein zweites Argument auf TOKEN-Ebene. Uebergibt man
+    % dort das Makro \bogenauswahl, sieht \in@ ein einzelnes Token und findet
+    % nie etwas — die Auswahl bliebe wirkungslos, ohne Fehlermeldung.
+    % Deshalb erst expandieren, dann suchen.
+    \begingroup\edef\bogen@x{\endgroup\noexpand\in@{,#1,}{\bogenauswahl}}\bogen@x
+    \ifthenelse{\equal{\bogenmodus}{nur}}{%
+      \ifin@\else\bogenzeigenfalse\fi
+    }{%
+      \ifin@\bogenzeigenfalse\fi
+    }%
+  \fi}
+
+% Faellt JEDER Bogen weg, entsteht ein Dokument ohne Seiten — pdflatex
+% schreibt dann gar kein PDF, und das sieht nach einem Absturz aus statt nach
+% einer Auswahl. Fuer diesen Fall bleibt Bogen 1 stehen.
+\newif\ifbogennotfall
+
+\newcommand{\bogenAuswahlPruefen}{%
+  \bogennotfalltrue
+  \bogenpruefen{1}\ifbogenzeigen\bogennotfallfalse\fi
+  \bogenpruefen{2}\ifbogenzeigen\bogennotfallfalse\fi
+  \bogenpruefen{3}\ifbogenzeigen\bogennotfallfalse\fi
+  \bogenpruefen{4}\ifbogenzeigen\bogennotfallfalse\fi
+  \bogenpruefen{5}\ifbogenzeigen\bogennotfallfalse\fi
+  \bogenpruefen{6}\ifbogenzeigen\bogennotfallfalse\fi
+  \ifbogennotfall
+    \message{^^JHINWEIS: kein Bogen hat Inhalt. Bogen 1 wird trotzdem
+      ausgegeben, damit ein PDF entsteht.^^J}%
+  \fi}
+
+% --- Eine Bogenseite ausgeben ---------------------------------------------
+% Originalseite als Grund, Felder absolut darueber. Nicht nachbauen.
+
+\newcommand{\bogenseite}[1]{%
+  \bogenpruefen{#1}%
+  \ifbogennotfall
+    \ifnum#1=1 \bogenzeigentrue\else\bogenzeigenfalse\fi
+  \fi
+  \ifbogenzeigen
+    \includepdf[pages={\quellseite{#1}},
+                picturecommand={\felderDerSeite{#1}}]{\quelldatei}%
+  \else
+    \message{^^JBogen #1 weggelassen (leer oder abgewaehlt).^^J}%
+  \fi}
+\makeatother

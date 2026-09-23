@@ -1,0 +1,33 @@
+% werteliste.tex — dritte Fassung: die Werte OHNE den Originalbogen.
+%
+% Zweck ist rechtlich, nicht gestalterisch: diese Ausgabe enthaelt kein
+% Verlagsmaterial und darf deshalb weitergegeben werden, wenn die
+% ueberlagerte Fassung es nicht darf. Sie benutzt dieselbe Feldtabelle.
+%
+% Sieht schlichter aus. Das ist Absicht.
+%
+% Copyright 2026 Leif Janzik. Apache License 2.0.
+
+\newgeometry{margin=20mm}
+\pagestyle{plain}
+
+\begingroup
+\setlength{\parindent}{0pt}
+
+{\Large\bfseries \wertdaP{s1_name}{\wertvon{s1_name}}{Namenloser Held}\par}
+\vspace{2mm}
+{\small Werte aus der Feldtabelle. Kein Verlagsmaterial.\par}
+\vspace{6mm}
+
+% Dieselbe Feldliste, hier als Zeilen statt als Overlay. Felder ohne Wert
+% werden uebersprungen — eine Liste voller Leerzeilen hilft niemandem.
+% Bildfelder ebenso: ihr Wert ist ein Dateipfad, der als Textzeile nichts
+% aussagt. Das Bild selbst kommt weiter unten.
+\renewcommand{\feldeintrag}[7]{%
+  \ifthenelse{\equal{#7}{bild}}{}{%
+    \wertdaP{#2}{\textbf{#2}\hfill\wertvon{#2}\par\vspace{1mm}}{}}}
+
+\feldliste
+
+\endgroup
+\restoregeometry

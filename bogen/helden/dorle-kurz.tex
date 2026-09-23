@@ -1,0 +1,9 @@
+% helden/dorle-kurz.tex — Dorle, aber ohne die Liturgie- und Zauberseite.
+%
+% Probe auf den EXPLIZITEN Weg: Dorle hat auf Bogen 4 und 5 Werte (Testwerte
+% aus dem Einmessen), und trotzdem sollen die Bögen wegfallen. Genau darin
+% unterscheidet sich \bogenweglassen von der Automatik -OhneLeere: die
+% Automatik würde diese Bögen behalten, weil sie Inhalt haben.
+
+\input{helden/dorle}
+\bogenweglassen{4,5}

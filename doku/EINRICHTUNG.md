@@ -59,6 +59,33 @@ aus innerhalb der Grenzlinien und rechnet aus der gefundenen Fläche dieselbe Se
 `aufbereiten.py`. Das Grenznetz kennt allerdings nur die großen Regionen: eine Saat im Kosch
 flutet das ganze Mittelreich.
 
+### Schritt 1c — die Heldendokumente
+
+**<https://www.ulisses-ebooks.de/de/product/159699/dsa5-heldendokumente-pdf-als-download-kaufen>**
+
+Nur für `bogen/` nötig, nicht für die Klasse. Wer keine Heldenbögen setzt, überspringt diesen
+Schritt — alles andere baut ohne sie.
+
+Der Bogen legt diese PDF als Grund ein und setzt seine Formularfelder darüber. Erwartet werden
+zwei Fassungen, die sich **nicht** nur in der Farbe unterscheiden:
+
+| | Seiten | Format |
+|---|---|---|
+| `Heldendokument_druckerfreundlich.pdf` | 6 | A4, `MediaBox 595,276 × 841,89` |
+| `US25505PDF_Heldendokumente.pdf` | 10 | Druckdatei, `MediaBox 230,8 × 317,8 mm`, `TrimBox 208,8 × 295,8 mm` |
+
+Es sind unterschiedliche Auflagen: die Seitenreihenfolge weicht ab (Ausrüstung ist dort Seite 6,
+hier Seite 4), und die Beschriftungen ebenso („Talente“ gegen „FERTIGKEITEN“). Deshalb hat jede
+Fassung ihre eigene Koordinatentabelle. Die Farbfassung wird außerdem vor dem Einlegen einmal auf
+ihre TrimBox beschnitten und unskaliert auf A4 gesetzt — sonst skalierte `pdfpages` sie um etwa
++0,6 Prozent, und keine gemessene Koordinate träfe mehr. Das erledigt
+`bogen/bau/quelle-vorbereiten.py` von selbst.
+
+**Die beiden PDF bleiben außerhalb des Projekts.** Sie sind Verlagsmaterial und stehen anders als
+der Baukasten nicht unter der Scriptorium-Vereinbarung. Ihre Pfade — und nur dort — stehen in
+`bogen/konfig.tex`; ab Werk zeigen sie nach `~/Downloads`. Näheres in `doku/BOGEN.md`, Abschnitt
+„Die zwei Quelldateien“.
+
 ### Schritt 2 — aufbereiten
 
 Der bequeme Weg. Das Werkzeug legt alles an, was die Klasse braucht, und benennt es passend:
@@ -94,6 +121,43 @@ Was es tut:
 - kopiert die fünf Schriftdateien nach `schriften/`
 - schreibt am Ende eine Liste dessen, was fehlt
 
+**Für den Heldenbogen (`bogen/`) gibt es `einrichten.py` statt `aufbereiten.py`.** Ein Aufruf,
+und alles ist da — auch das, was `bogen/` zusätzlich braucht:
+
+```sh
+python3 werkzeuge/einrichten.py "/pfad/zu/Scriptorium Aventuris v4" \
+    --rueckseiten "/pfad/zum/Rueckseiten_Karten_Paket"
+```
+
+Das `--rueckseiten` ist optional; ohne es fehlen nur die 29 Rückseiten aus Schritt 1b.
+`einrichten.py` ist die Klammer um drei Werkzeuge, die die Arbeit tun — und der einzige Ort, an
+dem der Pfad zum Baukasten genannt wird:
+
+| | |
+|---|---|
+| `aufbereiten.py` | Grafiken und Schriften aus dem Baukasten |
+| `pergament.py` | die Pergamentfläche der Charaktermappe |
+| `pruefen.py` | Pixelmaße gegen `doku/MASSE.md` |
+
+`pergament.py` leitet daraus die beiden Flächen der Charaktermappe ab: `mappe-pergament-a4.jpg`
+formatfüllend auf A4 bei 300 ppi, dazu `mappe-pergament-kasten.png` als Fußkasten. Quelle ist
+`Kasten_Pergament.png` — die Doppelseiten des Baukastens taugen dafür nicht, ihre Innenfläche ist
+mit einer Standardabweichung von 1,0 praktisch glattes Weiß. Die Herleitung steht im Kopf des
+Werkzeugs.
+
+Am Ende steht, was noch fehlt — auch die Heldendokumente aus Schritt 1c, die nicht aufbereitet,
+sondern nur gesucht werden. Wer nur wissen will, wie es steht, fragt ohne Baukasten:
+
+```sh
+python3 werkzeuge/einrichten.py --pruefen
+```
+
+Es braucht `Pillow`, `psd-tools` und `numpy`, für `nachmessen.py` außerdem `pdfplumber`:
+
+```sh
+python3 -m pip install Pillow psd-tools numpy pdfplumber
+```
+
 ### Schritt 3 — prüfen
 
 ```sh
@@ -102,7 +166,8 @@ python3 werkzeuge/pruefen.py
 
 Vergleicht jede Datei in `grafiken/` gegen die erwarteten Pixelmaße aus `doku/MASSE.md`. Weicht
 eine ab, ist entweder eine andere Fassung des Baukastens im Umlauf oder beim Kopieren etwas
-schiefgegangen. Beides würde sonst erst im gesetzten PDF auffallen.
+schiefgegangen. Beides würde sonst erst im gesetzten PDF auffallen. `einrichten.py` ruft es am
+Ende bereits selbst auf.
 
 ### Der Weg von Hand
 
@@ -138,6 +203,28 @@ Feature-Liste.
 Gebraucht werden aus TeX Live oder MiKTeX: `geometry graphicx xcolor fontspec polyglossia tikz
 tcolorbox eso-pic fancyhdr enumitem wrapfig contour changepage intcalc array colortbl textcomp
 microtype hyperref tabularx environ`.
+
+**Für den Heldenbogen (`bogen/`)** kommen `pdfpages ifthen fontenc inputenc ebgaramond cinzel`
+dazu, dazu zwei Programme außerhalb von Python:
+
+| | wofür | woher |
+|---|---|---|
+| **XeLaTeX** | die Klasse; ohne das baut kein Beispiel | TeX Live / MacTeX |
+| **pdflatex** | `bogen/`, alle Fassungen des Heldenbogens | dieselbe Distribution |
+| **Ghostscript** | `bogen/`: `rendern`, `linien-lesen`, Farbquelle normalisieren | siehe unten |
+
+**Ghostscript ist unter Windows kostenlos dabei, anderswo nicht.** TeX Live bringt es dort in
+`tlpkg/tlgs` mit, ohne dass man etwas tun muss. Unter macOS gehört es **nicht** zu MacTeX:
+
+```sh
+brew install ghostscript          # macOS
+sudo apt install ghostscript      # Debian, Ubuntu
+```
+
+Ohne Ghostscript baut alles außer den drei genannten Werkzeugen. `werkzeuge/einrichten.py
+--pruefen` sagt, was davon da ist. Windows, macOS und Linux: die Bauskripte in `bogen/bau/` sind
+Python, zu jedem gibt es eine `.ps1` und eine `.sh`, beide dreizeilig und ohne eigene Logik,
+damit die Aufrufe auf allen Plattformen dieselben bleiben.
 
 ### Klassenoptionen
 

@@ -1,0 +1,134 @@
+% ===========================================================================
+% mappe/blaetter.tex — die vier Blätter der Charaktermappe
+%
+% Jedes Blatt ist eine mappenblatt-Umgebung und damit eine Box von genau
+% 210 x 297 mm. Wo sie landet, entscheidet mappe.tex: eine pro A4-Seite
+% (digital) oder zwei nebeneinander auf A3 quer (Druck).
+%
+% Alle Maße sind am HvS-Charakterbogen abgelesen — die Textzeilen mit
+% pdftotext -bbox, Titel, Figur und Kasten über eine Pixelanalyse des
+% 300-dpi-Rasters:
+%
+%   Titelblatt    Titel-Lockup  y 19,2..63,9   x 50,8..159,0 (Mitte 105,0)
+%                 Figur         y 75..244      x 71,5..156,2 (85 breit)
+%                 Fußtext       y 255,9 ff.    x 20..192   Zeilenabstand 5,93
+%   Rückseite     Überschrift   y 28,5         mittig
+%                 Fließtext     y 39,1 ff.     x 30,6..179,4  Abstand 6,77
+%                 Fußkasten     Titel y 244,8, Text darunter
+%
+% Der Titel ist EIN Lockup, kein Name plus separat gesetzte Profession:
+% beim Vorbild sind die drei Zeilen ein Block von 19,2 bis 63,9 mm. Deshalb
+% steht die Profession als dritte Zeile im selben Knoten. Der Preis dafür
+% ist die \fontsize-Klammer mitten im Text; der Gewinn ist, dass ein
+% zweizeiliger Name die Profession von selbst nach unten schiebt.
+% ===========================================================================
+%
+% Copyright 2026 Leif Janzik. Apache License 2.0.
+
+% --- Blatt 1: Titel --------------------------------------------------------
+\newcommand{\blatttitel}{%
+  \begin{mappenblatt}
+    \flechtrahmen
+    % Kopfzier statt des Verlagslogos — siehe mechanik-mappe.tex
+    \kopfzier{105}{14}{86}{4}
+    \konturzeile{105}{21}{0.30}%
+      {\auszeichnung\fontsize{\mappenamengroesse}{\mappenamenzeile}\selectfont}%
+      {\wertoder{mappe_name}{s1_name}%
+       \wertdaP{mappe_profession}{%
+         \\[2.5mm]{\fontsize{\mappeprofgroesse}{\mappeprofgroesse}\selectfont
+                   \wertvon{mappe_profession}}%
+       }{}}%
+    % Ganzkörperbild, auf der Standlinie
+    \mappebild{mappe_bild}{s1_bild}{62.5}{75}{85}{169}
+    % Fußkasten mit der Kurzempfehlung
+    \wertdaP{mappe_empfehlung}{%
+      \pergamentkasten{14}{248}{182}{%
+        \lesetext\fontsize{11.5}{15.5}\selectfont\centering
+        \wertvon{mappe_empfehlung}}%
+    }{}%
+  \end{mappenblatt}}
+
+% --- Blatt 2: Rückseite ----------------------------------------------------
+\newcommand{\blattrueckseite}{%
+  \begin{mappenblatt}
+    % Das Heldenbild als blasses Wasserzeichen hinter dem Text, wie beim
+    % Vorbild: dieselbe Stelle, nur heruntergenommen.
+    \begin{scope}[opacity=0.13]
+      \mappebild{mappe_bild}{s1_bild}{62.5}{75}{85}{169}
+    \end{scope}
+    \flechtrahmen
+    \node[anchor=north,text=schrift,font=\auszeichnung\fontsize{19}{23}\selectfont]
+      at (105,28.5) {\mappehintergrundtitel};
+    \mappetextblock{30.6}{38}{148.9}%
+      {\lesetext\fontsize{13}{19.2}\selectfont}{justify}%
+      {\wertvon{mappe_hintergrund}}%
+    % Fußkasten, frei betextbar
+    \wertdaP{mappe_fusstext}{%
+      \pergamentkasten{14}{243}{182}{%
+        \centering
+        \wertdaP{mappe_fusstitel}{%
+          {\auszeichnung\fontsize{13}{17}\selectfont
+           \wertvon{mappe_fusstitel}\par\vspace{1.4mm}}%
+        }{}%
+        \lesetext\fontsize{11.5}{15.5}\selectfont
+        \wertvon{mappe_fusstext}}%
+    }{}%
+  \end{mappenblatt}}
+
+% --- Blatt 3: Innenseite links ---------------------------------------------
+% Trägt den Pflichttext der Vereinbarung über Gemeinschaftsinhalte. Der muss
+% laut Baukasten ("Lies mich zuerst", Seite 2: "Der folgende Text muss stets
+% im Werk enthalten sein") wortgleich im Werk stehen — deshalb steht er nicht
+% in der Heldendatei. Nur die Copyright-Zeile ist variabel.
+%
+% Der Wortlaut selbst steht in ../pflichttext.tex, gemeinsam mit dem
+% Impressum der Abenteuerklasse. Hier stand eine ältere Fassung mit einem
+% anderen Rechteinhaber ("von Ulisses Medien und Spiele Distribution GmbH in
+% Deutschland, den U.S.A. und anderen Ländern") und einer anderen
+% Markenliste, während dsa5latex.cls die aktuelle führte. Welche gilt,
+% entscheidet sich jetzt an einer Stelle.
+%
+% Die Absatztrennung bleibt hier bei der Vorgabe \par: den Abstand macht
+% \parskip, siehe unten.
+\newcommand{\blattinnenlinks}{%
+  \begin{mappenblatt}
+    \flechtrahmen
+    \node[anchor=north,text=schrift,font=\auszeichnung\fontsize{15}{19}\selectfont]
+      at (105,28.5) {RECHTLICHES};
+    % Absätze durch Leerzeilen, nicht durch \par\vspace: nach einem \vspace
+    % setzt TikZ den folgenden Absatz im Blocksatz statt zentriert, und dann
+    % ist ein Absatz von dreien anders ausgerichtet als die übrigen.
+    \mappetextblock{30.6}{42}{148.9}%
+      {\lesetext\fontsize{10.5}{14.5}\selectfont\setlength{\parskip}{4mm}}%
+      {center}{\dsaPflichttext{\mappecopyright}}%
+    \wertdaP{mappe_innen_links_text}{%
+      \pergamentkasten{14}{205}{182}{%
+        \centering
+        \wertdaP{mappe_innen_links_titel}{%
+          {\auszeichnung\fontsize{13}{17}\selectfont
+           \wertvon{mappe_innen_links_titel}\par\vspace{1.4mm}}%
+        }{}%
+        \lesetext\fontsize{11.5}{15.5}\selectfont
+        \wertvon{mappe_innen_links_text}}%
+    }{}%
+  \end{mappenblatt}}
+
+% --- Blatt 4: Innenseite rechts --------------------------------------------
+% Frei betextbar. Ohne Text: Notizlinien, damit die Seite am Spieltisch
+% etwas taugt und nicht bloß leer ist.
+\newcommand{\blattinnenrechts}{%
+  \begin{mappenblatt}
+    \flechtrahmen
+    \node[anchor=north,text=schrift,font=\auszeichnung\fontsize{15}{19}\selectfont]
+      at (105,28.5) {%
+      \wertdaP{mappe_innen_rechts_titel}{\wertvon{mappe_innen_rechts_titel}}{NOTIZEN}};
+    \wertdaP{mappe_innen_rechts_text}{%
+      \mappetextblock{30.6}{42}{148.9}%
+        {\lesetext\fontsize{12}{17.5}\selectfont}{justify}%
+        {\wertvon{mappe_innen_rechts_text}}%
+    }{%
+      \foreach \i in {0,...,24} {%
+        \draw[bandkontur,opacity=0.26,line width=0.25mm]
+          (26,{46+\i*9}) -- (184,{46+\i*9});}%
+    }%
+  \end{mappenblatt}}

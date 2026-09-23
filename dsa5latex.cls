@@ -2902,6 +2902,13 @@
 % Eine Freizeile zwischen zwei Absaetzen des Vermerks.
 \newcommand*{\dsa@vermerkluft}{\par\vspace{\dsaimpressumzeile pt}}
 
+% Der Wortlaut selbst steht in pflichttext.tex, neben dieser Datei. Er wird
+% auch von der Charaktermappe gebraucht (bogen/mappe/blaetter.tex), und dort
+% stand frueher eine aeltere Fassung mit einem anderen Rechteinhaber. Genau
+% das soll der Kommentar oben verhindern, und dafuer muss der Text einen Ort
+% haben, den beide erreichen.
+\input{pflichttext}
+
 \newcommand{\dsaRechtevermerk}[2]{%
   \par
   {\fontsize{\dsaimpressumwert bp}{\dsaimpressumabvermerk bp}\selectfont
@@ -2921,18 +2928,10 @@
   % Kein \parskip: der wuerde auch hinter „Disclaimer" wirken. Die Freizeile
   % steht einzeln zwischen den Absaetzen.
   \setlength{\parskip}{0pt}%
-  Dieses Produkt wurde unter Lizenz erstellt. DAS SCHWARZE AUGE, AVENTURIEN,
-  DERE, MYRANOR, THARUN, UTHURIA, RIESLAND und THE DARK EYE sind eingetragene
-  Marken der Ulisses Spiele GmbH, Waldems.\dsa@vermerkluft
-  Ulisses Spiele und sein Logo sind eingetragene Marken der Ulisses Medien und
-  Spiele Distribution GmbH.\dsa@vermerkluft
-  Dieses Werk enthält Material, das durch Ulisses Spiele und/oder andere
-  Autoren urheberrechtlich geschützt ist. Solches Material wird mit Erlaubnis
-  im Rahmen der Vereinbarung über Gemeinschaftsinhalte für SCRIPTORIUM
-  AVENTURIS verwendet.\dsa@vermerkluft
-  Alle anderen Originalmaterialien in diesem Werk sind Copyright #1 von #2 und
-  werden im Rahmen der Vereinbarung über Gemeinschaftsinhalte für SCRIPTORIUM
-  AVENTURIS veröffentlicht.\par}
+  % Die Absatztrennung des Impressums an den gemeinsamen Text weiterreichen.
+  % Lokal, weil \dsaRechtevermerk ohnehin in einer Gruppe steht.
+  \let\dsaPflichttextLuft\dsa@vermerkluft
+  \dsaPflichttext{#1 von #2}}
 
 % ---- Inhaltsverzeichnis ----
 % Die Eintraege setzt die Klasse selbst, statt \l@section aus article zu

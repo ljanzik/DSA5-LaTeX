@@ -733,11 +733,16 @@ Aufbau und Rubriken nach dem Vorbild einer gesetzten Scriptorium-Veröffentlichu
 Redaktion, Lektorat, Korrektorat, Künstlerische Leitung, Coverbild, Satz Layout und Gestaltung,
 Innenillustrationen und Pläne, Version — oft mit einer Danksagung am Ende.
 
-**Der Rechtevermerk steht wörtlich in der Klasse und darf nicht umformuliert werden** — nicht
-kürzen, die Versalien nicht glätten. Ältere Veröffentlichungen führen einen anderen Wortlaut, unter
-anderem mit einem anderen Rechteinhaber; der in der Klasse ist der aktuelle. Wer eine neuere Fassung
-vom Verlag hat, ersetzt ihn dort. Es gibt absichtlich nur diesen einen Ort und nur diesen einen
-Befehl dafür.
+**Der Rechtevermerk steht wörtlich in `pflichttext.tex` und darf nicht umformuliert werden** —
+nicht kürzen, die Versalien nicht glätten. Ältere Veröffentlichungen führen einen anderen Wortlaut,
+unter anderem mit einem anderen Rechteinhaber; der dort ist der aktuelle. Wer eine neuere Fassung
+vom Verlag hat, ersetzt ihn dort. Es gibt absichtlich nur diesen einen Ort dafür.
+
+Die Datei liegt neben der Klasse, weil die Charaktermappe (`bogen/mappe/`) denselben Text braucht
+und ihn eine Zeit lang in einer älteren Fassung führte. Sie stellt `\dsaPflichttext{<Copyright>}`
+bereit; die Absatztrennung kommt vom Aufrufer über `\dsaPflichttextLuft`, weil das Impressum eine
+Freizeile im Raster setzt und die Mappe einen festen Abstand. Im Dokument benutzt man weiterhin
+nur `\dsaRechtevermerk`.
 
 ---
 
