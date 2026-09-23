@@ -775,7 +775,7 @@ Zusagen des Features im Satz auch eintreten.
 | Behälterfüllung, Lasttest | 10 Doppelseiten, Füllung 189 bis 208 von 236 Einheiten, **keine Leerseite**; von 42 Spalten enden 18 mit einer einzigen freien Rastereinheit | `neu zu messen` |
 | Behälterfüllung, Regellauf | 3 Doppelseiten, Füllung **82 bis 149, im Mittel 117** — eine Leerseite, strukturell unvermeidbar (siehe unten). Die früher notierten 75 bis 136 stammen aus der Messung mit dem leeren Platzhalter | `ok` |
 | **Klickbare Fassung**, Sprünge | `solo-klickbar.pdf` des Regellaufs: 47 Links, alle auflösbar, jeder landet auf der Kopfzahl seines Blocks; 71 benannte Ziele. Im gedruckten `solo.pdf` **kein einziger** Link | `ok` |
-| **Klickbare Fassung**, gleicher Satz | gegen `solo.pdf` verglichen: 9 Seiten hier wie dort, 2895 Wörter in gleicher Folge, senkrechte Abweichung **0,0000 bp** | `ok` |
+| **Klickbare Fassung**, gleicher Satz | gegen `solo.pdf` verglichen: 9 Seiten hier wie dort, 2963 Wörter in gleicher Folge, senkrechte Abweichung **0,0000 bp** | `ok` |
 
 Die Zeilen zum **Lasttest mit 238 Blöcken** sind vor der Korrektur des Platzhalters entstanden und
 damit auf zu kurz gemessenen Blöcken. Das Lasttestdokument liegt nicht im Projekt, sie lassen sich
@@ -847,13 +847,13 @@ mitten im Spiel wechseln. Sie hält nur, wenn die Sprungziele den Umbruch nicht 
 deshalb geben `\dsaSolo@sprung` und `\dsaSolo@ziel` ohne die Paketoption ihr Argument
 unverändert aus, Zeichen für Zeichen.
 
-Gemessen Wort für Wort über beide Abzüge des Regellaufs, 2895 Wörter:
+Gemessen Wort für Wort über beide Abzüge des Regellaufs, 2963 Wörter:
 
 | | Druck gegen klickbar |
 |---|---|
 | Seiten | 9 gegen 9 |
 | Wortfolge | gleich, kein Wort mehr oder weniger |
-| Verschiebung **senkrecht** | 0,0000 bp bei allen 2895 |
+| Verschiebung **senkrecht** | 0,0000 bp bei allen 2963 |
 | Verschiebung waagerecht | höchstens 0,0090 bp |
 
 Senkrecht null ist der Wert, auf den es hier ankommt: das Grundlinienraster ist unberührt, und
