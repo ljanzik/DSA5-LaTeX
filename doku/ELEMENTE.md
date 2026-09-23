@@ -365,7 +365,8 @@ kommt über die Marken von LaTeX aus `\dsakapitel`:
 ```
 
 Ohne diesen Befehl bleibt der Kapitelname allein stehen, vor dem ersten Kapitel bleibt die Zeile
-leer.
+leer. **Heißt das Kapitel wie das Abenteuer**, steht der Name nur einmal statt zweimal
+nebeneinander — bei einem Solo und bei jedem einkapitligen Heft der Normalfall.
 
 Er schließt mit dem Satzspiegel ab, auf beiden Seiten 24 mm von der Außenkante — rechts
 rechtsbündig bei 186 mm, links linksbündig bei 24 mm. Damit steht er bündig unter dem Textblock,

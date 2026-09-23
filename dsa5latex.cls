@@ -613,13 +613,24 @@
 \newcommand*{\dsa@kolumnetext}{%
   \begingroup
     \protected@edef\dsa@kolumnemarke{\leftmark}%
+    % Der Titel muss fuer den Vergleich genauso weit expandiert sein wie
+    % die Marke, sonst sind zwei gleiche Namen fuer \ifx verschiedene
+    % Makros.
+    \protected@edef\dsa@kolumnetitel{\dsa@abenteuertitel}%
     \ifx\dsa@kolumnemarke\@empty
       \dsa@abenteuertitel
     \else
-      \ifx\dsa@abenteuertitel\@empty
+      \ifx\dsa@kolumnetitel\@empty
         \leftmark
       \else
-        \dsa@abenteuertitel\,--\,\leftmark
+        \ifx\dsa@kolumnemarke\dsa@kolumnetitel
+          % Heisst das einzige Kapitel wie das Abenteuer -- bei einem Solo
+          % und bei jedem einkapitligen Heft der Normalfall --, stuende der
+          % Name sonst zweimal nebeneinander in der Fusszeile.
+          \dsa@abenteuertitel
+        \else
+          \dsa@abenteuertitel\,--\,\leftmark
+        \fi
       \fi
     \fi
   \endgroup}
