@@ -74,6 +74,26 @@ Die Höhle ist niedriger, als sie von außen aussah, und sie riecht nach kaltem 
 Jemand hat hier gelagert, und das ist noch nicht lange her. In der Asche findest du
 ein Stück Siegellack — rot, wie das an deinem Brief.
 
+Zwischen den Steinen bewegt sich etwas, das größer ist als eine Ratte und schneller.
+Es stellt sich zwischen dich und den Ausgang.
+
+\dsaProbe{Mut, erschwert um 1 — oder Körperbeherrschung, um an ihm vorbeizukommen}
+
+\begin{dsaWerteFreiPortrait}[dsaportrait=grafiken/fiole]{18}
+{\bfseries Wolfsratte}
+
+\begin{dsaWerteblock}
+MU 11 \quad KL 2 \quad IN 13 \quad CH 8\\
+FF 10 \quad GE 14 \quad KO 12 \quad KK 11
+\end{dsaWerteblock}
+\dsaFeld{LeP}{18}
+\dsaFeld{INI}{\dsaFormel{13+1W6}}
+\dsaFeld{Biss}{AT 12 TP \dsaFormel{1W6+1} RW kurz}
+\dsaFeld{RS/BE}{1/0}
+\dsaFeld{Größe}{klein}
+\dsaFeld{Typus}{Tier}
+\end{dsaWerteFreiPortrait}
+
 Weiter hinten fällt der Boden ab. Du kannst einen schmalen Gang hinabsteigen oder
 umkehren, solange es noch hell ist.
 
@@ -125,6 +145,13 @@ Mannschaft in den Hafen getrieben sei.
 Die Wirtin stellt dir wortlos einen zweiten Krug hin, den du nicht bestellt hast.
 »Von dem Jungen da hinten«, sagt sie. Als du dich umdrehst, ist da kein Junge mehr,
 nur eine Tür, die noch nachschwingt, und dahinter eine Treppe in den Keller.
+
+\begin{dsaKastenFrei}{12}
+\dsaKastentitel{Zechen und Zuhören}
+Wer in einer Schenke etwas erfahren will, würfelt eine Probe auf Betören oder
+Zechen. Gelingt sie, erfährst du eine Kleinigkeit mehr, als im Text steht — und
+darfst dir aussuchen, ob du sie glaubst.
+\end{dsaKastenFrei}
 
 Dem Jungen nach: Abschnitt \soloWeiter{bote}. Die Kellertreppe hinunter: Abschnitt
 \soloWeiter{keller}.

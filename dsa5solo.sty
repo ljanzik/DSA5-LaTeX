@@ -74,10 +74,18 @@
 \newcommand*{\dsaSolo@stellen}{3}
 \newcommand*{\soloStellen}[1]{\renewcommand*{\dsaSolo@stellen}{#1}}
 
+% Das \relax hinter \dsaSolo@stellen ist nicht schmueckend, es traegt die
+% ganze Schleife. TeX liest die Zahl hinter < mit Expansion: \dsaSolo@stellen
+% liefert die 3, und dann sucht TeX weiter nach Ziffern. Das Leerzeichen, das
+% im Quelltext dahinter steht, ist schon beim Tokenisieren des Kontrollworts
+% verschwunden -- die naechste Ziffer ist also die 0, die gesetzt werden
+% sollte. Aus 3 wird 30, der Platzhalter bleibt leer, und die Schleife laeuft
+% dreissigmal ins Nichts. Gemessen: Endstand des Zaehlers 30 statt 3, Breite
+% 0,0 pt statt 14,130 pt. \relax beendet die Zahl und wird dabei verbraucht.
 \newcommand*{\dsaSolo@platzhalter}{%
   \begingroup
     \@tempcnta=0
-    \loop\ifnum\@tempcnta<\dsaSolo@stellen
+    \loop\ifnum\@tempcnta<\dsaSolo@stellen\relax
       0\advance\@tempcnta by 1
     \repeat
   \endgroup}
@@ -114,12 +122,35 @@
 % (Zielsammlung, Auxwrite) und darf in einem \edef oder in \markboth nicht
 % vorzeitig expandieren und dabei doppelt schreiben.
 
+% Die Auszeichnung der Verweiszahl steht an EINER Stelle, weil sie an drei
+% gebraucht wird und ueberall dieselbe sein muss: die echte Zahl im Satzlauf,
+% der Platzhalter im Messlauf, das rote ?? im Fehlerfall.
+%
+% Fett, am gesetzten Solo des Verlags nachgemessen -- derselben Vorlage, die
+% schon den Nummernkopf hergab (siehe Dateikopf; sie liegt nicht im Projekt
+% und wird nicht benannt). Ausgezaehlt ueber den Textteil von 56 Seiten:
+% 506 Laeufe in GentiumBasic-Bold 10,0 bp, davon 356 reine Zahlen, bei
+% sonst magerem Fliesstext in GentiumBasic 10,0 bp. Die uebrigen fetten
+% Laeufe sind Rubriken im Werteblock ("Talente:", "RS/BE:").
+%
+% Beide Einkleidungen kommen dort vor -- "zu Abschnitt 100." und
+% "(111)" --, genau die Freiheit, die \soloWeiter dem Autor laesst.
+%
+% Dass es eine gemeinsame Stelle sein MUSS, ist kein Stilwunsch: Gentium
+% Basic hat Tabellenziffern, jede Ziffer also gleich breit, und fett ist sie
+% 7,8 Prozent breiter als mager -- dreistellig 15,233 statt 14,130 pt,
+% gemessen mit \settowidth. Waere der Platzhalter mager und die Zahl fett,
+% maesse der Messlauf jede Verweisstelle 1,10 pt zu schmal; die Bloecke
+% braechen im Satz anders um, die Hoehen waeren zu klein, und die Behaelter
+% liefen ueber.
+\newcommand*{\dsaSolo@zahlsatz}[1]{\textbf{#1}}
+
 \protected\def\soloWeiter#1{%
   \ifdsaSolo@messen
     % Ziele sammeln. Bewusst stumpf: Leerzeichen als Trenner, das Werkzeug
     % teilt und dedupliziert.
     \xdef\dsaSolo@ziele{\dsaSolo@ziele\space\detokenize{#1}}%
-    \dsaSolo@platzhalter
+    \dsaSolo@zahlsatz{\dsaSolo@platzhalter}%
   \else
     % Nur der aufgeschobene Write kennt \thepage: die Seitenzahl steht erst
     % beim Ausschiessen fest. \dsaSolo@marke wird dagegen JETZT expandiert,
@@ -127,20 +158,24 @@
     % Blocks.
     \protected@write\@auxout{}{%
       \string\soloSprungLage{\dsaSolo@marke}{\detokenize{#1}}{\thepage}}%
-    \ifcsname dsaSolo@nr@#1\endcsname
-      \csname dsaSolo@nr@#1\endcsname
-    \else
-      \dsaSolo@fehlt{#1}%
-    \fi
+    \dsaSolo@zahlsatz{%
+      \ifcsname dsaSolo@nr@#1\endcsname
+        \csname dsaSolo@nr@#1\endcsname
+      \else
+        \dsaSolo@fehlt{#1}%
+      \fi}%
   \fi}
 
 % Der Platzhalter fuer eine unbekannte Marke ist absichtlich genauso breit
 % wie eine echte Nummer: sonst bricht der Absatz anders um als im Messlauf
 % und die Hoehenrechnung des ganzen Behaelters ist hinfaellig. So bleibt
 % das Dokument auch mit fehlenden Marken durchgehend masshaltig.
+% Die Auszeichnung kommt von \dsaSolo@zahlsatz, hier nur noch die Farbe --
+% sonst stuende die Schriftstaerke an zwei Stellen und koennte auseinander
+% laufen.
 \newcommand*{\dsaSolo@fehlt}[1]{%
   \PackageWarning{dsa5solo}{Unbekannte Blockmarke '\detokenize{#1}'}%
-  \textbf{\color{dsadunkelrot}\dsaSolo@platzhalter}}
+  {\color{dsadunkelrot}\dsaSolo@platzhalter}}
 
 % Die .aux-Zeilen sind Daten fuer das Pruefwerkzeug, im Satz tun sie nichts.
 \providecommand*{\soloSprungLage}[3]{}

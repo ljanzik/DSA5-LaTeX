@@ -1300,6 +1300,86 @@
 % pergament-lang hat auch in der Flaeche eine gezeichnete Kante. Sauberer
 % waere ein Mittelstreifen zum Kacheln.
 
+% ---- Wertekasten mit Medaillon in freier Hoehe ----
+%
+% Der Gegner- und Kreaturkasten. Befund an einem offiziellen, gesetzten Solo
+% des Verlags (68 Seiten A4, liegt nicht im Projekt, wird nicht benannt):
+% fuenf solche Kaesten, alle gleich gebaut, aber in VIER verschiedenen
+% Hoehen -- gemessene Koerperhoehen 72,7 / 73,4 / 76,9 / 78,1 mm. Der Kasten
+% waechst also mit seinem Inhalt, und die drei festen Hoehen des Baukastens
+% (59,2 / 104,0 / 199,1 mm) treffen keine davon.
+%
+% Die Maessse des Hefts sind dabei NICHT die Sollmaesse -- es hat einen
+% eigenen Satzspiegel, 92,6 mm Koerperbreite gegen 94,0 mm der Vorlage. Es
+% belegt nur, DASS es den Kasten in freier Hoehe gibt. Gebaut wird er
+% deshalb aus der Vorlagengrafik.
+%
+% Drei Scheiben aus werte-gross-portrait, alle in wahrer Groesse:
+%
+%   Kopf   0,00 .. 35,60 mm   Zierleiste und Medaillonring
+%   Mitte  35,60 .. je nach Hoehe   Pergament mit den dunklen Seitenkanten
+%   Fuss   186,25 .. 199,05 mm  Zierleiste mit dem Ornament
+%
+% Kein \dsaBildDeckend wie bei dsaKastenFrei: das beschneidet mittig und
+% wuerde hier beide Zierleisten und den Ring zerschneiden. Gemessen an der
+% Grafik (2351 px / 300 ppi = 199,05 mm): die Kopfleiste liegt dunkel von
+% 4,49 bis 8,13 mm, die Fussleiste von 189,99 bis 196,34 mm, und der Ring
+% reicht nach doku/MASSE.md bis 32,1 mm unter die Oberkante -- 16,62 mm
+% Mitte plus 15,5 mm halber Aussendurchmesser. Die Kopfscheibe von 35,60 mm
+% traegt beide vollstaendig.
+%
+% Weil nur beschnitten und nie gestreckt wird, ist die Textur an den zwei
+% Naehten dieselbe wie im Rest der Flaeche.
+\newlength{\dsawertefreihoehe}  \setlength{\dsawertefreihoehe}{199.05mm}
+\newlength{\dsawertefreikopf}   \setlength{\dsawertefreikopf}{35.60mm}
+\newlength{\dsawertefreifuss}   \setlength{\dsawertefreifuss}{12.80mm}
+% Hilfslaengen fuer die drei Beschnitte.
+\newlength{\dsa@wfmitte}\newlength{\dsa@wfa}\newlength{\dsa@wfb}\newlength{\dsa@wfc}
+
+% \begin{dsaWerteFreiPortrait}[<Schluessel>]{<Rastereinheiten>}
+%
+% Kopf und Fuss brauchen zusammen 48,40 mm, also 11,43 Rastereinheiten --
+% unter 12 gibt es keine Flaeche mehr fuer die Mitte. Nach oben ist bei 47
+% Schluss, dort ist die Grafik zu Ende; das ist genau dsaWerteGrossPortrait.
+\newtcolorbox{dsaWerteFreiPortrait}[2][]{%
+  dsa@grundkasten,
+  /utils/exec={%
+    \setlength{\dsa@kastenbreite}{94.0mm}%
+    \ifnum#2<12
+      \ClassWarning{dsa5latex}{dsaWerteFreiPortrait mit #2 Rastereinheiten ist
+        zu niedrig -- Kopf und Fuss brauchen zusammen 12. Der Kasten wird
+        falsch gesetzt}%
+    \fi
+    \ifnum#2>47
+      \ClassWarning{dsa5latex}{dsaWerteFreiPortrait mit #2 Rastereinheiten ist
+        hoeher als die Vorlagengrafik (47). Die Mitte wird gestreckt}%
+    \fi
+    \setlength{\dsa@wfmitte}{\dimexpr\dsaRaster{#2}-\dsawertefreikopf-\dsawertefreifuss\relax}%
+    % Beschnitt unten fuer die Kopfscheibe, oben fuer die Fussscheibe,
+    % und fuer die Mitte beides.
+    \setlength{\dsa@wfa}{\dimexpr\dsawertefreihoehe-\dsawertefreikopf\relax}%
+    \setlength{\dsa@wfb}{\dimexpr\dsawertefreihoehe-\dsawertefreifuss\relax}%
+    \setlength{\dsa@wfc}{\dimexpr\dsawertefreihoehe-\dsawertefreikopf-\dsa@wfmitte\relax}},
+  width=94.0mm, height=\dsaRaster{#2},
+  underlay={%
+    \node[anchor=north west, inner sep=0] at (frame.north west)
+      {\includegraphics[width=94.0mm, clip,
+        trim={0pt} {\the\dsa@wfa} {0pt} {0pt}]{\dsagrafik{werte-gross-portrait}}};
+    \node[anchor=north west, inner sep=0]
+      at ([yshift=-\dsawertefreikopf]frame.north west)
+      {\includegraphics[width=94.0mm, height=\the\dsa@wfmitte, clip,
+        trim={0pt} {\the\dsa@wfc} {0pt} {\the\dsawertefreikopf}]{\dsagrafik{werte-gross-portrait}}};
+    \node[anchor=south west, inner sep=0] at (frame.south west)
+      {\includegraphics[width=94.0mm, clip,
+        trim={0pt} {0pt} {0pt} {\the\dsa@wfb}]{\dsagrafik{werte-gross-portrait}}};},
+  % Die Innenmasse von dsaWerteMittelPortrait. Zulaessig, weil die Leisten
+  % in allen drei Fassungen gleich weit von der Kante sitzen: die Kopfleiste
+  % endet 8,13 bis 9,57 mm unter der Oberkante, die Fussleiste beginnt 9,06
+  % bis 9,40 mm ueber der Unterkante. Gemessen an allen drei Grafiken.
+  dsaportraitlage, dsaportraitlagen={17.57mm}{16.62mm},
+  left=7mm, right=\dsaportraitfrei, top=8.9mm, bottom=9.6mm,
+  #1}
+
 %%% ==================================================================
 %%% 14  Vorlesetext, Meistermaske, NSC-Kopf
 %%% ==================================================================
