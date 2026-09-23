@@ -13,7 +13,8 @@ dabei stimmen, und alle drei nimmt dieses Feature dem Autor ab:
 
 1. **Die Nummerierung.** Der Autor schreibt sprechende Marken, keine Zahlen. Das Werkzeug
    vergibt die Nummern.
-2. **Die Verweise.** `\soloWeiter{marke}` setzt die Zahl, die die Marke am Ende bekommen hat.
+2. **Die Verweise.** `\soloWeiter{marke}` setzt die Zahl, die die Marke am Ende bekommen hat —
+   **fett**, wie im gesetzten Solo des Verlags.
 3. **Der Seitenwechsel.** Quelle und Ziel eines Sprungs liegen nie auf derselben Doppelseite.
    Wer bei 47 die Wahl trifft und 100 schon vor sich liegen hat, liest beides — und die
    Entscheidung ist entwertet.
@@ -234,7 +235,7 @@ keinen einzigen Link. Einzelheiten in [PRUEFPLAN.md](PRUEFPLAN.md).
 | Befehl | was er tut |
 |---|---|
 | `\begin{soloBlock}{marke} … \end{soloBlock}` | ein nummerierter Block; die Zahl steht als Überschrift darüber |
-| `\soloWeiter{marke}` | setzt die Zahl des Zielblocks, sonst nichts — die Einkleidung wählt der Autor |
+| `\soloWeiter{marke}` | setzt die Zahl des Zielblocks fett, sonst nichts — die Einkleidung wählt der Autor |
 | `\soloEnde` | dieser Block ist ein gewolltes Ende, keine Sackgasse |
 | `\soloStart{marke}` | dieser Block steht am Anfang und trägt die 1 |
 | `\soloBloecke{datei}` | bindet die Blöcke ein, im Satzlauf in der berechneten Reihenfolge |
@@ -243,7 +244,15 @@ keinen einzigen Link. Einzelheiten in [PRUEFPLAN.md](PRUEFPLAN.md).
 | `\soloBehaelterEnde` | Ende einer Doppelseite; steht in der erzeugten Reihenfolgedatei |
 
 `\soloWeiter` setzt bewusst nur die Zahl. „zu Abschnitt \soloWeiter{wald}" und
-„(\soloWeiter{wald})" sind damit gleichermaßen möglich.
+„(\soloWeiter{wald})" sind damit gleichermaßen möglich. Fett ist allein die Zahl; das
+einkleidende Wort bleibt Fließtext.
+
+**Die Schriftstärke steht an einer einzigen Stelle** (`\dsaSolo@zahlsatz` in `dsa5solo.sty`), und
+das ist keine Stilfrage. Gentium Basic hat Tabellenziffern — jede Ziffer gleich breit —, und fett
+ist sie 7,8 Prozent breiter als mager: dreistellig 15,233 statt 14,130 pt. Der Platzhalter des
+Messlaufs muss dieselbe Stärke tragen wie die echte Zahl im Satz, sonst misst der Messlauf jede
+Verweisstelle 1,10 pt zu schmal, die Blöcke brechen im Satz anders um, und die Behälter laufen
+über.
 
 ## 5. Der Nummernkopf
 

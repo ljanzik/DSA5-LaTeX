@@ -438,6 +438,7 @@ Zierrand außerhalb des Textbereichs liegt.
 | `dsaMeisterBreit` | 177,9 × 114,2 | **nein**, einspaltig |
 | `dsaMeisterMaske` | 84,0 × 108,0 | ja, der Regelfall |
 | `dsaMeisterMaskeKlein` | 84,0 × 45,0 | ja |
+| `dsaWerteFreiPortrait` | 94,0 × **frei**, 12 bis 47 Rastereinheiten | ja, Medaillon tritt heraus |
 
 Text in den grauen Kästen ist weiß.
 
@@ -496,6 +497,34 @@ rechten Zeilenende auch die Höhe misst. `\parshape` verlangt seine Zeilen
 ausgeschrieben — wer die Zahl ändert, ändert die Liste in der Klasse und die `9` davor. Der Befehl
 gilt für den Absatz, der folgt; bei mehreren Absätzen also nur für den ersten. Ohne ihn bleibt der
 Satz durchgehend schmal: sicher, nur enger.
+
+### Der Gegner- und Kreaturkasten
+
+```latex
+\begin{dsaWerteFreiPortrait}[dsaportrait=grafiken/wolf]{18}
+{\bfseries Wolfsratte}
+
+\begin{dsaWerteblock}
+MU 11 \quad KL 2 \quad IN 13 \quad CH 8
+\end{dsaWerteblock}
+\dsaFeld{LeP}{18}
+\dsaFeld{Biss}{AT 12 TP \dsaFormel{1W6+1} RW kurz}
+\end{dsaWerteFreiPortrait}
+```
+
+Derselbe Kasten wie `dsaWerteMittelPortrait`, aber in **freier Höhe**: das Argument ist die Höhe
+in Rastereinheiten, zulässig sind 12 bis 47. Darunter reicht der Platz für Kopf- und Fußleiste
+nicht, darüber ist die Vorlagengrafik zu Ende — 47 Einheiten sind `dsaWerteGrossPortrait`. Beides
+meldet die Klasse als `dsa5latex Warning`.
+
+Gebaut wird er aus drei Scheiben derselben Vorlagengrafik, alle in wahrer Größe: Kopf mit
+Zierleiste und Medaillonring (35,60 mm), die Mitte aus der Pergamentfläche in der gebrauchten
+Höhe, Fuß mit der Zierleiste und dem Ornament (12,80 mm). Es wird nur beschnitten, nie gestreckt;
+deshalb ist die Textur an den beiden Nähten dieselbe wie im Rest der Fläche.
+
+**Die Textspalte bleibt über die ganze Höhe neben dem Medaillon**, wie bei den drei festen
+Portraitkästen auch — `right=\dsaportraitfrei`. `\dsaPortraitfluss` hilft hier nicht: sein
+`\parshape` gilt nur für einen Absatz, und ein Werteblock besteht aus lauter `\dsaFeld`-Absätzen.
 
 ### Freie Höhe
 

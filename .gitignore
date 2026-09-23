@@ -51,3 +51,7 @@ beispiel/solo-test/
 # Der Lasttest haengt an den fremden Testdaten und ist ohne sie nicht
 # lauffaehig.
 beispiel/solo-test.tex
+
+# macOS legt diese Datei in jedem Ordner an, den der Finder oeffnet.
+# Sie beschreibt die Ansicht, nicht das Projekt.
+.DS_Store

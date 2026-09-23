@@ -694,6 +694,37 @@ Die früheren 19,4 mm unter der Oberkante kamen daher, dass dort der Außenradiu
 gerechnet wurde — 17,7 mm, die halbe Bildbreite — und nicht der Kranz. Das Medaillon saß damit
 2,1 mm zu tief.
 
+## Der Wertekasten in freier Höhe
+
+`dsaWerteFreiPortrait` schneidet drei Scheiben aus `werte-gross-portrait.png`. Die Grenzen sind
+an der Datei gemessen — Weg 2, Pixel geteilt durch 300 ppi. Die Grafik ist 1110 × 2351 px, also
+**93,98 × 199,05 mm**; in der Klasse steht 94,0 mm, wie bei den drei festen Fassungen auch.
+
+Gemessen wurde die Helligkeit je Zeile über die Kastenmitte (x 15 bis 70 Prozent der Breite, also
+ohne die dunklen Seitenkanten und ohne den Ring). Dunkel heißt unter 130 von 255:
+
+| Grafik | Höhe | Kopfleiste dunkel | Fußleiste dunkel, über der Unterkante |
+|---|---|---|---|
+| `werte-klein-portrait` | 59,18 mm | 5,76 – 9,57 mm | 2,88 – 9,14 mm |
+| `werte-mittel-portrait` | 103,97 mm | 4,74 – 8,30 mm | 3,05 – 9,40 mm |
+| `werte-gross-portrait` | 199,05 mm | 4,49 – 8,13 mm | 2,71 – 9,06 mm |
+
+Die Leisten sitzen in allen drei Fassungen gleich weit von der Kante. Deshalb darf der Kasten in
+freier Höhe die Innenabstände von `dsaWerteMittelPortrait` übernehmen, statt eigene zu bekommen.
+
+Daraus die beiden Scheibenhöhen:
+
+| Wert | Maß | woher |
+|---|---|---|
+| Kopfscheibe `\dsawertefreikopf` | **35,60 mm** | muss Leiste (bis 8,13 mm) **und** Ring tragen. Der Ring reicht 16,62 mm + 15,5 mm = 32,12 mm unter die Oberkante, siehe oben; 35,60 mm lässt 3,5 mm Luft |
+| Fußscheibe `\dsawertefreifuss` | **12,80 mm** | die Leiste beginnt 9,06 mm über der Unterkante; 12,80 mm lässt 3,7 mm Luft |
+| Gesamthöhe `\dsawertefreihoehe` | **199,05 mm** | 2351 px / 300 ppi |
+
+Beide Zuschläge sind gerundet und nicht aus dem Baukasten belegt — sie müssen nur groß genug
+sein, damit keine Zierleiste angeschnitten wird, und klein genug, dass bei der kleinsten Höhe
+noch Fläche für die Mitte bleibt. Zusammen 48,40 mm, also 11,43 Rastereinheiten; die Untergrenze
+des Kastens ist deshalb 12.
+
 ## Fußzeile
 
 Gemessen an einer gesetzten Veröffentlichung des Verlags, vier Seiten:
