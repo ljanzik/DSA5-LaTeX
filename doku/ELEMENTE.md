@@ -365,7 +365,8 @@ kommt über die Marken von LaTeX aus `\dsakapitel`:
 ```
 
 Ohne diesen Befehl bleibt der Kapitelname allein stehen, vor dem ersten Kapitel bleibt die Zeile
-leer.
+leer. **Heißt das Kapitel wie das Abenteuer**, steht der Name nur einmal statt zweimal
+nebeneinander — bei einem Solo und bei jedem einkapitligen Heft der Normalfall.
 
 Er schließt mit dem Satzspiegel ab, auf beiden Seiten 24 mm von der Außenkante — rechts
 rechtsbündig bei 186 mm, links linksbündig bei 24 mm. Damit steht er bündig unter dem Textblock,
@@ -398,6 +399,7 @@ setzt `\dsakolumneaussenlinks` auf 40,35 mm.
 | `\dsaVorlesetext[Einheiten]{Text}` | Zierleisten darüber und darunter, unten das Buch |
 | `\dsaMeisterhinweis[Einheiten]{Text}` | dasselbe, unten die Maske |
 | `\dsaKastentitel{Titel}` | Überschrift im Kasten, 12 bp fett |
+| `\dsaTabellenrubrik[n]` | graues Band über **n** Rastereinheiten, ohne Angabe eine |
 | `\begin{dsaWerteabsatz}` | hängender Einzug 8,504 pt |
 | `\dsaBand{ABE}{8}` | hochgestelltes Bandkürzel |
 | `\dsaKapitaelchen{Text}` | nachgebildete Kapitälchen, 82 % Versalien |
@@ -420,6 +422,12 @@ Formelsatz, und ein Times-Mathefont neben Gentium fällt bei jeder Ziffer auf.
 Die Spalte ist 80,5 mm, die Kästen sind breiter — sie ragen bewusst darüber hinaus, weil der
 Zierrand außerhalb des Textbereichs liegt.
 
+**Jeder Kasten belegt eine ganze Zahl Rastereinheiten und hält damit das Raster**, auch mitten
+im Fließtext: er steht in einer Box ohne Höhe, seinen Raum liefert `\dsaRasterluft`. Die Zeilen
+unter ihm sitzen dadurch wieder auf 84 bp + k · 12 bp. Der Text **im** Kasten folgt weiterhin
+seinem eigenen Raster, das ist gewollt und steht in `PRUEFPLAN.md` unter „Elemente mit eigenem
+Raster“.
+
 | Umgebung | mm | in einer Spalte |
 |---|---|---|
 | `dsaPergamentKlein` | 85,5 × 50,7 | ja, +2,5 mm je Seite |
@@ -437,6 +445,8 @@ Zierrand außerhalb des Textbereichs liegt.
 | `dsaMeisterBreit` | 177,9 × 114,2 | **nein**, einspaltig |
 | `dsaMeisterMaske` | 84,0 × 108,0 | ja, der Regelfall |
 | `dsaMeisterMaskeKlein` | 84,0 × 45,0 | ja |
+| `dsaWerteFreiPortrait` | 94,0 × **frei**, 12 bis 47 Rastereinheiten | ja, Medaillon tritt heraus |
+| `dsaKastenFrei` | 85,5 × **frei**, 5 bis 45 Rastereinheiten | ja, +2,5 mm je Seite |
 
 Text in den grauen Kästen ist weiß.
 
@@ -482,9 +492,11 @@ Die ersten acht Zeilen bleiben schmal, ab der neunten läuft der Satz auf die vo
 \end{dsaWerteMittelPortrait}
 ```
 
-Gemessen: Zeile 1 bis 8 enden bei 74,9 mm, Zeile 9 und die folgenden bei 101,5 mm; der Kranz
-beginnt bei 76,6 mm und endet 58,9 mm unter der Papierkante; die erste breite Zeile liegt bei
-64,7 mm, also 5,8 mm darunter.
+Gemessen an `beispiel/kaesten.pdf`, **relativ zur Kastenoberkante** statt zur Papierkante — der
+Kasten sitzt je nach Stelle im Satz woanders, seine Innenmaße nicht: der Kranz reicht 34,3 mm
+unter die Oberkante, die erste breite Zeile liegt 39,5 mm darunter, also 5,2 mm unter dem Kranz.
+Die schmalen Zeilen folgen dem Kreis und enden zwischen 73,7 und 82,3 mm, die breiten bei
+96,7 mm.
 
 Acht Zeilen, und zwar so gerechnet: der Kranz reicht 34,9 mm unter die Kastenoberkante, der Text
 beginnt 6 mm darunter, eine Zeile ist 11,4 bp = 4,02 mm hoch. Unter dem Kranz liegen muss nicht die
@@ -495,6 +507,49 @@ rechten Zeilenende auch die Höhe misst. `\parshape` verlangt seine Zeilen
 ausgeschrieben — wer die Zahl ändert, ändert die Liste in der Klasse und die `9` davor. Der Befehl
 gilt für den Absatz, der folgt; bei mehreren Absätzen also nur für den ersten. Ohne ihn bleibt der
 Satz durchgehend schmal: sicher, nur enger.
+
+### Das graue Band einer Rubrikzeile
+
+`\dsaTabellenrubrik` zeichnet das Band, auf dem Spaltenkopf und Anmerkung sitzen. Es ist **eine
+Rastereinheit** hoch — das reicht für eine Rubrikzeile, nicht für eine Anmerkung, die umbricht.
+Dann steht die Höhe dabei:
+
+```latex
+\dsaTabellenrubrik[2] \dsaRubrikschrift Anmerkung
+  & \dsaAnmerkungsschrift Ein Text, der auf zwei Zeilen umbricht\\
+```
+
+Ohne die Angabe liegt der graue Grund nur unter der ersten Zeile und hört mitten im Satz auf. Die
+Zahl kommt vom Autor und nicht aus einer Messung: das Band wird in der **ersten** Zelle gezeichnet,
+und dort weiß noch niemand, wie oft die letzte umbrechen wird.
+
+### Der Gegner- und Kreaturkasten
+
+```latex
+\begin{dsaWerteFreiPortrait}[dsaportrait=grafiken/wolf]{18}
+{\bfseries Wolfsratte}
+
+\begin{dsaWerteblock}
+MU 11 \quad KL 2 \quad IN 13 \quad CH 8
+\end{dsaWerteblock}
+\dsaFeld{LeP}{18}
+\dsaFeld{Biss}{AT 12 TP \dsaFormel{1W6+1} RW kurz}
+\end{dsaWerteFreiPortrait}
+```
+
+Derselbe Kasten wie `dsaWerteMittelPortrait`, aber in **freier Höhe**: das Argument ist die Höhe
+in Rastereinheiten, zulässig sind 12 bis 47. Darunter reicht der Platz für Kopf- und Fußleiste
+nicht, darüber ist die Vorlagengrafik zu Ende — 47 Einheiten sind `dsaWerteGrossPortrait`. Beides
+meldet die Klasse als `dsa5latex Warning`.
+
+Gebaut wird er aus drei Scheiben derselben Vorlagengrafik, alle in wahrer Größe: Kopf mit
+Zierleiste und Medaillonring (35,60 mm), die Mitte aus der Pergamentfläche in der gebrauchten
+Höhe, Fuß mit der Zierleiste und dem Ornament (12,80 mm). Es wird nur beschnitten, nie gestreckt;
+deshalb ist die Textur an den beiden Nähten dieselbe wie im Rest der Fläche.
+
+**Die Textspalte bleibt über die ganze Höhe neben dem Medaillon**, wie bei den drei festen
+Portraitkästen auch — `right=\dsaportraitfrei`. `\dsaPortraitfluss` hilft hier nicht: sein
+`\parshape` gilt nur für einen Absatz, und ein Werteblock besteht aus lauter `\dsaFeld`-Absätzen.
 
 ### Freie Höhe
 

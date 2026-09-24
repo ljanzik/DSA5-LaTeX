@@ -613,13 +613,24 @@
 \newcommand*{\dsa@kolumnetext}{%
   \begingroup
     \protected@edef\dsa@kolumnemarke{\leftmark}%
+    % Der Titel muss fuer den Vergleich genauso weit expandiert sein wie
+    % die Marke, sonst sind zwei gleiche Namen fuer \ifx verschiedene
+    % Makros.
+    \protected@edef\dsa@kolumnetitel{\dsa@abenteuertitel}%
     \ifx\dsa@kolumnemarke\@empty
       \dsa@abenteuertitel
     \else
-      \ifx\dsa@abenteuertitel\@empty
+      \ifx\dsa@kolumnetitel\@empty
         \leftmark
       \else
-        \dsa@abenteuertitel\,--\,\leftmark
+        \ifx\dsa@kolumnemarke\dsa@kolumnetitel
+          % Heisst das einzige Kapitel wie das Abenteuer -- bei einem Solo
+          % und bei jedem einkapitligen Heft der Normalfall --, stuende der
+          % Name sonst zweimal nebeneinander in der Fusszeile.
+          \dsa@abenteuertitel
+        \else
+          \dsa@abenteuertitel\,--\,\leftmark
+        \fi
       \fi
     \fi
   \endgroup}
@@ -1138,9 +1149,52 @@
 % \dsaKastenNeu{<Umgebung>}{<Breite>}{<Grafikhoehe>}{<Rastereinheiten>}
 %              {<Grafik>}{<weitere Schluessel>}
 \newlength{\dsa@kastenbreite}
+\newsavebox{\dsa@kastenbox}
+
+% Der Kasten steht in einer Box OHNE Hoehe und Tiefe, und seinen Raum
+% liefert \dsaRasterluft -- dieselbe Bauform wie \dsaProbe.
+%
+% Vorher stand er als gewoehnliche Box in der vertikalen Liste. Seine Hoehe
+% ist zwar ein Vielfaches von 12 bp, aber sie ist groesser als
+% \baselineskip, und dann legt TeX keinen Durchschuss mehr davor, sondern
+% faellt auf \lineskip zurueck. Der Kasten sass damit richtig, alles unter
+% ihm nicht mehr: gemessen an einem Abzug mit Text vor und nach dem Kasten
+% lagen die Zeilen danach 3,44 bp neben dem Raster (dsaPergamentMittel) und
+% 3,97 bp (dsaWerteMittel).
+%
+% Aufgefallen ist es lange nicht, weil beispiel/kaesten.tex jeden Kasten
+% allein auf eine Seite setzt und mit \clearpage abschliesst — dort steht
+% hinter keinem Kasten eine Zeile, die daneben liegen koennte. Erst ein
+% Kasten mitten im Fliesstext bringt es ans Licht, und im Solo ist das der
+% Regelfall.
+%
+% Die Box wird erst gesetzt und dann gehoben: \raisebox nimmt ein Argument,
+% keine Umgebung, und tcolorbox laeuft ueber \begin und \end. Deshalb der
+% Umweg ueber die savebox.
+%
+% \dsa@kastenauf und \dsa@kastenzu{<Einheiten>} klammern jeden Kasten der
+% Klasse ein -- die fertigen aus \dsaKastenNeu ebenso wie die beiden in
+% freier Hoehe, die ihre tcolorbox selbst bauen. Die Regel gilt fuer alle
+% oder fuer keinen: ein Kasten, der sie nicht befolgt, verschiebt den Satz
+% unter sich genauso wie vorher.
+% Die Einheitenzahl wird beim Oeffnen gemerkt, weil der Schlussteil einer
+% \newenvironment die Argumente der Umgebung nicht mehr sieht.
+\newcommand*{\dsa@kasteneinheiten}{0}
+
+\newcommand{\dsa@kastenauf}[1]{%
+  \gdef\dsa@kasteneinheiten{#1}%
+  \par\nobreak
+  \begin{lrbox}{\dsa@kastenbox}}
+
+\newcommand{\dsa@kastenzu}{%
+  \end{lrbox}%
+  \noindent\makebox[\linewidth][l]{%
+    \raisebox{-\dsaRaster{\dsa@kasteneinheiten}}[0pt][0pt]{%
+      \usebox{\dsa@kastenbox}}}%
+  \par\dsaRasterluft{\dsa@kasteneinheiten}\nobreak}
 
 \newcommand{\dsaKastenNeu}[6]{%
-  \newtcolorbox{#1}[1][]{%
+  \newtcolorbox{dsa@kasten@#1}[1][]{%
     dsa@grundkasten,
     % Die Breite der Kastengrafik merken: das Portraitmedaillon braucht sie,
     % weil es an der Grafik haengt und nicht am Rahmen.
@@ -1148,7 +1202,13 @@
     width=#2, height=\dsaRaster{#4},
     underlay={\node[anchor=north west, inner sep=0] at (frame.north west)
       {\includegraphics[width=#2,height=#3]{\dsagrafik{#5}}};},
-    #6, ##1}}
+    #6, ##1}%
+  \newenvironment{#1}[1][]{%
+    \dsa@kastenauf{#4}%
+    \begin{dsa@kasten@#1}[##1]%
+  }{%
+    \end{dsa@kasten@#1}%
+    \dsa@kastenzu}}
 
 % ---- Pergament ----
 \dsaKastenNeu{dsaPergamentKlein} {85.5mm} {50.7mm} {12}{pergament-klein} {dsaueberhang=2.5mm}
@@ -1275,17 +1335,62 @@
 % den Portrait-Rahmen von Seite 10." Und zum Abstand: „Feste Abstaende fuer
 % Objekte haben wir nicht." Die fertigen Kaesten sind Bequemlichkeit, nicht
 % das Verfahren.
+% Die drei Scheiben von pergament-lang. Gemessen an der Datei, 1010 x 2272 px
+% bei 300 ppi = 85,51 x 192,36 mm; durchsichtig sind oben 2,46 und unten
+% 2,62 mm, die gezeichnete Kante liegt oben bei 2,7 bis 4,1 mm und unten bei
+% 188,7 bis 189,7 mm. Zehn Millimeter Scheibe tragen beides mit Luft.
+\newlength{\dsapergamenthoehe} \setlength{\dsapergamenthoehe}{192.36mm}
+\newlength{\dsapergamentkopf}  \setlength{\dsapergamentkopf}{10mm}
+\newlength{\dsapergamentfuss}  \setlength{\dsapergamentfuss}{10mm}
+\newlength{\dsa@pgmitte}\newlength{\dsa@pga}\newlength{\dsa@pgb}\newlength{\dsa@pgc}
+
+% Kopf und Fuss brauchen zusammen 20 mm, also 4,72 Rastereinheiten; unter 5
+% bleibt keine Flaeche fuer die Mitte. Nach oben ist bei 45 Schluss, dort ist
+% die Grafik zu Ende.
+\newcommand*{\dsa@pergamentscheiben}[1]{%
+  \ifnum#1<5
+    \ClassWarning{dsa5latex}{dsaKastenFrei mit #1 Rastereinheiten ist zu
+      niedrig -- Kopf und Fuss brauchen zusammen 5. Der Kasten wird falsch
+      gesetzt}%
+  \fi
+  \ifnum#1>45
+    \ClassWarning{dsa5latex}{dsaKastenFrei mit #1 Rastereinheiten ist hoeher
+      als pergament-lang (45). Die Mitte wird gestreckt}%
+  \fi
+  \setlength{\dsa@pgmitte}{\dimexpr\dsaRaster{#1}-\dsapergamentkopf-\dsapergamentfuss\relax}%
+  \setlength{\dsa@pga}{\dimexpr\dsapergamenthoehe-\dsapergamentkopf\relax}%
+  \setlength{\dsa@pgb}{\dimexpr\dsapergamenthoehe-\dsapergamentfuss\relax}%
+  \setlength{\dsa@pgc}{\dimexpr\dsapergamenthoehe-\dsapergamentkopf-\dsa@pgmitte\relax}}
+
 \newenvironment{dsaKastenFrei}[2][]{%
+  \dsa@kastenauf{#2}%
   \begin{tcolorbox}[
     dsa@grundkasten,
     width=85.5mm, height=\dsaRaster{#2},
     dsaueberhang=2.5mm, top=8mm, bottom=8mm,
+    /utils/exec={\dsa@pergamentscheiben{#2}},
     underlay={%
       % Die Pergamentflaeche wird beschnitten, nicht gestaucht: bei 14
       % Rastereinheiten waeren aus 192,4 mm Grafik 59,3 mm zu machen, ein
       % Faktor von 3,2, und die Textur waere sichtbar gequetscht.
+      %
+      % Drei Scheiben, nicht ein mittiger Beschnitt. \dsaBildDeckend schneidet
+      % mittig, und pergament-lang hat oben wie unten eine GEZEICHNETE Kante --
+      % gemessen faellt die Helligkeit oben bei 2,7 bis 4,1 mm von 175 auf 67,
+      % unten spiegelbildlich bei 188,7 bis 189,7 mm. Mittig beschnitten fielen
+      % beide weg, der Kasten hatte keinen Rand mehr, und die Zierleisten
+      % schienen in der Flaeche zu schweben statt auf ihr zu sitzen. Am Abzug
+      % gesehen, nicht gerechnet.
       \node[anchor=north west, inner sep=0] at (frame.north west)
-        {\dsaBildDeckend{85.5mm}{\dsaRaster{#2}}{\dsagrafik{pergament-lang}}};
+        {\includegraphics[width=85.5mm, clip,
+          trim={0pt} {\the\dsa@pga} {0pt} {0pt}]{\dsagrafik{pergament-lang}}};
+      \node[anchor=north west, inner sep=0]
+        at ([yshift=-\dsapergamentkopf]frame.north west)
+        {\includegraphics[width=85.5mm, height=\the\dsa@pgmitte, clip,
+          trim={0pt} {\the\dsa@pgc} {0pt} {\the\dsapergamentkopf}]{\dsagrafik{pergament-lang}}};
+      \node[anchor=south west, inner sep=0] at (frame.south west)
+        {\includegraphics[width=85.5mm, clip,
+          trim={0pt} {0pt} {0pt} {\the\dsa@pgb}]{\dsagrafik{pergament-lang}}};
       % 55,80 x 10,37 mm: das Rahmenmass von Absatztrenner_oben.psd im IDML.
       \node[anchor=north, inner sep=0] at (frame.north)
         {\includegraphics[width=55.8mm,height=10.37mm]{\dsagrafik{trenner-oben}}};
@@ -1295,10 +1400,96 @@
       % Maskenleiste (trenner-maske) gehoert an einen Meisterhinweis, die
       % Buchleiste (trenner-buch) an einen Vorlesetext.
     #1]%
-}{\end{tcolorbox}}
-% Die Pergamentflaeche wird beschnitten statt gestreckt, und
-% pergament-lang hat auch in der Flaeche eine gezeichnete Kante. Sauberer
-% waere ein Mittelstreifen zum Kacheln.
+}{\end{tcolorbox}\dsa@kastenzu}
+
+% ---- Wertekasten mit Medaillon in freier Hoehe ----
+%
+% Der Gegner- und Kreaturkasten. Befund an einem offiziellen, gesetzten Solo
+% des Verlags (68 Seiten A4, liegt nicht im Projekt, wird nicht benannt):
+% fuenf solche Kaesten, alle gleich gebaut, aber in VIER verschiedenen
+% Hoehen -- gemessene Koerperhoehen 72,7 / 73,4 / 76,9 / 78,1 mm. Der Kasten
+% waechst also mit seinem Inhalt, und die drei festen Hoehen des Baukastens
+% (59,2 / 104,0 / 199,1 mm) treffen keine davon.
+%
+% Die Maessse des Hefts sind dabei NICHT die Sollmaesse -- es hat einen
+% eigenen Satzspiegel, 92,6 mm Koerperbreite gegen 94,0 mm der Vorlage. Es
+% belegt nur, DASS es den Kasten in freier Hoehe gibt. Gebaut wird er
+% deshalb aus der Vorlagengrafik.
+%
+% Drei Scheiben aus werte-gross-portrait, alle in wahrer Groesse:
+%
+%   Kopf   0,00 .. 35,60 mm   Zierleiste und Medaillonring
+%   Mitte  35,60 .. je nach Hoehe   Pergament mit den dunklen Seitenkanten
+%   Fuss   186,25 .. 199,05 mm  Zierleiste mit dem Ornament
+%
+% Kein \dsaBildDeckend wie bei dsaKastenFrei: das beschneidet mittig und
+% wuerde hier beide Zierleisten und den Ring zerschneiden. Gemessen an der
+% Grafik (2351 px / 300 ppi = 199,05 mm): die Kopfleiste liegt dunkel von
+% 4,49 bis 8,13 mm, die Fussleiste von 189,99 bis 196,34 mm, und der Ring
+% reicht nach doku/MASSE.md bis 32,1 mm unter die Oberkante -- 16,62 mm
+% Mitte plus 15,5 mm halber Aussendurchmesser. Die Kopfscheibe von 35,60 mm
+% traegt beide vollstaendig.
+%
+% Weil nur beschnitten und nie gestreckt wird, ist die Textur an den zwei
+% Naehten dieselbe wie im Rest der Flaeche.
+\newlength{\dsawertefreihoehe}  \setlength{\dsawertefreihoehe}{199.05mm}
+\newlength{\dsawertefreikopf}   \setlength{\dsawertefreikopf}{35.60mm}
+\newlength{\dsawertefreifuss}   \setlength{\dsawertefreifuss}{12.80mm}
+% Hilfslaengen fuer die drei Beschnitte.
+\newlength{\dsa@wfmitte}\newlength{\dsa@wfa}\newlength{\dsa@wfb}\newlength{\dsa@wfc}
+
+% \begin{dsaWerteFreiPortrait}[<Schluessel>]{<Rastereinheiten>}
+%
+% Kopf und Fuss brauchen zusammen 48,40 mm, also 11,43 Rastereinheiten --
+% unter 12 gibt es keine Flaeche mehr fuer die Mitte. Nach oben ist bei 47
+% Schluss, dort ist die Grafik zu Ende; das ist genau dsaWerteGrossPortrait.
+\newtcolorbox{dsa@kasten@wfp}[2][]{%
+  dsa@grundkasten,
+  /utils/exec={%
+    \setlength{\dsa@kastenbreite}{94.0mm}%
+    \ifnum#2<12
+      \ClassWarning{dsa5latex}{dsaWerteFreiPortrait mit #2 Rastereinheiten ist
+        zu niedrig -- Kopf und Fuss brauchen zusammen 12. Der Kasten wird
+        falsch gesetzt}%
+    \fi
+    \ifnum#2>47
+      \ClassWarning{dsa5latex}{dsaWerteFreiPortrait mit #2 Rastereinheiten ist
+        hoeher als die Vorlagengrafik (47). Die Mitte wird gestreckt}%
+    \fi
+    \setlength{\dsa@wfmitte}{\dimexpr\dsaRaster{#2}-\dsawertefreikopf-\dsawertefreifuss\relax}%
+    % Beschnitt unten fuer die Kopfscheibe, oben fuer die Fussscheibe,
+    % und fuer die Mitte beides.
+    \setlength{\dsa@wfa}{\dimexpr\dsawertefreihoehe-\dsawertefreikopf\relax}%
+    \setlength{\dsa@wfb}{\dimexpr\dsawertefreihoehe-\dsawertefreifuss\relax}%
+    \setlength{\dsa@wfc}{\dimexpr\dsawertefreihoehe-\dsawertefreikopf-\dsa@wfmitte\relax}},
+  width=94.0mm, height=\dsaRaster{#2},
+  underlay={%
+    \node[anchor=north west, inner sep=0] at (frame.north west)
+      {\includegraphics[width=94.0mm, clip,
+        trim={0pt} {\the\dsa@wfa} {0pt} {0pt}]{\dsagrafik{werte-gross-portrait}}};
+    \node[anchor=north west, inner sep=0]
+      at ([yshift=-\dsawertefreikopf]frame.north west)
+      {\includegraphics[width=94.0mm, height=\the\dsa@wfmitte, clip,
+        trim={0pt} {\the\dsa@wfc} {0pt} {\the\dsawertefreikopf}]{\dsagrafik{werte-gross-portrait}}};
+    \node[anchor=south west, inner sep=0] at (frame.south west)
+      {\includegraphics[width=94.0mm, clip,
+        trim={0pt} {0pt} {0pt} {\the\dsa@wfb}]{\dsagrafik{werte-gross-portrait}}};},
+  % Die Innenmasse von dsaWerteMittelPortrait. Zulaessig, weil die Leisten
+  % in allen drei Fassungen gleich weit von der Kante sitzen: die Kopfleiste
+  % endet 8,13 bis 9,57 mm unter der Oberkante, die Fussleiste beginnt 9,06
+  % bis 9,40 mm ueber der Unterkante. Gemessen an allen drei Grafiken.
+  dsaportraitlage, dsaportraitlagen={17.57mm}{16.62mm},
+  left=7mm, right=\dsaportraitfrei, top=8.9mm, bottom=9.6mm,
+  #1}
+
+% Wie jeder Kasten der Klasse in eine Box ohne Hoehe, damit der Satz unter
+% ihm auf dem Raster bleibt -- siehe \dsa@kastenauf.
+\newenvironment{dsaWerteFreiPortrait}[2][]{%
+  \dsa@kastenauf{#2}%
+  \begin{dsa@kasten@wfp}[#1]{#2}%
+}{%
+  \end{dsa@kasten@wfp}%
+  \dsa@kastenzu}
 
 %%% ==================================================================
 %%% 14  Vorlesetext, Meistermaske, NSC-Kopf
@@ -1635,11 +1826,24 @@
 % einen Satz ohne Grundlinienraster, wo eine Zeile keine Rastereinheit misst
 % und eine Kopfzeile mehrzeilig sein darf. Das Band selbst, Rechteck, Verlauf
 % und die zwei Linien, bleibt dasselbe.
-\newcommand*{\dsa@bandmasse}{%
+% Die Hoehe des Bandes in Rastereinheiten. Eine Rubrikzeile ist eine Zeile
+% hoch, eine Anmerkung bricht aber um, und dann muss das Band mitwachsen --
+% sonst liegt der graue Grund nur unter der ersten Zeile und hoert mitten im
+% Satz auf. Am Abzug gesehen.
+%
+% Die Zahl kommt vom Autor und nicht aus einer Messung: das Band wird in der
+% ERSTEN Zelle gezeichnet, und dort weiss noch niemand, wie oft die letzte
+% Zelle umbrechen wird. Das ist dieselbe Ansage wie bei jedem anderen hohen
+% Element der Klasse -- \dsaBildSpalte, dsaKastenFrei, \dsaVorlesetext nennen
+% ihre Rastereinheiten auch selbst.
+\newcommand*{\dsa@bandmasse}[1]{%
+  \setlength{\dsa@bandoben}{\dimexpr\dsaRaster{1}-\dp\strutbox\relax}%
   \setlength{\dsa@bandunten}{\dp\strutbox}%
-  \setlength{\dsa@bandoben}{\dimexpr\dsaRaster{1}-\dp\strutbox\relax}}
-\newcommand{\dsa@tabellenband}[3]{%
-  \dsa@bandmasse
+  \ifnum#1>1
+    \addtolength{\dsa@bandunten}{\dsaRaster{\numexpr#1-1\relax}}%
+  \fi}
+\newcommand{\dsa@tabellenband}[4]{%
+  \dsa@bandmasse{#4}
   \begin{tikzpicture}[overlay, blend mode=multiply]
     \path[#2] (-#1,-\dsa@bandunten)
       rectangle (\dimexpr\dsa@tabellenbreite-#1\relax,\dsa@bandoben);
@@ -1665,7 +1869,7 @@
   \setlength{\dsa@tabellenbreite}{\linewidth}%
   \dsa@tabellenband{0pt}%
     {shade,left color=dsatabellenrot,right color=white}%
-    {dsatabellenkopflinie}%
+    {dsatabellenkopflinie}{1}%
   \hspace*{\dsatabelleninnen}\textbf{#1}%
   \par\nobreak}
 
@@ -1701,8 +1905,9 @@
   \bfseries}
 \newcommand*{\dsaAnmerkungsschrift}{%
   \fontsize{\dsatabellenrubrikgrad bp}{\dsagrunddurchschuss bp}\selectfont}
-\newcommand*{\dsaTabellenrubrik}{%
-  \dsa@tabellenband{\dsatabelleninnen}{fill=dsatabellengrau}{}%
+% \dsaTabellenrubrik[<Rastereinheiten>] -- ohne Angabe eine Zeile hoch.
+\newcommand*{\dsaTabellenrubrik}[1][1]{%
+  \dsa@tabellenband{\dsatabelleninnen}{fill=dsatabellengrau}{}{#1}%
   \ignorespaces}
 
 % Die Linie unter jeder Zeile. \hline taugt nicht: sie bringt ihre

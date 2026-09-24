@@ -30,3 +30,28 @@ __pycache__/
 
 # Persoenliche Claude-Code-Einstellungen (Plugins, Berechtigungen)
 .claude/settings.local.json
+
+# Solo: Zwischenstaende des Werkzeugs. Die Messdatei und die
+# Nummernzuordnung werden bei jedem Lauf neu erzeugt, und solo-aus/ haelt
+# die bytegetreu geteilten Bloecke -- alles abgeleitet, nichts davon
+# gehoert versioniert.
+*.solo
+*.solonummern
+beispiel/solo-aus/
+beispiel/*/solo-aus/
+
+# Der Bauordner der klickbaren Fassung. Dort landen aux, log und das PDF
+# des zweiten Satzlaufs; das Ergebnis kopiert das Bauskript daneben.
+*-klickbar-bau/
+
+# Testdaten aus fremder Quelle: nur zum Lasttest des Loesers und zum
+# Messen des Layouts, kein Material dieses Projekts.
+beispiel/solo-test/
+
+# Der Lasttest haengt an den fremden Testdaten und ist ohne sie nicht
+# lauffaehig.
+beispiel/solo-test.tex
+
+# macOS legt diese Datei in jedem Ordner an, den der Finder oeffnet.
+# Sie beschreibt die Ansicht, nicht das Projekt.
+.DS_Store

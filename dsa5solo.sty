@@ -1,0 +1,450 @@
+%%% dsa5solo.sty — Solo-Abenteuer mit nummerierten Bloecken, aufgeloesten
+%%% Verweisen und garantiertem Seitenwechsel bei jedem Sprung.
+%%%
+%%%   \documentclass{dsa5latex}
+%%%   \usepackage{dsa5solo}            % Satzlauf
+%%%   \usepackage[messen]{dsa5solo}    % Messlauf
+%%%   \usepackage[klickbar]{dsa5solo}  % Satzlauf mit Sprungzielen
+%%%
+%%% Copyright 2026 Leif Janzik. Apache License 2.0, siehe LICENSE.
+%%%
+%%% Der Nummernkopf ist an einem offiziellen, gesetzten Solo des Verlags
+%%% nachgemessen, ueber 26 Koepfe an der Spaltenkante. Die Vorlage liegt
+%%% nicht im Projekt und wird hier nicht benannt; sie diente nur zum
+%%% Ausmessen:
+%%%
+%%%   Grundlinie mod 12 bp   0,0 bei allen 23 Koepfen mit Grad 13
+%%%   Schrift                GentiumBasic-Bold 13,0 bp, Farbe (0,0,0)
+%%%   Grundlinie davor       24,0 bp  = 12 bp Zeile + 1 Rastereinheit Luft
+%%%   Grundlinie danach      12,0 bp  = keine Zusatzluft
+%%%   linke Kante            24,00 mm bzw. 105,50 mm, also Spaltenkante
+%%%
+%%% Das ist Zeichen fuer Zeichen \dsaabschnitt der Kernklasse. Deshalb
+%%% definiert dieses Paket keinen eigenen Kopf, sondern ruft ihn auf --
+%%% und deshalb kommt kein neues Mass nach doku/MASSE.md.
+%%%
+%%% Die Zahl steht UEBER dem Block, nicht davor. Keine Einrueckung, keine
+%%% Aufzaehlungsnummerierung: die Vorlage kennt beides an keiner Stelle.
+%%%
+%%% Wie die Seitenregel zustande kommt, steht bei \soloBehaelterEnde.
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{dsa5solo}[2026/09/18 v1.0 Solo-Abenteuer fuer dsa5latex]
+
+\@ifundefined{dsaabschnitt}{%
+  \PackageError{dsa5solo}{dsa5latex nicht geladen}{Vor
+    \string\usepackage{dsa5solo} muss \string\documentclass{dsa5latex}
+    stehen -- dsa5solo baut auf \string\dsaabschnitt, dem Raster und
+    \string\dsaHintergrundOhneFeld der Kernklasse auf.}}{}
+
+%%% ==================================================================
+%%% 1  Optionen und Zustand
+%%% ==================================================================
+%
+% Der Messlauf setzt jeden Block in eine Box, misst ihn und schreibt Hoehe
+% und Sprungziele nach \jobname.solo. Der Satzlauf setzt ganz gewoehnlich,
+% ohne eine einzige Box -- nur so bleiben Textumfluss, umbrechbare Kaesten
+% und der freie Seitenumbruch im Block erhalten.
+
+\newif\ifdsaSolo@messen  \dsaSolo@messenfalse
+\DeclareOption{messen}{\dsaSolo@messentrue}
+
+% Die klickbare Fassung ist derselbe Satz mit Sprungzielen darauf, nicht
+% ein zweites Layout: gleiche Nummern, gleicher Umbruch, gleiche
+% Seitenzahlen wie im Druck. Deshalb eine Option auf demselben Lauf und
+% kein eigenes Verfahren -- Naeheres bei \dsaSolo@ziel.
+\newif\ifdsaSolo@klickbar  \dsaSolo@klickbarfalse
+\DeclareOption{klickbar}{\dsaSolo@klickbartrue}
+
+\ProcessOptions\relax
+
+% Keine Trennung ueber den Seitenwechsel. In einem fortlaufenden Text ist ein
+% getrenntes Wort am Seitenfuss ueblich; in einem Solo blaettert der Leser bei
+% jedem Sprung, und ein "Trep-" unten rechts mit "pe in den Keller" oben links
+% auf der naechsten Seite liest sich wie ein Satzfehler. \brokenpenalty steht
+% in LaTeX auf 100; 10000 verbietet den Umbruch hinter einer getrennten Zeile.
+%
+% Der Preis ist eine Zeile mehr Verschnitt je betroffener Spalte. Das faellt
+% hier nicht ins Gewicht, weil die Behaelter ohnehin mit Rueckhalt rechnen.
+\brokenpenalty=10000
+
+\newsavebox{\dsaSolo@box}
+\newwrite\dsaSolo@aus
+
+\newcommand*{\dsaSolo@marke}{}
+\newcommand*{\dsaSolo@ziele}{}
+
+%%% ==================================================================
+%%% 2  Die Stelligkeit der Nummern
+%%% ==================================================================
+%
+% Die stillste Falle des ganzen Verfahrens: "bei 7" ist schmaler als
+% "bei 128". Die Nummer steht im Flusstext, aendert also den Umbruch und
+% damit genau die Hoehe, die der Messlauf gerade ermittelt -- waehrend die
+% Nummer selbst erst nach dem Messlauf feststeht. Henne und Ei.
+%
+% Aufgeloest nicht durch Iteration, sondern durch eine obere Schranke: im
+% Messlauf steht ein Platzhalter mit der groesstmoeglichen Stellenzahl. Die
+% gemessene Hoehe ist dann nie zu klein, und zu gross gemessen kostet nach
+% der Ueberlegung bei \soloBehaelterEnde nur Papier, nie die Richtigkeit.
+%
+% Das Werkzeug schreibt die tatsaechliche Stelligkeit in die
+% .solonummern zurueck; ein zweiter Messlauf misst damit exakt.
+\newcommand*{\dsaSolo@stellen}{3}
+\newcommand*{\soloStellen}[1]{\renewcommand*{\dsaSolo@stellen}{#1}}
+
+% Das \relax hinter \dsaSolo@stellen ist nicht schmueckend, es traegt die
+% ganze Schleife. TeX liest die Zahl hinter < mit Expansion: \dsaSolo@stellen
+% liefert die 3, und dann sucht TeX weiter nach Ziffern. Das Leerzeichen, das
+% im Quelltext dahinter steht, ist schon beim Tokenisieren des Kontrollworts
+% verschwunden -- die naechste Ziffer ist also die 0, die gesetzt werden
+% sollte. Aus 3 wird 30, der Platzhalter bleibt leer, und die Schleife laeuft
+% dreissigmal ins Nichts. Gemessen: Endstand des Zaehlers 30 statt 3, Breite
+% 0,0 pt statt 14,130 pt. \relax beendet die Zahl und wird dabei verbraucht.
+\newcommand*{\dsaSolo@platzhalter}{%
+  \begingroup
+    \@tempcnta=0
+    \loop\ifnum\@tempcnta<\dsaSolo@stellen\relax
+      0\advance\@tempcnta by 1
+    \repeat
+  \endgroup}
+
+%%% ==================================================================
+%%% 3  Die Zuordnung Marke -> Nummer
+%%% ==================================================================
+%
+% Ein reiner Nachschlag ueber einen Zeichenkettenschluessel -- genau
+% dafuer ist die Hashtabelle von TeX da. \ifcsname und NICHT
+% \@ifundefined: \@ifundefined legt den Namen an, was bei 200 Bloecken mit
+% je drei Verweisen 600 tote Eintraege hinterliesse.
+
+\newcommand*{\soloNummer}[2]{%
+  \expandafter\gdef\csname dsaSolo@nr@#1\endcsname{#2}}
+
+\AtBeginDocument{%
+  \InputIfFileExists{\jobname.solonummern}{}{%
+    \ifdsaSolo@messen\else
+      \PackageWarning{dsa5solo}{\jobname.solonummern fehlt -- alle
+        Verweise erscheinen als ?? im Satz. Erst
+        werkzeuge/solo.py laufen lassen}%
+    \fi}}
+
+%%% ==================================================================
+%%% 4  Der Verweis im Flusstext
+%%% ==================================================================
+%
+% \soloWeiter setzt nur die Zahl, damit der Autor die Einkleidung selbst
+% waehlt -- "zu Abschnitt \soloWeiter{hoehle}" so gut wie "(\soloWeiter
+% {hoehle})". Die Vorlage schreibt "Abschnitt 100" aus.
+%
+% \protected\def und nicht \newcommand: der Befehl hat Nebenwirkungen
+% (Zielsammlung, Auxwrite) und darf in einem \edef oder in \markboth nicht
+% vorzeitig expandieren und dabei doppelt schreiben.
+
+% Die Auszeichnung der Verweiszahl steht an EINER Stelle, weil sie an drei
+% gebraucht wird und ueberall dieselbe sein muss: die echte Zahl im Satzlauf,
+% der Platzhalter im Messlauf, das rote ?? im Fehlerfall.
+%
+% Fett, am gesetzten Solo des Verlags nachgemessen -- derselben Vorlage, die
+% schon den Nummernkopf hergab (siehe Dateikopf; sie liegt nicht im Projekt
+% und wird nicht benannt). Ausgezaehlt ueber den Textteil von 56 Seiten:
+% 506 Laeufe in GentiumBasic-Bold 10,0 bp, davon 356 reine Zahlen, bei
+% sonst magerem Fliesstext in GentiumBasic 10,0 bp. Die uebrigen fetten
+% Laeufe sind Rubriken im Werteblock ("Talente:", "RS/BE:").
+%
+% Beide Einkleidungen kommen dort vor -- "zu Abschnitt 100." und
+% "(111)" --, genau die Freiheit, die \soloWeiter dem Autor laesst.
+%
+% Dass es eine gemeinsame Stelle sein MUSS, ist kein Stilwunsch: Gentium
+% Basic hat Tabellenziffern, jede Ziffer also gleich breit, und fett ist sie
+% 7,8 Prozent breiter als mager -- dreistellig 15,233 statt 14,130 pt,
+% gemessen mit \settowidth. Waere der Platzhalter mager und die Zahl fett,
+% maesse der Messlauf jede Verweisstelle 1,10 pt zu schmal; die Bloecke
+% braechen im Satz anders um, die Hoehen waeren zu klein, und die Behaelter
+% liefen ueber.
+\newcommand*{\dsaSolo@zahlsatz}[1]{\textbf{#1}}
+
+\protected\def\soloWeiter#1{%
+  \ifdsaSolo@messen
+    % Ziele sammeln. Bewusst stumpf: Leerzeichen als Trenner, das Werkzeug
+    % teilt und dedupliziert.
+    \xdef\dsaSolo@ziele{\dsaSolo@ziele\space\detokenize{#1}}%
+    \dsaSolo@zahlsatz{\dsaSolo@platzhalter}%
+  \else
+    % Nur der aufgeschobene Write kennt \thepage: die Seitenzahl steht erst
+    % beim Ausschiessen fest. \dsaSolo@marke wird dagegen JETZT expandiert,
+    % sonst traegt es beim Ausschiessen laengst die Marke des naechsten
+    % Blocks.
+    \protected@write\@auxout{}{%
+      \string\soloSprungLage{\dsaSolo@marke}{\detokenize{#1}}{\thepage}}%
+    % Der Sprung liegt AUSSEN um den Zahlsatz: das Linkrechteck soll die
+    % gesetzte Zahl umfassen, und gesetzt ist sie fett. Innen herum waere
+    % das Rechteck um 7,8 Prozent zu schmal -- dieselben Tabellenziffern,
+    % die oben den Platzhalter betreffen.
+    %
+    % Den Fehlerfall laesst der Sprung bewusst aus. Zu einer unbekannten
+    % Marke gibt es kein Ziel, und ein Link, der ins Leere zeigt, ist
+    % schlimmer als keiner: er sieht im Betrachter aus wie jeder andere und
+    % tut beim Klick nichts.
+    \ifcsname dsaSolo@nr@#1\endcsname
+      \dsaSolo@sprung{#1}{%
+        \dsaSolo@zahlsatz{\csname dsaSolo@nr@#1\endcsname}}%
+    \else
+      \dsaSolo@zahlsatz{\dsaSolo@fehlt{#1}}%
+    \fi
+  \fi}
+
+% Sprung und Ziel der klickbaren Fassung. Beide stehen hier beieinander,
+% obwohl das Ziel erst im Block gebraucht wird: sie sind ein Paar und
+% muessen denselben Namen bilden.
+%
+% Ohne die Option geben beide ihr Argument unveraendert aus -- kein
+% Zeichen mehr, kein Zeichen weniger. Das ist die Bedingung dafuer, dass
+% die klickbare Fassung Seite fuer Seite dieselbe ist wie der Druck; an
+% einem Abzug beider Fassungen nachgemessen, siehe PRUEFPLAN.md.
+%
+% An einer gesetzten Vorlage des Verlags abgelesen: dort traegt je ein
+% Ziel die Kopfzahl des Blocks (/FitH auf ihre Zeilenhoehe), der Link
+% liegt auf der Zahl im Verweis und sonst nirgends, und beide Zahlen sind
+% schwarz und fett wie jede andere im Satz. Gemessen an 420 Links: Breite
+% im Mittel 17,3 bp, also genau die Zahl und nicht der Satz darum.
+%
+% \hypertarget statt \phantomsection\label: der Anker sitzt damit IN der
+% Kopfzeile und nicht darunter, und der Sprung landet auf der Zahl statt
+% auf der ersten Textzeile. Der \label{solo:...} des Blocks bleibt davon
+% unberuehrt -- er traegt die Seite fuer die Pruefung, nicht den Sprung.
+%
+% hyperref kommt aus der Kernklasse und steht dort auf hidelinks
+% (dsa5latex.cls:87). Ein Rahmen wird also nicht gezeichnet, und die
+% Fassung sieht aus wie der Druck.
+\newcommand*{\dsaSolo@sprung}[2]{%
+  \ifdsaSolo@klickbar\hyperlink{solo.#1}{#2}\else#2\fi}
+
+\newcommand*{\dsaSolo@ziel}[2]{%
+  \ifdsaSolo@klickbar\hypertarget{solo.#1}{#2}\else#2\fi}
+
+% Der Platzhalter fuer eine unbekannte Marke ist absichtlich genauso breit
+% wie eine echte Nummer: sonst bricht der Absatz anders um als im Messlauf
+% und die Hoehenrechnung des ganzen Behaelters ist hinfaellig. So bleibt
+% das Dokument auch mit fehlenden Marken durchgehend masshaltig.
+% Die Auszeichnung kommt von \dsaSolo@zahlsatz, hier nur noch die Farbe --
+% sonst stuende die Schriftstaerke an zwei Stellen und koennte auseinander
+% laufen.
+\newcommand*{\dsaSolo@fehlt}[1]{%
+  \PackageWarning{dsa5solo}{Unbekannte Blockmarke '\detokenize{#1}'}%
+  {\color{dsadunkelrot}\dsaSolo@platzhalter}}
+
+% Die .aux-Zeilen sind Daten fuer das Pruefwerkzeug, im Satz tun sie nichts.
+\providecommand*{\soloSprungLage}[3]{}
+
+%%% ==================================================================
+%%% 5  Der Block
+%%% ==================================================================
+%
+% Der Kopf ist \dsaabschnitt (Messung siehe Dateikopf), ergaenzt um die
+% Bindung von Zahl und Text: es darf nie vorkommen, dass die Zahl unten auf
+% einer Seite steht und ihr Block erst auf der naechsten beginnt.
+%
+% \dsaabschnitt endet bereits mit \nobreak, das verbietet den Bruch direkt
+% hinter der Zahl. Das allein genuegt nicht -- der Bruch waere dann nach
+% der ERSTEN Textzeile erlaubt, und eine einzelne Zeile bliebe bei ihrer
+% Zahl zurueck. \@afterheading setzt zusaetzlich \clubpenalty=10000 und
+% nimmt es nach dem ersten Absatz von selbst zurueck; damit haengen Zahl
+% und die ersten beiden Zeilen zusammen.
+
+\newcommand*{\dsaSolo@kopf}[1]{%
+  \dsaabschnitt{#1}}
+
+% \begin{soloBlock}[zusammen]{marke} haelt den Block ungeteilt: er landet
+% vollstaendig in einer Spalte oder gar nicht. Gedacht fuer Bloecke mit
+% Bild -- ein \dsaBildSpalte bringt zwar sein eigenes \nobreak mit und
+% klebt damit an den Nachbarzeilen, aber das bindet nicht den ganzen
+% Block. Wer will, dass Bild und Text zusammen auf einer Seite stehen,
+% nimmt diese Option.
+%
+% Preis: der Block muss in EINE Spalte passen, also hoechstens 59
+% Rastereinheiten hoch sein. Das Werkzeug prueft es und warnt sonst.
+\newif\ifdsaSolo@zusammen
+
+\newenvironment{soloBlock}[2][]{%
+  \dsaSolo@zusammenfalse
+  \if\relax\detokenize{#1}\relax\else\dsaSolo@zusammentrue\fi
+  \xdef\dsaSolo@marke{\detokenize{#2}}%
+  \gdef\dsaSolo@ziele{}%
+  \ifdsaSolo@messen
+    \setbox\dsaSolo@box\vbox\bgroup
+      \hsize=\columnwidth \linewidth=\hsize
+      \parindent=\z@
+      % Ohne \prevdepth=0 sitzt die erste Zeile mit ihrer natuerlichen
+      % Hoehe an der Boxoberkante und \ht ist kein Vielfaches von 12 bp.
+      % So legt TeX Durchschussglue davor, die erste Grundlinie liegt auf
+      % 12 bp -- dasselbe, was \topskip im Satz tut.
+      \prevdepth=\z@
+      \dsaSolo@kopf{\dsaSolo@platzhalter}%
+  \else
+    % Ungeteilt heisst hier: Umbrueche verbieten, NICHT boxen. Eine Box
+    % waere verlockend, weil sie unteilbar ist -- aber ihre Hoehe muesste
+    % auf Rastervielfache gerundet und die Box um den gerundeten Wert
+    % abgesenkt werden, und die Differenz verschiebt den ganzen Inhalt.
+    % Am Satz gemessen lagen so gesetzte Bloecke 0,20 und 2,44 bp neben
+    % dem Raster. Penalties lassen die vertikale Liste unveraendert, also
+    % kann das Raster gar nicht erst brechen.
+    \ifdsaSolo@zusammen
+      \interlinepenalty=\@M
+      \clubpenalty=\@M
+      \widowpenalty=\@M
+      \brokenpenalty=\@M
+      % Zwischen zwei Absaetzen bleibt sonst ein Umbruchpunkt offen, den
+      % keine der Penalties oben abdeckt.
+      \let\dsaSolo@par\par
+      \def\par{\dsaSolo@par\nobreak}%
+    \fi
+    % Die Zahl ist zugleich das Sprungziel der klickbaren Fassung, siehe
+    % \dsaSolo@ziel. Ohne die Option steht hier nur die Zahl.
+    \dsaSolo@kopf{\dsaSolo@ziel{#2}{\dsaSolo@nummer{#2}}}%
+    % Marke fuer die Pruefung: \newlabel in der .aux traegt die Seite des
+    % Blockanfangs. hyperref ist von der Kernklasse geladen (:86).
+    \phantomsection
+    \label{solo:#2}%
+    % Die Sperre steht bewusst NACH der Marke, damit zwischen ihr und der
+    % ersten Textzeile nichts mehr liegt: \phantomsection setzt einen
+    % Anker in die vertikale Liste, und was dort einen Umbruchpunkt
+    % schafft, gehoert nicht zwischen die Zahl und ihren Block.
+    % \dsaabschnitt bringt sein eigenes \nobreak mit, das hier aber
+    % bereits hinter dem Anker laege.
+    \nobreak
+    \@afterheading
+  \fi
+}{%
+  \ifdsaSolo@messen
+      \par
+      % Die Unterlaenge der letzten Zeile gehoert nicht zur Rasterhoehe.
+      % Ein Rechteck ohne Mass setzt \dp der vbox auf 0.
+      \hrule height\z@ depth\z@ width\z@
+    \egroup
+    \dsaSolo@schreiben
+  \else
+    % Das urspruengliche \par, nicht das gesperrte: ein \nobreak am
+    % Blockende wuerde den Block an den folgenden binden, und gerade
+    % dort SOLL umbrochen werden duerfen.
+    \ifdsaSolo@zusammen\dsaSolo@par\else\par\fi
+    % Die Sperren galten nur in der Umgebungsgruppe und enden mit ihr.
+  \fi}
+
+% Der Nachschlag der Nummer, an zwei Stellen gebraucht.
+\newcommand*{\dsaSolo@nummer}[1]{%
+  \ifcsname dsaSolo@nr@#1\endcsname
+    \csname dsaSolo@nr@#1\endcsname
+  \else
+    \dsaSolo@fehlt{#1}%
+  \fi}
+
+% Rundung wortgleich wie \dsa@tabellesetzen (dsa5latex.cls:1809): \numexpr
+% teilt kaufmaennisch, also erst rundend teilen und dann bei Bedarf
+% aufstocken. Die 1 bp Toleranz, weil 12 bp keine ganze Zahl von sp sind.
+\newcommand*{\dsaSolo@schreiben}{%
+  \begingroup
+    \dimen@=\dimexpr\ht\dsaSolo@box+\dp\dsaSolo@box\relax
+    \edef\dsaSolo@n{\the\numexpr
+      \number\dimen@/\number\dimexpr\dsaRaster{1}\relax\relax}%
+    \ifdim\dimexpr\dsaRaster{\dsaSolo@n}\relax<\dimexpr\dimen@-1bp\relax
+      \edef\dsaSolo@n{\the\numexpr\dsaSolo@n+1\relax}%
+    \fi
+    \immediate\write\dsaSolo@aus{%
+      \string\soloblock{\dsaSolo@marke}{\dsaSolo@n}{\dsaSolo@ziele}}%
+    % Ungeteilte Bloecke muss das Werkzeug kennen: fuer sie gilt nicht die
+    % Doppelseite als Grenze, sondern die Spalte.
+    \ifdsaSolo@zusammen
+      \immediate\write\dsaSolo@aus{%
+        \string\solozusammen{\dsaSolo@marke}}%
+    \fi
+  \endgroup
+  \global\setbox\dsaSolo@box\box\voidb@x}
+
+% Ein Block ohne ausgehenden Verweis ist eine Sackgasse. Wo das Absicht
+% ist -- Tod, Sieg, Abbruch -- sagt \soloEnde es dem Werkzeug, damit es
+% nicht warnt.
+\newcommand*{\soloEnde}{%
+  \ifdsaSolo@messen
+    \xdef\dsaSolo@ziele{\dsaSolo@ziele\space *ende*}%
+  \fi}
+
+% Der Startblock steht immer am Anfang und traegt immer die 1.
+\newcommand*{\soloStart}[1]{%
+  \ifdsaSolo@messen
+    \immediate\write\dsaSolo@aus{\string\solostart{\detokenize{#1}}}%
+  \fi}
+
+%%% ==================================================================
+%%% 6  Die Behaelter
+%%% ==================================================================
+%
+% Ein Behaelter ist genau eine Doppelseite. Der Loeser verteilt die Bloecke
+% so darauf, dass Quelle und Ziel eines Sprungs nie im selben Behaelter
+% liegen; hier wird nur die Grenze gezogen.
+%
+% Das Bemerkenswerte an dieser Aufteilung: ein Messfehler kostet Papier,
+% nicht Richtigkeit. Laeuft ein Behaelter ueber, belegt er zwei
+% Doppelseiten -- aber jeder Sprung aus ihm heraus fuehrt per Konstruktion
+% in einen ANDEREN Behaelter, und der liegt auf einer dritten Doppelseite.
+% Bleibt er zu leer, entsteht eine Fuellseite. Die Regel haelt in beiden
+% Faellen. Deshalb genuegen gemessene Rasterhoehen, und der Seitenbauer von
+% TeX muss nicht nachgebaut werden.
+%
+% Eine Doppelseite ist links GERADE, rechts ungerade (2|3, 4|5). Nach dem
+% Behaelterende muss die kommende Seite also gerade sein.
+% \dsa@aufrechteSeite der Klasse (dsa5latex.cls:771) erzwingt das
+% Gegenteil -- es ist fuer Kapitelanfaenge gebaut, die rechts beginnen.
+%
+% Nach \clearpage traegt \value{page} schon die Nummer der kommenden
+% Seite; die Paritaetspruefung gilt also ihr.
+\newcommand*{\soloBehaelterEnde}{%
+  \clearpage
+  \ifodd\value{page}
+    \dsaHintergrundOhneFeld
+    \null
+    \clearpage
+  \fi}
+
+%%% ==================================================================
+%%% 7  Die Bloecke einlesen
+%%% ==================================================================
+%
+% Im Messlauf die Datei des Autors in seiner Reihenfolge, im Satzlauf die
+% vom Werkzeug berechnete Reihenfolge. Das Werkzeug teilt die Autorendatei
+% dafuer bytegetreu auf -- LaTeX liest dieselben Bytes wie sonst auch, es
+% gibt also kein Katcode-Problem mit \verb, %, "a oder #.
+
+% Der Schreibkanal wird zu Dokumentbeginn geoeffnet und nicht erst in
+% \soloBloecke: \soloStart darf davor stehen, und \textheight ist hier
+% bereits endgueltig.
+\AtBeginDocument{%
+  \ifdsaSolo@messen
+    \immediate\openout\dsaSolo@aus=\jobname.solo\relax
+    % Einmal der Satzspiegel, damit das Werkzeug keine Zahl doppelt haelt:
+    % Rastereinheiten je Spalte und Spalten je Doppelseite.
+    \immediate\write\dsaSolo@aus{\string\solomass
+      {\the\numexpr\number\textheight/\number\dimexpr\dsaRaster{1}\relax
+        \relax}{4}}%
+  \fi}
+\AtEndDocument{%
+  \ifdsaSolo@messen\immediate\closeout\dsaSolo@aus\fi}
+
+% Wohin das Werkzeug geschrieben hat, vom Arbeitsverzeichnis des Laufs aus
+% gesehen. Nur noetig, wenn die Bloecke nicht neben der .tex liegen.
+\newcommand*{\dsaSolo@ordner}{solo-aus}
+\newcommand*{\soloOrdner}[1]{\renewcommand*{\dsaSolo@ordner}{#1}}
+
+\newcommand*{\soloBloecke}[1]{%
+  \ifdsaSolo@messen
+    \input{#1}%
+  \else
+    \InputIfFileExists{\dsaSolo@ordner/reihenfolge.tex}{}{%
+      \PackageWarning{dsa5solo}{\dsaSolo@ordner/reihenfolge.tex fehlt --
+        die Bloecke stehen in Autorenreihenfolge und die
+        Doppelseitenregel gilt NICHT. Erst werkzeuge/solo.py laufen
+        lassen}%
+      \input{#1}}%
+  \fi}
+
+\endinput

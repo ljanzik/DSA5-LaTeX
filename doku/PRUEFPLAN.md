@@ -473,6 +473,172 @@ dadurch flacher auf ihrer Fläche als in der Vorlage. Wer den Schein nachbaut, k
 Lagenroutine wie für die Schlagschatten nehmen, mit Versatz null — und muss damit rechnen, dass
 sich damit auch das Aussehen der grauen Voreinstellung ändert.
 
+## Abgleich gegen ein offizielles Abenteuer
+
+*Zeigt das Beispieldokument jedes Element, das ein gesetztes Abenteuer des Verlags benutzt?*
+
+Geprüft an einem offiziellen, gesetzten **Solo** des Verlags, 68 Seiten A4, InDesign CC 2017. Es
+liegt nicht im Projekt und wird hier nicht benannt; es diente nur zum Auszählen und Messen.
+
+**Was diese Quelle wert ist.** Ein gesetztes Heft ist nach den Regeln oben die schwächste der
+zulässigen Quellen und **niemals** maßgeblich für den Satzspiegel — dafür gilt der Baukasten. Für
+die Frage, *welche Elemente überhaupt vorkommen*, ist es dagegen die einzige belastbare Quelle,
+denn der Baukasten zeigt Musterseiten, kein fertiges Abenteuer.
+
+**Wie gemessen wurde.** `pdfplumber` über alle 68 Seiten: Schriftname, Grad und Lage jedes
+Zeichens, dazu Größe und Lage jeder Grafik des Seiteninhalts. Die vielen kleinen Grafiken, die
+`pdfimages -list` zusätzlich meldet, stecken im Hintergrund-Formular und sind Zierrat der
+Seitengrafik, kein eigenes Element.
+
+### Die Schriftgrade des Hefts gegen die der Klasse
+
+| Element im Heft | gemessen | in der Klasse | |
+|---|---|---|---|
+| Fließtext | GentiumBasic 10,0 pt | 10 bp | passt |
+| Kastentext | GentiumBasic 9,5 pt | `\dsakastengrad` 9,5 | passt |
+| Abschnitt / Blocknummer | GentiumBasic-Bold 13,0 pt | `\dsaabschnitt` 13 bp | passt |
+| Kapitel | Andalus 31,7 pt | `\dsakapitelgrad` 31,73 | passt |
+| Unterkapitel | Andalus 18,9 pt | `\dsaunterkapitelgrad` 18,9 | passt |
+| Seitenzahl | Andalus 13,0 pt | `\dsaseitenzahlgrad` 13 | passt |
+| **Kolumnentitel** | **Andalus 12,1 pt** | `\dsakolumnegrad` **14** | **weicht ab** |
+| Verweiszahl im Fließtext | GentiumBasic-Bold 10,0 pt | `\dsaSolo@zahlsatz` fett | passt |
+
+Der Kolumnentitel ist der einzige Widerspruch. Der Wert 14 der Klasse stammt aus einer anderen
+gesetzten Veröffentlichung, dieser hier aus einem Solo — beide sind Hefte, keines ist der
+Baukasten. **Nicht entschieden**, bis eine dritte Quelle vorliegt; wer es entscheidet, trägt es
+hier und in `MASSE.md` ein.
+
+### Elemente des Hefts, die das Beispiel zeigt
+
+Pergamentkasten, Pergamentkasten in freier Höhe (gemessen 83,4 × 85,5 mm, also eine Breite der
+Vorlage bei krummer Höhe — `dsaKastenFrei`), grauer Meisterkasten mit Titelzeile, Wertekasten mit
+Porträtmedaillon (aber nur dem Typ nach, siehe den Gegnerkasten unten),
+Vorlesetext zwischen zwei Zierleisten, Werteblock mit fetten Rubriken,
+Aufzählung, Kapitelanfang mit Banner und Bild, Illustration in Spalten- und in Satzbreite,
+Seitenzahl und Kolumnentitel in der Fußzeile, Seitenhintergrund randabfallend. Alle in
+`beispiel/beispiel.tex` vorhanden.
+
+### Was das Heft benutzt und das Beispiel nicht hat
+
+| Element | im Heft | Stand |
+|---|---|---|
+| **Sanduhr als Zeitmarke** im Fließtext, etwa „7 (⌛+1)" | Wingdings 11 pt, 66-mal über 14 Seiten; 27 pt in der Überschrift „ZEITTAFEL" | fehlt der Klasse ganz |
+| **Ankreuzkreis** zum Abhaken, einzeln, in Reihen und als Raster | Wingdings 10/13/30 pt auf den Seiten 8 bis 61, das 5 × 4-Raster der Zeittafel | fehlt der Klasse ganz |
+| **Randabfallende Vollseitengrafik**, 210 × 297 mm | Seiten 2 und 62 bis 66 | `\dsaGanzseite` setzt 184 × 265 mm in den Grafikbereich, nicht randabfallend |
+| **Formularseite** mit Feldern und Linien | Seiten 62 bis 66, 30 Rechtecke allein auf Seite 64 | eigenes Feature, siehe `feature/charbogen` |
+| **Gegnerkasten: Wertekasten mit Medaillon in freier Höhe** | fünf Stück, Seiten 16, 17, 18, 19, 51 | **gebaut**: `dsaWerteFreiPortrait`, siehe unten |
+
+### Ergebnis: `dsaWerteFreiPortrait`
+
+Gebaut aus drei Scheiben von `werte-gross-portrait`, Maße und Quellen in `MASSE.md`. Gemessen am
+Abzug, 200 ppi gerastert, sichtbare Schwärzung des Kastens ohne die Fußzeile:
+
+| Rastereinheiten | Rahmen soll | sichtbar gemessen | Differenz |
+|---|---|---|---|
+| 12 | 50,80 mm | 47,62 mm | −3,17 |
+| 15 | 63,50 mm | 60,33 mm | −3,17 |
+| 18 | 76,20 mm | 73,03 mm | −3,17 |
+| 22 | 93,13 mm | 89,92 mm | −3,22 |
+| 25 | 105,83 mm | 102,62 mm | −3,22 |
+| 30 | 127,00 mm | 123,83 mm | −3,17 |
+| 40 | 169,33 mm | 166,12 mm | −3,22 |
+| 47 | 198,97 mm | 195,83 mm | −3,13 |
+
+Die Differenz ist über den ganzen Bereich konstant und **kein Rechenfehler**: die Vorlagengrafik
+trägt oben und unten durchsichtigen Rand — über dem Ring und unter dem Fußornament —, und der
+zählt zum Rahmen, aber nicht zur sichtbaren Fläche. Zum Vergleich: `dsaWerteMittelPortrait` ist
+als Grafik 104,00 mm hoch und misst sichtbar 100,25 mm, also −3,75 mm aus demselben Grund.
+
+**Die entscheidende Probe ist die Obergrenze.** Bei 47 Rastereinheiten muss der geschnittene
+Kasten dem ungeschnittenen `dsaWerteGrossPortrait` gleichen. Beide auf eine leere Seite gesetzt,
+an ihrem eigenen Ursprung ausgerichtet und Bildpunkt für Bildpunkt verglichen: **98,13 Prozent
+deckungsgleich** bei Schwelle 40 von 255. Der Rest ist der Höhenunterschied von 0,26 mm — der
+feste Kasten zeichnet seine Grafik mit 199,1 mm, der freie schneidet auf die 198,97 mm des
+Rahmens — und die Kantenglättung.
+
+Im Regellauf `beispiel.tex` steht der Kasten auf Seite 10 mit 18 Rastereinheiten, in
+`kaesten.tex` ebenso. Beide bauen ohne Fehler; die `Overfull \hbox` von 23,90 pt ist dieselbe wie
+beim Geschwisterkasten `dsaWerteMittelPortrait` und der dokumentierte Überhang.
+
+**Zwei Fallen beim Messen**, beide zuerst als Fehler des Kastens gelesen:
+
+* Die Höhenreihe schien auf jeder zweiten Seite 252,86 mm zu ergeben. Das war die Seitenzahl in
+  der Fußzeile, die der Umriss mitgenommen hatte — nicht der Kasten.
+* Der freie Kasten schien 4,07 mm weiter rechts zu sitzen als der feste. Das war die Seitenparität:
+  die eine Probe stand auf einer rechten Seite mit 20 mm Bund, die andere auf einer linken mit
+  24 mm Außenrand.
+
+### Der Gegnerkasten des Hefts
+
+Fünf Kreaturkästen, alle gleich gebaut und in vier verschiedenen Höhen:
+
+| Teil | Maß |
+|---|---|
+| Kopfleiste | 100,6 × 18,7 mm |
+| Porträtmedaillon, rund | 39,4 mm |
+| Körper | 92,6 × **72,7 / 73,4 / 76,9 / 78,1** mm |
+| Fußleiste | ~101 × 16,1 mm |
+
+Die vier Körperhöhen sind der Befund: der Kasten wächst mit seinem Inhalt. Die Klasse kann das
+heute nicht. `dsaWerteKleinPortrait`, `-Mittel-` und `-Gross-` haben feste Höhen (59,2 / 104,0 /
+199,1 mm), und die freie Höhe gibt es nur als Pergamentkasten — `dsaKastenFrei` ist fest auf
+85,5 mm Breite, `pergament-lang` als Fläche und die allgemeinen Zierleisten verdrahtet, ohne
+Medaillon und ohne Werte-Optik.
+
+Die Maße des Hefts sind dabei **nicht** die Sollmaße: 92,6 mm Körperbreite gegen 94,0 mm der
+Vorlage, 39,4 mm Medaillon gegen 35,4 mm im IDML. Das Heft hat einen eigenen Satzspiegel, und
+nach der Regel oben entscheidet es Maße nicht. Belegt ist durch das Heft nur, **dass** es den
+Kasten in freier Höhe gibt; die Maße dafür kämen aus dem Baukasten.
+
+Der Inhalt fehlt im Beispiel ebenfalls: dort steht im Werteblock `MU 11 KL 13 IN 14 CH 10` und
+`LeP 30 INI 12+1W6`. Ein Kreaturblock des Hefts trägt acht Eigenschaften, LeP/AsP/KaP, INI, je
+Angriff eine Zeile mit AT/TP/RW, RS/BE, Aktionen, Sonderfertigkeiten, Talente, Größenkategorie
+und Typus.
+
+Die beiden ersten sind Marken wie `\dsaFiole` oder `\dsaSchaedel` und wären dort einzureihen; ein
+Sollmaß dafür gibt der Baukasten nicht her, es müsste aus dem Heft kommen und wäre damit
+geschätzt. Die dritte kann die Klasse schon heute über `\dsaBildDeckend{\paperwidth}{\paperheight}`
+— so macht es `beispiel/battlemap.tex` —, nur trägt sie keinen eigenen Befehl dafür.
+
+**Tabellen kommen im Textteil des Hefts nicht vor.** Die Rechtecke stecken sämtlich in den
+Formularseiten des Anhangs. `dsaTabelle` ist damit an diesem Heft nicht zu prüfen.
+
+## Drei Befunde beim Ansehen des gesetzten Solos
+
+Alle drei am Abzug gefunden, keiner im Log.
+
+### Die Zierleisten schwebten in der Fläche
+
+`dsaKastenFrei` hat die Pergamentfläche mit `\dsaBildDeckend` beschnitten, und das schneidet
+**mittig**. `pergament-lang` hat aber oben wie unten eine gezeichnete Kante — gemessen fällt die
+Helligkeit oben bei 2,7 bis 4,1 mm von 175 auf 67, unten spiegelbildlich bei 188,7 bis 189,7 mm.
+Beide fielen weg, der Kasten hatte keinen Rand, und die Zierleisten schienen in der Fläche zu
+schweben statt auf ihr zu sitzen. Dazu kommt, dass `trenner-oben` selbst 2,88 mm durchsichtigen
+Rand über der gezeichneten Schließe trägt.
+
+**Keine Regression.** Mit der Klasse von vor dem Rasterfix gebaut sieht der Kasten genauso aus; er
+fiel erst auf, als er zum ersten Mal mitten im Satz stand statt allein auf einer Seite.
+
+Behoben mit drei Scheiben, wie beim Gegnerkasten. Nach einer Naht gesucht und keine gefunden: die
+größten Helligkeitssprünge im Kasten liegen beim Text und bei der unteren Leiste, keiner bei 10 mm
+unter der Oberkante. Die Zeilen davor und danach sitzen auf **+0,00 bp**.
+
+### Das graue Band der Anmerkung war eine Zeile hoch
+
+`\dsa@bandmasse` setzte die Bandhöhe fest auf `\dsaRaster{1}`. Bei der Rubrikzeile stimmt das, bei
+einer umbrechenden Anmerkung nicht: der graue Grund lag nur unter der ersten Zeile und hörte mitten
+im Satz auf. `\dsaTabellenrubrik` nimmt die Höhe jetzt als optionales Argument.
+
+### Halbleere Seiten und ein getrenntes Wort am Seitenwechsel
+
+Kein Fehler, aber es las sich wie einer. Die halbleere Seite ist die Behältergrenze — der nächste
+Block **muss** auf eine andere Doppelseite. Mit `--doppelseiten 1` füllen die Behälter 132 bis 136
+statt 82 bis 187 Rastereinheiten, bei gleicher Seitenzahl.
+
+Das getrennte Wort über den Seitenwechsel war eine gewöhnliche Trennung innerhalb eines Behälters.
+`\brokenpenalty=10000` in `dsa5solo` verbietet sie; nachgemessen endet danach **keine** Seite mehr
+mit einem getrennten Wort, vorher war es „Trep-" / „pe in den Keller".
+
 ## Elemente mit eigenem Raster
 
 Nicht jede Zeile gehört auf das Grundlinienraster der Seite. Diese Elemente weichen bewusst ab —
@@ -489,6 +655,45 @@ wer sie in einer Messung als Abweichung findet, hat nichts gefunden:
 
 Das Querformat gehört **nicht** dazu: seine Zeilen sitzen auf demselben Raster, gerechnet ab der
 Papierkante.
+
+### Befund: Kästen im Fließtext haben das Raster verschoben
+
+Nur der Text **im** Kasten hat ein eigenes Maß. Der Text **unter** ihm gehört aufs Raster, und
+dort lag er nicht: gemessen an einem Abzug mit Text vor und nach einem Kasten lagen die Zeilen
+danach **3,44 bp** neben dem Raster (`dsaPergamentMittel`) und **3,97 bp** (`dsaWerteMittel`).
+Im Solo, wo Kästen mitten im Satz stehen, traf es 101 Zeilen und vier Blockzahlen.
+
+Ursache ist die Regel, die in `CLAUDE.md` unter Punkt 2 steht. Die Kästen haben rastertreue
+Höhen — `height=\dsaRaster{24}` —, standen aber als gewöhnliche Box in der vertikalen Liste.
+Eine Box, die höher ist als `\baselineskip`, bekommt keinen Durchschuss davor, TeX fällt auf
+`\lineskip` zurück, und alles darunter liegt daneben. Der Kasten selbst saß richtig, deshalb fiel
+es am Kasten nicht auf.
+
+**Warum es so lange unentdeckt blieb:** `beispiel/kaesten.tex` setzt jeden Kasten allein auf eine
+Seite und schließt mit `\clearpage` ab. Hinter keinem Kasten steht dort eine Zeile, die daneben
+liegen könnte. Erst ein Kasten mitten im Fließtext bringt es ans Licht.
+
+Behoben nach dem Muster von `\dsaProbe`: `\dsa@kastenauf` und `\dsa@kastenzu` setzen jeden Kasten
+in eine Box ohne Höhe und liefern seinen Raum mit `\dsaRasterluft`. Das gilt für alle Kästen aus
+`\dsaKastenNeu` ebenso wie für `dsaKastenFrei` und `dsaWerteFreiPortrait`, die ihre `tcolorbox`
+selbst bauen — die Regel gilt für alle oder für keinen.
+
+Nachgemessen:
+
+| | vorher | nachher |
+|---|---|---|
+| Zeilen nach einem Kasten (Minimaltest) | 3,44 und 3,97 bp daneben | **0,000 bp** |
+| Solo, Fließtext außerhalb der Kästen | 101 von 1061 daneben | **0 von 951** |
+| Solo, Blockzahlen | 4 daneben | **0 von 25** |
+| Kastengrafiken, Größe | — | **unverändert**, alle fünfzehn auf ±0,00 mm |
+| Regellauf `beispiel.tex` | 123 Abweichungen | **123**, dieselben Seiten |
+
+Die Kästen rücken dabei **5,63 mm nach unten**: sie hängen jetzt an der Grundlinie statt an der
+Textoberkante. Das ist die Korrektur, nicht ihr Preis — vorher saß die Oberkante nicht auf dem
+Raster, jetzt auf 0,20 bp genau. Die 0,20 bp sind der durchsichtige Rand der Vorlagengrafik.
+
+Im Regellauf ändert sich nichts, weil dort hinter den Kästen kein Fließtext steht; seine 123
+Abweichungen sind Impressum und Umschlagrückseite und damit die Ausnahmen aus der Tabelle oben.
 
 Alles andere gehört auf das Raster. Der Prüfbefehl dazu:
 
@@ -582,6 +787,180 @@ setzt die `4` in den Text — eine Ziffer ist kein Buchstabe; über `\@namedef` 
 Ziffern tragen. Und eine Zahl ohne Einheit ist in einer TikZ-Koordinate ein Vielfaches der
 Achseneinheit: `0.5*\paperheight` wären dort 420 Zentimeter, nicht die halbe Blatthöhe. Beides
 fiel erst am Abzug auf.
+
+## Solo-Abenteuer (dsa5solo.sty)
+
+Eigenständiges Feature auf der Kernklasse. Der Nummernkopf ist an einem offiziellen, gesetzten
+Solo des Verlags nachgemessen und erwies sich als identisch mit `\dsaabschnitt` — es kommt
+**kein neues Maß** hinzu, deshalb steht dazu nichts in `MASSE.md`. Geprüft wird, ob die drei
+Zusagen des Features im Satz auch eintreten.
+
+| Prüfung | Ergebnis | Status |
+|---|---|---|
+| Nummernkopf gegen die Vorlage | 26 Köpfe an der Spaltenkante gemessen: Grundlinie mod 12 bp = 0,0 bei allen 23 Köpfen mit Grad 13; GentiumBasic-Bold 13,0 bp, Farbe (0,0,0); 24,0 bp Grundlinienabstand davor, 12,0 bp danach; linke Kante 24,00 / 105,50 mm. Deckt sich mit `\dsaabschnitt` (`dsa5latex.cls:954`) | `ok` |
+| Nummernvergabe lückenlos | Regellauf: 30 Blöcke, Nummern 1 bis 30, Startblock trägt die 1 | `ok` |
+| Verweise aufgelöst | 47 Sprungstellen im Regellauf, keine unbekannte Marke | `ok` |
+| Verweiszahl fett, Mess- und Satzlauf deckungsgleich | Platzhalter im Messlauf 15,233 pt, echte dreistellige fette Zahl 15,233 pt — gleich auf den Punkt. Regellauf danach: 7 Seiten, 47 von 47 Sprüngen wechseln die Doppelseite | `ok` |
+| Platzhalter setzt überhaupt etwas | **war bis hierher falsch**, siehe unten: Breite 0,0 pt statt 14,130 pt. Nach der Korrektur 3 Schleifendurchläufe statt 30 | `behoben` |
+| **Doppelseitenregel**, Regellauf | `--pruefen solo.aux`: 47 von 47 Sprüngen wechseln die Doppelseite | `ok` |
+| **Doppelseitenregel**, Lasttest mit 238 Blöcken | 383 von 383 Sprüngen | `ok` |
+| **Kopfregel** (Zahl nie letzte Zeile ihrer Spalte) | am PDF geprüft: 30 von 30 bzw. 238 von 238 Zahlen haben ihren Block unter sich | `ok` |
+| Stand von `.aux` und PDF | Zahl der Marken gegen die Nummernzuordnung und gegen die Blockzahlen im PDF — erkennt einen abgebrochenen Satzlauf | `ok` |
+| Sprunggraph | Regellauf hängt vollständig zusammen: alles erreichbar, überall ein Weg zu einem Ende, kein Block ohne eingehenden Verweis | `ok` |
+| Rasterlage der Blockzahlen | 30 von 30 bzw. 238 von 238 auf 84 bp + k · 12 bp, Abweichung **0,00 bp** — der erzwungene Doppelseitenumbruch verschiebt das Raster nirgends | `ok` |
+| Behälterfüllung, Lasttest | 10 Doppelseiten, Füllung 189 bis 208 von 236 Einheiten, **keine Leerseite**; von 42 Spalten enden 18 mit einer einzigen freien Rastereinheit | `neu zu messen` |
+| Behälterfüllung, Regellauf | 3 Doppelseiten, Füllung **82 bis 149, im Mittel 117** — eine Leerseite, strukturell unvermeidbar (siehe unten). Die früher notierten 75 bis 136 stammen aus der Messung mit dem leeren Platzhalter | `ok` |
+| **Klickbare Fassung**, Sprünge | `solo-klickbar.pdf` des Regellaufs: 47 Links, alle auflösbar, jeder landet auf der Kopfzahl seines Blocks; 71 benannte Ziele. Im gedruckten `solo.pdf` **kein einziger** Link | `ok` |
+| **Klickbare Fassung**, gleicher Satz | gegen `solo.pdf` verglichen: 9 Seiten hier wie dort, 2963 Wörter in gleicher Folge, senkrechte Abweichung **0,0000 bp** | `ok` |
+
+Die Zeilen zum **Lasttest mit 238 Blöcken** sind vor der Korrektur des Platzhalters entstanden und
+damit auf zu kurz gemessenen Blöcken. Das Lasttestdokument liegt nicht im Projekt, sie lassen sich
+hier nicht nachziehen. Beim Regellauf wuchs jeder Block um genau eine Rastereinheit; im Lasttest
+mit seinen bis zu 208 von 236 belegten Einheiten ist der Rückhalt deutlich knapper, die Zahlen
+sind dort also neu zu erheben, bevor man sich auf sie stützt.
+
+### Befund: der Platzhalter des Messlaufs war leer
+
+Gefunden beim Fettsetzen der Verweiszahlen, und älter als diese Änderung. `\dsaSolo@platzhalter`
+soll an jeder Verweisstelle so viele Nullen setzen, wie die Nummern Stellen haben — er setzte
+**nichts**, gemessen 0,0 pt statt 14,130 pt.
+
+Die Ursache steckt in einer Zeile:
+
+```latex
+\loop\ifnum\@tempcnta<\dsaSolo@stellen
+  0\advance\@tempcnta by 1
+\repeat
+```
+
+TeX liest die Zahl hinter `<` mit Expansion. `\dsaSolo@stellen` liefert die `3`, dann sucht TeX
+weiter nach Ziffern — und das Leerzeichen, das im Quelltext dahinter steht, ist beim Tokenisieren
+des Kontrollworts längst verschwunden. Die nächste Ziffer ist die `0`, die gesetzt werden sollte.
+Aus 3 wird 30, der Platzhalter bleibt leer, die Schleife läuft dreißigmal ins Nichts. Nachgemessen
+am Paketkontext: Endstand des Zählers **30 statt 3**, Breite **0,0 pt**; mit `\relax` hinter
+`\dsaSolo@stellen` sind es 3 Durchläufe und 14,130 pt.
+
+**Was das für die Messung hieß.** Der Messlauf setzte jede der 47 Verweisstellen des Regellaufs
+mit der Breite null. Nach der Korrektur ist **jeder der 30 Blöcke genau eine Rastereinheit höher**
+als zuvor — die Zeile, die die verschluckten Zahlen gekostet hatten. Der Regellauf trägt die
+Korrektur ohne Weiteres: weiterhin 7 Seiten, 47 von 47 Sprüngen wechseln die Doppelseite, kein
+`Overfull \vbox` im Satzlauf. Die Füllung steigt von 75–136 auf 82–149 Einheiten. Getragen hat
+das bisher der Rückhalt; verlassen konnte man sich darauf nicht.
+
+### Die Verweiszahl ist fett, und das hat eine Nebenwirkung
+
+Dass die Zahlen, die auf andere Blöcke verweisen, fett stehen, ist am gesetzten Solo des Verlags
+**nachgemessen** — an derselben Vorlage, die schon den Nummernkopf hergab. Über den Textteil von
+56 Seiten ausgezählt: 506 Läufe in GentiumBasic-Bold 10,0 bp, davon **356 reine Zahlen**, bei
+sonst magerem Fließtext in GentiumBasic 10,0 bp; die übrigen fetten Läufe sind Rubriken im
+Werteblock („Talente:", „RS/BE:"). Beide Einkleidungen kommen vor, „zu Abschnitt 100." und
+„(111)".
+
+Nachmessbar ist dagegen die Folge. Gentium Basic hat Tabellenziffern, alle Ziffern also gleich
+breit; mit `\settowidth` gemessen:
+
+| | mager | fett | Zuwachs |
+|---|---|---|---|
+| dreistellig | 14,130 pt | 15,233 pt | +1,103 pt |
+| zweistellig | 9,420 pt | 10,155 pt | +0,735 pt |
+| einstellig | 4,710 pt | 5,078 pt | +0,368 pt |
+
+Der Messlauf setzt an jede Verweisstelle einen Platzhalter aus Nullen, dessen Breite die Höhe des
+Blocks mitbestimmt. Trüge er eine andere Schriftstärke als die echte Zahl im Satz, wäre jede
+Verweisstelle 1,10 pt zu schmal gemessen — die Blöcke brächen anders um, die Höhen wären zu klein,
+und die Behälter liefen über. Die Stärke steht deshalb an einer Stelle (`\dsaSolo@zahlsatz`) und
+gilt für beide Läufe. Gegenprobe nach der Korrektur des Platzhalters: er misst 15,233 pt, eine
+echte dreistellige fette Zahl misst 15,233 pt.
+
+Dass der Regellauf vor und nach dem Fettsetzen zunächst eine Zeile für Zeile identische
+`solo.solo` lieferte, war **kein** Beleg für die Deckungsgleichheit, sondern das Symptom des
+Fehlers darüber: ein Platzhalter der Breite null ist mager wie fett null breit.
+
+### Die klickbare Fassung ist derselbe Satz
+
+Die Zusage lautet: beide Fassungen tragen dieselben Nummern auf denselben Seiten, man kann
+mitten im Spiel wechseln. Sie hält nur, wenn die Sprungziele den Umbruch nicht anfassen —
+deshalb geben `\dsaSolo@sprung` und `\dsaSolo@ziel` ohne die Paketoption ihr Argument
+unverändert aus, Zeichen für Zeichen.
+
+Gemessen Wort für Wort über beide Abzüge des Regellaufs, 2963 Wörter:
+
+| | Druck gegen klickbar |
+|---|---|
+| Seiten | 9 gegen 9 |
+| Wortfolge | gleich, kein Wort mehr oder weniger |
+| Verschiebung **senkrecht** | 0,0000 bp bei allen 2963 |
+| Verschiebung waagerecht | höchstens 0,0090 bp |
+
+Senkrecht null ist der Wert, auf den es hier ankommt: das Grundlinienraster ist unberührt, und
+damit auch die Rasterlage der Blockzahlen eine Zeile weiter oben in dieser Tabelle.
+
+Die waagerechten 0,0090 bp sind 0,0032 mm und liegen weit unter dem, was `nachmessen.py` mit
+seinen Hundertstelmillimetern überhaupt auflöst. Ursache ist `\hyperlink`, das seinen Inhalt in
+eine Box setzt; damit entfällt das Kerning zur Nachbarschrift. Der Wert ist kleiner als die
+zuvor gemessenen 0,0250 bp, seit der Sprung um den **Zahlsatz** liegt statt um die nackte
+Ziffernfolge: eine fette Zahl neben magerem Fließtext kernt ohnehin kaum.
+
+Das Vorbild dafür ist ein gesetztes, offizielles Solo des Verlags — es liegt nicht im Projekt
+und diente nur zum Ausmessen. Daraus abgelesen, über 420 Links:
+
+| | Vorbild | hier |
+|---|---|---|
+| Link liegt auf | der Zahl, Breite im Mittel 17,3 bp | der Zahl, Breite im Mittel 10,1 bp (zweistellige Nummern) |
+| Ziel | Kopfzahl des Blocks, `/FitH` auf ihre Zeilenhöhe | Kopfzahl des Blocks |
+| Schrift der Zahl | schwarz und fett wie der Fließtext | fett über `\dsaSolo@zahlsatz`, Kopfzahl unverändert `\dsaabschnitt` |
+| Rücksprung | keiner | keiner |
+| Links auf Blockköpfen | keine | keine |
+
+Nichts davon ist ein Maß im Sinne von `MASSE.md`: Der Verlag setzt keine Länge fest, die man
+nachbauen müsste — die Linkbreite ist schlicht die Breite der jeweiligen Zahl.
+
+Eine Gegenprobe fällt dabei ab: die gemessene Linkbreite stieg mit dem Fettsetzen der
+Verweiszahlen von 9,38 auf 10,12 bp, also um 7,9 Prozent. Der Abschnitt über die Tabellenziffern
+weiter oben rechnet für zweistellige Zahlen mit 9,420 gegen 10,155 pt, das sind 7,8 Prozent. Die
+beiden Messungen sind unabhängig voneinander entstanden — die eine mit `\settowidth` im Satz, die
+andere am Rechteck der Annotation im fertigen PDF.
+
+### Der Rückhalt ist gemessen, nicht geschätzt
+
+Ein Behälter braucht mehr Platz als die Summe seiner Blockhöhen: rund um jeden Kopf geht etwas
+verloren. Der Aufschlag wächst mit der **Zahl** der Blöcke, am gesetzten Heft gemessen als
+Differenz zwischen belegten und geplanten Rastereinheiten:
+
+| Blöcke | 5 | 10 | 22 | 24 | 25 | 34 | 43 | 44 |
+|---|---|---|---|---|---|---|---|---|
+| Aufschlag | 3 | 8 | 12 | 11 | 10 | 10 | 27 | 25 |
+
+Das Werkzeug rechnet mit `0,8 × Blockzahl + 4`. Gegen die Nachbarwerte geprüft, jeweils voll
+gebaut und am PDF gemessen:
+
+| Faktor | Seiten | Leerseiten | Verschnitt |
+|---|---|---|---|
+| 0,7 | 27 | 3 | 450 |
+| **0,8** | **21** | **keine** | **273** |
+| 0,9 | 23 | 1 | 332 |
+
+### Eine Leerseite kann strukturell sein
+
+Die Zahl der Doppelseiten ist mindestens so groß wie die Zahl der Farben, die der Sprunggraph
+braucht. Im Regellauf passen 30 Blöcke mit 322 Rastereinheiten rechnerisch auf zwei
+Doppelseiten, verlangen aber drei Behälter; der kleinste füllt nur eine Seite, endet auf einer
+geraden, und die Paritätskorrektur setzt eine Leerseite daneben. Bei 238 Blöcken tritt das
+nicht auf.
+
+### Falle bei eigenen Messungen am PDF
+
+Zeilen dürfen **nicht allein nach der Grundlinie** gruppiert werden. Im Raster sitzen die Zeilen
+beider Spalten auf gleicher Höhe und verschmelzen dabei zu einer Zeile — die Blockzahl wird dann
+nicht mehr als Zahl erkannt. Nach Grundlinie *und* Spalte gruppiert, stieg die Trefferzahl im
+Regellauf von 6 auf 30 von 30, im Lasttest von 58 auf 238 von 238.
+
+Zweitens liest man die Zahl aus **ihren eigenen Zeichen** (fett, 13 bp), nicht aus dem Text der
+Zeile: `microtype` schiebt ein öffnendes Anführungszeichen der Nachbarspalte per Randausgleich
+über die Blattmitte, und eine Prüfung auf die ganze Zeile scheitert daran.
+
+Drittens zählt eine **völlig leere Spalte** als Lücke und darf beim Messen des Verschnitts nicht
+übersprungen werden — sie ist der schlimmste Fall, nicht der unauffälligste.
 
 ## Vorgehen
 
