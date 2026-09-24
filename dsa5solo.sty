@@ -58,6 +58,16 @@
 
 \ProcessOptions\relax
 
+% Keine Trennung ueber den Seitenwechsel. In einem fortlaufenden Text ist ein
+% getrenntes Wort am Seitenfuss ueblich; in einem Solo blaettert der Leser bei
+% jedem Sprung, und ein "Trep-" unten rechts mit "pe in den Keller" oben links
+% auf der naechsten Seite liest sich wie ein Satzfehler. \brokenpenalty steht
+% in LaTeX auf 100; 10000 verbietet den Umbruch hinter einer getrennten Zeile.
+%
+% Der Preis ist eine Zeile mehr Verschnitt je betroffener Spalte. Das faellt
+% hier nicht ins Gewicht, weil die Behaelter ohnehin mit Rueckhalt rechnen.
+\brokenpenalty=10000
+
 \newsavebox{\dsaSolo@box}
 \newwrite\dsaSolo@aus
 

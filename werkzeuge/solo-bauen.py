@@ -8,8 +8,9 @@ Dieses Skript bricht bei jedem Schritt ab, der nicht durchlaeuft.
 
   python3 werkzeuge/solo-bauen.py beispiel/solo.tex --bloecke solo-bloecke.tex
 
-Liegt die .tex nicht neben den Bloecken, kommen --aus und --praefix dazu; sie
-werden unveraendert an solo.py durchgereicht.
+Liegt die .tex nicht neben den Bloecken, kommen --aus und --praefix dazu.
+--doppelseiten und --rueckhalt steuern die Verteilung. Alle vier werden
+unveraendert an solo.py durchgereicht.
 
 Copyright 2026 Leif Janzik. Apache License 2.0.
 """
@@ -78,6 +79,13 @@ def main():
     p.add_argument('--aus', help='Ausgabeordner, an solo.py durchgereicht')
     p.add_argument('--praefix', help='Pfad wie LaTeX ihn sieht, '
                                      'an solo.py durchgereicht')
+    p.add_argument('--doppelseiten', type=int,
+                   help='wie viele Doppelseiten ein Behaelter umfassen darf, '
+                        'an solo.py durchgereicht. Kleinere Behaelter fuellen '
+                        'gleichmaessiger, groessere lassen weniger Grenzen')
+    p.add_argument('--rueckhalt', type=int,
+                   help='Rastereinheiten Rueckhalt je Doppelseite, an solo.py '
+                        'durchgereicht')
     p.add_argument('--laeufe', type=int, default=3,
                    help='Satzlaeufe (Standard 3, wegen Inhalt und Marken)')
     p.add_argument('--klickbar', action='store_true',
@@ -133,6 +141,10 @@ def main():
             loesen += ['--aus', args.aus]
         if args.praefix:
             loesen += ['--praefix', args.praefix]
+        if args.doppelseiten is not None:
+            loesen += ['--doppelseiten', str(args.doppelseiten)]
+        if args.rueckhalt is not None:
+            loesen += ['--rueckhalt', str(args.rueckhalt)]
         if not lauf(loesen, ordner, 'loesen'):
             return 1
 

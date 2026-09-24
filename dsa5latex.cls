@@ -1335,18 +1335,62 @@
 % den Portrait-Rahmen von Seite 10." Und zum Abstand: „Feste Abstaende fuer
 % Objekte haben wir nicht." Die fertigen Kaesten sind Bequemlichkeit, nicht
 % das Verfahren.
+% Die drei Scheiben von pergament-lang. Gemessen an der Datei, 1010 x 2272 px
+% bei 300 ppi = 85,51 x 192,36 mm; durchsichtig sind oben 2,46 und unten
+% 2,62 mm, die gezeichnete Kante liegt oben bei 2,7 bis 4,1 mm und unten bei
+% 188,7 bis 189,7 mm. Zehn Millimeter Scheibe tragen beides mit Luft.
+\newlength{\dsapergamenthoehe} \setlength{\dsapergamenthoehe}{192.36mm}
+\newlength{\dsapergamentkopf}  \setlength{\dsapergamentkopf}{10mm}
+\newlength{\dsapergamentfuss}  \setlength{\dsapergamentfuss}{10mm}
+\newlength{\dsa@pgmitte}\newlength{\dsa@pga}\newlength{\dsa@pgb}\newlength{\dsa@pgc}
+
+% Kopf und Fuss brauchen zusammen 20 mm, also 4,72 Rastereinheiten; unter 5
+% bleibt keine Flaeche fuer die Mitte. Nach oben ist bei 45 Schluss, dort ist
+% die Grafik zu Ende.
+\newcommand*{\dsa@pergamentscheiben}[1]{%
+  \ifnum#1<5
+    \ClassWarning{dsa5latex}{dsaKastenFrei mit #1 Rastereinheiten ist zu
+      niedrig -- Kopf und Fuss brauchen zusammen 5. Der Kasten wird falsch
+      gesetzt}%
+  \fi
+  \ifnum#1>45
+    \ClassWarning{dsa5latex}{dsaKastenFrei mit #1 Rastereinheiten ist hoeher
+      als pergament-lang (45). Die Mitte wird gestreckt}%
+  \fi
+  \setlength{\dsa@pgmitte}{\dimexpr\dsaRaster{#1}-\dsapergamentkopf-\dsapergamentfuss\relax}%
+  \setlength{\dsa@pga}{\dimexpr\dsapergamenthoehe-\dsapergamentkopf\relax}%
+  \setlength{\dsa@pgb}{\dimexpr\dsapergamenthoehe-\dsapergamentfuss\relax}%
+  \setlength{\dsa@pgc}{\dimexpr\dsapergamenthoehe-\dsapergamentkopf-\dsa@pgmitte\relax}}
+
 \newenvironment{dsaKastenFrei}[2][]{%
   \dsa@kastenauf{#2}%
   \begin{tcolorbox}[
     dsa@grundkasten,
     width=85.5mm, height=\dsaRaster{#2},
     dsaueberhang=2.5mm, top=8mm, bottom=8mm,
+    /utils/exec={\dsa@pergamentscheiben{#2}},
     underlay={%
       % Die Pergamentflaeche wird beschnitten, nicht gestaucht: bei 14
       % Rastereinheiten waeren aus 192,4 mm Grafik 59,3 mm zu machen, ein
       % Faktor von 3,2, und die Textur waere sichtbar gequetscht.
+      %
+      % Drei Scheiben, nicht ein mittiger Beschnitt. \dsaBildDeckend schneidet
+      % mittig, und pergament-lang hat oben wie unten eine GEZEICHNETE Kante --
+      % gemessen faellt die Helligkeit oben bei 2,7 bis 4,1 mm von 175 auf 67,
+      % unten spiegelbildlich bei 188,7 bis 189,7 mm. Mittig beschnitten fielen
+      % beide weg, der Kasten hatte keinen Rand mehr, und die Zierleisten
+      % schienen in der Flaeche zu schweben statt auf ihr zu sitzen. Am Abzug
+      % gesehen, nicht gerechnet.
       \node[anchor=north west, inner sep=0] at (frame.north west)
-        {\dsaBildDeckend{85.5mm}{\dsaRaster{#2}}{\dsagrafik{pergament-lang}}};
+        {\includegraphics[width=85.5mm, clip,
+          trim={0pt} {\the\dsa@pga} {0pt} {0pt}]{\dsagrafik{pergament-lang}}};
+      \node[anchor=north west, inner sep=0]
+        at ([yshift=-\dsapergamentkopf]frame.north west)
+        {\includegraphics[width=85.5mm, height=\the\dsa@pgmitte, clip,
+          trim={0pt} {\the\dsa@pgc} {0pt} {\the\dsapergamentkopf}]{\dsagrafik{pergament-lang}}};
+      \node[anchor=south west, inner sep=0] at (frame.south west)
+        {\includegraphics[width=85.5mm, clip,
+          trim={0pt} {0pt} {0pt} {\the\dsa@pgb}]{\dsagrafik{pergament-lang}}};
       % 55,80 x 10,37 mm: das Rahmenmass von Absatztrenner_oben.psd im IDML.
       \node[anchor=north, inner sep=0] at (frame.north)
         {\includegraphics[width=55.8mm,height=10.37mm]{\dsagrafik{trenner-oben}}};
@@ -1357,9 +1401,6 @@
       % Buchleiste (trenner-buch) an einen Vorlesetext.
     #1]%
 }{\end{tcolorbox}\dsa@kastenzu}
-% Die Pergamentflaeche wird beschnitten statt gestreckt, und
-% pergament-lang hat auch in der Flaeche eine gezeichnete Kante. Sauberer
-% waere ein Mittelstreifen zum Kacheln.
 
 % ---- Wertekasten mit Medaillon in freier Hoehe ----
 %
@@ -1785,11 +1826,24 @@
 % einen Satz ohne Grundlinienraster, wo eine Zeile keine Rastereinheit misst
 % und eine Kopfzeile mehrzeilig sein darf. Das Band selbst, Rechteck, Verlauf
 % und die zwei Linien, bleibt dasselbe.
-\newcommand*{\dsa@bandmasse}{%
+% Die Hoehe des Bandes in Rastereinheiten. Eine Rubrikzeile ist eine Zeile
+% hoch, eine Anmerkung bricht aber um, und dann muss das Band mitwachsen --
+% sonst liegt der graue Grund nur unter der ersten Zeile und hoert mitten im
+% Satz auf. Am Abzug gesehen.
+%
+% Die Zahl kommt vom Autor und nicht aus einer Messung: das Band wird in der
+% ERSTEN Zelle gezeichnet, und dort weiss noch niemand, wie oft die letzte
+% Zelle umbrechen wird. Das ist dieselbe Ansage wie bei jedem anderen hohen
+% Element der Klasse -- \dsaBildSpalte, dsaKastenFrei, \dsaVorlesetext nennen
+% ihre Rastereinheiten auch selbst.
+\newcommand*{\dsa@bandmasse}[1]{%
+  \setlength{\dsa@bandoben}{\dimexpr\dsaRaster{1}-\dp\strutbox\relax}%
   \setlength{\dsa@bandunten}{\dp\strutbox}%
-  \setlength{\dsa@bandoben}{\dimexpr\dsaRaster{1}-\dp\strutbox\relax}}
-\newcommand{\dsa@tabellenband}[3]{%
-  \dsa@bandmasse
+  \ifnum#1>1
+    \addtolength{\dsa@bandunten}{\dsaRaster{\numexpr#1-1\relax}}%
+  \fi}
+\newcommand{\dsa@tabellenband}[4]{%
+  \dsa@bandmasse{#4}
   \begin{tikzpicture}[overlay, blend mode=multiply]
     \path[#2] (-#1,-\dsa@bandunten)
       rectangle (\dimexpr\dsa@tabellenbreite-#1\relax,\dsa@bandoben);
@@ -1815,7 +1869,7 @@
   \setlength{\dsa@tabellenbreite}{\linewidth}%
   \dsa@tabellenband{0pt}%
     {shade,left color=dsatabellenrot,right color=white}%
-    {dsatabellenkopflinie}%
+    {dsatabellenkopflinie}{1}%
   \hspace*{\dsatabelleninnen}\textbf{#1}%
   \par\nobreak}
 
@@ -1851,8 +1905,9 @@
   \bfseries}
 \newcommand*{\dsaAnmerkungsschrift}{%
   \fontsize{\dsatabellenrubrikgrad bp}{\dsagrunddurchschuss bp}\selectfont}
-\newcommand*{\dsaTabellenrubrik}{%
-  \dsa@tabellenband{\dsatabelleninnen}{fill=dsatabellengrau}{}%
+% \dsaTabellenrubrik[<Rastereinheiten>] -- ohne Angabe eine Zeile hoch.
+\newcommand*{\dsaTabellenrubrik}[1][1]{%
+  \dsa@tabellenband{\dsatabelleninnen}{fill=dsatabellengrau}{}{#1}%
   \ignorespaces}
 
 % Die Linie unter jeder Zeile. \hline taugt nicht: sie bringt ihre

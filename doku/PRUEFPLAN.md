@@ -603,6 +603,42 @@ geschätzt. Die dritte kann die Klasse schon heute über `\dsaBildDeckend{\paper
 **Tabellen kommen im Textteil des Hefts nicht vor.** Die Rechtecke stecken sämtlich in den
 Formularseiten des Anhangs. `dsaTabelle` ist damit an diesem Heft nicht zu prüfen.
 
+## Drei Befunde beim Ansehen des gesetzten Solos
+
+Alle drei am Abzug gefunden, keiner im Log.
+
+### Die Zierleisten schwebten in der Fläche
+
+`dsaKastenFrei` hat die Pergamentfläche mit `\dsaBildDeckend` beschnitten, und das schneidet
+**mittig**. `pergament-lang` hat aber oben wie unten eine gezeichnete Kante — gemessen fällt die
+Helligkeit oben bei 2,7 bis 4,1 mm von 175 auf 67, unten spiegelbildlich bei 188,7 bis 189,7 mm.
+Beide fielen weg, der Kasten hatte keinen Rand, und die Zierleisten schienen in der Fläche zu
+schweben statt auf ihr zu sitzen. Dazu kommt, dass `trenner-oben` selbst 2,88 mm durchsichtigen
+Rand über der gezeichneten Schließe trägt.
+
+**Keine Regression.** Mit der Klasse von vor dem Rasterfix gebaut sieht der Kasten genauso aus; er
+fiel erst auf, als er zum ersten Mal mitten im Satz stand statt allein auf einer Seite.
+
+Behoben mit drei Scheiben, wie beim Gegnerkasten. Nach einer Naht gesucht und keine gefunden: die
+größten Helligkeitssprünge im Kasten liegen beim Text und bei der unteren Leiste, keiner bei 10 mm
+unter der Oberkante. Die Zeilen davor und danach sitzen auf **+0,00 bp**.
+
+### Das graue Band der Anmerkung war eine Zeile hoch
+
+`\dsa@bandmasse` setzte die Bandhöhe fest auf `\dsaRaster{1}`. Bei der Rubrikzeile stimmt das, bei
+einer umbrechenden Anmerkung nicht: der graue Grund lag nur unter der ersten Zeile und hörte mitten
+im Satz auf. `\dsaTabellenrubrik` nimmt die Höhe jetzt als optionales Argument.
+
+### Halbleere Seiten und ein getrenntes Wort am Seitenwechsel
+
+Kein Fehler, aber es las sich wie einer. Die halbleere Seite ist die Behältergrenze — der nächste
+Block **muss** auf eine andere Doppelseite. Mit `--doppelseiten 1` füllen die Behälter 132 bis 136
+statt 82 bis 187 Rastereinheiten, bei gleicher Seitenzahl.
+
+Das getrennte Wort über den Seitenwechsel war eine gewöhnliche Trennung innerhalb eines Behälters.
+`\brokenpenalty=10000` in `dsa5solo` verbietet sie; nachgemessen endet danach **keine** Seite mehr
+mit einem getrennten Wort, vorher war es „Trep-" / „pe in den Keller".
+
 ## Elemente mit eigenem Raster
 
 Nicht jede Zeile gehört auf das Grundlinienraster der Seite. Diese Elemente weichen bewusst ab —

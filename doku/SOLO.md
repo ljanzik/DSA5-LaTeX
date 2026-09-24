@@ -254,6 +254,27 @@ Messlaufs muss dieselbe Stärke tragen wie die echte Zahl im Satz, sonst misst d
 Verweisstelle 1,10 pt zu schmal, die Blöcke brechen im Satz anders um, und die Behälter laufen
 über.
 
+## Keine Trennung über den Seitenwechsel
+
+`dsa5solo` setzt `\brokenpenalty=10000`. In einem fortlaufenden Text ist ein getrenntes Wort am
+Seitenfuß üblich; in einem Solo blättert der Leser bei jedem Sprung, und ein „Trep-" unten rechts
+mit „pe in den Keller" oben links liest sich wie ein Satzfehler. Der Preis ist eine Zeile mehr
+Verschnitt je betroffener Spalte.
+
+## Gleichmäßig gefüllte Behälter
+
+`--doppelseiten` steuert, wie viele Doppelseiten ein Behälter umfassen darf, und `solo-bauen.py`
+reicht die Option jetzt an `solo.py` durch — zusammen mit `--rueckhalt`. Am Regellauf gemessen:
+
+| | Füllung je Behälter |
+|---|---|
+| `--doppelseiten 1` | **132 bis 136** Rastereinheiten |
+| `--doppelseiten 2` (Standard) | 82 bis 187 |
+
+Die Seitenzahl ist in beiden Fällen dieselbe. Der größere Behälter hat weniger Grenzen, verteilt
+aber ungleichmäßiger, und eine halbleere Seite mitten im Heft liest sich wie ein Fehler. Wer das
+vermeiden will, baut mit `--doppelseiten 1`.
+
 ## 5. Der Nummernkopf
 
 Die Zahl steht **über** dem Block, nicht davor. Keine Einrückung, keine

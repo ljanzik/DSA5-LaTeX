@@ -399,6 +399,7 @@ setzt `\dsakolumneaussenlinks` auf 40,35 mm.
 | `\dsaVorlesetext[Einheiten]{Text}` | Zierleisten darüber und darunter, unten das Buch |
 | `\dsaMeisterhinweis[Einheiten]{Text}` | dasselbe, unten die Maske |
 | `\dsaKastentitel{Titel}` | Überschrift im Kasten, 12 bp fett |
+| `\dsaTabellenrubrik[n]` | graues Band über **n** Rastereinheiten, ohne Angabe eine |
 | `\begin{dsaWerteabsatz}` | hängender Einzug 8,504 pt |
 | `\dsaBand{ABE}{8}` | hochgestelltes Bandkürzel |
 | `\dsaKapitaelchen{Text}` | nachgebildete Kapitälchen, 82 % Versalien |
@@ -445,6 +446,7 @@ Raster“.
 | `dsaMeisterMaske` | 84,0 × 108,0 | ja, der Regelfall |
 | `dsaMeisterMaskeKlein` | 84,0 × 45,0 | ja |
 | `dsaWerteFreiPortrait` | 94,0 × **frei**, 12 bis 47 Rastereinheiten | ja, Medaillon tritt heraus |
+| `dsaKastenFrei` | 85,5 × **frei**, 5 bis 45 Rastereinheiten | ja, +2,5 mm je Seite |
 
 Text in den grauen Kästen ist weiß.
 
@@ -505,6 +507,21 @@ rechten Zeilenende auch die Höhe misst. `\parshape` verlangt seine Zeilen
 ausgeschrieben — wer die Zahl ändert, ändert die Liste in der Klasse und die `9` davor. Der Befehl
 gilt für den Absatz, der folgt; bei mehreren Absätzen also nur für den ersten. Ohne ihn bleibt der
 Satz durchgehend schmal: sicher, nur enger.
+
+### Das graue Band einer Rubrikzeile
+
+`\dsaTabellenrubrik` zeichnet das Band, auf dem Spaltenkopf und Anmerkung sitzen. Es ist **eine
+Rastereinheit** hoch — das reicht für eine Rubrikzeile, nicht für eine Anmerkung, die umbricht.
+Dann steht die Höhe dabei:
+
+```latex
+\dsaTabellenrubrik[2] \dsaRubrikschrift Anmerkung
+  & \dsaAnmerkungsschrift Ein Text, der auf zwei Zeilen umbricht\\
+```
+
+Ohne die Angabe liegt der graue Grund nur unter der ersten Zeile und hört mitten im Satz auf. Die
+Zahl kommt vom Autor und nicht aus einer Messung: das Band wird in der **ersten** Zelle gezeichnet,
+und dort weiß noch niemand, wie oft die letzte umbrechen wird.
 
 ### Der Gegner- und Kreaturkasten
 

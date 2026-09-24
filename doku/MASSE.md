@@ -694,6 +694,29 @@ Die früheren 19,4 mm unter der Oberkante kamen daher, dass dort der Außenradiu
 gerechnet wurde — 17,7 mm, die halbe Bildbreite — und nicht der Kranz. Das Medaillon saß damit
 2,1 mm zu tief.
 
+## Der Pergamentkasten in freier Höhe
+
+`dsaKastenFrei` schneidet drei Scheiben aus `pergament-lang.png`, aus demselben Grund wie der
+Wertekasten unten: die Grafik hat oben **und** unten eine gezeichnete Kante, und ein mittiger
+Beschnitt wirft beide weg.
+
+Gemessen an der Datei, 1010 × 2272 px bei 300 ppi = **85,51 × 192,36 mm**. Helligkeit je Zeile
+über die Kastenmitte:
+
+| | Lage | Befund |
+|---|---|---|
+| durchsichtiger Rand oben | 0 – 2,46 mm | keine Deckung |
+| gezeichnete Kante oben | 2,7 – 4,1 mm | Helligkeit fällt von 175 auf 67 |
+| gezeichnete Kante unten | 188,7 – 189,7 mm | spiegelbildlich |
+| durchsichtiger Rand unten | 189,74 – 192,36 mm | keine Deckung |
+
+Daraus **10 mm** Kopf- und **10 mm** Fußscheibe (`\dsapergamentkopf`, `\dsapergamentfuss`): beide
+tragen Rand und Kante mit Luft. Zusammen 20 mm, also 4,72 Rastereinheiten — die Untergrenze des
+Kastens ist deshalb 5, die Obergrenze 45, dort ist die Grafik zu Ende.
+
+Ohne diese Scheiben hatte der Kasten keinen Rand, und die Zierleisten schienen in der Fläche zu
+schweben statt auf ihr zu sitzen. Am Abzug gesehen, nicht gerechnet.
+
 ## Der Wertekasten in freier Höhe
 
 `dsaWerteFreiPortrait` schneidet drei Scheiben aus `werte-gross-portrait.png`. Die Grenzen sind
