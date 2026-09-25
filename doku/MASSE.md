@@ -934,3 +934,299 @@ Multiplizieren rechnerisch ergibt.
 7. Die Form des Umflusses um freigestellte Grafiken ist an einem gesetzten
    Scriptorium-Abenteuer gemessen, nicht an einem Verlagsband. Die Konturform ist übertragbar, die
    absoluten Werte nicht.
+
+
+---
+
+## 8. Spielkarten
+
+Eigener Abschnitt, weil die Quelle eine andere ist: nicht der allgemeine *Scriptorium Aventuris –
+Layout Baukasten*, sondern der **„Scriptorium Aventuris – Spielkarten“-Baukasten**, ein eigenes
+Paket bei Ulisses. Umgesetzt in `dsa5spielkarten.cls`, beschrieben in
+[Spielkarten](SPIELKARTEN.md).
+
+Das Paket enthält sieben Dateien. Drei davon tragen Maße:
+
+| Datei | was sie hergibt |
+|---|---|
+| `Scriptorium Aventuris -Spielkarten.idml` | Seitenformat, Bildrahmen, Textrahmen, drei Absatzformate |
+| `Links/Spielkarte_Ulisses_Design.tif` | die Kartenfläche, 815 × 1110 px bei 300 ppi |
+| `Scriptorium Aventuris -Spielkarten.pdf` | der gesetzte Musterbogen, eine Seite — die Gegenprobe |
+
+Die Rangfolge aus Abschnitt 1 greift hier vollständig: einen Klartext des Verlags gibt es für die
+Karten nicht, aber das Bild liegt in der IDML mit `ActualPpi` = `EffectivePpi` = 300, also
+unskaliert. Pixelmaße und Rahmenmaße sind damit beide belastbar und sagen dasselbe.
+
+Die Absatzformate stehen als Zahl in der IDML und sind am Musterbogen nachgemessen — beides ist
+unten aufgeführt, damit man sieht, dass es zusammenpasst.
+
+### Die Karte
+
+Aus `Resources/Preferences.xml`, unverändert:
+
+| Wert | IDML | mm |
+|---|---:|---:|
+| `PageWidth` | 178,58267716535434 bp | 63,00 |
+| `PageHeight` | 249,44881889763780 bp | 88,00 |
+| `DocumentBleed*` (vier Werte) | 0 | 0 |
+
+Der Baukasten legt also **selbst keinen Anschnitt an**. Den bringt die Kartenfläche mit.
+
+### Die Kartenfläche
+
+`Spielkarte_Ulisses_Design.tif`, 815 × 1110 px bei 300 ppi:
+
+```
+815 / 300 × 25,4 = 69,003 mm
+1110 / 300 × 25,4 = 93,980 mm
+```
+
+Die `GraphicBounds` des Bildrahmens in der IDML nennen dieselben Maße in bp: 195,6 × 266,4. Das
+Bild sitzt mittig auf der Karte (`ItemTransform 1 0 0 1 -97.8 -133.2`, die halben Bildmaße). Der
+Überstand ist damit
+
+```
+(195,6 − 178,583) / 2 = 8,5085 bp = 3,00 mm   links und rechts
+(266,4 − 249,449) / 2 = 8,4756 bp = 2,99 mm   oben und unten
+```
+
+und die `FrameFittingOption` des Rahmens bestätigt es mit `LeftCrop` 8,51338582677164 und
+`TopCrop` 8,447244094488155. **Das ist der Anschnitt: 3 mm, in der Grafik angelegt, nicht im
+Dokument.**
+
+### Der Textrahmen
+
+Aus `Spreads/Spread_uce.xml`. Der einzige Textrahmen (`TextFrame uf6`) hat
+
+```
+ItemTransform  1 0 0 1 -5.787401574803141 -15.141732283464563
+Anker          (-75|-75) (-75|106,98425) (86,57480|106,98425) (86,57480|-75)
+```
+
+Die Seite liegt mit `ItemTransform 1 0 0 1 -89.29133858267717 -124.7244094488189` auf dem Spread;
+der Spread-Ursprung ist also die Kartenmitte. In Seitenkoordinaten ergibt das
+
+| Kante | bp | mm |
+|---|---:|---:|
+| links | 8,50394 | 3,00 |
+| rechts | 170,07874 | 60,00 |
+| oben | 34,58268 | 12,20 |
+| unten | 216,56693 | 76,40 |
+
+Breite 57,00 mm, Höhe 64,20 mm. `InsetSpacing` ist viermal 0, `TextColumnCount` 1 und
+`TextColumnFixedWidth` 161,5748 bp = 57,00 mm — beides bestätigt die Rechnung.
+
+### Die drei Absatzformate
+
+Aus `Resources/Styles.xml`, vollständig:
+
+| Format | Schrift | Grad | Durchschuss | Ausrichtung | Einzug | Abstand danach |
+|---|---|---:|---:|---|---:|---:|
+| Überschrift | Andalus | 14 bp | 12 bp | zentriert, Versalien | — | — |
+| Untertitel | Andalus | 7 bp | 8,4 bp (automatisch) | zentriert, Versalien | — | 6,236220 bp = 2,20 mm |
+| Beschreibung | Gentium Basic | 7 bp | 8 bp | Blocksatz | 7,086614 bp = 2,50 mm links und rechts | 2,834646 bp = 1,00 mm |
+
+Alle drei mit `Tracking 10`. InDesign zählt Tracking in Tausendstel Geviert, 10 davon sind
+1 Prozent des Schriftgrads; fontspec zählt `LetterSpace` in Prozent, also `LetterSpace=1.0`.
+
+Der Durchschuss des Untertitels steht in der IDML nicht als Zahl — dort fehlt `Leading`, und das
+heißt „automatisch“, bei InDesign 120 Prozent des Grads. Aus 7 bp werden so 8,4 bp, und der
+Musterbogen bestätigt es: 58,453 − 50,053 = **8,400 bp**, exakt.
+
+Der Zeilenabstand 12 bp bei 14 bp Grad ist enger als der Grad. Das ist Absicht und für zweizeilige
+Namen gedacht: Versalien haben keine Unterlängen, die Zeilen stoßen nicht zusammen. Beide
+veröffentlichten Sets setzen ihre zweizeiligen Namen genau so, gemessen 11,998 bp.
+
+Der **Satzspiegel** folgt aus Rahmen und Einzug: 3,00 + 2,50 = **5,50 mm** linke Satzkante,
+57,00 − 2 × 2,50 = **52,00 mm** Satzbreite. Am Musterbogen liegt die linke Satzkante bei
+15,586 bp = 5,498 mm — zwei Hundertstel Millimeter daneben, das ist die Seitenlagerung des ersten
+Buchstabens.
+
+### Gegenprobe am Musterbogen
+
+| Wert | gemessen | gerechnet |
+|---|---:|---|
+| Grundlinie Überschrift | 50,053 bp = 17,657 mm | — (das Maß selbst) |
+| Grundlinie Untertitel | 58,453 bp = 20,621 mm | 50,053 + 8,4 = 58,453 |
+| erste Zeile Beschreibung | 72,691 bp = 25,644 mm | 58,453 + 8,0 + 6,236 = 72,689 |
+| Zeilenabstand Beschreibung | 8,001 bp | 8,0 |
+| Absatzabstand Beschreibung | 10,836 − 8,001 = 2,835 bp | 2,834646 |
+
+Die erste Grundlinie ist **als festes Maß** in die Klasse übernommen, nicht als „Rahmenoberkante
+plus Zeilenhöhe“. InDesign setzt sie auf „Oberlänge“ — den Abstand, den die größte Oberlänge der
+ersten Zeile braucht. TeX rechnet dafür die Höhe der tatsächlich gesetzten Glyphen, und die hängt
+am Text: für „EINE ÜBERSCHRIFT“ in Andalus 14 bp sind es 10,004 pt, mit einem Umlaut darin mehr.
+Die erste Zeile säße also je nach Name anders hoch. Der Textfluss wird deshalb an seiner ersten
+Grundlinie aufgehängt, nicht an seiner Oberkante.
+
+### Was der Baukasten nicht hergibt
+
+Er kennt genau eine Anordnung: Überschrift, Untertitel, Fließtext. Wertetabelle, Attributraster,
+Medaillon, Kartennummer und Illustrationsnachweis stehen nicht darin. Diese fünf sind an den
+beiden veröffentlichten Kartensets gemessen — *Aventurische Meisterpersonen* (2017, 53 Karten) und
+*Flusslande* (2018, 126 Karten). Beide liegen nicht in diesem Projekt; sie dienten nur zum
+Ausmessen.
+
+| Element | Maß | Quelle |
+|---|---|---|
+| erste Grundlinie der Rückseite | 41,924 bp = 14,790 mm | Flusslande, auf 33 von 126 Karten genau so und auf den übrigen nur dort höher, wo der Satz zu lang wurde |
+| Kartennummer | Grundlinie 241,206 bp = 85,09 mm, rechtsbündig 170,160 bp = 60,03 mm, 6 bp fett, weiß mit dunkler Kontur | Flusslande, auf allen 252 Seiten gleich |
+| Wertetabelle, Zeilenhöhe | 11,339 bp = 4,00 mm, ausnahmslos | Flusslande, Waffen- und Rüstungskarten |
+| Wertetabelle, Wechselton | PDF-Füllfarbe 0,866 / 0,809 / 0,7865 = `#DDCEC9`, jede zweite Zeile ab der Kopfzeile | ebenda |
+| Wertetabelle, Spaltenteilung | 19,00 mm hinter der linken Tabellenkante, bei 46,00 mm Tabellenbreite | ebenda |
+| Attributraster, Spaltenschritt | Tabulatoren bei 17,0 / 53,0 / 89,0 / 125,0 bp, Schritt 36 bp = 12,70 mm | Flusslande, Kreaturenkarten |
+| Medaillon | 20 × 20 mm, obere linke Ecke bei 2,50 mm von links und 65,90 mm von oben | Meisterpersonen |
+| Illustrationsnachweis | 5,5 bp auf 6,6 bp, rechte Kante 154,777 bp = 54,60 mm, letzte Grundlinie 209,608 bp = 73,95 mm | Meisterpersonen |
+| Stichwortabsatz, hängender Einzug | 17,008 → 24,093 bp = 7,085 bp = 2,50 mm | beide Sets |
+
+Die Kartennummer sitzt rechtsbündig auf 60,03 mm — das ist die rechte Kante des Textrahmens
+(60,00 mm), auf drei Hundertstel genau. Kein Zufall, sondern dieselbe Führungslinie.
+
+**Zwei Werte sind nicht übernommen, sondern umgerechnet:**
+
+1. Die **Spaltenteilung der Wertetabelle**. Die Tabelle dieser Klasse ist 52,00 mm breit (der
+   Satzspiegel des Baukastens), die des Sets 46,00 mm. 19,00 von 46,00 mm sind 41,3 Prozent, auf
+   52,00 mm also **21,48 mm**. Mit den 19 mm des Sets stieß „zusätzliche Abzüge“ auf der
+   Rüstungskarte in die Wertespalte: Gentium Basic läuft breiter als das Times des Sets.
+2. Der **Zeilenschritt des Attributrasters**. Das Set setzt 7,8 bp, den Durchschuss seines
+   6,5-bp-Satzes. Hier gilt der Durchschuss des Baukastens, **8 bp**, damit das Raster auf
+   denselben Zeilen sitzt wie der Fließtext darunter.
+
+### Das Bildfeld
+
+**Offen, und zwar endgültig.** Der Baukasten sieht keine Figur vor — sein Bildrahmen ist die
+Kartenfläche selbst. Beide Sets setzen die freigestellte Figur von Hand: im Meisterpersonen-Set
+liegen die 53 Bildrahmen waagerecht zwischen 6,49 und 166,3 bp und senkrecht zwischen 35,67 und
+249,45 bp. Einen gemeinsamen Rahmen zum Nachmessen gibt es nicht.
+
+Drei Kanten sind deshalb gesetzt: links und rechts auf dem Textrahmen (3 mm bis 60 mm), unten auf
+82 mm, eine Zeile über der Kartennummer. Die **Oberkante ist gerechnet** — sie ist die Unterkante
+des Kartenkopfs, gemessen an dessen Boxtiefe. Ein fester Wert ginge nicht, weil der Kopf ein-,
+zwei- oder dreizeilig sein kann.
+
+### Die Textkarten und ihre zwei Seiten
+
+Zauber, Sonderfertigkeiten und Kulturen tragen im Flusslande-Set **auf beiden Seiten denselben
+Text**. Ausgezählt über alle 126 Karten: 39 sind beidseitig gleich, und es sind genau die, deren
+Text auf eine Seite ging. Passt er nicht, läuft er auf der Rückseite weiter — dort dann ohne
+Kopf, wie H 053 (Böser Blick) zeigt: vorne Beschreibung und Probe, hinten Reichweite,
+Wirkungsdauer und der Rest.
+
+Der Abstand zwischen Kopf und Text braucht dafür kein eigenes Maß. Er folgt aus dem Baukasten:
+
+| Karte | Untertitel | erste Textzeile | Abstand | gerechnet |
+|---|---:|---:|---:|---|
+| H 050, 7-bp-Satz | 46,547 bp | 61,184 bp | 14,637 | 8,4 Durchschuss + 6,237 SpaceAfter |
+| H 077, 6,5-bp-Satz | 46,831 bp | 60,867 bp | 14,036 | 7,8 Durchschuss + 6,236 SpaceAfter |
+| H 121, 6,5-bp-Satz | 58,547 bp | 72,583 bp | 14,036 | ebenso |
+
+Das ist zweimal derselbe Wert: der Durchschuss der ersten Textzeile plus der `SpaceAfter` des
+Untertitels, 6,236220472440945 bp. Beides steht im Baukasten.
+
+### Der generische Kartenrücken
+
+Nicht im Spielkarten-Baukasten — er kennt nur die eine Kartenfläche, und die ist beidseitig
+dieselbe. Die gedruckten Sets haben einen gemeinsamen Rücken, aber der steckt in keinem der
+beiden PDF; dort stehen nur die Karteninhalte.
+
+Die beiden Motive kommen deshalb aus dem **allgemeinen** Layout-Baukasten, aus Grafiken, die
+`werkzeuge/aufbereiten.py` ohnehin anlegt:
+
+| Grafik | px | mm | wofür |
+|---|---|---|---|
+| `raute-grau`, `raute-gruen`, `raute-rot` | 215 × 259 | 18,2 × 21,9 | Raute mittig (auf 34 mm) und Rautenfeld (auf 14 mm) |
+
+Das Rautenfeld wird auf den Textrahmen beschnitten (3,00 … 60,00 mm, 12,20 … 76,40 mm), nicht auf
+die Kartenkante: über die ganze Karte gelegt deckt es Schuppenband und Messingecken zu. Der
+Zeilenschritt ist die halbe Kachelhöhe, damit die Reihen ineinandergreifen — sonst klafft
+zwischen vier Rauten ein Rhombus aus blankem Pergament.
+
+Zwei Grafiken desselben Baukastens taugen **nicht** als Rücken, was erst beim Setzen auffiel:
+`ornament-mittig` (17,4 × 81,6 mm) ist das Mittelstück einer dreiteiligen Leiste und trägt rechts
+eine dunkle Anschlusskante, die als schwarzer Balken auf dem Pergament steht. `ornament-links`
+und `ornament-rechts` (je 69 × 69 mm) sind Eckbeschläge, auf die Blattecke einer A4-Seite
+gerechnet; auf 63 × 88 mm deckt ein Stück davon die halbe Karte.
+
+### Der Verbrauchsgegenstand
+
+Kein Vorbild in den Sets — die kennen den Typ nicht. Sein Aufbau steht deshalb ganz auf den Maßen
+des Baukastens: der Text hängt an der **unteren Rahmenkante, 76,40 mm**, und wächst nach oben; die
+Abbildung füllt, was zwischen Kopfunterkante und Text bleibt. Die untere Rahmenkante ist die
+Linie, an der das Pergament in den Zierrand übergeht, und damit die richtige für einen Text, der
+von unten aufsteigt.
+
+### Das Porträtmedaillon und sein Kranz
+
+Das Medaillon der Karte ist Porträt und Messingkranz in einem Bild — nachgesehen an der
+237-×-237-Grafik der Karte AMP 01a, die beides enthält. Der Kranz ist derselbe, den die Kernklasse
+in ihre Wertekästen setzt: `portraitrahmen.png` aus dem allgemeinen Baukasten, im IDML
+`Ornament_Portrait_Wertekasten.psd`.
+
+Die Klasse zeichnet beide Lagen getrennt. Die Maße stammen aus dem Alphakanal von
+`portraitrahmen.png`, 418 × 413 px bei 300 ppi:
+
+| Wert | gemessen | Verhältnis |
+|---|---|---|
+| deckender Kranz waagerecht | Pixel 16 … 383, also 368 von 418 | 0,8804 der Dateibreite |
+| deckender Kranz senkrecht | Pixel 21 … 390, also 370 von 413 | 0,8959 der Dateihöhe |
+| Kranzmitte | (199,5 \| 205,5) px gegen die Dateimitte (209 \| 206,5) | −0,0227 / −0,0024 |
+| freier Innenkreis | 247 px | 20,91 mm |
+
+Daraus folgt für einen sichtbaren Kranz von 20 mm — dem Maß des Sets — eine Ringdatei von
+20 / 0,8804 = **22,72 mm**, die um 0,0227 ihrer Breite nach rechts gerückt wird, damit der Kranz
+mittig liegt und nicht die Datei. Das Porträt darunter misst 0,7345 der Dateibreite = **16,69 mm**;
+der freie Innenkreis ist nur 13,4 mm breit, das Bild reicht also unter den Kranz und lässt keine
+Fuge. Dieselben drei Verhältnisse benutzt die Kernklasse in ihren Wertekästen.
+
+### Die Umfärbung der Raute
+
+Die Rautenkachel liegt im Baukasten in drei Farben vor: `raute-grau`, `raute-gruen`, `raute-rot`.
+Es ist dieselbe Zeichnung, und der Unterschied zwischen ihnen ist ausgezählt:
+
+| Befund | Wert |
+|---|---|
+| deckende Bildpunkte | 23 947 |
+| davon zwischen grau und grün verändert | 8 760, also 37 Prozent |
+| Sättigung der veränderten Punkte (in grau) | 0,11 bei einer Helligkeit von 0,42 |
+| Sättigung der unveränderten Punkte | 0,50 |
+| Farbton der veränderten Punkte, Median | grau 33°, grün 167°, rot 6° |
+
+Die veränderten Punkte sind also der Edelstein, die unveränderten der Messingrahmen — dieselbe
+Regel wie beim Schuppenband der Kartenfläche. `kartengrafik.py` bildet sie mit den Schwellen
+V 0,60 … 0,95 und S 0,15 … 0,30 bei Sättigung 0,35 nach. Von grau nach grün trifft das auf 0,078
+mittlere Abweichung, nach rot auf 0,086 — näher kommt man einer von Hand kolorierten Fassung
+nicht.
+
+### Die bandlose Rückseitenfläche
+
+Schwarzer Rand, Schuppenband, Messingecken und Pergament stecken in **einer flachen Datei**: das
+TIF ist RGB, eine Ebene, ohne Alphakanal, und das IDML legt genau dieses eine Bild auf die Karte.
+Trennen lässt sich das nicht.
+
+Ableiten schon. Für einen ruhigen Kartenrücken ersetzt `kartengrafik.py` die Bandzone durch
+Pergament aus der Kartenmitte — und lässt den schwarzen Rand im Original stehen:
+
+| Marke | Zeile | woher |
+|---|---:|---|
+| Ende des schwarzen Rahmens oben | 46 | entlang der Mittelspalte bleibt die Helligkeit bis dahin unter 0,12 |
+| Ende des Bandes samt Messingecken | 210 | der Pergamentanteil je Zeile steigt zwar schon ab Zeile 120, die Ecken reichen aber tiefer |
+| Anfang des Bandes unten | 930 | entsprechend, Abfall ab Zeile 1010 |
+| Anfang des schwarzen Rahmens unten | 1061 | wie oben gemessen |
+| Pergamentquelle | 330 und 560 | reines Pergament |
+| Überblendung am Rahmen | 34 Zeilen | Profil aus der Kartenmitte, wo derselbe Rahmen ohne Band liegt |
+| Überblendung am Bandrand | 40 Zeilen | sonst steht dort eine sichtbare Kante |
+
+Die Seitenränder bleiben unangetastet: das Pergament wird zeilenweise übernommen und bringt den
+seitlichen Rahmen mit. Eingefärbt wird die Fläche nicht — es ist nichts Buntes mehr darin, die
+Farbe trägt die Raute.
+
+**Warum der Rahmen im Original bleiben muss.** Eine erste Fassung baute auch ihn neu, aus dem
+Helligkeitsprofil der linken Kante über die ganze Kartenhöhe. Das Ergebnis war ein weicher
+Grauverlauf statt einer Kante: die Karte hatte auf dem Bogen keinen sichtbaren Rand mehr und stach
+zwischen den anderen als blasses Rechteck heraus. Aufgefallen ist das erst beim Vergleich aller
+siebzehn Rückseiten nebeneinander — an der einzelnen Karte sah es plausibel aus.
+
+### Der Druckbogen
+
+Kein Maß des Baukastens, sondern Arithmetik: 3 × 63 = 189 mm und 3 × 88 = 264 mm passen auf A4,
+mittig mit (210 − 189) / 2 = **10,5 mm** und (297 − 264) / 2 = **16,5 mm** Rand.

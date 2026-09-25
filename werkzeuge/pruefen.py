@@ -80,6 +80,16 @@ SOLL = {
     'kapitelstart-ornament.png':    (1290, 3543),
 }
 
+# Aus einem anderen Paket: dem "Scriptorium Aventuris - Spielkarten"-
+# Baukasten, geholt von werkzeuge/kartengrafik.py. 815 x 1110 px bei 300 ppi
+# sind 69,003 x 93,980 mm - die Karte 63 x 88 mm mit 3 mm Anschnitt.
+# Steht hier und nicht in einer eigenen Liste, weil pruefen.py alles prueft,
+# was in grafiken/ liegt; unverzichtbar ist sie nur fuer dsa5spielkarten.cls.
+SOLL['spielkarte-flaeche.png'] = (815, 1110)
+# Dieselbe Karte ohne Schuppenband, fuer den generischen Kartenruecken.
+# kartengrafik.py leitet sie aus der Flaeche ab und legt sie immer mit an.
+SOLL['spielkarte-ruecken.png'] = (815, 1110)
+
 # Die acht Einzelseiten aus den vier Doppelseiten. Eine Doppelseite ist
 # 5032 x 3579 px; der Schnitt in der Mitte ergibt je 2516 x 3579 px, also
 # 213,0 x 303,0 mm — A4 plus 3 mm Anschnitt an drei Kanten.
@@ -182,6 +192,11 @@ def main():
     if fehlt:
         print('Die fehlenden Dateien betreffen nur einzelne Elemente.')
         print('Der Lauf geht durch, solange sie nicht benutzt werden.')
+        if 'spielkarte-flaeche' in fehlt:
+            print()
+            print('Die Kartenflaeche kommt aus einem anderen Paket:')
+            print('    python3 werkzeuge/kartengrafik.py '
+                  '"/pfad/zu/Scriptorium Aventuris -Spielkarten"')
         return 0
 
     print('Alles da. Weiter mit:')
