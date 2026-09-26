@@ -367,6 +367,14 @@ kommt über die Marken von LaTeX aus `\dsakapitel`:
 Ohne diesen Befehl bleibt der Kapitelname allein stehen, vor dem ersten Kapitel bleibt die Zeile
 leer.
 
+Derselbe Titel geht als Dokumenttitel in die PDF-Metadaten. Den Autor dort setzt `\dsaAutor`; im
+Satz erscheint er nicht, dafür sind Impressum und Rückseite da. Als Erzeuger trägt jedes PDF
+`dsa5latex` mit Versionsnummer.
+
+```latex
+\dsaAutor{Alrike Sturmfels}
+```
+
 Er schließt mit dem Satzspiegel ab, auf beiden Seiten 24 mm von der Außenkante — rechts
 rechtsbündig bei 186 mm, links linksbündig bei 24 mm. Damit steht er bündig unter dem Textblock,
 und der Abstand zur Zahl ist auf beiden Seiten gleich. Im Vorbild ist die Lage **nicht**

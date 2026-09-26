@@ -26,7 +26,11 @@
 %%% wurde, steht in doku/PRUEFPLAN.md.
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{dsa5latex}[2026/09/07 v2.0 DSA5-Satz nach Scriptorium Aventuris v4]
+% Eine Versionsnummer fuer das ganze Projekt, gleich dem Git-Tag: Klasse,
+% Aufsteller und alle weiteren Dateien tragen dieselbe. Was sich je Version
+% geaendert hat, steht in CHANGELOG.md.
+\def\dsa@version{1.2.0}
+\ProvidesClass{dsa5latex}[2026/09/26 v1.2.0 DSA5-Satz nach Scriptorium Aventuris v4]
 
 %%% ==================================================================
 %%% 1  Optionen
@@ -39,12 +43,18 @@
 % Seite. Wer am Umschlag oder am Text arbeitet, braucht sie nicht, und der
 % Lauf wird deutlich kuerzer.
 \newif\ifdsa@ohnehintergrund \dsa@ohnehintergrundfalse
+% Ersatzschrift aus TeX Live statt der Baukastenschriften aus schriften/.
+% Fuer Laeufe ohne das Material von Ulisses, vor allem die CI: die Schriften
+% duerfen nicht ins Repository, und ohne sie bricht fontspec ab. Raster und
+% Seitenaufbau bleiben pruefbar, Zeilenfall und Satzbreiten nicht.
+\newif\ifdsa@ersatz        \dsa@ersatzfalse
 
 \DeclareOption{raster}{\dsa@rastertrue}
 \DeclareOption{ohneraster}{\dsa@rasterfalse}
 \DeclareOption{rasterzeigen}{\dsa@rasterzeigentrue}
 \DeclareOption{entwurf}{\dsa@entwurftrue}
 \DeclareOption{ohnehintergrund}{\dsa@ohnehintergrundtrue}
+\DeclareOption{ersatz}{\dsa@ersatztrue}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions\relax
 
@@ -84,7 +94,10 @@
 \RequirePackage{textcomp}
 \RequirePackage{microtype}
 \RequirePackage{hyperref}
-\hypersetup{hidelinks}
+% pdfcreator nennt die Klasse samt Version, damit man einem fertigen PDF
+% ansieht, womit es gesetzt ist. Titel und Autor setzen \dsaAbenteuertitel
+% und \dsaAutor, siehe Abschnitt 11.
+\hypersetup{hidelinks, pdfcreator={dsa5latex v\dsa@version}}
 
 \ifdsa@entwurf \setkeys{Gin}{draft} \fi
 
@@ -157,6 +170,22 @@
 % es vom Arbeitsverzeichnis aus nicht gibt, und der Lauf endete mit "not
 % loadable". Ein fuehrendes ./ schaltet die Suche ab und fragt genau das
 % Arbeitsverzeichnis.
+%
+% Mit der Option ersatz entfaellt die Suche: dann kommt Gentium aus dem
+% TeX-Live-Paket gentium-sil, ueber kpathsea gefunden. Das ist der Nachfolger
+% von Gentium Basic aus derselben Hand (SIL), die Laufweite liegt nahe, und
+% er ist in jeder vollen TeX-Live-Installation vorhanden. Gleich ist sie
+% nicht: Zeilenfall und Satzbreiten im Ersatzmodus sind nicht verbindlich.
+\ifdsa@ersatz
+  \ClassWarning{dsa5latex}{Option ersatz: Gentium aus TeX Live statt der
+    Baukastenschriften. Zeilenfall und Satzbreiten sind nicht verbindlich}
+  \setmainfont{Gentium}[
+    Extension      = .ttf,
+    UprightFont    = *-Regular,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic ]
+\else
 \IfFileExists{./schriften/GenBasR.ttf}
   {\newcommand*{\dsa@schriften}{./schriften/}}
   {\IfFileExists{./../schriften/GenBasR.ttf}
@@ -164,7 +193,8 @@
      {\newcommand*{\dsa@schriften}{./schriften/}%
       \ClassWarning{dsa5latex}{Der Ordner schriften/ ist weder neben dem
         Dokument noch eine Ebene hoeher zu finden. Erzeugen mit
-        werkzeuge/aufbereiten.py}}}
+        werkzeuge/aufbereiten.py, oder ohne Baukasten die Option ersatz
+        setzen}}}
 
 \setmainfont{GenBasR}[
   Path           = \dsa@schriften,
@@ -172,6 +202,7 @@
   BoldFont       = GenBasB,
   ItalicFont     = GenBasI,
   BoldItalicFont = GenBasBI ]
+\fi
 
 % Der Fliesstext: 10 bp auf 12 bp. Der Baukasten nennt „10 pt", und das sind
 % InDesign-Punkte, also bp. In TeX-Punkten waeren es 10,04 pt — der
@@ -211,11 +242,22 @@
 % „Font shape TU/andlso(0)/b/n undefined" und faellt still auf den normalen
 % zurueck — der Baukasten verlangt fuer Kapitel und Covertitel aber fett.
 % Also nachbilden lassen.
+%
+% Fuer Andalus gibt es keinen freien Ersatz mit aehnlichem Bild. Im
+% Ersatzmodus steht dort Gentium mit denselben nachgebildeten Schnitten --
+% die Ueberschriften sehen falsch aus, aber sie stehen an ihrem Platz, und
+% nur darum geht es in diesem Modus.
+\ifdsa@ersatz
+  \newfontfamily{\dsaandalus}{Gentium-Regular.ttf}[
+    AutoFakeBold  = 1.5,
+    AutoFakeSlant = 0.2 ]
+\else
 \newfontfamily{\dsaandalus}{andlso}[
   Path          = \dsa@schriften,
   Extension     = .ttf,
   AutoFakeBold  = 1.5,
   AutoFakeSlant = 0.2 ]
+\fi
 
 % Kapitaelchen. Keine der beiden Schriften hat das OpenType-Feature smcp —
 % nachgesehen in allen fuenf Dateien. \textsc tut damit nichts, still und
@@ -600,7 +642,16 @@
 % Der Abenteuertitel, in der Praeambel zu setzen. Ohne ihn bleibt der
 % Kolumnentitel der Kapitelname allein; ohne Kapitel bleibt er ganz leer.
 \newcommand*{\dsa@abenteuertitel}{}
-\newcommand*{\dsaAbenteuertitel}[1]{\renewcommand*{\dsa@abenteuertitel}{#1}}
+% Derselbe Titel geht als Dokumenttitel in die PDF-Metadaten -- sonst zeigt
+% der Betrachter im Fensterkopf den Dateinamen.
+\newcommand*{\dsaAbenteuertitel}[1]{%
+  \renewcommand*{\dsa@abenteuertitel}{#1}%
+  \hypersetup{pdftitle={#1}}}
+% Der Autor erscheint nirgends im Satz, nur in den PDF-Metadaten. Im Heft
+% steht er im Impressum und auf der Rueckseite, und dort mit eigener
+% Rubrik und eigenem Wortlaut; ein zentraler Befehl dafuer wuerde beides
+% nur einengen.
+\newcommand*{\dsaAutor}[1]{\hypersetup{pdfauthor={#1}}}
 
 % Der Kapitelname kommt ueber die Marken von LaTeX, damit jede Seite den
 % Namen ihres Kapitels traegt und nicht den des naechsten.

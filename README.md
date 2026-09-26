@@ -61,8 +61,12 @@ auch mit einer KI setzen: **[Einrichten und Bauen](doku/EINRICHTUNG.md)**. Kurzf
 ```sh
 python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
 cd beispiel
-TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
+latexmk                                  # oder: TEXINPUTS="..;" xelatex beispiel.tex, dreimal
 ```
+
+Ohne den Baukasten baut der Ersatzmodus, mit Platzhaltergrafiken und freier Schrift: zum
+Ansehen der Klasse und für die CI, nicht für das fertige Heft. Beschrieben in
+[Einrichten und Bauen](doku/EINRICHTUNG.md), Abschnitt „Ohne Baukasten bauen“.
 
 Die Elementreferenz der Kernklasse steht in `doku/ELEMENTE.md`, dort auch die Battlemap mit
 Zollraster (`beispiel/battlemap.tex`, Abschnitt „Seitentypen“) — kein eigener Seitentyp der

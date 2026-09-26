@@ -78,7 +78,30 @@ SOLL = {
     'kapitelstart-rahmen.png':      (1290, 3543),
     'kapitelstart-pergament.png':   (1290, 3543),
     'kapitelstart-ornament.png':    (1290, 3543),
+    # Innenflaeche und Fenster des Kapitelanfangs, von aufbereiten.py per
+    # Saatpunkt aus kapitelstart-rahmen gewonnen, gleiche Leinwand.
+    'kapitelstart-flaeche.png':     (1290, 3543),
+    'kapitelstart-fenster.png':     (1290, 3543),
+    # Rautenskalen, aus den Aufzaehlern der Rueckseitenvorlage
+    'raute-rot.png':                (215, 259),
+    'raute-gruen.png':              (215, 259),
+    'raute-grau.png':               (215, 259),
 }
+
+# Die Rueckseite in ihren Regionsfassungen, aus dem Rueckseiten-Paket. Alle
+# auf A4 zu 300 ppi, also 2480 x 3508 px, als JPEG abgelegt. Keine davon ist
+# unverzichtbar: jedes Dokument braucht hoechstens eine.
+REGIONEN = [
+    'neutral', 'al-anfa', 'andergast', 'aranien', 'bergkoenigreiche',
+    'bjaldorn', 'bornland', 'brabak', 'donnerbach',
+    'freie-staedte-elfenlande', 'gjalskerland', 'herzogtum-paavi',
+    'hoher-norden', 'horasreich', 'kalifat', 'maraskan', 'mittelreich',
+    'nivesenlande', 'nostria', 'orkland', 'schattenlande', 'selem',
+    'sultanat-gorien', 'svelltal', 'thorwal', 'tiefer-sueden',
+    'tulamidenlande', 'warunkei', 'zyklopeninseln',
+]
+for r in REGIONEN:
+    SOLL['ruecken-%s.jpg' % r] = (2480, 3508)
 
 # Die acht Einzelseiten aus den vier Doppelseiten. Eine Doppelseite ist
 # 5032 x 3579 px; der Schnitt in der Mitte ergibt je 2516 x 3579 px, also
