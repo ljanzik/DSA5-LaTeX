@@ -3291,12 +3291,18 @@
 
 \newcommand{\dsaFeld}[2]{\dsa@werteabsatz\textbf{#1:} #2}
 
+% Beide Umgebungen setzen in der Schrift ihrer Umgebung: im Fliesstext auf
+% dem Raster, im Kasten im Kastentext. Frueher standen hier \small und
+% \footnotesize -- die Groessen der Basisklasse, nicht ans Raster
+% angepasst, und ohne Quelle: gemessen 8,0 bp auf 9,47 bp im Wertekasten,
+% wo der Kastentext 9,5 auf 11,4 bp setzt (Issue #10). Das Werteformat
+% des Baukastens ist die Grundschrift, siehe oben.
 \newenvironment{dsaKurzcharakteristik}{%
-  \small\setlength{\parindent}{0pt}%
+  \par\setlength{\parindent}{0pt}%
 }{\par}
 
 \newenvironment{dsaWerteblock}{%
-  \footnotesize\setlength{\parindent}{0pt}%
+  \par\setlength{\parindent}{0pt}%
 }{\par}
 
 % Die Probenzeile: ein farbiger Balken ueber die Spaltenbreite, darin der

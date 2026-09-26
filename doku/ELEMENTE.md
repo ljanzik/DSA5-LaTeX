@@ -765,7 +765,7 @@ Die folgenden Elemente sehen aus wie Tabellen, sind aber eigene Bausteine mit ei
 | `\dsaZauber{Name}{Schlüssel}` | Rubriken eines Zaubers |
 | `\dsaLiturgie{Name}{Schlüssel}` | Rubriken einer Liturgie |
 | `\dsaFeld{Name}{Wert}` | ein Feld: Rubrik fett mit Doppelpunkt, Folgezeilen um 3 mm eingezogen |
-| `\begin{dsaWerteblock}` | Werte frei gesetzt, in kleinerem Grad |
+| `\begin{dsaWerteblock}` | Werte frei gesetzt, in der Schrift der Umgebung: im Fließtext auf dem Raster, im Kasten im Kastentext |
 | `\begin{dsaKurzcharakteristik}` | Felder für soziale Begegnungen |
 | `\dsaProbe[Farbe]{Name}` | farbiger Balken über die Spalte, danach die QS-Staffel |
 | `\dsaZusammenfassung{…}` | fünf Rubriken für den Rücktitel |

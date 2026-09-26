@@ -625,14 +625,23 @@ Gegnerblöcke, alle gleich gebaut), mit PyMuPDF an jedem Zeichen gemessen:
 hängend über drei Zeilen. Im Regellauf `beispiel.tex` bleiben es 22 Seiten, ohne Klassenwarnung
 und ohne `Overfull \vbox`.
 
-### Offen: die Markenzeile schiebt das Raster um 1,61 bp
+Auf Seite 7 liegt die Zeile mit der Rautenskala 1,61 bp neben dem Raster und alles darunter mit
+ihr. Das ist nicht diese Änderung, sondern Issue #9, behoben auf `feature/werkzeugkette`.
 
-Beim Nachmessen des Regellaufs gefunden, nicht durch die Werteblöcke verursacht. Auf Seite 7 von
-`beispiel.pdf` liegt die Zeile mit Gegnerabstufung und Rautenskala bei 378,80 bp statt 372 oder
-384, und alles darunter bis zum Spaltenende 1,61 bp tiefer als das Raster (k = 27,13 statt 27).
-Auf `development` steht die Abweichung an derselben Stelle genauso. Die Marken dieser Zeile sind
-höher als eine Zeile; TeX fällt auf `\lineskip` zurück. Die Prüfung ist dieselbe wie unter
-„Elemente mit eigenem Raster“; behoben ist es noch nicht.
+### `dsaWerteblock` und `dsaKurzcharakteristik` in der Schrift der Umgebung (Issue #10)
+
+Beide setzen in der Schrift ihrer Umgebung, nicht in `\footnotesize` und `\small`, den Größen der
+Basisklasse. Für die gab es keine Quelle, und sie lagen neben dem Raster: 8,0 bp auf 9,47 bp im
+Wertekasten, wo der Kastentext 9,5 auf 11,4 bp setzt. Nachgemessen am Regellauf, alle Grundlinien
+vorher gegen nachher:
+
+| Stelle | vorher | nachher | Status |
+|---|---|---|---|
+| S. 9, `dsaWerteblock` im Wertekasten | 8,0 / 9,47 bp | 9,5 / 11,4 bp wie der Kastentext | `ok` |
+| S. 22, `\dsaZusammenfassung` | 8,0 / 9,47 bp | Abstand 12,0 bp, im Grad des Klappentexts; die Anforderungen rücken 12,7 bp tiefer und passen | `ok` |
+| übrige Seiten | — | unverändert auf 0,01 bp, 22 Seiten | `ok` |
+
+`rest.tex` zeigt auf seiner Rückseite dieselbe Verschiebung, ohne Warnung.
 
 ## Drei Befunde beim Ansehen des gesetzten Solos
 
