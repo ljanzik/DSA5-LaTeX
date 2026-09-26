@@ -583,6 +583,92 @@ Ziffern tragen. Und eine Zahl ohne Einheit ist in einer TikZ-Koordinate ein Viel
 Achseneinheit: `0.5*\paperheight` wären dort 420 Zentimeter, nicht die halbe Blatthöhe. Beides
 fiel erst am Abzug auf.
 
+## Spielkarten (dsa5spielkarten.cls)
+
+Eigene Klasse mit eigener Quelle — dem *Scriptorium Aventuris – Spielkarten*-Baukasten, nicht dem
+allgemeinen Layout-Baukasten. Die Sollmaße stehen in [MASSE.md](MASSE.md), Abschnitt 8.
+
+Gemessen wird am gebauten PDF mit `pymupdf`: Seitenformat, Lage und Größe der Kartenfläche, jede
+Grundlinie, die Füllrechtecke der Wertetabelle, die Spaltenkanten des Attributrasters. Für den
+Druckbogen zusätzlich die Duplexprobe — zu jeder Kartenfläche auf dem Vorderseitenbogen muss es
+auf dem Rückseitenbogen eine geben, deren Mitte auf der an der senkrechten Blattachse gespiegelten
+Stelle liegt.
+
+Gebaut wurden `beispiel/spielkarten.tex` (Einzelkarten), `beispiel/spielkarten-bogen.tex`
+(A4-Bogen) und dieselbe Datei mit Option `anschnitt`. Alle drei mit XeLaTeX aus TeX Live 2026,
+**ein Lauf, fehlerfrei** — die Klasse benutzt kein `remember picture` und braucht deshalb keine
+drei Durchläufe wie ein Aufstellerbogen.
+
+Das Beispieldokument hat siebzehn Karten und deckt alle acht Kartentypen ab, dazu die Raute als
+Rücken (in drei Farben und einmal auf der bandlosen Fläche) und das Rautenfeld als Alternative. Zwei Karten tragen eine Stückzahl (zehn und vier), sodass auf den Bogen 29
+Karten landen — vier Bogenpaare, und damit ist auch der Übergang von einem Bogen auf den
+nächsten mehrfach geprüft.
+
+| Prüfung | Sollwert | Gemessen | Status |
+|---|---|---|---|
+| Seitenformat, Einzelkarte | 63,00 × 88,00 mm | 62,999 × 88,000 | `ok` |
+| Seitenformat mit `anschnitt` | 69,00 × 93,98 mm | 69,00 × 93,98 | `ok` |
+| Seitenformat, Druckbogen | 210 × 297 mm | 210,002 × 297,000 | `ok` |
+| Kartenfläche, Pixelmaß | 815 × 1110 px | 815 × 1110 | `ok` |
+| Kartenfläche, Lage | −3,00 / −2,99 mm | −3,000 / −2,988 | `ok` |
+| Kartenfläche, Größe | 69,003 × 93,980 mm | 69,001 × 93,976 | `ok` |
+| Grundlinie Überschrift | 17,657 mm | 17,657 | `ok` |
+| Grundlinie Untertitel | 20,621 mm | 20,621 | `ok` |
+| Überschrift, Mitte | 31,50 mm | 31,499 | `ok` |
+| zweizeiliger Name, Zeile 2 | 17,657 + 12 bp = 21,890 mm | 21,891 | `ok` |
+| zweizeiliger Name, Untertitel | 17,657 + 20,4 bp = 24,854 mm | 24,854 | `ok` |
+| erste Grundlinie Rückseite | 14,790 mm | 14,790 | `ok` |
+| Zeilenabstand Rückseite | 8,0 bp | 8,000 | `ok` |
+| linke Satzkante | 5,50 mm | 5,500 | `ok` |
+| Kartennummer, Grundlinie | 85,09 mm | 85,090 | `ok` |
+| Kartennummer, rechte Kante | 60,00 mm | 60,001 | `ok` |
+| Medaillon, Lage und Größe | 2,50 / 65,90 mm, 20 mm | 2,500 / 65,900, 19,997 | `ok` |
+| Wertetabelle, Oberkante | 12,20 mm | 12,200 | `ok` |
+| Wertetabelle, linke Kante und Breite | 5,50 / 52,00 mm | 5,500 / 52,000 | `ok` |
+| Wertetabelle, Zeilenhöhe | 4,00 mm | 4,000 | `ok` |
+| Wertetabelle, Abstand gefüllter Zeilen | 8,00 mm | 8,000 | `ok` |
+| Attributraster, erste Grundlinie | 14,790 mm | 14,790 | `ok` |
+| Attributraster, Spaltenschritt | 12,70 mm | 12,700 | `ok` |
+| Verbrauchsgegenstand, Text unten | letzte Grundlinie auf 75,7 mm | 75,821 | `ok` |
+| Verbrauchsgegenstand, linke Satzkante | 5,50 mm | 5,500 | `ok` |
+| Kartenrücken, Raute | 34,00 mm hoch | 34,000 | `ok` |
+| Kartenrücken, Rautenfeld | Kachel 14,00 mm | 14,000 | `ok` |
+| Kartenrücken, kein Text | keine Textzeile | keine | `ok` |
+| bandlose Rückseitenfläche | 69,003 × 93,980 mm | 69,001 × 93,976 | `ok` |
+| Medaillon, Porträtmitte | 12,50 / 75,90 mm | 12,500 / 75,900 | `ok` |
+| Medaillon, Porträtdurchmesser | 16,69 mm | 16,686 | `ok` |
+| Medaillon, Ringdatei | 22,72 mm breit | 22,718 | `ok` |
+| Medaillon, sichtbarer Kranz | 20,00 mm | 20,001 | `ok` |
+| Medaillon, Ringmitte waagerecht | 13,016 mm | 13,016 | `ok` |
+| Stückzahl auf dem Bogen | 15 + 10 + 4 = 29 Karten | 29, auf vier Bogenpaaren (9 + 9 + 9 + 2) | `ok` |
+| **Duplex-Passung** des Druckbogens | 0 mm Versatz | 0,001 mm, schlechtester von 29 Karten über vier Bogenpaare | `ok` |
+
+### Wo die Klasse vom Set abweicht
+
+* Die **Spaltenteilung der Wertetabelle** ist von 19,00 auf 21,48 mm umgerechnet, weil die Tabelle
+  dieser Klasse 52 statt 46 mm breit ist. Mit dem Wert des Sets stößt „zusätzliche Abzüge“ auf der
+  Rüstungskarte in die Wertespalte — Gentium Basic läuft breiter als das Times des Sets.
+* Die **Wertetabelle setzt kleiner als der Fließtext** (Beschriftung 6 bp fett, Wert 6,5 bp). Das
+  sind die Grade des Sets; die Tabelle steht nicht im Baukasten, also gilt für sie durchgehend das
+  Set.
+* Der **Zeilenschritt des Attributrasters** ist der Durchschuss dieser Klasse (8 bp), nicht die
+  7,8 bp des Sets — damit das Raster auf denselben Zeilen sitzt wie der Fließtext darunter.
+* **Blocksatz auf 52 mm** braucht andere Einstellungen als die 80,5 mm der Kernklasse: `tolerance`
+  3000 und `emergencystretch` 2em. Das sind die mildesten Werte, mit denen keine Zeile mehr
+  überläuft; ab dort ändert sich nichts mehr, höhere kaufen nur löchrigere Zeilen ein.
+
+### Was noch nicht geprüft ist
+
+* **Der wirkliche Duplexdruck.** Die Passung ist am PDF nachgerechnet, nicht auf Papier. Wie genau
+  ein bestimmter Drucker Vorder- und Rückseite trifft, ist Sache des Geräts, nicht der Vorlage.
+* **Der Schnitt auf Kartenformat.** Die Fassung mit `anschnitt` ist gebaut und vermessen, aber
+  nicht bei einer Druckerei gewesen.
+* **Das Medaillon an einem hochkanten Bild.** Das Beispieldokument benutzt quadratische
+  Platzhalter, und an einem Quadrat ist am Bildausschnitt des Medaillons nichts zu sehen. Wer die
+  Klasse dort ändert, prüft sie an einer Halb- oder Dreiviertelfigur.
+* **Der Kartenrücken auf Papier.** Das Rautenfeld ist am PDF vermessen und angesehen. Ob es
+  gedruckt so dicht wirkt wie am Bildschirm, hängt am Papier und ist hier nicht zu entscheiden.
+
 ## Vorgehen
 
 Seriell von oben nach unten, je Block: `probeseiten.tex` bauen, mit `nachmessen.py` die Zahlen

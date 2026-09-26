@@ -59,6 +59,48 @@ aus innerhalb der Grenzlinien und rechnet aus der gefundenen Fläche dieselbe Se
 `aufbereiten.py`. Das Grenznetz kennt allerdings nur die großen Regionen: eine Saat im Kosch
 flutet das ganze Mittelreich.
 
+### Schritt 1c — der Spielkarten-Baukasten
+
+Nur für `dsa5spielkarten.cls` nötig, siehe [Spielkarten](SPIELKARTEN.md). Der *Scriptorium
+Aventuris – Spielkarten*-Baukasten ist ein eigenes, ebenfalls kostenloses Paket neben dem
+allgemeinen Layout-Baukasten und liegt unter demselben Ulisses-Link.
+
+**Er ersetzt Schritt 1 nicht, er kommt dazu.** Das Kartenpaket bringt zwar eigene Schriften mit,
+aber nur `GenBasR.ttf` und `andlso.ttf` — der Fett- und der Kursivschnitt von Gentium Basic fehlen
+dort, und die braucht auf einer Karte jedes Stichwort. Die Rautenkacheln des generischen
+Kartenrückens kommen ebenfalls aus dem allgemeinen Baukasten. Wer nur Schritt 1c macht, bekommt
+Karten, auf denen alles mager steht und der Rücken fehlt.
+
+```
+Scriptorium Aventuris -Spielkarten/
+├── Document fonts/andlso.ttf, GenBasR.ttf   dieselben wie im Layout-Baukasten
+├── Links/Spielkarte_Ulisses_Design.tif      die Kartenfläche, 815 × 1110 px
+├── Scriptorium Aventuris -Spielkarten.idml  Seiten-, Rahmen- und Absatzmaße
+└── Scriptorium Aventuris -Spielkarten.pdf   der gesetzte Musterbogen
+```
+
+Gebraucht wird daraus genau eine Datei, die TIF. Das Werkzeug dafür ist ein eigenes:
+
+```sh
+python3 werkzeuge/kartengrafik.py "/pfad/zu/Scriptorium Aventuris -Spielkarten"
+python3 werkzeuge/kartengrafik.py "/pfad/zum/Paket" --farbe blau --farbe rot
+python3 werkzeuge/kartengrafik.py --farben
+```
+
+Es legt `grafiken/spielkarte-flaeche.png` an, mit `--farbe` zusätzlich eingefärbte Fassungen des
+Schuppenbands. Die Schriften holt weiterhin `aufbereiten.py` aus dem allgemeinen Baukasten; es
+sind dieselben, und `kartengrafik.py` fasst `schriften/` nicht an. Der generische Kartenrücken
+benutzt die Rautenkacheln, die ebenfalls aus dem allgemeinen Baukasten kommen — auch dafür muss
+`aufbereiten.py` gelaufen sein.
+
+Solange die Illustrationen fehlen, legt `werkzeuge/kartenplatzhalter.py` Platzhalter in der
+richtigen Form an:
+
+```sh
+python3 werkzeuge/kartenplatzhalter.py "Bruder Halmrich" "Zwergenspalter"
+python3 werkzeuge/kartenplatzhalter.py --rund "Halmrich"
+```
+
 ### Schritt 2 — aufbereiten
 
 Der bequeme Weg. Das Werkzeug legt alles an, was die Klasse braucht, und benennt es passend:

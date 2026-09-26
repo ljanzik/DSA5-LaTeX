@@ -25,6 +25,7 @@ Jedes Feature ist eine eigene Klasse oder eine eigene Erweiterung, mit eigener E
 | Abenteuer setzen | `dsa5latex.cls` | Zweispaltiger Satz auf A4 mit Grundlinienraster, Pergament- und Wertekästen in Produktionsgröße, Kapitelbanner, Meistermasken, Seitenhintergründe, Textumfluss | [Elementreferenz](doku/ELEMENTE.md) |
 | Aufsteller (Standfiguren zum Ausschneiden) | `dsa5aufsteller.sty` | Kleine Standfiguren auf eigenen A4-Bögen in vier Größenklassen (S/M/L/XL), mit automatisch erzeugter Rückseite für den beidseitigen Druck | [Elementreferenz](doku/ELEMENTE.md#aufsteller) |
 | Battlemap mit Zollraster | — (`beispiel/battlemap.tex`, kein `.cls`) | Eigenes Blatt neben dem Heft (A4 bis A1, hoch oder quer) mit gestricheltem Zollraster über der Battlemap, kein eigener Seitentyp der Klasse | [Elementreferenz](doku/ELEMENTE.md#seitentypen) |
+| Spielkarten | `dsa5spielkarten.cls` | Karten im Format der offiziellen Sets (63 × 88 mm), elf Typen (NSC, Waffe, Rüstung, Gegenstand, Monster, Zauber, Sonderfertigkeit, Kultur, Text, Impressum) und einseitige Verbrauchsgegenstände mit generischem Rücken, wahlweise als Einzelkarten für die Druckerei oder als A4-Druckbogen mit duplexdeckender Rückseite und Stückzahl je Karte; Randfarbe einstellbar | [Spielkarten](doku/SPIELKARTEN.md) |
 
 Einrichten, Grafiken und Schriften besorgen, bauen — das gilt featureübergreifend und steht in
 [Einrichten und Bauen](doku/EINRICHTUNG.md).
@@ -68,6 +69,19 @@ Die Elementreferenz der Kernklasse steht in `doku/ELEMENTE.md`, dort auch die Ba
 Zollraster (`beispiel/battlemap.tex`, Abschnitt „Seitentypen“) — kein eigener Seitentyp der
 Klasse, sondern ein eigenes Blatt (A4 bis A1, hoch oder quer) neben dem Heft.
 
+Die Spielkarten brauchen ein **zweites** Ulisses-Paket, den *Scriptorium Aventuris – Spielkarten*-
+Baukasten, und ein zweites Werkzeug dafür — zusätzlich zum allgemeinen Baukasten, nicht statt
+seiner: das Kartenpaket bringt Gentium Basic nur im Grundschnitt mit, fett und kursiv kommen von
+dort, ebenso die Rautenkacheln des Kartenrückens.
+
+```sh
+python3 werkzeuge/aufbereiten.py  "/pfad/zu/Scriptorium Aventuris v4"
+python3 werkzeuge/kartengrafik.py "/pfad/zu/Scriptorium Aventuris -Spielkarten" --farbe blau
+cd beispiel
+TEXINPUTS="..;" xelatex spielkarten.tex        # Einzelkarten, 63 x 88 mm
+TEXINPUTS="..;" xelatex spielkarten-bogen.tex  # A4-Bogen, 3 x 3, duplexdeckend
+```
+
 ---
 
 ## Stand
@@ -87,6 +101,12 @@ in `doku/ELEMENTE.md` unter „Was noch nicht nachgemessen ist“, der Stand jed
 `doku/PRUEFPLAN.md`. Das Zollraster der Battlemap ist dort ebenfalls nachgemessen: alle vier
 Blattgrößen treffen ihr Sollmaß, der Linienabstand liegt auf 72,001 bp gegen ein Sollmaß von
 72 bp.
+
+**Die Spielkarten ebenso.** `spielkarten.tex` und `spielkarten-bogen.tex` bauen in einem Lauf
+fehlerfrei, und alle achtunddreißig Sollmaße des Spielkarten-Baukastens sind am gesetzten PDF
+getroffen: Kartenformat, Kartenfläche samt Anschnitt, jede Grundlinie, Wertetabelle,
+Attributraster, Kartenrücken und das Porträtmedaillon samt Messingkranz. Die Duplex-Passung des
+Druckbogens liegt bei 0,001 mm Versatz, über vier Bogenpaare gemessen.
 
 ---
 

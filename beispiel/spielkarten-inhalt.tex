@@ -1,0 +1,439 @@
+% spielkarten-inhalt.tex — die Karten selbst, ohne Praeambel.
+%
+% Eingebunden von beispiel/spielkarten.tex (Einzelkarten) und von
+% beispiel/spielkarten-bogen.tex (A4-Druckbogen). Beide setzen denselben
+% Satz Karten; sie unterscheiden sich nur in der Klassenoption. Genau
+% dafuer liegt der Inhalt in einer eigenen Datei — so ist am gebauten PDF
+% nachzupruefen, dass die Druckfassung am Satz der Karte nichts aendert.
+%
+% Zwoelf Karten, jeder der acht Kartentypen mindestens einmal, in vier
+% Randfarben. Zwoelf und nicht neun: so laeuft der Druckbogen auf ein
+% zweites Bogenpaar ueber, und dass das stimmt, ist am PDF zu sehen.
+%
+% Der Inhalt ist erfunden. „Die Uferlande" gibt es in Aventurien nicht;
+% Namen, Werte und Regeln sind frei erdacht und stehen hier nur, damit
+% jedes Element einen Text hat, der so lang ist wie im Ernstfall.
+%
+% Die Abbildungen sind Platzhalter und werden erzeugt mit
+%
+%   python3 werkzeuge/kartenplatzhalter.py "Bruder Halmrich" "Zwergenspalter" \
+%       "Schuppenpanzer" "Wegfeuerlaterne" "Moorschrecke" "Windhauch" \
+%       "Klingentanz" "Uferlande" "Gerlinde Rabenfels" "Nebelschleicher" \
+%       "Wurzelsegen" "Steinwurf"
+%   python3 werkzeuge/kartenplatzhalter.py --rund "Halmrich" "Gerlinde" \
+%       "Moorschrecke" "Nebelschleicher"
+%
+% Die Randfarben kommen aus
+%
+%   python3 werkzeuge/kartengrafik.py "/pfad/zum/Kartenpaket" \
+%       --farbe blau --farbe rot --farbe gruen --farbe bernstein
+
+% ======================================================================
+% Was das Set über sich selbst sagt — neutraler Rand
+% ======================================================================
+%
+% Zwei Karten in der Bauform, die beide veröffentlichten Sets für sich
+% selbst benutzen: Kopf und Text, kein Bild, auf beiden Seiten dasselbe.
+
+\dsaKartenfarbe{}
+
+\begin{dsaKarteText}
+  \dsaKartenname{Die Uferlande}
+  \dsaKartenuntertitel{Ein Kartensatz zum Nachschlagen}
+  \dsaKartennummer{UFR 00}
+
+  \dsaKartentext{Siebzehn Karten für den Spielleiter: Bewohner,
+    Ausrüstung, Zauberwerk und was im Moor lauert. Auf jeder Karte steht,
+    was am Tisch in der Hand liegen muss.}
+  \dsaKartenstich{Mischen}{Die Verbrauchsgegenstände sind einseitig und
+    tragen den gemeinsamen Rücken. Sie lassen sich mischen und verdeckt
+    ziehen.}
+\end{dsaKarteText}
+
+\begin{dsaKarteImpressum}
+  \dsaKartennummer{UFR 18}
+
+  \dsaKartenzeile{Text und Satz}{frei erfunden für dieses Beispiel}
+  \dsaKartenzeile{Vorlage}{Scriptorium Aventuris – Spielkarten}
+  \dsaKartenzeile{Abbildungen}{Platzhalter aus
+    \texttt{kartenplatzhalter.py}}
+  \dsaKartenzeile{Klasse}{\texttt{dsa5spielkarten}}
+\end{dsaKarteImpressum}
+
+% ======================================================================
+% Erste Gruppe: die Bewohner der Uferlande — blauer Rand
+% ======================================================================
+
+\dsaKartenfarbe{blau}
+
+% --- NSC --------------------------------------------------------------
+
+\begin{dsaKarteNSC}
+  \dsaKartenname{Bruder Halmrich}
+  \dsaKartenuntertitel{Wandernder Efferdgeweihter}
+  \dsaKartenbild{platzhalter-bruder-halmrich}
+  \dsaKartennummer{UFR 01}
+  \dsaKartenmedaillon{platzhalter-halmrich-rund}
+  \dsaKartennachweis{Platzhalter}
+
+  \dsaKartentext{Bedächtiger Zuhörer, Götter \& Kulte (12/13/11) 9,
+    Boote \& Schiffe (11/12/13) 8}
+  \dsaKartentext{Zieht seit dreißig Jahren den Uferpfad entlang und segnet
+    die Netze der Fischer. Spricht langsam und wiegt jedes Wort zweimal.
+    Hat eine unerklärliche Schwäche für geräucherten Aal und eine ebenso
+    unerklärliche Abneigung gegen Brückenzölle.}
+  \dsaKartenstich{Charakterzüge}{gelassen, wortkarg, unbestechlich}
+  \dsaKartenstich{Dienstleistungen}{Wettervorhersage, Segnung von Booten,
+    Vermittlung bei Streit unter Fischern}
+  \dsaKartenstich{Im Abenteuer}{Halmrich hat am Ufer eine Truhe gefunden,
+    die er nicht öffnen mag. Er sucht jemanden, der sie zum Tempel nach
+    Wehrheim bringt — ohne hineinzusehen.}
+  \dsaKartenstich{Zusammenfassung}{Mensch, Uferlande, Geweihter, Auftrag}
+\end{dsaKarteNSC}
+
+\begin{dsaKarteNSC}
+  \dsaKartenname{Gerlinde Rabenfels}
+  \dsaKartenuntertitel{Wirtin zum Krummen Ruder}
+  \dsaKartenbild{platzhalter-gerlinde-rabenfels}
+  \dsaKartennummer{UFR 02}
+  \dsaKartenmedaillon{platzhalter-gerlinde-rund}
+  \dsaKartennachweis{Platzhalter}
+
+  \dsaKartentext{Schlagfertige Wirtin, Gassenwissen (13/14/12) 11,
+    Zechen (12/12/14) 9}
+  \dsaKartentext{Führt die einzige Schenke zwischen Wehrheim und der
+    Moorkante. Weiß alles, was am Fluss geredet wird, und gibt davon genau
+    so viel weiter, wie ihr nützt.}
+  \dsaKartenstich{Charakterzüge}{schlagfertig, misstrauisch, großzügig
+    gegenüber Kindern}
+  \dsaKartenstich{Dienstleistungen}{Unterkunft, Gerüchte, Botendienste
+    flussaufwärts}
+  \dsaKartenstich{Im Abenteuer}{Seit drei Wochen zahlt ein Gast in alten
+    Münzen, die niemand kennt. Gerlinde will wissen, woher sie kommen —
+    fragen mag sie aber nicht selbst.}
+  \dsaKartenstich{Zusammenfassung}{Mensch, Uferlande, Wirtin, Information}
+\end{dsaKarteNSC}
+
+% ======================================================================
+% Zweite Gruppe: Ausrüstung — roter Rand
+% ======================================================================
+
+\dsaKartenfarbe{rot}
+
+% --- Waffe ------------------------------------------------------------
+
+\begin{dsaKarteWaffe}
+  \dsaKartenname{Zwergenspalter aus Wehrheim}
+  \dsaKartenbild{platzhalter-zwergenspalter}
+  \dsaKartennummer{UFR 03}
+
+  \dsaKartenwert{KT}{Zweihandhiebwaffen}
+  \dsaKartenwert{TP}{\dsaFormel{1W6+5}}
+  \dsaKartenwert{L+S}{KK 15}
+  \dsaKartenwert{AT/PA-Mod}{\dsaFormel{0/\dsaMinus 1}}
+  \dsaKartenwert{RW}{mittel}
+  \dsaKartenwert{Gewicht}{3,5 Stn}
+  \dsaKartenwert{Länge}{110 HF}
+  \dsaKartenwert{Preis}{190 S}
+  \dsaKartenwert{Komplexität}{komp (1 AP)}
+
+  \dsaKartenstich{Waffenvorteil}{Gegen Rüstungen mit RS~4 oder höher
+    richtet der Zwergenspalter \dsaMod{+}{2}~TP an. Die Klinge ist dafür
+    eigens gezahnt.}
+  \dsaKartenstich{Waffennachteil}{Die Waffe ist kopflastig. Nach einer
+    misslungenen Attacke ist die nächste Verteidigung um 1 erschwert.}
+\end{dsaKarteWaffe}
+
+% --- Rüstung ----------------------------------------------------------
+
+\begin{dsaKarteRuestung}
+  \dsaKartenname{Schuppenpanzer der Flussgarde}
+  \dsaKartenbild{platzhalter-schuppenpanzer}
+  \dsaKartennummer{UFR 04}
+
+  \dsaKartenwert{Rüstungsschutz}{5}
+  \dsaKartenwert{Belastung (Stufe)}{2}
+  \dsaKartenwert{zusätzliche Abzüge}{\dsaFormel{\dsaMinus 1} auf GE}
+  \dsaKartenwert{Gewicht}{9 Stn}
+  \dsaKartenwert{Preis}{340 S}
+  \dsaKartenwert{Komplexität}{komp (2 AP)}
+
+  \dsaKartenstich{Rüstungsvorteil}{Die Schuppen sind gefettet. Im Wasser
+    gilt die Belastung um eine Stufe verringert, solange der Träger sich
+    nicht länger als eine Spielrunde untertaucht.}
+  \dsaKartenstich{Rüstungsnachteil}{Gegen Waffen der Kampftechnik
+    Stangenwaffen schützt der Panzer nur mit RS~3: die Schuppen geben
+    einer geführten Spitze nach.}
+\end{dsaKarteRuestung}
+
+% --- Gegenstand -------------------------------------------------------
+
+\begin{dsaKarteGegenstand}
+  \dsaKartenname{Wegfeuerlaterne}
+  \dsaKartenbild{platzhalter-wegfeuerlaterne}
+  \dsaKartennummer{UFR 05}
+
+  \dsaKartenstich{Beschreibung}{eine Laterne aus getriebenem Kupfer, deren
+    Scheiben mit Efferdsrunen geätzt sind}
+  \dsaKartenstich{Wirkung}{Ihr Licht durchdringt Nebel bis auf zwanzig
+    Schritt. Wer die Laterne trägt, erhält eine Erleichterung von 2 auf
+    Orientierung, solange er einem Wasserlauf folgt.}
+  \dsaKartenstich{Kosten}{drei Wochen Arbeit eines Kupferschmieds}
+  \dsaKartenstich{Preis}{280 S}
+\end{dsaKarteGegenstand}
+
+\begin{dsaKarteGegenstand}
+  \dsaKartenname{Steinwurfnetz}
+  \dsaKartenbild{platzhalter-steinwurf}
+  \dsaKartennummer{UFR 06}
+
+  \dsaKartenstich{Beschreibung}{ein Wurfnetz mit eingeflochtenen
+    Bleiperlen, wie es die Aalfischer benutzen}
+  \dsaKartenstich{Wirkung}{Bei einer gelungenen Fernkampfprobe erhält ein
+    Ziel der Größenkategorie klein oder mittel den Status
+    \emph{Gefesselt}. Befreien gelingt mit einer Probe auf Kraftakt,
+    erschwert um 2.}
+  \dsaKartenstich{Preis}{24 S}
+\end{dsaKarteGegenstand}
+
+% ======================================================================
+% Dritte Gruppe: Zauberwerk und Geweihtes — grüner Rand
+% ======================================================================
+
+\dsaKartenfarbe{gruen}
+
+% --- Zauber, kurz: beide Seiten tragen denselben Text ------------------
+
+\begin{dsaKarteZauber}
+  \dsaKartenname{Windhauch}
+  \dsaKartenuntertitel{Zaubertrick}
+  \dsaKartennummer{UFR 07}
+
+  \dsaKartentext{Ein kurzer Luftzug fährt über das Wasser und legt sich
+    wieder. Er reicht, um ein Segel einmal knattern zu lassen, eine Kerze
+    zu löschen oder ein loses Blatt einen Schritt weit zu tragen.}
+  \dsaKartenstich{Reichweite}{16 Schritt}
+  \dsaKartenstich{Wirkungsdauer}{sofort}
+  \dsaKartenstich{Zielkategorie}{Objekte}
+  \dsaKartenstich{Merkmal}{Elementar (Luft)}
+  \dsaKartenstich{Anmerkung}{Elfen, Hexen}
+\end{dsaKarteZauber}
+
+% --- Zauber, lang: mit Fortsetzung auf der Rückseite -------------------
+
+\begin{dsaKarteZauber}
+  \dsaKartenname{Wurzelsegen}
+  \dsaKartenuntertitel{Liturgie}
+  \dsaKartennummer{UFR 08}
+
+  \dsaKartentext{Der Geweihte legt die Hand auf den Boden und ruft die
+    Kraft des Flussvaters an. Im Umkreis von QS Schritt treiben Wurzeln
+    aus dem Erdreich und halten fest, was sie fassen können.}
+  \dsaKartenstich{Liturgiezeit}{4 Aktionen}
+  \dsaKartenstich{KaP-Kosten}{8 KaP}
+  \dsaKartenstich{Reichweite}{Berührung}
+  \dsaKartenfortsetzung
+  \dsaKartenstich{Wirkungsdauer}{QS Spielrunden}
+  \dsaKartenstich{Zielkategorie}{Zone}
+  \dsaKartenstich{Merkmal}{Objekt}
+  \dsaKartenstich{Verbreitung}{Geweihte des Flussvaters}
+  \dsaKartenstich{Steigerungsfaktor}{C}
+  \dsaKartentext{Wer die Zone betritt, legt eine Probe auf
+    Körperbeherrschung ab, erschwert um QS. Misslingt sie, erhält er den
+    Status \emph{Fixiert}, bis er sich befreit.}
+\end{dsaKarteZauber}
+
+% --- Sonderfertigkeit -------------------------------------------------
+
+\begin{dsaKarteSonderfertigkeit}
+  \dsaKartenname{Klingentanz}
+  \dsaKartenuntertitel{Kampf-Sonderfertigkeit}
+  \dsaKartennummer{UFR 09}
+
+  \dsaKartentext{Wer den Klingentanz beherrscht, weicht einem Angriff aus
+    und führt die eigene Waffe in derselben Bewegung weiter. Die Uferlande
+    kennen den Kniff von den Flussgarden, die auf schwankenden Planken
+    kämpfen lernen.}
+  \dsaKartenstich{Regel}{Nach einer gelungenen Verteidigung mit einer
+    Waffe der Kampftechnik Fechtwaffen darf sofort eine Attacke geführt
+    werden, erschwert um 2. Dies gilt einmal je Kampfrunde.}
+  \dsaKartenstich{Voraussetzungen}{GE 13, Fechtwaffen 10, Ausweichen 6}
+  \dsaKartenstich{AP-Wert}{15 Abenteuerpunkte}
+\end{dsaKarteSonderfertigkeit}
+
+% --- Kultur -----------------------------------------------------------
+
+\begin{dsaKarteKultur}
+  \dsaKartenname{Uferlande (Stufe I)}
+  \dsaKartenuntertitel{Wesenszug}
+  \dsaKartennummer{UFR 10}
+
+  \dsaKartenstich{Wasserfest}{Wer in den Uferlanden aufgewachsen ist,
+    kennt das Wasser, bevor er laufen kann. Proben auf Schwimmen und
+    Boote \& Schiffe sind um 1 erleichtert.}
+  \dsaKartenstich{Fremdenscheu}{Die Uferländer halten zusammen und alle
+    anderen auf Abstand. Die erste Probe auf Überreden oder Betören
+    gegenüber einem Fremden ist um 1 erschwert.}
+  \dsaKartenstich{Kombinierbar mit}{Stufe II: Moorkante, Stufe II:
+    Wehrheimer Werft}
+\end{dsaKarteKultur}
+
+% ======================================================================
+% Verbrauchsgegenstände: einseitig, mit Stückzahl — türkiser Rand
+% ======================================================================
+%
+% Diese Karten haben keine eigene Rückseite. Sie bekommen den generischen
+% Rücken aus der Klasse, damit ein Stapel gemischt werden kann.
+%
+% \dsaKartenanzahl gilt nur für den Druckbogen: dort erscheint die Karte so
+% oft. In der Einzelkartenfassung bleibt es bei einer Seite je Kartenseite,
+% denn das ist die Druckvorlage.
+
+\dsaKartenfarbe{tuerkis}
+
+\begin{dsaKarteVerbrauch}
+  \dsaKartenanzahl{10}
+  \dsaKartenname{Heiltrank}
+  \dsaKartenuntertitel{Verbrauchsgegenstand, Stufe 1}
+  \dsaKartenbild{platzhalter-heiltrank}
+  \dsaKartennummer{UFR 13}
+
+  \dsaKartentext{Heilt \dsaFormel{1W6} Lebenspunkte. Brauqualität 1,
+    Preis 20 S.}
+\end{dsaKarteVerbrauch}
+
+\begin{dsaKarteVerbrauch}
+  \dsaKartenanzahl{4}
+  \dsaKartenname{Wirselkraut}
+  \dsaKartenuntertitel{Verbrauchsgegenstand}
+  \dsaKartenbild{platzhalter-wirselkraut}
+  \dsaKartennummer{UFR 14}
+
+  \dsaKartentext{Betäubt für \dsaFormel{2W6} Stunden. Eine Probe auf
+    Selbstbeherrschung, erschwert um 2, halbiert die Dauer.}
+\end{dsaKarteVerbrauch}
+
+% ----------------------------------------------------------------------
+% Die Rückenmotive zum Vergleich
+% ----------------------------------------------------------------------
+%
+% Drei weitere einseitige Karten, nur damit jedes Rückenmotiv einmal im
+% gebauten PDF steht. Die Rückseite ist immer die Seite NACH der Karte.
+
+\dsaKartenfarbe{rot}
+
+\begin{dsaKarteVerbrauch}
+  \dsaKartenname{Uferbrand}
+  \dsaKartenuntertitel{Rücken: Raute in Randfarbe}
+  \dsaKartenbild{platzhalter-uferbrand}
+  \dsaKartennummer{UFR 15}
+
+  \dsaKartentext{Ein Schluck Kornbrand aus Wehrheim. Erleichtert die
+    nächste Probe auf Willenskraft um 1 und erschwert alle übrigen für
+    eine Stunde um ebenso viel.}
+\end{dsaKarteVerbrauch}
+
+\dsaKartenfarbe{violett}
+\dsaKartenruecken{\dsaRueckenRautenfeld}
+
+\begin{dsaKarteVerbrauch}
+  \dsaKartenname{Schlafmohnkugel}
+  \dsaKartenuntertitel{Rücken: Rautenfeld statt Raute}
+  \dsaKartenbild{platzhalter-schlafmohnkugel}
+  \dsaKartennummer{UFR 16}
+
+  \dsaKartentext{Wer sie zerbeißt, schläft \dsaFormel{1W6} Stunden. Wecken
+    gelingt nur mit einer Probe auf Heilkunde Gift, erschwert um 4.}
+\end{dsaKarteVerbrauch}
+
+% Dieselbe Raute, aber auf der bandlosen Fläche: das Schuppenband lässt
+% sich nicht abschalten — es steckt mit allem anderen in einer flachen
+% Datei —, aber werkzeuge/kartengrafik.py leitet eine Fassung ohne Band ab.
+\dsaKartenfarbe{bernstein}
+\dsaKartenruecken{\dsaRueckenRaute}
+\dsaKartenrueckflaeche{spielkarte-ruecken}
+
+\begin{dsaKarteVerbrauch}
+  \dsaKartenname{Flussvaterwasser}
+  \dsaKartenuntertitel{Rücken: Raute ohne Schuppenband}
+  \dsaKartenbild{platzhalter-flussvaterwasser}
+  \dsaKartennummer{UFR 17}
+
+  \dsaKartentext{Geweihtes Wasser aus dem Tempel zu Wehrheim. Hebt einen
+    Zustand der Stufe 1 auf, gleich welcher Art.}
+\end{dsaKarteVerbrauch}
+
+% Für die Karten danach wieder die Vorgabe: Raute auf der Kartenfläche.
+\dsaKartenrueckflaeche{}
+
+% ======================================================================
+% Vierte Gruppe: was im Moor lauert — bernsteinfarbener Rand
+% ======================================================================
+%
+% Ab hier wieder zweiseitige Karten, also zurück zum eigenen Rückseiteninhalt.
+
+\dsaKartenfarbe{bernstein}
+
+% --- Monster ----------------------------------------------------------
+
+\begin{dsaKarteMonster}
+  \dsaKartenname{Moorschrecke}
+  \dsaKartenuntertitel{Tier, nicht humanoid}
+  \dsaKartenbild{platzhalter-moorschrecke}
+  \dsaKartennummer{UFR 11}
+  \dsaKartenmedaillon{platzhalter-moorschrecke-rund}
+
+  \dsaKartenattribut{MU}{11}   \dsaKartenattribut{KL}{3 (t)}
+  \dsaKartenattribut{IN}{13}   \dsaKartenattribut{CH}{8}
+  \dsaKartenattribut{FF}{6}    \dsaKartenattribut{GE}{15}
+  \dsaKartenattribut{KO}{12}   \dsaKartenattribut{KK}{11}
+  \dsaKartenattribut{LeP}{24}  \dsaKartenattribut{AsP}{\dsaMinus}
+  \dsaKartenattribut{KaP}{\dsaMinus}
+  \dsaKartenattribut{INI}{\dsaFormel{14+1W6}}
+  \dsaKartenattribut{VW}{8}    \dsaKartenattribut{SK}{2}
+  \dsaKartenattribut{ZK}{3}    \dsaKartenattribut{GS}{10}
+  \dsaKartenattribut{AT}{13}   \dsaKartenattribut{PA}{9}
+  \dsaKartenattribut{TP}{\dsaFormel{1W6+3}}
+  \dsaKartenattribut{RW}{kurz}
+
+  \dsaKartenstich{RS/BE}{2/0}
+  \dsaKartenstich{Aktionen}{1}
+  \dsaKartenstich{Vorteile/Nachteile}{Herausragender Sinn (Gehör),
+    Dunkelsicht}
+  \dsaKartenstich{Talente}{Körperbeherrschung 9, Schwimmen 12,
+    Sinnesschärfe 10, Verbergen 14}
+  \dsaKartenstich{Größenkategorie}{mittel}
+  \dsaKartenstich{Sonderregeln}{\emph{Sprung aus dem Wasser} — im ersten
+    Angriff einer Kampfrunde aus dem Wasser heraus ist die Verteidigung
+    um 2 erschwert.}
+\end{dsaKarteMonster}
+
+\begin{dsaKarteMonster}
+  \dsaKartenname{Nebelschleicher}
+  \dsaKartenuntertitel{Chimäre, nicht humanoid}
+  \dsaKartenbild{platzhalter-nebelschleicher}
+  \dsaKartennummer{UFR 12}
+  \dsaKartenmedaillon{platzhalter-nebelschleicher-rund}
+
+  \dsaKartenattribut{MU}{16}   \dsaKartenattribut{KL}{9}
+  \dsaKartenattribut{IN}{14}   \dsaKartenattribut{CH}{12}
+  \dsaKartenattribut{FF}{10}   \dsaKartenattribut{GE}{14}
+  \dsaKartenattribut{KO}{15}   \dsaKartenattribut{KK}{16}
+  \dsaKartenattribut{LeP}{45}  \dsaKartenattribut{AsP}{20}
+  \dsaKartenattribut{KaP}{\dsaMinus}
+  \dsaKartenattribut{INI}{\dsaFormel{15+1W6}}
+  \dsaKartenattribut{VW}{9}    \dsaKartenattribut{SK}{4}
+  \dsaKartenattribut{ZK}{5}    \dsaKartenattribut{GS}{8}
+  \dsaKartenattribut{AT}{15}   \dsaKartenattribut{PA}{11}
+  \dsaKartenattribut{TP}{\dsaFormel{2W6+2}}
+  \dsaKartenattribut{RW}{mittel}
+
+  \dsaKartenstich{RS/BE}{4/0}
+  \dsaKartenstich{Aktionen}{2}
+  \dsaKartenstich{Vorteile/Nachteile}{Dunkelsicht, Immunität gegen Kälte}
+  \dsaKartenstich{Talente}{Einschüchtern 12, Verbergen 16, Willenskraft 11}
+  \dsaKartenstich{Größenkategorie}{groß}
+  \dsaKartenstich{Sonderregeln}{\emph{Nebelleib} — außerhalb von Nebel
+    verliert der Nebelschleicher 1~LeP je Spielrunde und kann nicht
+    zaubern.}
+\end{dsaKarteMonster}
