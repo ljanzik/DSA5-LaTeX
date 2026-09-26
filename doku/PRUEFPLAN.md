@@ -603,6 +603,37 @@ geschätzt. Die dritte kann die Klasse schon heute über `\dsaBildDeckend{\paper
 **Tabellen kommen im Textteil des Hefts nicht vor.** Die Rechtecke stecken sämtlich in den
 Formularseiten des Anhangs. `dsaTabelle` ist damit an diesem Heft nicht zu prüfen.
 
+### Ergebnis: `\dsaGegner`, `\dsaZauber`, `\dsaLiturgie`
+
+Den Inhalt des Gegnerkastens setzt jetzt `\dsaGegner`. Maße und Quelle stehen in `MASSE.md`,
+„Die Werteblöcke“. Geprüft am Nachbau eines Blocks aus einem zweiten gesetzten Abenteuer (zwölf
+Gegnerblöcke, alle gleich gebaut), mit PyMuPDF an jedem Zeichen gemessen:
+
+| Prüfung | Vorbild | Nachbau | Status |
+|---|---|---|---|
+| Schrift und Grad | Gentium Basic 10,0 bp | Gentium Basic 10,0 bp | `ok` |
+| Zeilenabstand | 12,0 bp | 12,0 bp, jede Grundlinie auf 84 + k · 12 bp, k ganzzahlig | `ok` |
+| Fett | Name, Kürzel, Rubriken | ebenso | `ok` |
+| Kürzel → Wert | Median 2,49 bp | 2,36 bis 2,50 bp | `ok` |
+| Wert → Kürzel | Median 6,61 bp | 6,61 bp | `ok` |
+| Folgezeilen | eingezogen | 8,5 bp eingezogen | `ok` |
+| fehlende Werte | — | keine Zeile, auch keine leere | `ok` |
+| vertippter Schlüssel | — | `Class dsa5latex Error: Unbekannter Schluessel` | `ok` |
+| im Gegnerkasten | — | Kastentext 9,5 bp auf 11,4 bp wie in jedem Kasten, neben dem Medaillon | `ok` |
+
+`\dsaZauber` und `\dsaLiturgie` im selben Lauf: jede Rubrik auf dem Raster, die Wirkung läuft
+hängend über drei Zeilen. Im Regellauf `beispiel.tex` bleiben es 22 Seiten, ohne Klassenwarnung
+und ohne `Overfull \vbox`.
+
+### Offen: die Markenzeile schiebt das Raster um 1,61 bp
+
+Beim Nachmessen des Regellaufs gefunden, nicht durch die Werteblöcke verursacht. Auf Seite 7 von
+`beispiel.pdf` liegt die Zeile mit Gegnerabstufung und Rautenskala bei 378,80 bp statt 372 oder
+384, und alles darunter bis zum Spaltenende 1,61 bp tiefer als das Raster (k = 27,13 statt 27).
+Auf `development` steht die Abweichung an derselben Stelle genauso. Die Marken dieser Zeile sind
+höher als eine Zeile; TeX fällt auf `\lineskip` zurück. Die Prüfung ist dieselbe wie unter
+„Elemente mit eigenem Raster“; behoben ist es noch nicht.
+
 ## Drei Befunde beim Ansehen des gesetzten Solos
 
 Alle drei am Abzug gefunden, keiner im Log.
