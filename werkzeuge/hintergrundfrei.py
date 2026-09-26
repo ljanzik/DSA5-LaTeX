@@ -6,6 +6,7 @@
     python3 werkzeuge/hintergrundfrei.py bilder/*.jpeg --ziel grafiken/
     python3 werkzeuge/hintergrundfrei.py bild.jpeg --toleranz 40 --weich 3
     python3 werkzeuge/hintergrundfrei.py bild.jpeg --breite 700
+    python3 werkzeuge/hintergrundfrei.py seil.jpg --loecher 0.05
 
 Wofuer: auf einer Spielkarte sitzt die Figur direkt auf dem Pergament. Ein
 Bild mit eigenem Hintergrund steht statt dessen als helles Rechteck darauf,
@@ -24,6 +25,14 @@ Zimmer dahinter richtet es nichts aus; dann hilft nur ein Bildwerkzeug.
 Die Randfarbe wird nicht geraten, sondern gemessen: Median der aeussersten
 Bildzeile und -spalte. Die Toleranz ist der zulaessige Abstand davon,
 gemessen als groesste Abweichung eines Farbkanals.
+
+Mit --loecher werden auch umschlossene Flaechen durchsichtig, sofern sie
+der Randfarbe nahe kommen und mindestens so viele Promille der Bildflaeche
+einnehmen: das Innere einer Seilschlaufe, das Oehr eines Hakens, der Raum
+zwischen Henkel und Kessel. Bei Figuren bleibt das aus, sonst verschwindet
+das weisse Hemd. Die Schwelle haelt kleine Glanzlichter heraus; ein
+Promille ist bei einem 896 x 1200 grossen Bild etwa ein Fleck von 33 x 33
+Punkten.
 
 Heraus kommt ein PNG mit Alphakanal, gleicher Name, Endung .png.
 
@@ -56,6 +65,42 @@ def randfarbe(a):
     import numpy as np
     rand = np.concatenate([a[0, :], a[-1, :], a[:, 0], a[:, -1]])
     return np.median(rand, axis=0)
+
+
+def flaeche(nah, erreicht, start):
+    """Alle Punkte der zusammenhaengenden nahen Flaeche ab start."""
+    h, w = nah.shape
+    erreicht[start] = True
+    punkte = [start]
+    schlange = deque([start])
+    while schlange:
+        y, x = schlange.popleft()
+        for dy, dx in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+            ny, nx = y + dy, x + dx
+            if 0 <= ny < h and 0 <= nx < w and nah[ny, nx] \
+                    and not erreicht[ny, nx]:
+                erreicht[ny, nx] = True
+                punkte.append((ny, nx))
+                schlange.append((ny, nx))
+    return punkte
+
+
+def loecher(a, maske, toleranz, promille):
+    """Maske um umschlossene Hintergrundflaechen ab einer Mindestgroesse
+    erweitern. Kleinere Flaechen bleiben Figur."""
+    import numpy as np
+    nah = (np.abs(a - randfarbe(a)).max(axis=2) <= toleranz)
+    mindest = nah.size * promille / 1000.0
+    erreicht = maske.copy()
+    neu = maske.copy()
+    for y, x in zip(*np.nonzero(nah & ~maske)):
+        if erreicht[y, x]:
+            continue
+        punkte = flaeche(nah, erreicht, (y, x))
+        if len(punkte) >= mindest:
+            ys, xs = zip(*punkte)
+            neu[list(ys), list(xs)] = True
+    return neu
 
 
 def hintergrund(a, toleranz):
@@ -97,13 +142,15 @@ def hintergrund(a, toleranz):
     return erreicht
 
 
-def freistellen(pfad, toleranz, weich, breite):
+def freistellen(pfad, toleranz, weich, breite, promille=0):
     import numpy as np
     from PIL import Image, ImageFilter
 
     bild = Image.open(pfad).convert('RGB')
     a = np.asarray(bild).astype(np.int16)
     maske = hintergrund(a, toleranz)
+    if promille > 0:
+        maske = loecher(a, maske, toleranz, promille)
 
     alpha = Image.fromarray(((~maske) * 255).astype(np.uint8), mode='L')
     if weich > 0:
@@ -126,6 +173,7 @@ def main():
     toleranz = TOLERANZ
     weich = WEICH
     breite = 0
+    promille = 0
     dateien = []
     i = 0
     while i < len(args):
@@ -141,6 +189,9 @@ def main():
         elif args[i] == '--breite':
             i += 1
             breite = int(args[i])
+        elif args[i] == '--loecher':
+            i += 1
+            promille = float(args[i])
         elif args[i].startswith('-'):
             print('Unbekannte Option: %s' % args[i])
             return 2
@@ -164,7 +215,7 @@ def main():
         if not os.path.isfile(p):
             print('Nicht gefunden: %s' % p)
             continue
-        aus, anteil = freistellen(p, toleranz, weich, breite)
+        aus, anteil = freistellen(p, toleranz, weich, breite, promille)
         name = os.path.splitext(os.path.basename(p))[0] + '.png'
         zielpfad = os.path.join(ziel, name) if ziel else \
             os.path.join(os.path.dirname(p), name)
