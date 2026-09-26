@@ -748,6 +748,39 @@ sein, damit keine Zierleiste angeschnitten wird, und klein genug, dass bei der k
 noch Fläche für die Mitte bleibt. Zusammen 48,40 mm, also 11,43 Rastereinheiten; die Untergrenze
 des Kastens ist deshalb 12.
 
+## Die Werteblöcke
+
+`\dsaGegner`, `\dsaZauber`, `\dsaLiturgie` und `\dsaFeld` setzen im Absatzformat „Werte“. Das
+steht in `Resources/Styles.xml` — Weg 3, aber ein Absatzformat hat kein ppi-Problem:
+
+| Eigenschaft | IDML | in der Klasse |
+|---|---|---|
+| Grundlage | `BasedOn` 2_Fließtext: Gentium Basic, `PointSize` 10 | Fließtext, 10 bp auf 12 bp |
+| Raster | `GridAlignment` AlignBaseline | auf dem Grundlinienraster |
+| Einzug | `LeftIndent` 8,5039, `FirstLineIndent` −8,5039 | `\dsawerteeinzug` = **3 mm**, hängend ab Zeile 2 |
+
+8,5039 bp sind genau 3 mm; `dsaWerteabsatz` nimmt dieselbe Länge. Ein kleineres Werteformat gibt
+es im Baukasten nicht.
+
+Was der Baukasten **nicht** hergibt, ist der Inhalt: welche Werte in welcher Folge, was fett
+steht, wie weit die Paare auseinanderliegen. Das kommt aus einem gesetzten Abenteuer mit zwölf
+Gegnerblöcken, gemessen mit PyMuPDF an jedem Zeichen:
+
+| Wert | gemessen | in der Klasse |
+|---|---|---|
+| Schrift | alle Zeilen Gentium Basic 10,0 bp, Grundlinien im Abstand von 12,0 bp | Absatzformat „Werte“ |
+| Schnitt | Name, Kürzel (MU, AT, RS/BE …) und Rubriken fett; Werte und Waffenname mager | ebenso |
+| Kürzel → Wert | 2,19 bis 2,49 bp, Median 2,49 über 96 Stellen: ein fetter Wortzwischenraum | fester Wortzwischenraum im fetten Schnitt |
+| Wert → Kürzel | 2,20 / 4,41 / 6,61 / 8,81 bp, Median 6,61 über 77 Stellen: ein bis vier Leerzeichen von Hand | `\dsawertepaarabstand` = drei Wortzwischenräume, ohne Dehnung |
+| Tabulatoren | keine; die Lage von KL wandert mit der Breite des MU-Werts | Paare hintereinander |
+| Folge | Name / MU KL IN CH / FF GE KO KK / LeP AsP KaP INI / VW SK ZK GS / Angriffe / RS/BE / Aktionen / Sonderfertigkeiten / Talente / Größenkategorie / Typus / Kampfverhalten / Flucht / Schmerz +1 bei | ebenso, dazu AW, Vorteile/Nachteile, Anzahl, Beute und Sonderregeln an ihrer Stelle im Regelwerk |
+
+Am Nachbau desselben Blocks gemessen: Kürzel → Wert 2,36 bis 2,50 bp, Wert → Kürzel 6,61 bp, alle
+Grundlinien auf dem Raster, Folgezeilen 8,5 bp eingezogen.
+
+Die Rubriken von Zauber und Liturgie sind die des Regelwerks. Die Veröffentlichung taugt hier, weil
+der Baukasten diese Elemente nicht kennt. Für den Satzspiegel taugt sie nach Abschnitt 1 nie.
+
 ## Fußzeile
 
 Gemessen an einer gesetzten Veröffentlichung des Verlags, vier Seiten:
@@ -988,3 +1021,6 @@ Multiplizieren rechnerisch ergibt.
 7. Die Form des Umflusses um freigestellte Grafiken ist an einem gesetzten
    Scriptorium-Abenteuer gemessen, nicht an einem Verlagsband. Die Konturform ist übertragbar, die
    absoluten Werte nicht.
+8. Folge und Abstände der Gegnerwerte sind an einem gesetzten Abenteuer gemessen, nicht am
+   Baukasten, siehe „Die Werteblöcke“. Der Abstand zwischen den Paaren ist dort von Hand gesetzt,
+   die Klasse nimmt den Median.

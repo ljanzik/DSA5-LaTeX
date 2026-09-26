@@ -603,6 +603,46 @@ geschätzt. Die dritte kann die Klasse schon heute über `\dsaBildDeckend{\paper
 **Tabellen kommen im Textteil des Hefts nicht vor.** Die Rechtecke stecken sämtlich in den
 Formularseiten des Anhangs. `dsaTabelle` ist damit an diesem Heft nicht zu prüfen.
 
+### Ergebnis: `\dsaGegner`, `\dsaZauber`, `\dsaLiturgie`
+
+Den Inhalt des Gegnerkastens setzt jetzt `\dsaGegner`. Maße und Quelle stehen in `MASSE.md`,
+„Die Werteblöcke“. Geprüft am Nachbau eines Blocks aus einem zweiten gesetzten Abenteuer (zwölf
+Gegnerblöcke, alle gleich gebaut), mit PyMuPDF an jedem Zeichen gemessen:
+
+| Prüfung | Vorbild | Nachbau | Status |
+|---|---|---|---|
+| Schrift und Grad | Gentium Basic 10,0 bp | Gentium Basic 10,0 bp | `ok` |
+| Zeilenabstand | 12,0 bp | 12,0 bp, jede Grundlinie auf 84 + k · 12 bp, k ganzzahlig | `ok` |
+| Fett | Name, Kürzel, Rubriken | ebenso | `ok` |
+| Kürzel → Wert | Median 2,49 bp | 2,36 bis 2,50 bp | `ok` |
+| Wert → Kürzel | Median 6,61 bp | 6,61 bp | `ok` |
+| Folgezeilen | eingezogen | 8,5 bp eingezogen | `ok` |
+| fehlende Werte | — | keine Zeile, auch keine leere | `ok` |
+| vertippter Schlüssel | — | `Class dsa5latex Error: Unbekannter Schluessel` | `ok` |
+| im Gegnerkasten | — | Kastentext 9,5 bp auf 11,4 bp wie in jedem Kasten, neben dem Medaillon | `ok` |
+
+`\dsaZauber` und `\dsaLiturgie` im selben Lauf: jede Rubrik auf dem Raster, die Wirkung läuft
+hängend über drei Zeilen. Im Regellauf `beispiel.tex` bleiben es 22 Seiten, ohne Klassenwarnung
+und ohne `Overfull \vbox`.
+
+Auf Seite 7 liegt die Zeile mit der Rautenskala 1,61 bp neben dem Raster und alles darunter mit
+ihr. Das ist nicht diese Änderung, sondern Issue #9, behoben auf `feature/werkzeugkette`.
+
+### `dsaWerteblock` und `dsaKurzcharakteristik` in der Schrift der Umgebung (Issue #10)
+
+Beide setzen in der Schrift ihrer Umgebung, nicht in `\footnotesize` und `\small`, den Größen der
+Basisklasse. Für die gab es keine Quelle, und sie lagen neben dem Raster: 8,0 bp auf 9,47 bp im
+Wertekasten, wo der Kastentext 9,5 auf 11,4 bp setzt. Nachgemessen am Regellauf, alle Grundlinien
+vorher gegen nachher:
+
+| Stelle | vorher | nachher | Status |
+|---|---|---|---|
+| S. 9, `dsaWerteblock` im Wertekasten | 8,0 / 9,47 bp | 9,5 / 11,4 bp wie der Kastentext | `ok` |
+| S. 22, `\dsaZusammenfassung` | 8,0 / 9,47 bp | Abstand 12,0 bp, im Grad des Klappentexts; die Anforderungen rücken 12,7 bp tiefer und passen | `ok` |
+| übrige Seiten | — | unverändert auf 0,01 bp, 22 Seiten | `ok` |
+
+`rest.tex` zeigt auf seiner Rückseite dieselbe Verschiebung, ohne Warnung.
+
 ## Drei Befunde beim Ansehen des gesetzten Solos
 
 Alle drei am Abzug gefunden, keiner im Log.

@@ -400,7 +400,7 @@ setzt `\dsakolumneaussenlinks` auf 40,35 mm.
 | `\dsaMeisterhinweis[Einheiten]{Text}` | dasselbe, unten die Maske |
 | `\dsaKastentitel{Titel}` | Überschrift im Kasten, 12 bp fett |
 | `\dsaTabellenrubrik[n]` | graues Band über **n** Rastereinheiten, ohne Angabe eine |
-| `\begin{dsaWerteabsatz}` | hängender Einzug 8,504 pt |
+| `\begin{dsaWerteabsatz}` | hängender Einzug 3 mm (8,504 bp), Absatzformat „Werte“ |
 | `\dsaBand{ABE}{8}` | hochgestelltes Bandkürzel |
 | `\dsaKapitaelchen{Text}` | nachgebildete Kapitälchen, 82 % Versalien |
 | `\dsaFormel{1W6+4}` | Zahlenangabe im Textfont — **statt `$…$`** |
@@ -527,15 +527,12 @@ und dort weiß noch niemand, wie oft die letzte umbrechen wird.
 
 ```latex
 \begin{dsaWerteFreiPortrait}[dsaportrait=grafiken/wolf]{18}
-{\bfseries Wolfsratte}
-
-\begin{dsaWerteblock}
-MU 11 \quad KL 2 \quad IN 13 \quad CH 8
-\end{dsaWerteblock}
-\dsaFeld{LeP}{18}
-\dsaFeld{Biss}{AT 12 TP \dsaFormel{1W6+1} RW kurz}
+\dsaGegner{Wolfsratte}{MU=11, KL=2 (t), IN=13, CH=8, LeP=18,
+  angriff={Biss}{AT=12, TP=\dsaFormel{1W6+1}, RW=kurz}, RSBE=1/0}
 \end{dsaWerteFreiPortrait}
 ```
+
+Den Inhalt setzt `\dsaGegner`, siehe „Gegnerwerte“ unter „Werte, nicht Tabellen“.
 
 Derselbe Kasten wie `dsaWerteMittelPortrait`, aber in **freier Höhe**: das Argument ist die Höhe
 in Rastereinheiten, zulässig sind 12 bis 47. Darunter reicht der Platz für Kopf- und Fußleiste
@@ -549,7 +546,7 @@ deshalb ist die Textur an den beiden Nähten dieselbe wie im Rest der Fläche.
 
 **Die Textspalte bleibt über die ganze Höhe neben dem Medaillon**, wie bei den drei festen
 Portraitkästen auch — `right=\dsaportraitfrei`. `\dsaPortraitfluss` hilft hier nicht: sein
-`\parshape` gilt nur für einen Absatz, und ein Werteblock besteht aus lauter `\dsaFeld`-Absätzen.
+`\parshape` gilt nur für einen Absatz, und ein Gegnerblock besteht aus lauter Werteabsätzen.
 
 ### Freie Höhe
 
@@ -764,8 +761,11 @@ Die folgenden Elemente sehen aus wie Tabellen, sind aber eigene Bausteine mit ei
 
 | Aufruf | wofür |
 |---|---|
-| `\dsaFeld{Name}{Wert}` | ein Feld |
-| `\begin{dsaWerteblock}` | Werte einer Meisterperson oder Kreatur |
+| `\dsaGegner{Name}{Schlüssel}` | Werte eines Gegners oder einer Kreatur, feste Folge, siehe unten |
+| `\dsaZauber{Name}{Schlüssel}` | Rubriken eines Zaubers |
+| `\dsaLiturgie{Name}{Schlüssel}` | Rubriken einer Liturgie |
+| `\dsaFeld{Name}{Wert}` | ein Feld: Rubrik fett mit Doppelpunkt, Folgezeilen um 3 mm eingezogen |
+| `\begin{dsaWerteblock}` | Werte frei gesetzt, in der Schrift der Umgebung: im Fließtext auf dem Raster, im Kasten im Kastentext |
 | `\begin{dsaKurzcharakteristik}` | Felder für soziale Begegnungen |
 | `\dsaProbe[Farbe]{Name}` | farbiger Balken über die Spalte, danach die QS-Staffel |
 | `\dsaZusammenfassung{…}` | fünf Rubriken für den Rücktitel |
@@ -773,6 +773,61 @@ Die folgenden Elemente sehen aus wie Tabellen, sind aber eigene Bausteine mit ei
 
 Die Rubriken der Anforderungen sind der heutige Stand: **Kampftalente, Gesellschaftstalente,
 Handwerkstalente, Lebendige Geschichte**.
+
+#### Gegnerwerte
+
+```latex
+\dsaGegner{Pervertierte Krebse}{
+  MU=16, KL=8 (t), IN=12, CH=11, FF=13, GE=10, KO=14, KK=12,
+  LeP=10, AsP=--, KaP=--, INI=\dsaFormel{13+1W6},
+  VW=3, SK=1, ZK=2, GS=5,
+  angriff={Scheren}{AT=12, TP=\dsaFormel{1W6}, RW=kurz},
+  RSBE=3/0, Aktionen=1, Sonderfertigkeiten=keine,
+  Talente={Einschüchtern 6, Kraftakt 5, Verbergen 12},
+  Groesse=klein, Typus={Tier, nicht humanoid},
+  Kampfverhalten=staksen auf einen Helden zu,
+  Flucht=fliehen nicht,
+  Schmerz={8 LeP, 6 LeP, 4 LeP, 2 LeP oder weniger}}
+```
+
+Der Autor gibt nur die Werte an. Reihenfolge und Beschriftung legt die Klasse fest, und was
+fehlt, steht nicht da — auch keine leere Zeile. Gerechnet wird nichts; INI, VW, SK und ZK stehen
+so da, wie sie angegeben sind.
+
+| Zeile | Schlüssel | Satz |
+|---|---|---|
+| Name | erstes Argument | fett, eigene Zeile |
+| Eigenschaften | `MU KL IN CH`, dann `FF GE KO KK` | vier Paare je Zeile, Kürzel fett |
+| Grundwerte | `LeP AsP KaP INI`, dann `VW AW SK ZK GS` | dito; `AW` für Meisterpersonen, `VW` für Kreaturen |
+| Angriffe | `angriff={Name}{AT=…, PA=…, TP=…, RW=…}`, beliebig oft | eine Zeile je Angriff, Name mager mit Doppelpunkt |
+| Rüstung | `RSBE` | **RS/BE** |
+| Rubriken | `Aktionen`, `VorNachteile`, `Sonderfertigkeiten`, `Talente`, `Anzahl`, `Groesse`, `Typus`, `Beute`, `Kampfverhalten`, `Flucht`, `Schmerz`, `Sonderregeln` | je ein Werteabsatz, in dieser Folge; `VorNachteile` heißt im Satz „Vorteile/Nachteile“, `Groesse` „Größenkategorie“, `Schmerz` „Schmerz +1 bei“ |
+
+Werte mit Komma stehen in Klammern: `Talente={Einschüchtern 6, Kraftakt 5}`. Ein Strich für
+„keine“ ist `--`, ein Minuszeichen `\dsaMinus`. Ein vertippter Schlüssel ist ein Fehler, keine
+stille Lücke: `Unbekannter Schluessel 'Groese' in \dsaGegner`.
+
+Alles steht im Absatzformat „Werte“ des Baukastens: Fließtext, 10 bp auf dem Raster, Folgezeilen
+um 3 mm eingezogen. Die Paare stehen nicht an Tabulatoren, sondern hintereinander, mit einem
+fetten Wortzwischenraum zwischen Kürzel und Wert und drei mageren bis zum nächsten Kürzel
+(`\dsawertepaarabstand`). Vor und nach dem Block kommt kein Abstand; im Heft steht er fast immer
+in einem Kasten, frei im Text setzt der Autor `\dsaRasterluft{1}` dazu.
+
+#### Zauber und Liturgien
+
+```latex
+\dsaZauber{Balsam Salabunde}{Probe=KL/IN/FF, Wirkung={Heilt je QS \dsaFormel{1W6} LeP.},
+  Zauberdauer=16 Aktionen, AsP-Kosten=8 AsP, Reichweite=Berührung,
+  Wirkungsdauer=sofort, Zielkategorie=Kulturschaffende, Merkmal=Heilung,
+  Verbreitung=allgemein, Steigerungsfaktor=B}
+```
+
+Die Rubriken erscheinen in dieser Folge und heißen im Satz so wie ihr Schlüssel:
+
+| Block | Rubriken |
+|---|---|
+| `\dsaZauber` | Probe, Wirkung, Zauberdauer, AsP-Kosten, Reichweite, Wirkungsdauer, Zielkategorie, Merkmal, Verbreitung, Steigerungsfaktor, Anmerkung |
+| `\dsaLiturgie` | Probe, Wirkung, Liturgiedauer, KaP-Kosten, Reichweite, Wirkungsdauer, Zielkategorie, Aspekt, Verbreitung, Steigerungsfaktor, Anmerkung |
 
 ## Impressum
 

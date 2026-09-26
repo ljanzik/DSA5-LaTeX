@@ -1699,10 +1699,12 @@
   label={\smash{\raisebox{-0.25\height}{%
     \includegraphics[height=2.4mm]{\dsagrafik{aufzaehlung-rot}}}}}}
 
-% Haengender Einzug, Absatzformat „Werte" des Baukastens: -8,504 pt
+% Haengender Einzug, Absatzformat „Werte" des Baukastens. Das Mass steht
+% als \dsawerteeinzug in Abschnitt 19: 8,5039 bp im IDML, also 3 mm. Hier
+% standen vorher 8,504 pt -- TeX-Punkte, 0,03 pt zu wenig.
 \newenvironment{dsaWerteabsatz}{%
   \par\setlength{\parindent}{0pt}%
-  \setlength{\hangindent}{8.504pt}\hangafter=1
+  \setlength{\hangindent}{\dsawerteeinzug}\hangafter=1
 }{\par}
 
 \newcommand{\dsaEinfuehrung}[1]{%
@@ -3271,15 +3273,36 @@
 %%% ==================================================================
 %%% 19  Raster fuer wiederkehrende Angaben
 %%% ==================================================================
+%
+% Das Absatzformat „Werte" im IDML (Resources/Styles.xml) ist der Fliesstext
+% mit haengendem Einzug: BasedOn 2_Fliesstext, also Gentium Basic 10 bp auf
+% dem Grundlinienraster (GridAlignment AlignBaseline), LeftIndent 8,5039 und
+% FirstLineIndent -8,5039. Die 8,5039 sind bp und damit genau 3 mm. Ein
+% kleineres Werteformat hat der Baukasten nicht.
+%
+% Gegenprobe an einem gesetzten Abenteuer, zwoelf Gegnerbloecke: alle Zeilen
+% Gentium Basic 10,0 bp, Grundlinien im Abstand von 12,0 bp, Kuerzel und
+% Rubriken fett, Werte mager.
+\newlength{\dsawerteeinzug}  \setlength{\dsawerteeinzug}{3mm}
 
-\newcommand{\dsaFeld}[2]{\par\noindent\textbf{#1:} #2}
+% Ein Werteabsatz: haengend eingezogen, jede Folgezeile um den Einzug.
+\newcommand*{\dsa@werteabsatz}{%
+  \par\noindent\hangindent\dsawerteeinzug\hangafter\@ne}
 
+\newcommand{\dsaFeld}[2]{\dsa@werteabsatz\textbf{#1:} #2}
+
+% Beide Umgebungen setzen in der Schrift ihrer Umgebung: im Fliesstext auf
+% dem Raster, im Kasten im Kastentext. Frueher standen hier \small und
+% \footnotesize -- die Groessen der Basisklasse, nicht ans Raster
+% angepasst, und ohne Quelle: gemessen 8,0 bp auf 9,47 bp im Wertekasten,
+% wo der Kastentext 9,5 auf 11,4 bp setzt (Issue #10). Das Werteformat
+% des Baukastens ist die Grundschrift, siehe oben.
 \newenvironment{dsaKurzcharakteristik}{%
-  \small\setlength{\parindent}{0pt}%
+  \par\setlength{\parindent}{0pt}%
 }{\par}
 
 \newenvironment{dsaWerteblock}{%
-  \footnotesize\setlength{\parindent}{0pt}%
+  \par\setlength{\parindent}{0pt}%
 }{\par}
 
 % Die Probenzeile: ein farbiger Balken ueber die Spaltenbreite, darin der
@@ -3345,6 +3368,165 @@
     Handwerkstalente              & \dsaRautenRot{#3}{\dsaanforderungskala}\\
     \textbf{Lebendige Geschichte} & \dsaRautenGruen{#4}{\dsaanforderungskala}\\
   \end{tabular}\par}
+
+% ---- Gegnerwerte ----
+%
+% \dsaGegner{<Name>}{<Schluessel>} setzt die Werte eines Gegners oder
+% einer Kreatur. Die Klasse legt Reihenfolge und Beschriftung fest, der
+% Autor nur die Werte; was er weglaesst, steht nicht da -- auch keine
+% Leerzeile. Gerechnet wird nichts: in den gesetzten Baenden weichen
+% abgeleitete Werte oft von der Grundregel ab, und eine Klasse, die
+% nachrechnet, druckte dort falsche Zahlen.
+%
+% Reihenfolge und Rubriken nennt der Baukasten nicht, sie kommen aus dem
+% gesetzten Abenteuer oben (zwoelf Bloecke, ueberall dieselbe Folge):
+%
+%   Name                                   fett, eigene Zeile
+%   MU KL IN CH / FF GE KO KK              je vier Paare in einer Zeile
+%   LeP AsP KaP INI / VW SK ZK GS
+%   <Waffe>: AT PA TP RW                   eine Zeile je Angriff
+%   RS/BE
+%   Aktionen, Vorteile/Nachteile, Sonderfertigkeiten, Talente, Anzahl,
+%   Groessenkategorie, Typus, Beute, Kampfverhalten, Flucht,
+%   Schmerz +1 bei, Sonderregeln           je ein Werteabsatz
+%
+% AW steht neben VW, weil beides vorkommt: die Kreaturen der Baende fuehren
+% VW, Meisterpersonen oft AW. Gesetzt wird, was angegeben ist.
+%
+% Die Paare stehen nicht an Tabulatoren, sie laufen hintereinander --
+% gemessen wandert das KL mit der Breite des MU-Werts. Zwischen Kuerzel und
+% Wert steht ein fetter Wortzwischenraum (gemessen 2,49 bp, Median ueber 96
+% Stellen), zwischen Wert und naechstem Kuerzel drei magere (6,61 bp,
+% Median ueber 77 Stellen). Im Vorbild sind es von Hand ein bis vier
+% Leerzeichen; die Klasse nimmt den Median und haelt ihn fest, ohne Dehnung.
+\newcommand*{\dsawertepaarabstand}{3\fontdimen2\font}
+
+\newif\ifdsa@zeileleer
+
+% #1 Kuerzel, #2 Wert
+\newcommand{\dsa@paar}[2]{%
+  \ifdsa@zeileleer\dsa@zeileleerfalse\else\hskip\dsawertepaarabstand\relax\fi
+  \mbox{\textbf{#1\nobreakspace}#2}}
+
+% Eine Zeile aus Paaren. Sie wird erst in eine Box gesetzt: bleibt die
+% leer, weil kein Wert der Zeile angegeben ist, entfaellt der ganze Absatz.
+% Zwischen den Paaren darf umbrochen werden, falls ein Kasten schmal ist.
+\newcommand{\dsa@wertezeile}[1]{%
+  \setbox\@tempboxa\hbox{\dsa@zeileleertrue#1}%
+  \ifdim\wd\@tempboxa>\z@
+    \dsa@werteabsatz\unhbox\@tempboxa\par
+  \fi}
+
+% Die Werte liegen als \dsa@<Block>@<Schluessel>. Nie gesetzte Schluessel
+% sind undefiniert, und \ifcsvoid behandelt beides gleich.
+% #1 Block, #2 Schluessel, #3 Kuerzel
+\newcommand*{\dsa@wpaar}[3]{%
+  \ifcsvoid{dsa@#1@#2}{}{\dsa@paar{#3}{\csname dsa@#1@#2\endcsname}}}
+% #1 Block, #2 Schluessel, #3 Rubrik
+\newcommand*{\dsa@wrubrik}[3]{%
+  \ifcsvoid{dsa@#1@#2}{}{\dsaFeld{#3}{\csname dsa@#1@#2\endcsname}}}
+
+% Die Schluessel eines Blocks werden gegen eine Liste geprueft. Ein
+% vertippter Schluessel waere sonst still verschwunden, und mit ihm der
+% Wert im Satz -- genau der Fehler, den niemand im PDF sucht.
+% #1 Block, #2 Befehl fuer die Meldung
+\newcommand*{\dsa@wertschluessel}[2]{%
+  \pgfkeys{/dsa/#1/.unknown/.code={%
+    \edef\dsa@tmp{\noexpand\in@{,\pgfkeyscurrentname,}%
+      {,\csname dsa@#1@liste\endcsname,}}%
+    \dsa@tmp
+    \ifin@
+      \expandafter\def\csname dsa@#1@\pgfkeyscurrentname\endcsname{##1}%
+    \else
+      \ClassError{dsa5latex}{Unbekannter Schluessel
+        `\pgfkeyscurrentname' in \string#2}{Zulaessig sind:
+        \csname dsa@#1@liste\endcsname}%
+    \fi}}}
+
+\newcommand*{\dsa@g@liste}{MU,KL,IN,CH,FF,GE,KO,KK,LeP,AsP,KaP,INI,VW,AW,%
+  SK,ZK,GS,RSBE,Aktionen,VorNachteile,Sonderfertigkeiten,Talente,Anzahl,%
+  Groesse,Typus,Beute,Kampfverhalten,Flucht,Schmerz,Sonderregeln}
+\dsa@wertschluessel{g}{\dsaGegner}
+
+% Angriffe: der Schluessel angriff darf mehrfach stehen, jede Zeile in der
+% Reihenfolge, in der sie angegeben ist. Der Waffenname steht mager mit
+% Doppelpunkt, dahinter die Paare -- so im Vorbild ("Scheren: AT 12 ...").
+%   angriff={Scheren}{AT=12, TP=\dsaFormel{1W6}, RW=kurz}
+\pgfkeys{/dsa/g/angriff/.code 2 args={%
+  \appto\dsa@g@angriffe{\dsa@angriffzeile{#1}{#2}}}}
+\newcommand*{\dsa@a@liste}{AT,PA,TP,RW}
+\dsa@wertschluessel{a}{\dsaGegner (angriff)}
+\newcommand{\dsa@angriffzeile}[2]{%
+  \begingroup
+    \pgfkeys{/dsa/a/.cd,#2}%
+    \dsa@wertezeile{#1:\nobreakspace
+      \dsa@zeileleertrue
+      \dsa@wpaar{a}{AT}{AT}\dsa@wpaar{a}{PA}{PA}%
+      \dsa@wpaar{a}{TP}{TP}\dsa@wpaar{a}{RW}{RW}}%
+  \endgroup}
+
+\newcommand{\dsaGegner}[2]{%
+  \begingroup
+    \let\dsa@g@angriffe\@empty
+    \pgfkeys{/dsa/g/.cd,#2}%
+    \dsa@werteabsatz\textbf{#1}\par
+    \dsa@wertezeile{\dsa@wpaar{g}{MU}{MU}\dsa@wpaar{g}{KL}{KL}%
+      \dsa@wpaar{g}{IN}{IN}\dsa@wpaar{g}{CH}{CH}}%
+    \dsa@wertezeile{\dsa@wpaar{g}{FF}{FF}\dsa@wpaar{g}{GE}{GE}%
+      \dsa@wpaar{g}{KO}{KO}\dsa@wpaar{g}{KK}{KK}}%
+    \dsa@wertezeile{\dsa@wpaar{g}{LeP}{LeP}\dsa@wpaar{g}{AsP}{AsP}%
+      \dsa@wpaar{g}{KaP}{KaP}\dsa@wpaar{g}{INI}{INI}}%
+    \dsa@wertezeile{\dsa@wpaar{g}{VW}{VW}\dsa@wpaar{g}{AW}{AW}%
+      \dsa@wpaar{g}{SK}{SK}\dsa@wpaar{g}{ZK}{ZK}\dsa@wpaar{g}{GS}{GS}}%
+    \dsa@g@angriffe
+    \dsa@wertezeile{\dsa@wpaar{g}{RSBE}{RS/BE}}%
+    \dsa@wrubrik{g}{Aktionen}{Aktionen}%
+    \dsa@wrubrik{g}{VorNachteile}{Vorteile/Nachteile}%
+    \dsa@wrubrik{g}{Sonderfertigkeiten}{Sonderfertigkeiten}%
+    \dsa@wrubrik{g}{Talente}{Talente}%
+    \dsa@wrubrik{g}{Anzahl}{Anzahl}%
+    \dsa@wrubrik{g}{Groesse}{Größenkategorie}%
+    \dsa@wrubrik{g}{Typus}{Typus}%
+    \dsa@wrubrik{g}{Beute}{Beute}%
+    \dsa@wrubrik{g}{Kampfverhalten}{Kampfverhalten}%
+    \dsa@wrubrik{g}{Flucht}{Flucht}%
+    \dsa@wrubrik{g}{Schmerz}{Schmerz +1 bei}%
+    \dsa@wrubrik{g}{Sonderregeln}{Sonderregeln}%
+    \par
+  \endgroup}
+
+% ---- Zauber und Liturgien ----
+%
+% Dieselbe Mechanik, nur Rubriken. Die Folge ist die des Regelwerks; der
+% Baukasten nennt keine. Zauber und Liturgie unterscheiden sich in drei
+% Rubriken: Zauberdauer/Liturgiedauer, AsP-/KaP-Kosten, Merkmal/Aspekt.
+% Wirkung und Anmerkung sind Fliesstext und koennen lang werden; der
+% haengende Einzug des Werteformats traegt sie.
+\newcommand*{\dsa@z@liste}{Probe,Wirkung,Zauberdauer,AsP-Kosten,Reichweite,%
+  Wirkungsdauer,Zielkategorie,Merkmal,Verbreitung,Steigerungsfaktor,Anmerkung}
+\dsa@wertschluessel{z}{\dsaZauber}
+\newcommand*{\dsa@l@liste}{Probe,Wirkung,Liturgiedauer,KaP-Kosten,Reichweite,%
+  Wirkungsdauer,Zielkategorie,Aspekt,Verbreitung,Steigerungsfaktor,Anmerkung}
+\dsa@wertschluessel{l}{\dsaLiturgie}
+
+% #1 Block, #2 Name, #3 Schluessel
+%
+% Die Liste wird erst unter festem Namen abgelegt: \@for expandiert sein
+% Listenargument genau einmal, und aus \csname...\endcsname wird dabei nur
+% das Makro, nicht sein Inhalt. Die Schleife lief dann ueber ein einziges
+% Element, den Makronamen, und setzte keine Rubrik -- gemessen: nur der
+% Name stand im PDF.
+\newcommand{\dsa@spruch}[3]{%
+  \begingroup
+    \pgfkeys{/dsa/#1/.cd,#3}%
+    \dsa@werteabsatz\textbf{#2}\par
+    \expandafter\let\expandafter\dsa@liste\csname dsa@#1@liste\endcsname
+    \@for\dsa@k:=\dsa@liste\do{%
+      \dsa@wrubrik{#1}{\dsa@k}{\dsa@k}}%
+    \par
+  \endgroup}
+\newcommand{\dsaZauber}[2]{\dsa@spruch{z}{#1}{#2}}
+\newcommand{\dsaLiturgie}[2]{\dsa@spruch{l}{#1}{#2}}
 
 %%% ==================================================================
 %%% 20  Freigestellte Grafiken und Textumfluss
