@@ -1,7 +1,7 @@
 # Spielkarten
 
 `dsa5spielkarten.cls` setzt Spielkarten im Format der offiziellen DSA5-Kartensets: **63 × 88 mm**,
-acht Kartentypen, wahlweise als Einzelkarten für die Druckerei oder als A4-Druckbogen, dessen
+elf Kartentypen, wahlweise als Einzelkarten für die Druckerei oder als A4-Druckbogen, dessen
 Rückseite beim Duplexdruck exakt auf der Vorderseite liegt.
 
 Die Maße stammen aus dem **„Scriptorium Aventuris – Spielkarten“-Baukasten** von Ulisses Spiele,
@@ -145,7 +145,7 @@ Umbrüche.
 
 ---
 
-## Die acht Kartentypen
+## Die Kartentypen
 
 Jeder Typ ist eine Umgebung. Die Felder werden darin mit Setzbefehlen benannt und dürfen in
 beliebiger Reihenfolge stehen.
@@ -161,6 +161,8 @@ beliebiger Reihenfolge stehen.
 | `dsaKarteSonderfertigkeit` | Flusslande | ebenso |
 | `dsaKarteKultur` | Flusslande | ebenso |
 | `dsaKarteVerbrauch` | — | einseitig, generischer Rücken |
+| `dsaKarteText` | beide Sets | Kopf und Text, sonst nichts — beidseitig gleich |
+| `dsaKarteImpressum` | Flusslande | wie `dsaKarteText`, Kopf steht schon |
 
 Die **Vorderseite** trägt bei den ersten fünf Typen Kartenfläche, freigestellte Abbildung, Name,
 Untertitel und Kartennummer. Der Untertitel ist beim NSC die Kurzbezeichnung, sonst die Gattung —
@@ -181,6 +183,7 @@ deshalb gesetzt.
 | `\dsaKartennachweis{…}` | NSC | Illustrationsnachweis, zweizeilig |
 | `\dsaKartentext{…}` | alle | ein Absatz |
 | `\dsaKartenstich{…}{…}` | alle | Absatz mit fettem Stichwort und hängendem Einzug |
+| `\dsaKartenzeile{…}{…}` | alle | Beschriftung über dem Wert, danach eine Leerzeile |
 | `\dsaKartenwert{…}{…}` | Waffe, Rüstung | eine Zeile der Wertetabelle |
 | `\dsaKartenattribut{…}{…}` | Monster | ein Feld des Attributrasters, vier je Zeile |
 | `\dsaKartenfortsetzung` | Textkarten | alles Weitere kommt auf die Rückseite |
@@ -200,6 +203,7 @@ wenn jemand einen eigenen Kartentyp baut. Wer sie nicht braucht, überliest dies
 | `\dsaKartenkopf{Name}{Untertitel}` | den Kopf in Andalus, zentriert und versal |
 | `\dsaKartenabsatz{…}` | einen Absatz im Format „Beschreibung“ |
 | `\dsaKarteStich{Wort}{Text}` | einen Stichwortabsatz mit hängendem Einzug |
+| `\dsaKarteZeile{Wort}{Text}` | Beschriftung über dem Wert |
 | `\dsaKartenwertkopf{…}` | die Kopfzeile der Wertetabelle |
 
 **Achtung auf die zwei ähnlichen Namen:** `\dsaKartenstich` (kleines s) ist das Feld — es sammelt
@@ -341,6 +345,53 @@ Rückseitengrundlinie. Auch das macht das Set so.
 Der Untertitel ist bei allen dreien nur vorbelegt („Zauberspruch“, „Sonderfertigkeit“,
 „Wesenszug“) und wird in der Regel gesetzt: das Set kennt „Zaubertrick“, „Ritual“, „Liturgie“,
 „Zeremonie“ und „Dolchritual“ als denselben Aufbau.
+
+### Textkarten ohne Gattung: was ein Set über sich selbst setzt
+
+Beide veröffentlichten Sets haben Karten, die nicht zum Inhalt gehören, sondern zum Set: die
+Impressumskarte der *Flusslande* und die Regelkarte der *Meisterpersonen*. Kopf und Text, kein
+Bild, keine Tabelle, auf beiden Seiten dasselbe.
+
+```latex
+\begin{dsaKarteText}
+  \dsaKartenname{Die Uferlande}
+  \dsaKartenuntertitel{Ein Kartensatz zum Nachschlagen}
+  \dsaKartennummer{UFR 00}
+
+  \dsaKartentext{Siebzehn Karten für den Spielleiter.}
+  \dsaKartenstich{Mischen}{Die Verbrauchsgegenstände lassen sich verdeckt ziehen.}
+\end{dsaKarteText}
+```
+
+`dsaKarteText` ist zugleich der **Auffangtyp**: Was im Set eine Gattungszeile trägt, für die es
+hier keine eigene Umgebung gibt, lässt sich damit setzen.
+
+Die Impressumskarte braucht eine eigene Absatzform — die Beschriftung steht **über** dem Wert,
+nicht davor:
+
+```latex
+\begin{dsaKarteImpressum}
+  \dsaKartennummer{UFR 18}
+  \dsaKartenzeile{Verlagsleitung}{Markus Plötz}
+  \dsaKartenzeile{Redaktion}{Nikolai Hoch, Johannes Kaub}
+\end{dsaKarteImpressum}
+```
+
+`\dsaKartenzeile` und `\dsaKartenstich` sind nicht dasselbe und sehen auch nicht so aus: die
+Zeile setzt die Beschriftung auf eine eigene Zeile und lässt danach eine frei, der Stichwortabsatz
+setzt sie in die Zeile und zieht den Rest hängend ein.
+
+### Karten ohne Gattungszeile
+
+Zehn Karten des Flusslande-Sets tragen nur einen Namen und keine Gattung — die mechanischen Geräte
+von `ASTROLABIUM` bis `VORHÄNGESCHLOSS`, dazu der `FLUSSPIRAT` und zwei weitere Kreaturen. Dafür
+braucht es keinen eigenen Typ, nur einen leeren Untertitel:
+
+```latex
+\dsaKartenuntertitel{}
+```
+
+Der Kopf setzt dann nur den Namen, und das Bildfeld rückt um die eingesparte Zeile nach oben.
 
 ### Verbrauchsgegenstände
 

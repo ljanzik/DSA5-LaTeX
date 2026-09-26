@@ -1123,6 +1123,21 @@ Der Abstand zwischen Kopf und Text braucht dafür kein eigenes Maß. Er folgt au
 Das ist zweimal derselbe Wert: der Durchschuss der ersten Textzeile plus der `SpaceAfter` des
 Untertitels, 6,236220472440945 bp. Beides steht im Baukasten.
 
+### Die Impressumszeile
+
+Nicht im Baukasten — gemessen an H 001 des Flusslande-Sets, der Impressumskarte. Dort steht die
+Beschriftung nicht vor dem Wert, sondern darüber:
+
+| Zeile | Grundlinie | Abstand |
+|---|---:|---|
+| „Verlagsleitung“, fett | 16,21 mm | — |
+| „Markus Plötz“ | 18,96 mm | 2,75 mm, ein Zeilenschritt |
+| „Redaktion“, fett | 24,46 mm | 5,50 mm, zwei Zeilenschritte |
+
+Also: Beschriftung, Wert, eine Leerzeile. In der Klasse ist das `\dsaKartenzeile`; es benutzt den
+Durchschuss dieser Klasse (8 bp statt der 7,8 bp des Sets) und den Absatzabstand aus dem
+Baukasten.
+
 ### Der generische Kartenrücken
 
 Nicht im Spielkarten-Baukasten — er kennt nur die eine Kartenfläche, und die ist beidseitig

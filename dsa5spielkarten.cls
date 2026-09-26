@@ -1217,6 +1217,20 @@
 \newcommand{\dsaKartentext}[1]{\dsa@flussanfuegen{\dsaKartenabsatz{#1}}}
 \newcommand{\dsaKartenstich}[2]{\dsa@flussanfuegen{\dsaKarteStich{#1}{#2}}}
 
+% Beschriftung UEBER dem Wert statt davor, dazwischen kein Absatzabstand,
+% danach eine Leerzeile. So setzt das Flusslande-Set seine Impressumskarte
+% (H 001): „Verlagsleitung" fett auf 16,21 mm, der Name darunter auf
+% 18,96 mm — 2,75 mm, also ein Zeilenschritt —, und die naechste
+% Beschriftung erst auf 24,46 mm, also zwei Zeilenschritte weiter.
+%
+% Fuer den Stichwortabsatz mit haengendem Einzug gibt es \dsaKartenstich;
+% die beiden sind nicht dasselbe und sehen auch nicht so aus.
+\newcommand{\dsaKartenzeile}[2]{\dsa@flussanfuegen{\dsaKarteZeile{#1}{#2}}}
+
+\newcommand{\dsaKarteZeile}[2]{%
+  \dsa@absatzluft
+  {\textbf{#1}\par\nobreak #2\par}}
+
 \newcommand{\dsa@felderleeren}{%
   \renewcommand{\dsa@f@name}{}%
   \renewcommand{\dsa@f@untertitel}{}%
@@ -1574,5 +1588,26 @@
   \dsa@felderleeren
   \dsaKartenuntertitel{Verbrauchsgegenstand}\ignorespaces}{%
   \dsa@karteabliefern{\dsa@verbrauchseite}{\dsa@rueckseite}}
+
+% --- Die neutrale Textkarte --------------------------------------------
+%
+% Kopf und Text, sonst nichts: kein Bild, keine Tabelle, kein Raster. Das
+% ist die Bauform der Karten, die ein Set ueber sich selbst setzt — die
+% Impressumskarte des Flusslande-Sets (H 001) und die Regelkarte des
+% Meisterpersonen-Sets (AMP, Seite 3 und 4). Beide tragen auf Vorder- und
+% Rueckseite dasselbe.
+%
+% Sie ist zugleich der Auffangtyp: was im Set eine Gattungszeile traegt,
+% die keiner der anderen Umgebungen entspricht, laesst sich damit setzen.
+\newenvironment{dsaKarteText}{%
+  \dsa@felderleeren\ignorespaces}{%
+  \dsa@textkartesetzen}
+
+% Die Impressumskarte. Nichts weiter als eine Textkarte, deren Kopf schon
+% steht; gesetzt wird sie mit \dsaKartenzeile.
+\newenvironment{dsaKarteImpressum}{%
+  \dsa@felderleeren
+  \dsaKartenname{Impressum}\ignorespaces}{%
+  \dsa@textkartesetzen}
 
 \endinput
