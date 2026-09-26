@@ -543,6 +543,11 @@ und `\dsaRauten` setzt sie aneinander. Damit ist die Skala beliebig lang, und ni
 nachgezeichnet. Vorher zeichnete TikZ sie nach, obwohl das Material vorlag; die Maße stehen in
 `MASSE.md`.
 
+Im Fließtext steht die Skala ohne Höhe und Tiefe, wie die übrigen Marken: bei 18 mm Breite ist
+eine Raute 15,4 bp hoch, mehr als eine Zeile, und ungeglättet schöbe sie alles darunter vom Raster.
+Ihre Mitte sitzt auf halber x-Höhe. Nur in `\dsaAnforderungen` trägt sie ihre volle Höhe, dort
+bestimmt sie die Zeilen der Tabelle.
+
 ---
 
 ## Bilder und Masken

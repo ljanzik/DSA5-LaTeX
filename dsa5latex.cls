@@ -1502,7 +1502,10 @@
 % 3,75 mm heraus, und die Tabellenzeilen landeten bei y 346 bis 624 mm.
 \newlength{\dsa@rautebreite}
 \newcount\dsa@rautezahl
-\newcommand{\dsaRauten}[4]{%
+% Die Skala selbst, in ihrer vollen Hoehe. Die nimmt nur die Tabelle von
+% \dsaAnforderungen: dort traegt die Skala die Zeilenhoehe, und die
+% Rueckseite ist so ausgemessen.
+\newcommand{\dsa@rautenskala}[4]{%
   \begingroup
     % Die Breite einer Kachel: die Gesamtbreite durch die Zahl der Rauten.
     \setlength{\dsa@rautebreite}{\dimexpr#4/#2\relax}%
@@ -1516,6 +1519,18 @@
       \advance\dsa@rautezahl by 1
     \repeat
   \endgroup}
+
+% Im Fliesstext ohne Hoehe und Tiefe, wie die anderen Marken auch. Eine
+% Raute ist 215 x 259 px, bei 18 mm Skalenbreite also 4,5 x 5,42 mm und
+% 15,4 bp hoch -- hoeher als eine Zeile. Ungeglaettet griff die
+% Grundlinienregel nicht mehr, TeX fiel auf \lineskip zurueck, und im
+% Regellauf lag die Zeile mit der Skala 1,61 bp neben dem Raster, alles
+% darunter bis zum Spaltenende mit ihr (Issue #9). Die Mitte der Skala
+% sitzt auf halber x-Hoehe, so ragt sie nach oben und unten gleich weit
+% ueber die Zeile.
+\newcommand{\dsaRauten}[4]{%
+  \smash{\raisebox{\dimexpr0.5ex-0.5\height\relax}{%
+    \dsa@rautenskala{#1}{#2}{#3}{#4}}}}
 
 % Die beiden gewohnten Aufrufe: vier Rauten, davon #1 gefuellt.
 \newcommand{\dsaRautenRot}[2]{\dsaRauten{#1}{4}{rot}{#2}}
@@ -3185,11 +3200,14 @@
   % Zwischen den Spalten liegt sonst zweimal \tabcolsep, also 4,23 mm.
   % Mit 38 mm Rubrik und 15 mm Skala sprengt das die 55,4 mm des grauen
   % Kastens um 10,86 pt. Der Abstand steht deshalb ausdruecklich auf 2 mm.
+  % Die Skalen in voller Hoehe, nicht \dsaRautenRot: hier traegt die Skala
+  % die Zeile, geglaettet ruecken die vier Zeilen zusammen und die Rauten
+  % ueberlappen sich.
   \noindent\begin{tabular}{@{}p{\dsaanforderungrubrik}@{\hspace{2mm}}l@{}}
-    Kampftalente                  & \dsaRautenRot{#1}{\dsaanforderungskala}\\
-    Gesellschaftstalente          & \dsaRautenRot{#2}{\dsaanforderungskala}\\
-    Handwerkstalente              & \dsaRautenRot{#3}{\dsaanforderungskala}\\
-    \textbf{Lebendige Geschichte} & \dsaRautenGruen{#4}{\dsaanforderungskala}\\
+    Kampftalente                  & \dsa@rautenskala{#1}{4}{rot}{\dsaanforderungskala}\\
+    Gesellschaftstalente          & \dsa@rautenskala{#2}{4}{rot}{\dsaanforderungskala}\\
+    Handwerkstalente              & \dsa@rautenskala{#3}{4}{rot}{\dsaanforderungskala}\\
+    \textbf{Lebendige Geschichte} & \dsa@rautenskala{#4}{4}{gruen}{\dsaanforderungskala}\\
   \end{tabular}\par}
 
 %%% ==================================================================

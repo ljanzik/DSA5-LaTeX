@@ -167,6 +167,7 @@ Musterbogen zeigt sie ohne Text.
 | Porträtmedaillon, Größe | 35,39 × 34,97 mm bei 100 % | IDML | `#` |
 | Porträtmedaillon, Lage im Kasten | je Kasten 17,06/17,97, 17,91/16,87 und 17,57/16,62 mm | Alphakanal der Kastengrafiken | `#` |
 | Rautenskalen in TikZ | Vorbild `DSA5_Rauten_*` | PNG | — |
+| Rautenskala im Fließtext auf dem Raster | Grundlinie 84 + k · 12 bp | Regellauf S. 7, alle Zeilen ganzzahlig (Issue #9) | `ok` |
 | Bandmarke `\dsaBand` | Text, keine Grafik: hochgestelltes Kürzel plus Seite | Baukasten | `ok` |
 | Markengrafiken, Auflösung | mit 1700 bis 2700 ppi platziert, zusammen 2 MB | eigene Messung | `ok` |
 

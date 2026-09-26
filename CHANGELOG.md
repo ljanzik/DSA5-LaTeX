@@ -15,6 +15,7 @@ ausliefern wird.
   `werkzeuge/platzhalter.py` legt Platzhaltergrafiken in den Sollmaßen an. Beides zusammen lässt
   die Beispiele ohne Baukastenmaterial bauen, so läuft die CI.
 * GitHub Action baut alle Beispiele im Ersatzmodus und prüft das Log.
+* Behoben: eine Rautenskala im Fließtext schob alles darunter um 1,61 bp vom Raster (#9).
 
 ## 1.1.0 — 2026-09-20
 
