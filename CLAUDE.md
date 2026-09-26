@@ -9,7 +9,7 @@ Wer nur ein Abenteuer schreiben soll, braucht Teil A.
 `dsa5latex.cls` setzt Abenteuer im Layout von *Das Schwarze Auge 5*, nach den Maßen des
 offiziellen *Scriptorium Aventuris – Layout Baukastens*: A4 hoch, zweispaltig, mit
 Grundlinienraster. Die Elementreferenz steht in `doku/ELEMENTE.md`, wie man einrichtet und baut
-in `doku/EINRICHTUNG.md`. Dazu sechs Python-Werkzeuge in `werkzeuge/`, vier Dokumente in `doku/`
+in `doku/EINRICHTUNG.md`. Dazu acht Python-Werkzeuge in `werkzeuge/`, vier Dokumente in `doku/`
 und fünf Beispieldokumente in `beispiel/`.
 
 Dazu kommt der **Aufsteller** (`dsa5aufsteller.sty`): kleine Standfiguren zum Ausschneiden auf
@@ -167,6 +167,16 @@ TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 
 `TEXINPUTS` ist nötig, weil `dsa5latex.cls` eine Ebene höher liegt und nicht installiert ist. Wer
 die Klasse nach `TEXMFHOME/tex/latex/dsa5latex/` legt, kann es weglassen.
+
+Kürzer: `latexmk` in `beispiel/`. Die `latexmkrc` dort setzt XeLaTeX und `TEXINPUTS` und
+wiederholt die Läufe selbst. Klassenoptionen von außen gibt `DSA5_OPTIONEN=entwurf latexmk -g
+raster.tex` mit, ohne die `.tex` anzufassen.
+
+**Ohne Baukasten** (frischer Klon, CI): `python3 werkzeuge/platzhalter.py` legt graue Platzhalter
+in den Sollmaßen an, die Klassenoption `ersatz` nimmt Gentium aus TeX Live statt `schriften/`.
+Das Raster bleibt damit prüfbar, Zeilenfall und Satzbreiten nicht — ein Ersatz-PDF ist nie das
+Ergebnis. `werkzeuge/logpruefen.py beispiel/*.log` findet, was LaTeX nur als Warnung meldet;
+die GitHub Action `.github/workflows/bauen.yml` macht genau diese drei Schritte.
 
 Fünf Beispieldokumente, alle in `beispiel/`:
 

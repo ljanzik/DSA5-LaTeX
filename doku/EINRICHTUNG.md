@@ -128,6 +128,19 @@ TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 `TEXMFHOME/tex/latex/dsa5latex/` legt, kann es weglassen. Unter Windows in der PowerShell:
 `$env:TEXINPUTS = "..;"`.
 
+Kürzer geht es mit `latexmk`. Die `latexmkrc` in `beispiel/` setzt XeLaTeX und `TEXINPUTS` und
+wiederholt die Läufe selbst, bis Inhaltsverzeichnis und Marken stehen:
+
+```sh
+cd beispiel
+latexmk                 # baut beispiel.tex
+latexmk kaesten.tex     # eine bestimmte Datei
+latexmk -c              # Zwischenstände wegräumen
+```
+
+`latexmk` ist ein Perl-Skript. TeX Live bringt Perl mit, unter MiKTeX braucht es ein eigenes, etwa
+Strawberry Perl.
+
 Fünf Beispieldokumente liegen in `beispiel/`: `beispiel.tex` zeigt jedes Element genau einmal
 (22 Seiten), `raster.tex` nur Text und Raster und baut in Sekunden, `kaesten.tex` alle fünfzehn
 Kästen, `rest.tex` die Seitentypen, `battlemap.tex` eine Battlemap mit Zollraster auf eigenem
@@ -146,9 +159,47 @@ microtype hyperref tabularx environ`.
 \documentclass[ohneraster]{dsa5latex}          % Raster aus
 \documentclass[raster,rasterzeigen]{dsa5latex} % Grundlinien mitdrucken
 \documentclass[raster,entwurf]{dsa5latex}      % Bilder als Rahmen, schnelles Bauen
+\documentclass[ohnehintergrund]{dsa5latex}     % ohne die 7-MB-Seitenhintergründe
+\documentclass[ersatz]{dsa5latex}              % freie Schrift statt schriften/, siehe unten
 ```
 
 Die Elementreferenz steht in `doku/ELEMENTE.md`.
+
+### Ohne Baukasten bauen: der Ersatzmodus
+
+Wer die Klasse nur ansehen will, und die CI, haben das Material aus dem Baukasten nicht. Ohne
+`schriften/` bricht `fontspec` ab, ohne `grafiken/` jede Grafik, die die Klasse vor dem Setzen
+ausmisst. Zwei Teile ersetzen beides:
+
+```sh
+python3 werkzeuge/platzhalter.py      # graue Platzhalter in den Sollmaßen nach grafiken/
+cd beispiel
+DSA5_OPTIONEN=ersatz latexmk beispiel.tex
+```
+
+In der PowerShell: `$env:DSA5_OPTIONEN = "ersatz"; latexmk beispiel.tex`.
+
+* `werkzeuge/platzhalter.py` legt jede Grafik aus der Sollmaßliste von `werkzeuge/pruefen.py`
+  als graue Fläche mit genau den Pixelmaßen an, also in Produktionsgröße. Kästen, Banner und
+  Seitenhintergründe stehen damit so groß da wie mit dem echten Material. Eigene Bilder der
+  Beispiele, etwa die Battlemap, bekommen eine feste Größe. Geschrieben wird nur, was fehlt.
+  Liegt schon Baukastenmaterial in `grafiken/`, bricht das Werkzeug ab. `--weg` löscht die
+  Platzhalter wieder, und nur sie.
+* Die Klassenoption `ersatz` nimmt statt Gentium Basic und Andalus die freie Gentium aus dem
+  TeX-Live-Paket `gentium-sil`. Die `latexmkrc` reicht den Inhalt von `DSA5_OPTIONEN` als
+  Klassenoptionen weiter, ohne die `.tex` zu ändern; mehrere mit Komma, etwa `ersatz,entwurf`.
+  Ein Wechsel der Variable löst keinen neuen Lauf aus, weil sich keine Datei geändert hat.
+  Dafür `latexmk -g`.
+
+Was der Ersatzmodus zeigt: ob alles baut, ob das Raster hält, ob die Seiten stehen, wo sie
+sollen. Was er nicht zeigt: Zeilenfall und Satzbreiten. Gentium ist nicht Gentium Basic, und
+Andalus hat keinen freien Ersatz. Ein PDF aus dem Ersatzmodus ist nie das Ergebnis.
+
+### Automatisch bauen
+
+`.github/workflows/bauen.yml` baut bei jedem Push und jedem Pull Request alle Beispiele im
+Ersatzmodus, prüft das Log und hängt die PDFs als Artefakt an. Scheitert ein Lauf, steht die
+Ursache im Protokoll des Schritts „Log prüfen“.
 
 ---
 

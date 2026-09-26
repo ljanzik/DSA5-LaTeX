@@ -167,6 +167,7 @@ Musterbogen zeigt sie ohne Text.
 | Porträtmedaillon, Größe | 35,39 × 34,97 mm bei 100 % | IDML | `#` |
 | Porträtmedaillon, Lage im Kasten | je Kasten 17,06/17,97, 17,91/16,87 und 17,57/16,62 mm | Alphakanal der Kastengrafiken | `#` |
 | Rautenskalen in TikZ | Vorbild `DSA5_Rauten_*` | PNG | — |
+| Rautenskala im Fließtext auf dem Raster | Grundlinie 84 + k · 12 bp | Regellauf S. 7, alle Zeilen ganzzahlig (Issue #9) | `ok` |
 | Bandmarke `\dsaBand` | Text, keine Grafik: hochgestelltes Kürzel plus Seite | Baukasten | `ok` |
 | Markengrafiken, Auflösung | mit 1700 bis 2700 ppi platziert, zusammen 2 MB | eigene Messung | `ok` |
 
@@ -582,6 +583,30 @@ setzt die `4` in den Text — eine Ziffer ist kein Buchstabe; über `\@namedef` 
 Ziffern tragen. Und eine Zahl ohne Einheit ist in einer TikZ-Koordinate ein Vielfaches der
 Achseneinheit: `0.5*\paperheight` wären dort 420 Zentimeter, nicht die halbe Blatthöhe. Beides
 fiel erst am Abzug auf.
+
+## Ersatzmodus und CI
+
+Geprüft wurde, ob die Beispiele ohne Baukastenmaterial bauen und ob das Raster dabei dasselbe
+bleibt. Dazu ein Klon ohne `grafiken/` (bis auf `titelbild.jpg`) und ohne `schriften/`, darin
+`werkzeuge/platzhalter.py` und dann `DSA5_OPTIONEN=ersatz,entwurf latexmk <datei>`.
+
+| Prüfung | Ergebnis |
+|---|---|
+| Platzhalter angelegt | 92, davon 91 aus der Sollmaßliste und einer für die Battlemap; `pruefen.py` meldet 91 von 91 in Ordnung |
+| Alle acht Beispiele bauen | `beispiel` 22 Seiten wie mit echtem Material, `kaesten` 15, `rest` 5, `aufsteller` 4, `raster` 2, `battlemap`, `titel`, `titelgrafik` je 1 |
+| `logpruefen.py` über alle acht Logs | in Ordnung |
+| Grundlinien `raster.pdf`, Ersatz gegen echtes Material | alle 51 Zeilen auf 0,01 mm gleich |
+| Fließtext 10 bp in `beispiel.pdf` neben dem Raster | nur, was auch mit echtem Material danebenliegt (Impressum mit eigenem Maß), dazu je Bildrahmen der Dateiname, den `entwurf` hineinschreibt |
+| Schutz gegen gemischten Satz | `platzhalter.py` bricht im Arbeitsklon mit echtem Material ab („91 Dateien aus dem Baukasten“) |
+| `logpruefen.py` schlägt an | eine eingefügte `Class dsa5latex Warning`, ein `Overfull \vbox` und „There were undefined references“ zählen je als Meldung, Rückgabewert 1 |
+
+Dass das Raster gleich bleibt, ist kein Zufall: die Grundlinien hängen an `\baselineskip` und am
+Satzspiegel, nicht an der Schrift. Zeilenfall und Satzbreiten sind mit Gentium dagegen andere,
+darum prüft der Ersatzmodus sie nicht.
+
+Auf GitHub (`texlive/texlive:latest`) läuft die Action in 2 min 18 s durch. Alle acht Beispiele
+mit denselben Seitenzahlen wie lokal, `logpruefen.py` meldet alle acht Logs in Ordnung, und das
+Artefakt `beispiele-ersatzmodus` trägt die PDFs, 345 KB.
 
 ## Vorgehen
 
