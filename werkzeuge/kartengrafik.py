@@ -100,13 +100,36 @@ SOLL_PIXEL = (815, 1110)
 #   rot    Flusslande, 2018               -- Haeufung bei 5 bis 15 Grad
 #
 # Die uebrigen sind keine Messwerte, sondern Angebote in derselben Machart.
+#
+# Die Saettigung darf nicht nach dem Farbeindruck auf weissem Grund gewaehlt
+# werden. Das Band ist dunkel -- in der eingefaerbten Zone gemessen liegt die
+# Helligkeit bei 0,28, und sie kommt aus dem Bild, nicht aus der Zielfarbe.
+# Dunkle Farben verlieren dort ihren Ton: bei 40 Grad und 0,55 kippte
+# bernstein ins Olivgraue, und auch 0,80 und 1,00 machten daraus nur ein
+# gelbstichiges Oliv. Erst 30 Grad tragen das warme Braun, und die hohe
+# Saettigung haelt es gegen die 0,28 Helligkeit.
+#
+# Faustregel fuer eigene Farben: je naeher der Farbton an Gelb (60 Grad),
+# desto hoeher muss die Saettigung sein. Gegenprobe ist nicht der Zahlenwert,
+# sondern die erzeugte Datei.
 FARBEN = {
     'blau':      (200, 0.46),
     'rot':       (10, 0.55),
     'gruen':     (120, 0.45),
     'violett':   (280, 0.40),
-    'bernstein': (40, 0.55),
+    'bernstein': (30, 0.90),
     'tuerkis':   (175, 0.45),
+}
+
+# Woher jeder Wert kommt, fuer die Ausgabe von --farben. Wer eine Farbe
+# aendert, aendert hier mit.
+HERKUNFT = {
+    'blau':      'gemessen, Aventurische Meisterpersonen',
+    'rot':       'gemessen, Flusslande',
+    'gruen':     'Angebot',
+    'violett':   'Angebot',
+    'bernstein': 'Angebot',
+    'tuerkis':   'Angebot',
 }
 
 # Die Schwellen der Auswahl, je ein Satz fuer die Kartenflaeche und fuer
@@ -287,13 +310,23 @@ def einfaerben(bild, grad, saettigung, schwellen=SCHWELLEN_FLAECHE):
 def main():
     args = sys.argv[1:]
     if '--farben' in args:
-        print('Vorgegebene Farben (Farbton in Grad, Saettigung):')
-        for n in sorted(FARBEN):
-            print('    %-10s %3d Grad, %.2f' % ((n,) + FARBEN[n]))
+        print('Vorgegebene Farben:')
         print()
-        print('blau und rot sind an den Kartengrafiken der beiden')
-        print('veroeffentlichten Sets gemessen, die uebrigen sind Angebote.')
+        print('    Name        Farbton  Saettigung  woher')
+        for n in sorted(FARBEN):
+            grad, saet = FARBEN[n]
+            print('    %-10s %4d Grad      %4.2f      %s'
+                  % (n, grad, saet, HERKUNFT[n]))
+        print()
+        print('blau und rot sind am Schuppenband der beiden veroeffentlichten')
+        print('Sets gemessen; die uebrigen sind Angebote in derselben Machart.')
         print('Eigene gehen mit --farbe name:farbton:saettigung.')
+        print()
+        print('Zur Saettigung: das Schuppenband ist dunkel. In der eingefaerbten')
+        print('Zone liegt die Helligkeit bei 0,28, und sie kommt aus dem Bild,')
+        print('nicht aus der Zielfarbe. Toene nahe Gelb (60 Grad) verlieren dort')
+        print('ihren Charakter und werden oliv; sie brauchen eine hohe')
+        print('Saettigung. Die Gegenprobe ist die erzeugte Datei, nicht die Zahl.')
         return 0
 
     wurzel = None

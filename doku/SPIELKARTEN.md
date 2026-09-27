@@ -126,9 +126,14 @@ vertauschen physisch. Die Klasse spiegelt den Rückseitenbogen dafür spaltenwei
 Spalte' = 2 − Spalte        (Zeile bleibt gleich, gezählt ab 0)
 ```
 
-Mit `kurz` gilt statt dessen `Zeile' = 2 − Zeile`. Die Schnittmarken werden nur für belegte Zeilen
-gezeichnet — auf dem letzten Bogen bleiben Plätze frei, und eine Marke dort wiese auf einen
-Schnitt, den es nicht zu tun gibt.
+Mit `kurz` gilt statt dessen `Zeile' = 2 − Zeile`.
+
+**Die Schnittmarken** stehen rings um das Raster, nie zwischen den Karten: dort stoßen die Kanten
+ohne Zwischenraum aneinander, und eine Marke läge im Bild. Senkrechte Striche sitzen über der
+obersten und unter der untersten Kartenreihe, an allen vier Spaltenkanten; waagerechte links und
+rechts des Bogens, auf Höhe jeder Schnittlinie. Gezeichnet werden nur die Marken belegter Zeilen —
+auf dem letzten Bogen bleiben Plätze frei, und eine Marke dort wiese auf einen Schnitt, den es
+nicht zu tun gibt. Wer ohne schneiden will, nimmt `ohneschnittmarken`.
 
 ### Stückzahl
 
@@ -490,7 +495,6 @@ und der schwarze Außenrand sind in beiden Sets Bild für Bild dieselben.
 
 ```sh
 python3 werkzeuge/kartengrafik.py "/pfad/zum/Kartenpaket" --farbe blau --farbe rot
-python3 werkzeuge/kartengrafik.py "/pfad/zum/Kartenpaket" --farbe moor:150:0.4
 python3 werkzeuge/kartengrafik.py --farben
 ```
 
@@ -498,8 +502,39 @@ Eingefärbt werden nur die dunklen, fast unbunten Bildpunkte des Bandes; ihre He
 Ausgenommen sind das Pergament (hell), die Messingecken (bunt) und der schwarze Rand — der bleibt
 schwarz, weil die Zielfarbe nur den Farbton beiträgt und die Helligkeit aus dem Bild kommt.
 
-`blau` und `rot` sind an den Kartengrafiken der beiden Sets gemessen, die übrigen vier Namen sind
-Angebote in derselben Machart. Eigene gehen mit `name:farbton:sättigung`.
+### Die sechs vorgegebenen Farben
+
+`--farben` gibt diese Liste auch auf der Kommandozeile aus:
+
+| Name | Farbton | Sättigung | woher | wie es aussieht |
+|---|---:|---:|---|---|
+| `blau` | 200° | 0,46 | gemessen, *Aventurische Meisterpersonen* | kühles Stahlblau |
+| `rot` | 10° | 0,55 | gemessen, *Flusslande* | mattes Rotbraun |
+| `gruen` | 120° | 0,45 | Angebot | sattes Moosgrün |
+| `violett` | 280° | 0,40 | Angebot | gedämpftes Purpur |
+| `bernstein` | 30° | 0,90 | Angebot | warmes Braun |
+| `tuerkis` | 175° | 0,45 | Angebot | graugrünes Petrol |
+
+`blau` und `rot` sind keine Erfindungen, sondern am Schuppenband der beiden veröffentlichten Sets
+gemessen. Die vier übrigen sind Angebote in derselben Machart.
+
+### Eigene Farben
+
+```sh
+python3 werkzeuge/kartengrafik.py "/pfad/zum/Kartenpaket" --farbe moor:150:0.4
+```
+
+Ein Name, ein Farbton in Grad, eine Sättigung zwischen 0 und 1. Die Sättigung darf dabei **nicht
+nach dem Eindruck auf weißem Grund** gewählt werden: das Band ist dunkel, in der eingefärbten Zone
+liegt die Helligkeit bei 0,28, und sie kommt aus dem Bild, nicht aus der Zielfarbe. Wer eine Farbe
+wählt, die ihren Charakter aus Helligkeit bezieht, bekommt sie dort nicht.
+
+Betroffen sind vor allem die Töne um Gelb: zwischen etwa 20 und 70 Grad kippt eine mittlere
+Sättigung ins Olivgraue, weil ein dunkles Gelb kein Gelb mehr ist. Deshalb steht `bernstein` auf
+0,90 und nicht, wie die übrigen, bei 0,4 bis 0,55. Blau, Grün und Violett vertragen die dunkle
+Lage dagegen gut und kommen mit weniger aus.
+
+Die Gegenprobe ist nicht der Zahlenwert, sondern die erzeugte Datei.
 
 Im Dokument umgestellt wird mit
 

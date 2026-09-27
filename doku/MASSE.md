@@ -1193,6 +1193,25 @@ mittig liegt und nicht die Datei. Das Porträt darunter misst 0,7345 der Dateibr
 der freie Innenkreis ist nur 13,4 mm breit, das Bild reicht also unter den Kranz und lässt keine
 Fuge. Dieselben drei Verhältnisse benutzt die Kernklasse in ihren Wertekästen.
 
+### Die Umfärbung des Schuppenbands
+
+Dieselbe Regel wie bei der Raute, nur an der Kartenfläche. Gemessen an
+`spielkarte-flaeche.png`, 815 × 1110 px, und an den daraus abgeleiteten Farbfassungen:
+
+| Befund | Wert |
+|---|---|
+| eingefärbte Bildpunkte | 51 131, also 5,7 Prozent der Fläche |
+| Farbton unbehandelt, Median | 270° bei einer Sättigung von 0,14 |
+| Helligkeit der eingefärbten Zone | 0,28 — in jeder Farbfassung dieselbe |
+
+Die Helligkeit stammt aus dem Bild, nicht aus der Zielfarbe: `kartengrafik.py` multipliziert den
+größten Kanal eines Bildpunkts mit der Zielfarbe. Deshalb bleibt Schwarz schwarz, und der
+Außenrand muss nicht eigens ausgenommen werden.
+
+Für eigene Farben folgt daraus, dass die Sättigung den Farbton gegen eine Helligkeit von 0,28
+durchsetzen muss. Töne um Gelb brauchen dafür deutlich mehr als die übrigen: `bernstein` steht bei
+30° auf 0,90, während Blau, Grün und Violett mit 0,40 bis 0,46 auskommen.
+
 ### Die Umfärbung der Raute
 
 Die Rautenkachel liegt im Baukasten in drei Farben vor: `raute-grau`, `raute-gruen`, `raute-rot`.

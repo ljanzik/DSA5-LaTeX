@@ -1048,9 +1048,15 @@
 \newlength{\dsa@mkunten}
 \newcommand{\dsa@schnittmarken}{%
   \ifdsa@schnittmarken
-    % Angefangene Zeilen zaehlen voll: \numexpr rundet bei der Division,
-    % deshalb vorher zwei addieren und erst dann teilen.
-    \dsa@bogenzeilen=\numexpr(\dsa@bogenplatz+2)/3\relax
+    % Angefangene Zeilen zaehlen voll, gesucht ist also das aufgerundete
+    % Drittel. \numexpr rundet bei der Division kaufmaennisch, statt
+    % abzuschneiden — (n+2)/3 gibt deshalb bei jeder vollen Zeile eine zu
+    % viel: 9 Karten ergaeben 11/3 = 3,67 und damit 4. Die Marken der
+    % vierten Zeile landeten bei 368,5 mm, weit unter der A4-Kante.
+    %
+    % Mit Rundung statt Abschneiden ist abgerundet(m/3) = (2m-2)/6; mit
+    % m = n+2 wird daraus (2n+2)/6. Durchgerechnet fuer 1 bis 9 Karten.
+    \dsa@bogenzeilen=\numexpr(2*\dsa@bogenplatz+2)/6\relax
     \setlength{\dsa@mkunten}{\dimexpr\dsabogenrandy
                              +\the\dsa@bogenzeilen\dsakartenhoehe\relax}%
     \foreach \dsa@i in {0,1,2,3}{%
