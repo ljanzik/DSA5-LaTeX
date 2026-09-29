@@ -102,6 +102,17 @@ SOLL_PIXEL = (815, 1110)
 # gelbstichiges Oliv. Erst 30 Grad tragen das warme Braun, und die hohe
 # Saettigung haelt es gegen die 0,28 Helligkeit.
 #
+# karmin ist das kraeftige Rot neben rot. rot (10 Grad, 0,55) bleibt, wie
+# es ist -- auf den Seitenhintergruenden wirkte es aber braun: Orangerot bei einer Helligkeit
+# um 0,24 liest sich als Braun. Erst 0 Grad bei 0,90 wurde als Rot gesehen.
+#
+# Karten und Seiten teilen diese eine Tabelle, und das mit Absicht. Das
+# Schuppenband der Seiten ist so dunkel wie das der Karte (gemessen V 0,24
+# und 0,23 gegen 0,24 auf der Karte), und deshalb kommt aus denselben
+# Werten derselbe Ton: karmin im Median H 357 Grad S 0,75 auf der Karte,
+# H 359 Grad S 0,78 auf der Seite. Eine eigene Tabelle fuer die Seiten
+# wuerde das auseinanderlaufen lassen.
+#
 # Faustregel fuer eigene Farben: je naeher der Farbton an Gelb (60 Grad),
 # desto hoeher muss die Saettigung sein. Gegenprobe ist nicht der Zahlenwert,
 # sondern die erzeugte Datei.
@@ -112,6 +123,7 @@ FARBEN = {
     'violett':   (280, 0.40),
     'bernstein': (30, 0.90),
     'petrol':    (175, 0.45),
+    'karmin':    (0, 0.90),
 }
 
 # Woher jeder Wert kommt, fuer die Ausgabe von --farben. Wer eine Farbe
@@ -123,6 +135,7 @@ HERKUNFT = {
     'violett':   'Angebot',
     'bernstein': 'Angebot',
     'petrol':    'Angebot, vorher tuerkis genannt',
+    'karmin':    'Angebot, an den Seitenhintergruenden gewaehlt',
 }
 
 # Die Schwellen der Auswahl, je ein Satz fuer die Kartenflaeche und fuer
