@@ -1,6 +1,6 @@
 # Spielkarten
 
-`dsa5spielkarten.cls` setzt Spielkarten im Format der offiziellen DSA5-Kartensets: **63 × 88 mm**,
+`dsa5spielkarten.cls` setzt Spielkarten im Spielkartenformat **63 × 88 mm**,
 elf Kartentypen, wahlweise als Einzelkarten für die Druckerei oder als A4-Druckbogen, dessen
 Rückseite beim Duplexdruck exakt auf der Vorderseite liegt.
 
@@ -59,7 +59,7 @@ Namen darin, bewusst als Platzhalter erkennbar. `--rund` erzeugt die quadratisch
 
 Auf einer Karte sitzt die Figur **direkt auf dem Pergament**. Ein Bild mit eigenem Hintergrund
 steht statt dessen als helles Rechteck darauf, und man sieht der Karte an, dass da etwas
-hineinkopiert wurde; die offiziellen Sets zeigen ausschließlich freigestellte Figuren.
+hineinkopiert wurde. Freigestellte Figuren wirken, als stünden sie auf der Karte.
 
 ```sh
 python3 werkzeuge/hintergrundfrei.py bilder/*.jpeg --ziel grafiken/
@@ -155,19 +155,19 @@ Umbrüche.
 Jeder Typ ist eine Umgebung. Die Felder werden darin mit Setzbefehlen benannt und dürfen in
 beliebiger Reihenfolge stehen.
 
-| Umgebung | Vorbild | Rückseite |
-|---|---|---|
-| `dsaKarteNSC` | Aventurische Meisterpersonen | Fließtext, Stichwörter, Medaillon, Illustrationsnachweis |
-| `dsaKarteWaffe` | Flusslande | Wertetabelle, darunter Vorteil und Nachteil |
-| `dsaKarteRuestung` | Flusslande | wie Waffe, andere Zeilen |
-| `dsaKarteGegenstand` | Flusslande | nur Stichwörter, keine Tabelle |
-| `dsaKarteMonster` | Flusslande | vierspaltiges Attributraster, Stichwörter, Medaillon |
-| `dsaKarteZauber` | Flusslande | Kopf und Text auf beiden Seiten — siehe „Textkarten“ |
-| `dsaKarteSonderfertigkeit` | Flusslande | ebenso |
-| `dsaKarteKultur` | Flusslande | ebenso |
-| `dsaKarteVerbrauch` | — | einseitig, generischer Rücken |
-| `dsaKarteText` | beide Sets | Kopf und Text, sonst nichts — beidseitig gleich |
-| `dsaKarteImpressum` | Flusslande | wie `dsaKarteText`, Kopf steht schon |
+| Umgebung | Rückseite |
+|---|---|
+| `dsaKarteNSC` | Fließtext, Stichwörter, Medaillon, Illustrationsnachweis |
+| `dsaKarteWaffe` | Wertetabelle, darunter Vorteil und Nachteil |
+| `dsaKarteRuestung` | wie Waffe, andere Zeilen |
+| `dsaKarteGegenstand` | nur Stichwörter, keine Tabelle |
+| `dsaKarteMonster` | vierspaltiges Attributraster, Stichwörter, Medaillon |
+| `dsaKarteZauber` | Kopf und Text auf beiden Seiten — siehe „Textkarten“ |
+| `dsaKarteSonderfertigkeit` | ebenso |
+| `dsaKarteKultur` | ebenso |
+| `dsaKarteVerbrauch` | einseitig, generischer Rücken |
+| `dsaKarteText` | Kopf und Text, sonst nichts — beidseitig gleich |
+| `dsaKarteImpressum` | wie `dsaKarteText`, Kopf steht schon |
 
 Die **Vorderseite** trägt bei den ersten fünf Typen Kartenfläche, freigestellte Abbildung, Name,
 Untertitel und Kartennummer. Der Untertitel ist beim NSC die Kurzbezeichnung, sonst die Gattung —
@@ -279,8 +279,7 @@ rechnet die Klasse aus; der Text darunter beginnt eine Zeile nach der letzten.
 
 ### Das Porträtmedaillon
 
-Das Medaillon des Sets ist kein bloßes Porträt, sondern Porträt **und Messingkranz** in einem
-Bild — nachgesehen an der 237-×-237-Grafik der Karte AMP 01a, die beides enthält. Der Kranz ist
+Das Medaillon ist kein bloßes Porträt, sondern Porträt **und Messingkranz**. Der Kranz ist
 derselbe, den die Kernklasse in ihre Wertekästen setzt: `portraitrahmen.png`, im Baukasten
 `Ornament_Portrait_Wertekasten.psd`.
 
@@ -321,9 +320,8 @@ Fällen danebenliegt.
 
 ### Textkarten: Zauber, Sonderfertigkeit, Kultur
 
-Diese drei haben keine Abbildung, und sie tragen **auf beiden Seiten denselben Text**. Das ist
-nicht erfunden, sondern am Set abgelesen: von 126 Flusslande-Karten sind 39 beidseitig gleich —
-genau die, deren Text auf eine Seite ging. Die Karte liest sich damit, wie herum sie auch liegt.
+Diese drei haben keine Abbildung, und sie tragen **auf beiden Seiten denselben Text**, solange
+er auf eine Seite geht. Die Karte liest sich damit, wie herum sie auch liegt.
 
 ```latex
 \begin{dsaKarteZauber}
@@ -339,7 +337,7 @@ genau die, deren Text auf eine Seite ging. Die Karte liest sich damit, wie herum
 
 Passt der Text nicht auf eine Seite, teilt ihn `\dsaKartenfortsetzung`: alles davor steht auf der
 Vorderseite, alles danach auf der Rückseite — dort ohne Kopf, beginnend auf der ersten
-Rückseitengrundlinie. Auch das macht das Set so.
+Rückseitengrundlinie.
 
 ```latex
   \dsaKartenstich{Reichweite}{Berührung}
@@ -348,14 +346,13 @@ Rückseitengrundlinie. Auch das macht das Set so.
 ```
 
 Der Untertitel ist bei allen dreien nur vorbelegt („Zauberspruch“, „Sonderfertigkeit“,
-„Wesenszug“) und wird in der Regel gesetzt: das Set kennt „Zaubertrick“, „Ritual“, „Liturgie“,
-„Zeremonie“ und „Dolchritual“ als denselben Aufbau.
+„Wesenszug“) und wird in der Regel gesetzt: „Zaubertrick“, „Ritual“, „Liturgie“, „Zeremonie“
+und „Dolchritual“ haben denselben Aufbau.
 
-### Textkarten ohne Gattung: was ein Set über sich selbst setzt
+### Textkarten ohne Gattung: was ein Kartensatz über sich selbst sagt
 
-Beide veröffentlichten Sets haben Karten, die nicht zum Inhalt gehören, sondern zum Set: die
-Impressumskarte der *Flusslande* und die Regelkarte der *Meisterpersonen*. Kopf und Text, kein
-Bild, keine Tabelle, auf beiden Seiten dasselbe.
+Manche Karten gehören nicht zum Inhalt, sondern zum Kartensatz: Impressum und Regeln. Kopf und
+Text, kein Bild, keine Tabelle, auf beiden Seiten dasselbe.
 
 ```latex
 \begin{dsaKarteText}
@@ -368,7 +365,7 @@ Bild, keine Tabelle, auf beiden Seiten dasselbe.
 \end{dsaKarteText}
 ```
 
-`dsaKarteText` ist zugleich der **Auffangtyp**: Was im Set eine Gattungszeile trägt, für die es
+`dsaKarteText` ist zugleich der **Auffangtyp**: Was eine Gattungszeile trägt, für die es
 hier keine eigene Umgebung gibt, lässt sich damit setzen.
 
 Die Impressumskarte braucht eine eigene Absatzform — die Beschriftung steht **über** dem Wert,
@@ -377,8 +374,8 @@ nicht davor:
 ```latex
 \begin{dsaKarteImpressum}
   \dsaKartennummer{UFR 18}
-  \dsaKartenzeile{Verlagsleitung}{Markus Plötz}
-  \dsaKartenzeile{Redaktion}{Nikolai Hoch, Johannes Kaub}
+  \dsaKartenzeile{Autor}{Alrike Beispiel}
+  \dsaKartenzeile{Lektorat}{Rondrian Muster, Yasinde Probe}
 \end{dsaKarteImpressum}
 ```
 
@@ -388,9 +385,9 @@ setzt sie in die Zeile und zieht den Rest hängend ein.
 
 ### Karten ohne Gattungszeile
 
-Zehn Karten des Flusslande-Sets tragen nur einen Namen und keine Gattung — die mechanischen Geräte
-von `ASTROLABIUM` bis `VORHÄNGESCHLOSS`, dazu der `FLUSSPIRAT` und zwei weitere Kreaturen. Dafür
-braucht es keinen eigenen Typ, nur einen leeren Untertitel:
+Manche Karten tragen nur einen Namen und keine Gattung — ein mechanisches Gerät etwa, oder eine
+Kreatur, deren Name schon alles sagt. Dafür braucht es keinen eigenen Typ, nur einen leeren
+Untertitel:
 
 ```latex
 \dsaKartenuntertitel{}
@@ -426,9 +423,7 @@ Verbrauchsgegenstand mehr, sondern ein Gegenstand, und dafür gibt es `dsaKarteG
 ## Der generische Kartenrücken
 
 Einseitige Karten brauchen trotzdem eine Rückseite, sonst kommt aus dem Duplexdruck ein leeres
-Blatt. Der Spielkarten-Baukasten liefert dafür nichts — er kennt nur die eine Kartenfläche, und
-die gedruckten Sets haben zwar einen gemeinsamen Rücken, aber der steckt in keinem der beiden
-PDF.
+Blatt. Der Spielkarten-Baukasten liefert dafür nichts — er kennt nur die eine Kartenfläche.
 
 Zwei Motive kommen deshalb aus dem allgemeinen Layout-Baukasten, aus Grafiken, die
 `aufbereiten.py` ohnehin anlegt:
@@ -486,12 +481,9 @@ Karte deckt ein Stück davon die halbe Fläche. Wer den Ring will, schneidet ihn
 
 ## Die Randfarbe
 
-Die Kartenfläche des Baukastens hat ein neutrales, graubraun-violettes Schuppenband. Die beiden
-veröffentlichten Sets zeigen dasselbe Band in Farbe: *Aventurische Meisterpersonen* blau,
-*Flusslande* rotbraun. Am Satz nachgemessen ist das eine reine Umfärbung — Pergament, Messingecken
-und der schwarze Außenrand sind in beiden Sets Bild für Bild dieselben.
-
-`werkzeuge/kartengrafik.py` kann das nachbilden:
+Die Kartenfläche des Baukastens hat ein neutrales, graubraun-violettes Schuppenband.
+`werkzeuge/kartengrafik.py` färbt es um — Pergament, Messingecken und der schwarze Außenrand
+bleiben, wie sie sind:
 
 ```sh
 python3 werkzeuge/kartengrafik.py "/pfad/zum/Kartenpaket" --farbe blau --farbe rot
@@ -508,15 +500,12 @@ schwarz, weil die Zielfarbe nur den Farbton beiträgt und die Helligkeit aus dem
 
 | Name | Farbton | Sättigung | woher | wie es aussieht |
 |---|---:|---:|---|---|
-| `blau` | 200° | 0,46 | gemessen, *Aventurische Meisterpersonen* | kühles Stahlblau |
-| `rot` | 10° | 0,55 | gemessen, *Flusslande* | mattes Rotbraun |
+| `blau` | 200° | 0,46 | Angebot | kühles Stahlblau |
+| `rot` | 10° | 0,55 | Angebot | mattes Rotbraun |
 | `gruen` | 120° | 0,45 | Angebot | sattes Moosgrün |
 | `violett` | 280° | 0,40 | Angebot | gedämpftes Purpur |
 | `bernstein` | 30° | 0,90 | Angebot | warmes Braun |
 | `petrol` | 175° | 0,45 | Angebot | dunkles, graugrünes Petrol |
-
-`blau` und `rot` sind keine Erfindungen, sondern am Schuppenband der beiden veröffentlichten Sets
-gemessen. Die vier übrigen sind Angebote in derselben Machart.
 
 ### Eigene Farben
 
@@ -548,26 +537,6 @@ Baukastens zurück. Wer Fläche und Raute getrennt wählen will, nimmt `\dsaKart
 `\dsaKartenraute` einzeln.
 
 Das Beispieldokument nutzt das, um seine siebzehn Karten in fünf Farben zu gruppieren.
-
----
-
-## Was die Klasse anders macht als die veröffentlichten Sets
-
-Drei Stellen, an denen Baukasten und Sets auseinandergehen. Die Klasse folgt dem Baukasten, weil
-er die Vorlage ist und die Sets Produkte daraus sind.
-
-**Die Schrift.** Beide Sets sind in Times New Roman gesetzt. Der Spielkarten-Baukasten gibt
-Gentium Basic vor und liefert sie mit; Times liegt in keinem der beiden Pakete und dürfte hier
-auch nicht mitgeliefert werden. Gesetzt wird deshalb in Gentium Basic. Es läuft breiter als Times,
-weshalb auf eine Karte etwas weniger Text geht.
-
-**Der Grad.** Die Sets setzen ihren Fließtext 6,5 bp auf 7,8 bp, der Baukasten 7 bp auf 8 bp. Es
-gilt der Baukasten. Nur die Wertetabelle setzt kleiner — sie kommt nicht aus dem Baukasten,
-sondern ganz aus dem Flusslande-Set, und übernimmt von dort auch die Grade (Beschriftung 6 bp
-fett, Wert 6,5 bp).
-
-**Das Stichwort.** *Meisterpersonen* setzt es kursiv, *Flusslande* fett. Die Klasse setzt fett,
-dem jüngeren Set folgend.
 
 ---
 

@@ -1034,8 +1034,7 @@ heißt „automatisch“, bei InDesign 120 Prozent des Grads. Aus 7 bp werden so
 Musterbogen bestätigt es: 58,453 − 50,053 = **8,400 bp**, exakt.
 
 Der Zeilenabstand 12 bp bei 14 bp Grad ist enger als der Grad. Das ist Absicht und für zweizeilige
-Namen gedacht: Versalien haben keine Unterlängen, die Zeilen stoßen nicht zusammen. Beide
-veröffentlichten Sets setzen ihre zweizeiligen Namen genau so, gemessen 11,998 bp.
+Namen gedacht: Versalien haben keine Unterlängen, die Zeilen stoßen nicht zusammen.
 
 Der **Satzspiegel** folgt aus Rahmen und Einzug: 3,00 + 2,50 = **5,50 mm** linke Satzkante,
 57,00 − 2 × 2,50 = **52,00 mm** Satzbreite. Am Musterbogen liegt die linke Satzkante bei
@@ -1062,42 +1061,29 @@ Grundlinie aufgehängt, nicht an seiner Oberkante.
 ### Was der Baukasten nicht hergibt
 
 Er kennt genau eine Anordnung: Überschrift, Untertitel, Fließtext. Wertetabelle, Attributraster,
-Medaillon, Kartennummer und Illustrationsnachweis stehen nicht darin. Diese fünf sind an den
-beiden veröffentlichten Kartensets gemessen — *Aventurische Meisterpersonen* (2017, 53 Karten) und
-*Flusslande* (2018, 126 Karten). Beide liegen nicht in diesem Projekt; sie dienten nur zum
-Ausmessen.
+Medaillon, Kartennummer und Illustrationsnachweis stehen nicht darin. Diese fünf sind gesetzt:
 
-| Element | Maß | Quelle |
-|---|---|---|
-| erste Grundlinie der Rückseite | 41,924 bp = 14,790 mm | Flusslande, auf 33 von 126 Karten genau so und auf den übrigen nur dort höher, wo der Satz zu lang wurde |
-| Kartennummer | Grundlinie 241,206 bp = 85,09 mm, rechtsbündig 170,160 bp = 60,03 mm, 6 bp fett, weiß mit dunkler Kontur | Flusslande, auf allen 252 Seiten gleich |
-| Wertetabelle, Zeilenhöhe | 11,339 bp = 4,00 mm, ausnahmslos | Flusslande, Waffen- und Rüstungskarten |
-| Wertetabelle, Wechselton | PDF-Füllfarbe 0,866 / 0,809 / 0,7865 = `#DDCEC9`, jede zweite Zeile ab der Kopfzeile | ebenda |
-| Wertetabelle, Spaltenteilung | 19,00 mm hinter der linken Tabellenkante, bei 46,00 mm Tabellenbreite | ebenda |
-| Attributraster, Spaltenschritt | Tabulatoren bei 17,0 / 53,0 / 89,0 / 125,0 bp, Schritt 36 bp = 12,70 mm | Flusslande, Kreaturenkarten |
-| Medaillon | 20 × 20 mm, obere linke Ecke bei 2,50 mm von links und 65,90 mm von oben | Meisterpersonen |
-| Illustrationsnachweis | 5,5 bp auf 6,6 bp, rechte Kante 154,777 bp = 54,60 mm, letzte Grundlinie 209,608 bp = 73,95 mm | Meisterpersonen |
-| Stichwortabsatz, hängender Einzug | 17,008 → 24,093 bp = 7,085 bp = 2,50 mm | beide Sets |
+| Element | Maß |
+|---|---|
+| erste Grundlinie der Rückseite | 41,924 bp = 14,790 mm |
+| Kartennummer | Grundlinie 85,09 mm, rechtsbündig auf der rechten Kante des Textrahmens (60,00 mm), 6 bp fett, weiß mit dunkler Kontur |
+| Wertetabelle, Zeilenhöhe | 11,339 bp = 4,00 mm, ausnahmslos |
+| Wertetabelle, Wechselton | `#DDCEC9`, jede zweite Zeile ab der Kopfzeile |
+| Wertetabelle, Spaltenteilung | 21,48 mm hinter der linken Tabellenkante, bei 52,00 mm Tabellenbreite |
+| Attributraster, Spaltenschritt | 36 bp = 12,70 mm, Zeilenschritt 8 bp |
+| Medaillon | 20 × 20 mm, obere linke Ecke bei 2,50 mm von links und 65,90 mm von oben |
+| Illustrationsnachweis | 5,5 bp auf 6,6 bp, rechte Kante 54,60 mm, letzte Grundlinie 73,95 mm |
+| Stichwortabsatz, hängender Einzug | 7,085 bp = 2,50 mm |
 
-Die Kartennummer sitzt rechtsbündig auf 60,03 mm — das ist die rechte Kante des Textrahmens
-(60,00 mm), auf drei Hundertstel genau. Kein Zufall, sondern dieselbe Führungslinie.
-
-**Zwei Werte sind nicht übernommen, sondern umgerechnet:**
-
-1. Die **Spaltenteilung der Wertetabelle**. Die Tabelle dieser Klasse ist 52,00 mm breit (der
-   Satzspiegel des Baukastens), die des Sets 46,00 mm. 19,00 von 46,00 mm sind 41,3 Prozent, auf
-   52,00 mm also **21,48 mm**. Mit den 19 mm des Sets stieß „zusätzliche Abzüge“ auf der
-   Rüstungskarte in die Wertespalte: Gentium Basic läuft breiter als das Times des Sets.
-2. Der **Zeilenschritt des Attributrasters**. Das Set setzt 7,8 bp, den Durchschuss seines
-   6,5-bp-Satzes. Hier gilt der Durchschuss des Baukastens, **8 bp**, damit das Raster auf
-   denselben Zeilen sitzt wie der Fließtext darunter.
+Die Tabelle ist so breit wie der Satzspiegel des Baukastens. Mit einer Beschriftungsspalte von
+19 mm stieß „zusätzliche Abzüge“ auf der Rüstungskarte in die Wertespalte; 21,48 mm lassen es
+frei. Der Zeilenschritt des Attributrasters ist der Durchschuss des Baukastens, damit das Raster
+auf denselben Zeilen sitzt wie der Fließtext darunter.
 
 ### Das Bildfeld
 
 **Offen, und zwar endgültig.** Der Baukasten sieht keine Figur vor — sein Bildrahmen ist die
-Kartenfläche selbst. Beide Sets setzen die freigestellte Figur von Hand: im Meisterpersonen-Set
-liegen die 53 Bildrahmen waagerecht zwischen 6,49 und 166,3 bp und senkrecht zwischen 35,67 und
-249,45 bp. Einen gemeinsamen Rahmen zum Nachmessen gibt es nicht.
+Kartenfläche selbst. Einen Rahmen zum Nachmessen gibt es nicht.
 
 Drei Kanten sind deshalb gesetzt: links und rechts auf dem Textrahmen (3 mm bis 60 mm), unten auf
 82 mm, eine Zeile über der Kartennummer. Die **Oberkante ist gerechnet** — sie ist die Unterkante
@@ -1106,43 +1092,24 @@ zwei- oder dreizeilig sein kann.
 
 ### Die Textkarten und ihre zwei Seiten
 
-Zauber, Sonderfertigkeiten und Kulturen tragen im Flusslande-Set **auf beiden Seiten denselben
-Text**. Ausgezählt über alle 126 Karten: 39 sind beidseitig gleich, und es sind genau die, deren
-Text auf eine Seite ging. Passt er nicht, läuft er auf der Rückseite weiter — dort dann ohne
-Kopf, wie H 053 (Böser Blick) zeigt: vorne Beschreibung und Probe, hinten Reichweite,
-Wirkungsdauer und der Rest.
+Zauber, Sonderfertigkeiten und Kulturen tragen **auf beiden Seiten denselben Text**, solange er
+auf eine Seite geht. Passt er nicht, läuft er auf der Rückseite weiter — dort dann ohne Kopf:
+vorne etwa Beschreibung und Probe, hinten Reichweite, Wirkungsdauer und der Rest.
 
 Der Abstand zwischen Kopf und Text braucht dafür kein eigenes Maß. Er folgt aus dem Baukasten:
-
-| Karte | Untertitel | erste Textzeile | Abstand | gerechnet |
-|---|---:|---:|---:|---|
-| H 050, 7-bp-Satz | 46,547 bp | 61,184 bp | 14,637 | 8,4 Durchschuss + 6,237 SpaceAfter |
-| H 077, 6,5-bp-Satz | 46,831 bp | 60,867 bp | 14,036 | 7,8 Durchschuss + 6,236 SpaceAfter |
-| H 121, 6,5-bp-Satz | 58,547 bp | 72,583 bp | 14,036 | ebenso |
-
-Das ist zweimal derselbe Wert: der Durchschuss der ersten Textzeile plus der `SpaceAfter` des
-Untertitels, 6,236220472440945 bp. Beides steht im Baukasten.
+der Durchschuss der ersten Textzeile plus der `SpaceAfter` des Untertitels,
+6,236220472440945 bp.
 
 ### Die Impressumszeile
 
-Nicht im Baukasten — gemessen an H 001 des Flusslande-Sets, der Impressumskarte. Dort steht die
-Beschriftung nicht vor dem Wert, sondern darüber:
-
-| Zeile | Grundlinie | Abstand |
-|---|---:|---|
-| „Verlagsleitung“, fett | 16,21 mm | — |
-| „Markus Plötz“ | 18,96 mm | 2,75 mm, ein Zeilenschritt |
-| „Redaktion“, fett | 24,46 mm | 5,50 mm, zwei Zeilenschritte |
-
-Also: Beschriftung, Wert, eine Leerzeile. In der Klasse ist das `\dsaKartenzeile`; es benutzt den
-Durchschuss dieser Klasse (8 bp statt der 7,8 bp des Sets) und den Absatzabstand aus dem
-Baukasten.
+Nicht im Baukasten — gesetzt. Die Beschriftung steht nicht vor dem Wert, sondern darüber:
+Beschriftung, Wert, eine Leerzeile. In der Klasse ist das `\dsaKartenzeile`; es benutzt den
+Durchschuss dieser Klasse (8 bp) und den Absatzabstand aus dem Baukasten.
 
 ### Der generische Kartenrücken
 
 Nicht im Spielkarten-Baukasten — er kennt nur die eine Kartenfläche, und die ist beidseitig
-dieselbe. Die gedruckten Sets haben einen gemeinsamen Rücken, aber der steckt in keinem der
-beiden PDF; dort stehen nur die Karteninhalte.
+dieselbe.
 
 Die beiden Motive kommen deshalb aus dem **allgemeinen** Layout-Baukasten, aus Grafiken, die
 `werkzeuge/aufbereiten.py` ohnehin anlegt:
@@ -1164,7 +1131,7 @@ gerechnet; auf 63 × 88 mm deckt ein Stück davon die halbe Karte.
 
 ### Der Verbrauchsgegenstand
 
-Kein Vorbild in den Sets — die kennen den Typ nicht. Sein Aufbau steht deshalb ganz auf den Maßen
+Sein Aufbau steht ganz auf den Maßen
 des Baukastens: der Text hängt an der **unteren Rahmenkante, 76,40 mm**, und wächst nach oben; die
 Abbildung füllt, was zwischen Kopfunterkante und Text bleibt. Die untere Rahmenkante ist die
 Linie, an der das Pergament in den Zierrand übergeht, und damit die richtige für einen Text, der
@@ -1172,8 +1139,7 @@ von unten aufsteigt.
 
 ### Das Porträtmedaillon und sein Kranz
 
-Das Medaillon der Karte ist Porträt und Messingkranz in einem Bild — nachgesehen an der
-237-×-237-Grafik der Karte AMP 01a, die beides enthält. Der Kranz ist derselbe, den die Kernklasse
+Das Medaillon der Karte ist Porträt und Messingkranz. Der Kranz ist derselbe, den die Kernklasse
 in ihre Wertekästen setzt: `portraitrahmen.png` aus dem allgemeinen Baukasten, im IDML
 `Ornament_Portrait_Wertekasten.psd`.
 
@@ -1187,7 +1153,7 @@ Die Klasse zeichnet beide Lagen getrennt. Die Maße stammen aus dem Alphakanal v
 | Kranzmitte | (199,5 \| 205,5) px gegen die Dateimitte (209 \| 206,5) | −0,0227 / −0,0024 |
 | freier Innenkreis | 247 px | 20,91 mm |
 
-Daraus folgt für einen sichtbaren Kranz von 20 mm — dem Maß des Sets — eine Ringdatei von
+Daraus folgt für einen sichtbaren Kranz von 20 mm eine Ringdatei von
 20 / 0,8804 = **22,72 mm**, die um 0,0227 ihrer Breite nach rechts gerückt wird, damit der Kranz
 mittig liegt und nicht die Datei. Das Porträt darunter misst 0,7345 der Dateibreite = **16,69 mm**;
 der freie Innenkreis ist nur 13,4 mm breit, das Bild reicht also unter den Kranz und lässt keine

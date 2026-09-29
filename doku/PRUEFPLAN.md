@@ -644,16 +644,14 @@ nächsten mehrfach geprüft.
 | Stückzahl auf dem Bogen | 15 + 10 + 4 = 29 Karten | 29, auf vier Bogenpaaren (9 + 9 + 9 + 2) | `ok` |
 | **Duplex-Passung** des Druckbogens | 0 mm Versatz | 0,001 mm, schlechtester von 29 Karten über vier Bogenpaare | `ok` |
 
-### Wo die Klasse vom Set abweicht
+### Was beim Setzen auffiel
 
-* Die **Spaltenteilung der Wertetabelle** ist von 19,00 auf 21,48 mm umgerechnet, weil die Tabelle
-  dieser Klasse 52 statt 46 mm breit ist. Mit dem Wert des Sets stößt „zusätzliche Abzüge“ auf der
-  Rüstungskarte in die Wertespalte — Gentium Basic läuft breiter als das Times des Sets.
-* Die **Wertetabelle setzt kleiner als der Fließtext** (Beschriftung 6 bp fett, Wert 6,5 bp). Das
-  sind die Grade des Sets; die Tabelle steht nicht im Baukasten, also gilt für sie durchgehend das
-  Set.
-* Der **Zeilenschritt des Attributrasters** ist der Durchschuss dieser Klasse (8 bp), nicht die
-  7,8 bp des Sets — damit das Raster auf denselben Zeilen sitzt wie der Fließtext darunter.
+* Die **Spaltenteilung der Wertetabelle** steht auf 21,48 mm. Mit 19 mm stößt „zusätzliche
+  Abzüge“ auf der Rüstungskarte in die Wertespalte.
+* Die **Wertetabelle setzt kleiner als der Fließtext** (Beschriftung 6 bp fett, Wert 6,5 bp); die
+  Tabelle steht nicht im Baukasten.
+* Der **Zeilenschritt des Attributrasters** ist der Durchschuss dieser Klasse (8 bp) — damit das
+  Raster auf denselben Zeilen sitzt wie der Fließtext darunter.
 * **Blocksatz auf 52 mm** braucht andere Einstellungen als die 80,5 mm der Kernklasse: `tolerance`
   3000 und `emergencystretch` 2em. Das sind die mildesten Werte, mit denen keine Zeile mehr
   überläuft; ab dort ändert sich nichts mehr, höhere kaufen nur löchrigere Zeilen ein.

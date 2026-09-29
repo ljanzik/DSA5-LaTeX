@@ -11,7 +11,7 @@
 Wofuer: auf einer Spielkarte sitzt die Figur direkt auf dem Pergament. Ein
 Bild mit eigenem Hintergrund steht statt dessen als helles Rechteck darauf,
 und man sieht der Karte an, dass da etwas hineinkopiert wurde. Die
-offiziellen Sets zeigen ausschliesslich freigestellte Figuren.
+freigestellte Figur wirkt, als stuende sie auf der Karte.
 
 Anders als werkzeuge/freistellen.py, das den Alphakanal einer VORLAGE
 uebertraegt (das gerissene Pergamentblatt etwa), sucht dieses Werkzeug den

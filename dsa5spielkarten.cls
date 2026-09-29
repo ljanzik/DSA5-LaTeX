@@ -34,11 +34,8 @@
 %%% und Pixelmasse beide belastbar und sagen dasselbe.
 %%%
 %%% Was der Baukasten NICHT hergibt — Wertetabelle, Attributraster,
-%%% Medaillon, Kartennummer, Illustrationsnachweis — ist an den beiden
-%%% veroeffentlichten Kartensets gemessen: „Aventurische Meisterpersonen"
-%%% (2017, 53 Karten) und „Flusslande" (2018, 126 Karten). Beide liegen
-%%% nicht in diesem Projekt; sie dienten nur zum Ausmessen. Wo ein Mass von
-%%% dort kommt, steht das Set daneben.
+%%% Medaillon, Kartennummer, Illustrationsnachweis — ist gesetzt, nicht
+%%% aus dem Baukasten abgeleitet. Das steht jeweils daneben.
 %%%
 %%% Zur Einheit: alle Masse aus dem Baukasten sind bp, PostScript-Punkte zu
 %%% 1/72 Zoll — so rechnet InDesign. Ein TeX-Punkt ist 0,4 Prozent kleiner.
@@ -151,11 +148,8 @@
 % LetterSpace in Prozent, also LetterSpace=1.0. Es gilt hier fuer beide
 % Familien, weil der Baukasten es fuer alle drei Formate setzt.
 %
-% Die beiden veroeffentlichten Sets sind in Times New Roman gesetzt, nicht
-% in Gentium Basic. Times liegt weder im Baukasten noch im Kartenpaket und
-% darf hier nicht mitgeliefert werden; gesetzt wird deshalb in der Schrift,
-% die der Kartenbaukasten selbst vorgibt. Das ist kein Kompromiss, sondern
-% der Vorlage naeher: der Baukasten ist die Vorlage, die Sets sind Produkte.
+% Gesetzt wird in der Schrift, die der Kartenbaukasten selbst vorgibt,
+% Gentium Basic. Der Baukasten ist die Vorlage.
 
 \defaultfontfeatures{Ligatures=TeX}
 
@@ -216,16 +210,15 @@
 %
 % Der Spielkarten-Baukasten hat keine eigene Palette: seine Graphic.xml
 % enthaelt nur die Prozessfarben, die InDesign in jedem neuen Dokument
-% anlegt, und der Text steht in Schwarz. Die beiden Farben unten stammen
-% deshalb aus den veroeffentlichten Sets.
+% anlegt, und der Text steht in Schwarz. Die beiden Farben unten sind
+% deshalb gesetzt.
 %
-%   dsakartenschrift  #231F20 — der Textton beider Sets. Nicht reines
+%   dsakartenschrift  #231F20 — der Textton. Nicht reines
 %                     Schwarz; so exportiert InDesign CMYK 0/0/0/100 mit dem
 %                     Standardprofil, und so sieht der Leser es. Derselbe
 %                     Wert wie im Heft.
-%   dsakartenzeile    #DDCEC9 — der Wechselton der Wertetabelle, an der
-%                     Fuellung im Flusslande-Set gemessen (PDF-Fuellfarbe
-%                     0,866 / 0,809 / 0,7865).
+%   dsakartenzeile    #DDCEC9 — der Wechselton der Wertetabelle, ein
+%                     warmes Hellgrau, das zum Pergament passt.
 \definecolor{dsakartenschrift}{HTML}{231F20}
 \definecolor{dsakartenzeile}{HTML}{DDCEC9}
 
@@ -326,10 +319,8 @@
 \newlength{\dsakartenerstezeile} \setlength{\dsakartenerstezeile}{17.657mm}
 
 % Die erste Grundlinie der Rueckseite. Nicht im Baukasten — er zeigt nur
-% eine Anordnung, und die beginnt mit der Ueberschrift. Gemessen am
-% Flusslande-Set, wo jede Rueckseite ohne Tabelle mit Fliesstext beginnt:
-% 41,924 bp = 14,790 mm, auf 33 von 126 Karten genau so und auf den
-% uebrigen nur dort hoeher, wo der Satz zu lang wurde.
+% eine Anordnung, und die beginnt mit der Ueberschrift. Gesetzt auf
+% 41,924 bp = 14,790 mm.
 \newlength{\dsakartenrueckzeile} \setlength{\dsakartenrueckzeile}{14.790mm}
 
 %%% ==================================================================
@@ -500,11 +491,8 @@
 
 % Ein Absatz mit hervorgehobenem Stichwort und haengendem Einzug.
 %
-% Beide Sets setzen ihre Stichwortabsaetze so, aber nicht gleich:
-% „Meisterpersonen" kursiv („Charakterzuege:"), „Flusslande" fett
-% („Waffenvorteil:"). Hier gilt fett, das juengere Set. Der haengende
-% Einzug ist in beiden 2,5 mm — im Meisterpersonen-Set von 17,008 bp auf
-% 24,093 bp, also 7,085 bp.
+% Das Stichwort steht fett („Waffenvorteil:"). Der haengende Einzug ist
+% 2,5 mm = 7,085 bp.
 \newlength{\dsakartenhaengend} \setlength{\dsakartenhaengend}{2.50mm}
 \newcommand{\dsaKarteStich}[2]{%
   \dsa@absatzluft
@@ -527,8 +515,7 @@
 %
 % Der Zeilenabstand 12 bp bei 14 bp Grad ist enger als der Grad. Das ist
 % Absicht und fuer zweizeilige Namen gedacht: Versalien haben keine
-% Unterlaengen, die Zeilen stossen nicht zusammen. Beide Sets setzen ihre
-% zweizeiligen Namen genau so, gemessen 11,998 bp.
+% Unterlaengen, die Zeilen stossen nicht zusammen.
 \newlength{\dsakartenuntertitelluft}
 \setlength{\dsakartenuntertitelluft}{6.236220bp}
 
@@ -548,31 +535,23 @@
 %%% 13  Die Wertetabelle
 %%% ==================================================================
 %
-% Nicht im Baukasten — gemessen am Flusslande-Set, dort auf jeder Waffen-
-% und Ruestungskarte. Die Fuellrechtecke liegen im PDF offen:
+% Nicht im Baukasten — gesetzt:
 %
 %   Zeilenhoehe   11,339 bp = 4,00 mm, ausnahmslos
 %   Kopfzeile     ebenso 4,00 mm
 %   Fuellung      jede zweite Zeile, beginnend mit der Kopfzeile
-%   Spalten       Trennung bei 77,953 bp, also 19,00 mm hinter der linken
-%                 Tabellenkante bei 24,094 bp
+%   Spalten       Trennung 21,48 mm hinter der linken Tabellenkante
 %
-% Uebernommen sind Zeilenhoehe und Wechselton unveraendert. Lage und Breite
-% richten sich nach dem Satzspiegel des Baukastens (52 mm ab 5,5 mm) statt
-% nach den 46 mm des Sets, damit Tabelle und Fliesstext auf derselben Kante
-% stehen.
+% Lage und Breite richten sich nach dem Satzspiegel des Baukastens (52 mm
+% ab 5,5 mm), damit Tabelle und Fliesstext auf derselben Kante stehen.
 %
-% Die Spaltenteilung wird deshalb nicht uebernommen, sondern mitskaliert:
-% 19,00 von 46,00 mm sind 41,3 Prozent, auf 52,00 mm also 21,48 mm. Die
-% 19 mm des Sets stehen auf dieser Breite zu eng — „zusaetzliche Abzuege"
-% stiess auf der Ruestungskarte in die Wertespalte, weil Gentium Basic
-% breiter laeuft als das Times des Sets.
+% Mit einer Beschriftungsspalte von 19 mm stiess „zusaetzliche Abzuege"
+% auf der Ruestungskarte in die Wertespalte; 21,48 mm lassen es frei.
 \newlength{\dsakartenzeilenhoehe} \setlength{\dsakartenzeilenhoehe}{4mm}
 \newlength{\dsakartenwertspalte}  \setlength{\dsakartenwertspalte}{21.48mm}
 
-% Oberkante der Tabelle: die Oberkante des Textrahmens. Das Set setzt sie
-% auf 13,20 mm, der Baukastenrahmen beginnt bei 12,20 mm; hier gilt der
-% Baukasten, damit Tabelle und Fliesstext denselben Rahmen benutzen.
+% Oberkante der Tabelle: die Oberkante des Textrahmens, 12,20 mm, damit
+% Tabelle und Fliesstext denselben Rahmen benutzen.
 \newlength{\dsakartentabelleoben}
 \setlength{\dsakartentabelleoben}{\dsakartenrahmenoben}
 
@@ -585,15 +564,12 @@
 \newcommand{\dsaKartenwert}[2]{\listgadd{\dsa@werteliste}{{#1}{#2}}}
 \newcommand{\dsaKartenwertkopf}[1]{\renewcommand{\dsa@wertekopf}{#1}}
 
-% Die Tabelle setzt kleiner als der Fliesstext, und zwar in den Graden des
-% Sets: Beschriftung 6 bp fett, Wert 6,5 bp. Der Baukasten sagt dazu nichts
-% — er kennt die Tabelle nicht —, also gilt hier durchgehend das Set, aus
-% dem auch Zeilenhoehe, Wechselton und Spaltenteilung stammen.
+% Die Tabelle setzt kleiner als der Fliesstext: Beschriftung 6 bp fett,
+% Wert 6,5 bp. Der Baukasten sagt dazu nichts — er kennt die Tabelle
+% nicht.
 %
 % Es ist ausserdem das, was passt: mit den 7 bp des Fliesstexts stiess
-% „zusaetzliche Abzuege" auf der Ruestungskarte in die Wertespalte. Gentium
-% Basic laeuft breiter als das Times des Sets, und 19 mm Beschriftungsspalte
-% sind auf diesen Grad gerechnet.
+% „zusaetzliche Abzuege" auf der Ruestungskarte in die Wertespalte.
 \newcommand{\dsakartentabellenschrift}{\fontsize{6bp}{7bp}\selectfont}
 \newcommand{\dsakartenwertschrift}{\fontsize{6.5bp}{7.8bp}\selectfont}
 
@@ -609,9 +585,8 @@
                   +(\dsakartensatzbreite,-\dsakartenzeilenhoehe)$);
   \fi
   % Beschriftung und Wert stehen senkrecht mittig in der 4 mm hohen Zeile.
-  % Das Set setzt die Grundlinie 2,72 mm unter die Zeilenoberkante; bei
-  % 6,5 bp Schrift ist das die optische Mitte, und anchor=west stellt sie
-  % her, ohne den Wert an einen fremden Schriftgrad zu binden.
+  % anchor=west stellt die optische Mitte her, ohne den Wert an einen
+  % fremden Schriftgrad zu binden.
   \node[anchor=west, inner sep=0, outer sep=0]
     at ($(\dsakartensatzlinks,\dsa@wy)+(1mm,-0.5\dsakartenzeilenhoehe)$)
     {\color{dsakartenschrift}\dsakartentabellenschrift\bfseries #1};
@@ -635,19 +610,12 @@
 %%% 14  Das Attributraster der Monsterkarte
 %%% ==================================================================
 %
-% Nicht im Baukasten — gemessen am Flusslande-Set, dort auf jeder
-% Kreaturenkarte. Vier Spalten mit den Tabulatoren bei 17,0 / 53,0 / 89,0 /
-% 125,0 bp, also Schritt 36 bp = 12,70 mm, Zeilenschritt 7,8 bp (der
-% Durchschuss ihres 6,5-bp-Satzes).
+% Nicht im Baukasten — gesetzt. Vier Spalten im Schritt 36 bp = 12,70 mm.
+% Der Zeilenschritt ist der Durchschuss dieser Klasse (8 bp, Baukasten),
+% damit das Raster auf denselben Zeilen sitzt wie der Fliesstext darunter.
 %
-% Uebernommen ist der Spaltenschritt. Der Zeilenschritt ist hier der
-% Durchschuss dieser Klasse (8 bp, Baukasten), damit das Raster auf
-% denselben Zeilen sitzt wie der Fliesstext darunter.
-%
-% Der Abstand vom Kuerzel zum Wert steht im Set auf einem Tabulator, den
-% die Karten zwischen 2,5 und 4,3 mm ansetzen — je nach Breite des
-% Kuerzels. Gesetzt sind hier 4,5 mm: das laesst auch „LeP" und „AsP"
-% freien Lauf.
+% Der Abstand vom Kuerzel zum Wert ist 4,5 mm: das laesst auch „LeP" und
+% „AsP" freien Lauf.
 \newlength{\dsakartenspaltenschritt} \setlength{\dsakartenspaltenschritt}{12.70mm}
 \newlength{\dsakartenwertversatz}    \setlength{\dsakartenwertversatz}{4.50mm}
 
@@ -710,25 +678,22 @@
   \expandafter\endgroup\expandafter\ifstrempty\expandafter{\dsa@feld}{}{#2}}
 
 %
-% Alle drei sind an den veroeffentlichten Sets gemessen.
+% Alle drei sind gesetzt, der Baukasten kennt sie nicht.
 
 % --- Die Kartennummer --------------------------------------------------
 %
-% Weiss auf dem dunklen Rand unten rechts. Flusslande-Set, auf allen 252
-% Seiten gleich: Grundlinie 241,206 bp = 85,09 mm, rechtsbuendig auf
-% 170,160 bp = 60,03 mm — das ist die rechte Kante des Textrahmens
-% (60,00 mm), auf drei Hundertstel genau. Grad 6 bp, fett.
+% Weiss auf dem dunklen Rand unten rechts: Grundlinie 85,09 mm,
+% rechtsbuendig auf der rechten Kante des Textrahmens (60,00 mm). Grad
+% 6 bp, fett.
 %
-% Das Set setzt sie weiss MIT duenner dunkler Kontur: das PDF legt neben
-% den weissen Text vier Konturpfade in #231F20. Ohne die Kontur verschwaende
+% Weiss MIT duenner dunkler Kontur in #231F20. Ohne die Kontur verschwaende
 % die Nummer dort, wo der Rand hell ausblitzt.
 \newlength{\dsakartennummeroben}   \setlength{\dsakartennummeroben}{85.09mm}
 \newlength{\dsakartennummerrechts} \setlength{\dsakartennummerrechts}{60.00mm}
 
 % Die Kontur ohne weiteres Paket: derselbe Text achtmal dunkel um ein
 % Viertel bp versetzt, darueber der weisse. contour, das dsa5latex.cls
-% laedt, braucht es dafuer nicht, und ein Viertel bp ist die Haarlinie,
-% die das Set zeichnet.
+% laedt, braucht es dafuer nicht, und ein Viertel bp ist eine Haarlinie.
 \newlength{\dsa@konturweite} \setlength{\dsa@konturweite}{0.25bp}
 \newcommand{\dsa@konturversatz}[3]{%
   \rlap{\raisebox{#2\dsa@konturweite}{%
@@ -750,18 +715,16 @@
 
 % --- Das Portraetmedaillon ---------------------------------------------
 %
-% Unten links. Im Meisterpersonen-Set 20 x 20 mm mit der oberen linken Ecke
-% bei (2,50 | 65,90) mm, im Flusslande-Set 14,5 x 14,5 mm buendig in der
-% Ecke. Uebernommen ist das erste: es haelt Abstand zur Kartenkante, und
-% den braucht eine geschnittene Karte.
+% Unten links, 20 x 20 mm mit der oberen linken Ecke bei (2,50 | 65,90) mm.
+% Es haelt Abstand zur Kartenkante, und den braucht eine geschnittene
+% Karte.
 \newlength{\dsakartenmedaillongroesse}
 \setlength{\dsakartenmedaillongroesse}{20mm}
 \newlength{\dsakartenmedaillonlinks} \setlength{\dsakartenmedaillonlinks}{2.50mm}
 \newlength{\dsakartenmedaillonoben}  \setlength{\dsakartenmedaillonoben}{65.90mm}
 
-% Das Medaillon des Sets ist kein blosses Portraet, sondern Portraet UND
-% Messingkranz in einem Bild -- nachgesehen an der 237-x-237-Grafik der
-% Karte AMP 01a, die beides enthaelt. Der Kranz ist derselbe, den die
+% Das Medaillon ist kein blosses Portraet, sondern Portraet UND
+% Messingkranz. Der Kranz ist derselbe, den die
 % Kernklasse in ihre Wertekaesten setzt: portraitrahmen.png aus dem
 % allgemeinen Baukasten, im IDML als Ornament_Portrait_Wertekasten.psd.
 %
@@ -895,7 +858,8 @@
       {\includegraphics[width=\dsa@medring]{\dsagrafik{\dsa@kartenring}}};}}
 
 % Ein fertig montiertes Medaillon -- Portraet und Kranz schon in einem Bild,
-% wie das Set es liefert. Dann zeichnet die Klasse keinen zweiten Kranz.
+% wie man es fertig montiert bekommt. Dann zeichnet die Klasse keinen
+% zweiten Kranz.
 \newcommand{\dsa@medaillonfertig}[1]{%
   \dsa@wenngesetzt{#1}{%
     \dsa@medmasse
@@ -913,9 +877,8 @@
 
 % --- Der Illustrationsnachweis -----------------------------------------
 %
-% Meisterpersonen-Set: 5,5 bp auf 6,6 bp, rechte Kante 154,777 bp =
-% 54,60 mm, letzte Grundlinie 209,608 bp = 73,95 mm. Zwei Zeilen, die
-% zweite kursiv.
+% 5,5 bp auf 6,6 bp, rechte Kante 54,60 mm, letzte Grundlinie 73,95 mm.
+% Zwei Zeilen, die zweite kursiv.
 \newlength{\dsakartennachweisrechts} \setlength{\dsakartennachweisrechts}{54.60mm}
 \newlength{\dsakartennachweisoben}   \setlength{\dsakartennachweisoben}{73.95mm}
 \newcommand{\dsa@nachweis}[1]{%
@@ -928,10 +891,8 @@
 % --- Das Kartenbild der Vorderseite ------------------------------------
 %
 % Der Baukasten sagt dazu nichts: sein Bildrahmen ist die Kartenflaeche
-% selbst, eine Figur ist darin nicht vorgesehen. Beide Sets setzen sie von
-% Hand — im Meisterpersonen-Set liegen die 53 Bildrahmen waagerecht
-% zwischen 6,49 und 166,3 bp und senkrecht zwischen 35,67 und 249,45 bp.
-% Einen gemeinsamen Rahmen zum Nachmessen gibt es also nicht.
+% selbst, eine Figur ist darin nicht vorgesehen. Einen Rahmen zum
+% Nachmessen gibt es also nicht.
 %
 % OFFEN: Das Bildfeld ist deshalb gesetzt, nicht gemessen — aber nur an
 % drei seiner vier Kanten. Links und rechts steht es auf dem Textrahmen,
@@ -1208,10 +1169,8 @@
 % vertraegt also Absaetze im Kartentext.
 % Ab \dsaKartenfortsetzung landet alles Weitere in einem zweiten Fluss.
 % Gebraucht wird der nur von den drei Textkarten (Zauber, Sonderfertigkeit,
-% Kultur): sie tragen bei den Sets auf BEIDEN Seiten denselben Text, und
-% erst wenn er nicht auf eine Seite passt, laeuft er auf der Rueckseite
-% weiter. Von 126 Flusslande-Karten sind 39 beidseitig gleich — genau die,
-% deren Text auf eine Seite ging.
+% Kultur): sie tragen auf BEIDEN Seiten denselben Text, und erst wenn er
+% nicht auf eine Seite passt, laeuft er auf der Rueckseite weiter.
 \newif\ifdsa@fortsetzung \dsa@fortsetzungfalse
 \newcommand{\dsa@f@fort}{}
 \newcommand{\dsaKartenfortsetzung}{\dsa@fortsetzungtrue}
@@ -1224,10 +1183,9 @@
 \newcommand{\dsaKartenstich}[2]{\dsa@flussanfuegen{\dsaKarteStich{#1}{#2}}}
 
 % Beschriftung UEBER dem Wert statt davor, dazwischen kein Absatzabstand,
-% danach eine Leerzeile. So setzt das Flusslande-Set seine Impressumskarte
-% (H 001): „Verlagsleitung" fett auf 16,21 mm, der Name darunter auf
-% 18,96 mm — 2,75 mm, also ein Zeilenschritt —, und die naechste
-% Beschriftung erst auf 24,46 mm, also zwei Zeilenschritte weiter.
+% danach eine Leerzeile: die Beschriftung fett, der Name einen
+% Zeilenschritt darunter, und die naechste Beschriftung erst zwei
+% Zeilenschritte weiter.
 %
 % Fuer den Stichwortabsatz mit haengendem Einzug gibt es \dsaKartenstich;
 % die beiden sind nicht dasselbe und sehen auch nicht so aus.
@@ -1267,8 +1225,7 @@
 %
 % Bei allen fuenf Typen dieselbe: Flaeche, Bild, Name, Untertitel, Nummer.
 % Sie unterscheiden sich nur im Untertitel — beim NSC ist er die
-% Kurzbezeichnung, sonst die Gattung („WAFFE", „GEGENSTAND", …), wie beide
-% Sets es zeigen.
+% Kurzbezeichnung, sonst die Gattung („WAFFE", „GEGENSTAND", …).
 % Der Kopf wird zuerst in eine Box gesetzt, damit seine Tiefe bekannt ist,
 % bevor das Bild platziert wird: die Oberkante des Bildfelds ist die
 % Unterkante des Kopfs (siehe \dsa@kartenbild). Gezeichnet wird die Box
@@ -1293,7 +1250,7 @@
 
 % --- NSC ---------------------------------------------------------------
 %
-% Vorbild: „Aventurische Meisterpersonen". Vorne Figur, Name,
+% Vorne Figur, Name,
 % Kurzbezeichnung; hinten Kurzcharakteristik, Hintergrund, Stichwoerter,
 % Medaillon, Illustrationsnachweis.
 \newenvironment{dsaKarteNSC}{%
@@ -1309,10 +1266,9 @@
 
 % --- Gegenstand --------------------------------------------------------
 %
-% Vorbild: „Flusslande". Vorne der Gegenstand freigestellt, Name, „GEGEN-
-% STAND"; hinten nur Stichwortabsaetze — Beschreibung, Wirkung, Kosten,
-% Preis. Keine Tabelle: gemessen an H 033 beginnt der Satz direkt auf der
-% ersten Rueckseitengrundlinie.
+% Vorne der Gegenstand freigestellt, Name, „GEGENSTAND"; hinten nur
+% Stichwortabsaetze — Beschreibung, Wirkung, Kosten, Preis. Keine Tabelle:
+% der Satz beginnt direkt auf der ersten Rueckseitengrundlinie.
 \newcommand{\dsa@textkarte}{%
   \dsa@karteabliefern
     {\dsa@vorderseite}%
@@ -1329,7 +1285,7 @@
 
 % --- Waffe und Ruestung ------------------------------------------------
 %
-% Vorbild: „Flusslande". Vorne der Gegenstand freigestellt, Name, Gattung;
+% Vorne der Gegenstand freigestellt, Name, Gattung;
 % hinten die Wertetabelle und darunter Vorteil und Nachteil als
 % Stichwortabsaetze.
 %
@@ -1341,9 +1297,7 @@
     {\dsa@vorderseite}%
     {\dsa@kartenblatt{%
        \dsa@wertetabelle
-       % Der Text beginnt eine Tabellenzeile unter der Tabelle. Gemessen
-       % im Flusslande-Set: Tabellenunterkante 150,804 bp, erste Textzeile
-       % 162,402 bp — 11,6 bp, also eine Zeilenhoehe.
+       % Der Text beginnt eine Tabellenzeile unter der Tabelle.
        \global\dsa@ersterabsatztrue
        \dsa@kartenfluss{\dimexpr\dsa@wertunten
                         +\dsakartenzeilenhoehe\relax}{\dsa@f@rueck}%
@@ -1363,8 +1317,7 @@
 
 % --- Monster -----------------------------------------------------------
 %
-% Vorbild: „Flusslande", die Kreaturenkarten. Vorne die Kreatur
-% freigestellt, Name, Gattung — die steht dort ausgeschrieben
+% Vorne die Kreatur freigestellt, Name, Gattung — die steht ausgeschrieben
 % („KREATUR, NICHT HUMANOID", „TIER, NICHT HUMANOID", „DRACHE, NICHT
 % HUMANOID"), deshalb ist der Untertitel hier nicht vorbelegt, sondern
 % wird gesetzt. Hinten das Attributraster und darunter die Stichwoerter,
@@ -1377,8 +1330,6 @@
     {\dsa@kartenblatt{%
        \dsa@attrraster
        % Der Text beginnt eine Zeile unter der letzten Rasterzeile.
-       % Gemessen an H 101: letzte Rasterzeile 80,924 bp, erste Textzeile
-       % 88,724 bp — 7,8 bp, also genau ein Zeilenschritt.
        \global\dsa@ersterabsatztrue
        \dsa@kartenfluss{\dimexpr\dsa@attrunten
                         +\dsakartenzeilenschritt\relax}{\dsa@f@rueck}%
@@ -1387,13 +1338,10 @@
 
 % --- Textkarten: Zauber, Sonderfertigkeit, Kultur ----------------------
 %
-% Vorbild: „Flusslande". Diese drei haben keine Abbildung. Kopf und Text
-% stehen in EINEM Fluss — der Abstand dazwischen kommt aus dem Baukasten
-% selbst, aus dem SpaceAfter des Untertitels (6,23622 bp). Am Set
-% nachgerechnet: die erste Textzeile sitzt 14,036 bp unter dem Untertitel,
-% und das sind 7,8 bp Durchschuss plus eben jene 6,236 bp. Bei der einen
-% Karte mit 7-bp-Satz sind es 14,637 bp — 8,4 plus 6,237. Es braucht hier
-% also kein eigenes Mass, der Kopf bringt seinen Abstand mit.
+% Diese drei haben keine Abbildung. Kopf und Text stehen in EINEM Fluss —
+% der Abstand dazwischen kommt aus dem Baukasten selbst, aus dem
+% SpaceAfter des Untertitels (6,23622 bp). Es braucht hier also kein
+% eigenes Mass, der Kopf bringt seinen Abstand mit.
 \newcommand{\dsa@kopftextseite}[1]{%
   \dsa@kartenblatt{%
     \global\dsa@ersterabsatztrue
@@ -1403,9 +1351,8 @@
 
 % Die Rueckseite einer Textkarte: ohne \dsaKartenfortsetzung eine Kopie der
 % Vorderseite, sonst die Fortsetzung allein — ohne Kopf, beginnend auf der
-% ersten Rueckseitengrundlinie. Beides ist am Set abgelesen: H 067 traegt
-% beidseitig dasselbe, H 053 vorne Beschreibung und Probe, hinten
-% Reichweite, Wirkungsdauer und den Rest.
+% ersten Rueckseitengrundlinie — etwa vorne Beschreibung und Probe,
+% hinten Reichweite, Wirkungsdauer und den Rest.
 \newcommand{\dsa@textkartehinten}{%
   \ifdefempty{\dsa@f@fort}%
     {\dsa@kopftextseite{\dsa@f@rueck}}%
@@ -1421,7 +1368,7 @@
 
 % Die Gattung steht bei allen dreien auf der Karte und wechselt innerhalb
 % des Typs — „ZAUBERSPRUCH", „ZAUBERTRICK", „RITUAL", „LITURGIE",
-% „ZEREMONIE", „DOLCHRITUAL" sind im Flusslande-Set alle derselbe Aufbau.
+% „ZEREMONIE", „DOLCHRITUAL" sind alle derselbe Aufbau.
 % Deshalb ist der Untertitel hier nur vorbelegt, nicht festgelegt.
 \newenvironment{dsaKarteZauber}{%
   \dsa@felderleeren
@@ -1448,9 +1395,7 @@
 % eine Rueckseite, sonst kommt aus dem Duplexdruck ein leeres Blatt.
 %
 % Der Spielkarten-Baukasten liefert dafuer nichts: er kennt nur die eine
-% Kartenflaeche, und die ist beidseitig dieselbe. Die gedruckten Sets haben
-% einen gemeinsamen Ruecken, aber der steckt in keinem der beiden PDF --
-% dort stehen nur die Karteninhalte.
+% Kartenflaeche, und die ist beidseitig dieselbe.
 %
 % Drei Motive kommen deshalb aus dem allgemeinen Layout-Baukasten, aus
 % Grafiken, die werkzeuge/aufbereiten.py ohnehin anlegt:
@@ -1598,12 +1543,10 @@
 % --- Die neutrale Textkarte --------------------------------------------
 %
 % Kopf und Text, sonst nichts: kein Bild, keine Tabelle, kein Raster. Das
-% ist die Bauform der Karten, die ein Set ueber sich selbst setzt — die
-% Impressumskarte des Flusslande-Sets (H 001) und die Regelkarte des
-% Meisterpersonen-Sets (AMP, Seite 3 und 4). Beide tragen auf Vorder- und
-% Rueckseite dasselbe.
+% ist die Bauform der Karten, die ein Kartenset ueber sich selbst setzt —
+% Impressum und Regeln. Sie tragen auf Vorder- und Rueckseite dasselbe.
 %
-% Sie ist zugleich der Auffangtyp: was im Set eine Gattungszeile traegt,
+% Sie ist zugleich der Auffangtyp: was eine Gattungszeile traegt,
 % die keiner der anderen Umgebungen entspricht, laesst sich damit setzen.
 \newenvironment{dsaKarteText}{%
   \dsa@felderleeren\ignorespaces}{%
