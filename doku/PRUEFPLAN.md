@@ -708,6 +708,7 @@ bleibt. Dazu ein Klon ohne `grafiken/` (bis auf `titelbild.jpg`) und ohne `schri
 | Platzhalter angelegt | 92, davon 91 aus der Sollmaßliste und einer für die Battlemap; `pruefen.py` meldet 91 von 91 in Ordnung |
 | Alle acht Beispiele bauen | `beispiel` 22 Seiten wie mit echtem Material, `kaesten` 15, `rest` 5, `aufsteller` 4, `raster` 2, `battlemap`, `titel`, `titelgrafik` je 1 |
 | `logpruefen.py` über alle acht Logs | in Ordnung |
+| `seitenfarbe.py karmin` auf den Platzhalterseiten | acht Fassungen, alle mit Platzhalterkennung, also von `platzhalter.py --weg` erfasst; aus echten Seiten ohne Kennung |
 | Grundlinien `raster.pdf`, Ersatz gegen echtes Material | alle 51 Zeilen auf 0,01 mm gleich |
 | Fließtext 10 bp in `beispiel.pdf` neben dem Raster | nur, was auch mit echtem Material danebenliegt (Impressum mit eigenem Maß), dazu je Bildrahmen der Dateiname, den `entwurf` hineinschreibt |
 | Schutz gegen gemischten Satz | `platzhalter.py` bricht im Arbeitsklon mit echtem Material ab („91 Dateien aus dem Baukasten“) |

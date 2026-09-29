@@ -25,13 +25,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Pillow
+      - name: Pillow und numpy
         run: |
           apt-get update -qq
-          apt-get install -y -qq python3-pil
+          apt-get install -y -qq python3-pil python3-numpy
 
       - name: Platzhaltergrafiken
         run: python3 werkzeuge/platzhalter.py
+
+      # beispiel.tex setzt ab Seite 14 \dsaSeitenfarbe{karmin}. Ohne die
+      # gefaerbte Fassung warnt die Klasse, und logpruefen.py zaehlt jede
+      # Klassenwarnung als Fehler. Gefaerbt wird der Platzhalter selbst.
+      - name: Seitenfarbe des Beispiels
+        run: python3 werkzeuge/seitenfarbe.py karmin
 
       - name: Beispiele bauen
         working-directory: beispiel

@@ -226,6 +226,7 @@ ausmisst. Zwei Teile ersetzen beides:
 
 ```sh
 python3 werkzeuge/platzhalter.py      # graue Platzhalter in den Sollmaßen nach grafiken/
+python3 werkzeuge/seitenfarbe.py karmin   # die Seitenfarbe, die beispiel.tex benutzt
 cd beispiel
 DSA5_OPTIONEN=ersatz latexmk beispiel.tex
 ```
@@ -237,7 +238,8 @@ In der PowerShell: `$env:DSA5_OPTIONEN = "ersatz"; latexmk beispiel.tex`.
   Seitenhintergründe stehen damit so groß da wie mit dem echten Material. Eigene Bilder der
   Beispiele, etwa die Battlemap, bekommen eine feste Größe. Geschrieben wird nur, was fehlt.
   Liegt schon Baukastenmaterial in `grafiken/`, bricht das Werkzeug ab. `--weg` löscht die
-  Platzhalter wieder, und nur sie.
+  Platzhalter wieder, und nur sie — dazu die Farbfassungen, die `seitenfarbe.py` aus
+  Platzhaltern gemacht hat; sie tragen dieselbe Kennung.
 * Die Klassenoption `ersatz` nimmt statt Gentium Basic und Andalus die freie Gentium aus dem
   TeX-Live-Paket `gentium-sil`. Die `latexmkrc` reicht den Inhalt von `DSA5_OPTIONEN` als
   Klassenoptionen weiter, ohne die `.tex` zu ändern; mehrere mit Komma, etwa `ersatz,entwurf`.

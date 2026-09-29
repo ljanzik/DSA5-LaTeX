@@ -41,6 +41,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from kartengrafik import FARBEN, HERKUNFT, einfaerben, farbe_lesen  # noqa: E402
+from platzhalter import KENNUNG, ist_platzhalter  # noqa: E402
 
 ZIEL_GRAFIK = 'grafiken'
 VARIANTEN = range(4)
@@ -109,13 +110,18 @@ def main():
             if q is None:
                 fehlt.append(stamm)
                 continue
+            # Ist die Quelle ein Platzhalter, traegt die gefaerbte Fassung
+            # dieselbe Kennung. Sonst liesse platzhalter.py --weg sie liegen,
+            # und die naechste Pruefung dort hielte sie fuer echtes Material.
+            kennung = ist_platzhalter(q, Image)
             bild = Image.open(q).convert('RGB')
             for name, grad, saet in angaben:
                 neu = einfaerben(bild, grad, saet).convert('RGB')
                 dateiname = '%s-%s.jpg' % (stamm, name)
+                extra = {'comment': KENNUNG.encode('ascii')} if kennung else {}
                 neu.save(os.path.join(zg, dateiname), 'JPEG',
                          quality=JPEG_QUALITAET, optimize=True,
-                         progressive=False, subsampling=0)
+                         progressive=False, subsampling=0, **extra)
                 print('%-28s (%3d Grad, %.2f)' % (dateiname, grad, saet))
 
     if fehlt:
