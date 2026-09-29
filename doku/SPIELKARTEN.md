@@ -513,7 +513,7 @@ schwarz, weil die Zielfarbe nur den Farbton beiträgt und die Helligkeit aus dem
 | `gruen` | 120° | 0,45 | Angebot | sattes Moosgrün |
 | `violett` | 280° | 0,40 | Angebot | gedämpftes Purpur |
 | `bernstein` | 30° | 0,90 | Angebot | warmes Braun |
-| `tuerkis` | 175° | 0,45 | Angebot | graugrünes Petrol |
+| `petrol` | 175° | 0,45 | Angebot | dunkles, graugrünes Petrol |
 
 `blau` und `rot` sind keine Erfindungen, sondern am Schuppenband der beiden veröffentlichten Sets
 gemessen. Die vier übrigen sind Angebote in derselben Machart.

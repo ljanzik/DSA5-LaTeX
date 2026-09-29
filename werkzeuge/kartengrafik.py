@@ -118,7 +118,7 @@ FARBEN = {
     'gruen':     (120, 0.45),
     'violett':   (280, 0.40),
     'bernstein': (30, 0.90),
-    'tuerkis':   (175, 0.45),
+    'petrol':    (175, 0.45),
 }
 
 # Woher jeder Wert kommt, fuer die Ausgabe von --farben. Wer eine Farbe
@@ -129,7 +129,7 @@ HERKUNFT = {
     'gruen':     'Angebot',
     'violett':   'Angebot',
     'bernstein': 'Angebot',
-    'tuerkis':   'Angebot',
+    'petrol':    'Angebot, vorher tuerkis genannt',
 }
 
 # Die Schwellen der Auswahl, je ein Satz fuer die Kartenflaeche und fuer
