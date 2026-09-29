@@ -261,6 +261,14 @@ aufsplitten. Jedes Feature bekommt darin einen eigenen, klar abgegrenzten Abschn
 Abschnitt 8 in `doku/MASSE.md` für den Einleger), damit Messungen an einem Ort auffindbar und
 über Features hinweg vergleichbar bleiben.
 
+## Version
+
+Das Projekt hat **eine** Versionsnummer, und jede `.cls` und `.sty` trägt sie: gleichlautend in
+`\ProvidesClass` beziehungsweise `\ProvidesPackage`, in `\dsa@version` in `dsa5latex.cls` und im
+Git-Tag. Eine neue Klasse fängt nicht bei `v1.0` an, sondern übernimmt die laufende
+Projektversion; keine Datei zählt für sich. Wer die Version hebt, hebt sie in allen Dateien
+zugleich und trägt die Änderungen in `CHANGELOG.md` unter dieser Version ein.
+
 ## Git
 
 * Commit-Nachrichten sind deutsch, ohne Umlaute, Betreff im Aussagesatz ohne Punkt:

@@ -562,6 +562,34 @@
     \dsa@bgfest
   \fi}
 
+% Seitenfarbe. Leer ist der Baukasten, wie er ist; ein Name haengt sich an
+% den Dateinamen, seite-rechts-0 wird zu seite-rechts-0-karmin. Die
+% Fassungen legt werkzeuge/seitenfarbe.py an, mit derselben Farbtabelle und
+% derselben Umfaerbung wie die Spielkarten -- \dsaSeitenfarbe{blau} und
+% \dsaKartenfarbe{blau} ergeben denselben Ton, gemessen im Median H 203 Grad
+% S 0,38 auf der Karte gegen H 203 Grad S 0,39 auf der Seite. Global, damit
+% ein Wechsel mitten im Heft ueber Gruppen hinweg haelt. Gelesen wird der
+% Wert erst beim Ausgeben, also gilt er schon fuer die laufende Seite:
+% geprueft mit \dsaSeitenfarbe{} vor \clearpage, die Seite davor war dann
+% nicht mehr blau.
+%
+% Fehlt die Fassung, bleibt der Baukasten mit einer Warnung -- sonst braeche
+% jedes Dokument ab, dessen Grafiken ohne seitenfarbe.py aufbereitet sind.
+% Gesucht wird mit dem \graphicspath: \IfFileExists kennt nur \input@path,
+% und ohne den Tausch fand es die Datei aus beispiel/ heraus nicht.
+\newcommand*{\dsa@seitenfarbe}{}
+\newcommand*{\dsaSeitenfarbe}[1]{%
+  \ifstrempty{#1}%
+    {\gdef\dsa@seitenfarbe{}}%
+    {\begingroup
+       \ifdefined\Ginput@path\let\input@path\Ginput@path\fi
+       \IfFileExists{\dsagrafik{seite-rechts-0-#1.jpg}}%
+         {\endgroup\gdef\dsa@seitenfarbe{-#1}}%
+         {\endgroup\gdef\dsa@seitenfarbe{}%
+          \ClassWarning{dsa5latex}{Seitenfarbe '#1' fehlt in grafiken/,
+            es bleibt der Hintergrund des Baukastens. Anlegen mit
+            werkzeuge/seitenfarbe.py #1}}}}
+
 \AddToShipoutPictureBG{%
   \ifdsa@ohnehintergrund\else
   \ifdsa@bgaus\else
@@ -569,11 +597,11 @@
       \ifodd\count0
         \node[anchor=north east, inner sep=0]
           at ([shift={(\dsabeschnitt,\dsabeschnitt)}]current page.north east)
-          {\includegraphics[width=213mm,height=303mm]{\dsagrafik{seite-rechts-\dsa@bgvariante}}};
+          {\includegraphics[width=213mm,height=303mm]{\dsagrafik{seite-rechts-\dsa@bgvariante\dsa@seitenfarbe}}};
       \else
         \node[anchor=north west, inner sep=0]
           at ([shift={(-\dsabeschnitt,\dsabeschnitt)}]current page.north west)
-          {\includegraphics[width=213mm,height=303mm]{\dsagrafik{seite-links-\dsa@bgvariante}}};
+          {\includegraphics[width=213mm,height=303mm]{\dsagrafik{seite-links-\dsa@bgvariante\dsa@seitenfarbe}}};
       \fi
     \end{tikzpicture}%
   \fi\fi}

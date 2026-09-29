@@ -136,6 +136,17 @@ Was es tut:
 - kopiert die fünf Schriftdateien nach `schriften/`
 - schreibt am Ende eine Liste dessen, was fehlt
 
+Wer die Schuppenleiste der Seiten eingefärbt haben will (`\dsaSeitenfarbe`, siehe
+`doku/ELEMENTE.md`), legt die Fassungen danach mit einem zweiten Werkzeug an. Es braucht dazu
+`numpy`:
+
+```sh
+python3 werkzeuge/seitenfarbe.py karmin blau
+python3 werkzeuge/seitenfarbe.py --farben
+```
+
+Welche Farben es gibt und wie sie zu den Spielkarten passen, steht in [Farben](FARBEN.md).
+
 ### Schritt 3 — prüfen
 
 ```sh
@@ -215,6 +226,7 @@ ausmisst. Zwei Teile ersetzen beides:
 
 ```sh
 python3 werkzeuge/platzhalter.py      # graue Platzhalter in den Sollmaßen nach grafiken/
+python3 werkzeuge/seitenfarbe.py karmin   # die Seitenfarbe, die beispiel.tex benutzt
 cd beispiel
 DSA5_OPTIONEN=ersatz latexmk beispiel.tex
 ```
@@ -226,7 +238,8 @@ In der PowerShell: `$env:DSA5_OPTIONEN = "ersatz"; latexmk beispiel.tex`.
   Seitenhintergründe stehen damit so groß da wie mit dem echten Material. Eigene Bilder der
   Beispiele, etwa die Battlemap, bekommen eine feste Größe. Geschrieben wird nur, was fehlt.
   Liegt schon Baukastenmaterial in `grafiken/`, bricht das Werkzeug ab. `--weg` löscht die
-  Platzhalter wieder, und nur sie.
+  Platzhalter wieder, und nur sie — dazu die Farbfassungen, die `seitenfarbe.py` aus
+  Platzhaltern gemacht hat; sie tragen dieselbe Kennung.
 * Die Klassenoption `ersatz` nimmt statt Gentium Basic und Andalus die freie Gentium aus dem
   TeX-Live-Paket `gentium-sil`. Die `latexmkrc` reicht den Inhalt von `DSA5_OPTIONEN` als
   Klassenoptionen weiter, ohne die `.tex` zu ändern; mehrere mit Komma, etwa `ersatz,entwurf`.
@@ -239,8 +252,9 @@ Andalus hat keinen freien Ersatz. Ein PDF aus dem Ersatzmodus ist nie das Ergebn
 
 ### Automatisch bauen
 
-`.github/workflows/bauen.yml` baut bei jedem Push und jedem Pull Request alle Beispiele im
-Ersatzmodus, prüft das Log und hängt die PDFs als Artefakt an. Scheitert ein Lauf, steht die
+`.github/workflows/bauen.yml` baut bei jedem Push auf `main` und `development` und bei jedem Pull
+Request samt jedem weiteren Push auf seinen Zweig alle Beispiele im Ersatzmodus. Ein
+Feature-Zweig ohne PR baut nicht. Der Lauf prüft das Log und hängt die PDFs als Artefakt an. Scheitert ein Lauf, steht die
 Ursache im Protokoll des Schritts „Log prüfen“.
 
 ---
