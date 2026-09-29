@@ -44,7 +44,9 @@
 %%% um 0,8 bp daneben.
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{dsa5spielkarten}[2026/09/25 v1.0 Spielkarten im DSA5-Layout]
+% Dieselbe Versionsnummer wie dsa5latex.cls und alle anderen Dateien, keine
+% eigene Zaehlung fuer die Karten. Siehe CHANGELOG.md.
+\ProvidesClass{dsa5spielkarten}[2026/09/29 v1.2.0 Spielkarten im DSA5-Layout]
 
 %%% ==================================================================
 %%% 1  Optionen

@@ -6,6 +6,10 @@ ausliefern wird.
 
 ## 1.2.0 — unveröffentlicht
 
+* Spielkarten im Format 63 × 88 mm (`dsa5spielkarten.cls`): elf Kartentypen, als Einzelkarten
+  für die Druckerei oder als A4-Druckbogen mit duplexdeckender Rückseite, Randfarbe einstellbar.
+* Farbige Seitenränder: `\dsaSeitenfarbe` färbt das Schuppenband der Seitenhintergründe in
+  denselben Farben wie die Spielkarten, `werkzeuge/seitenfarbe.py` legt die Fassungen an.
 * `\dsaAutor` setzt den Autor in den PDF-Metadaten. `\dsaAbenteuertitel` setzt den Dokumenttitel
   dort mit, und als Erzeuger steht `dsa5latex` mit Versionsnummer im PDF.
 * Eine Versionsnummer für alle Dateien. Bis hierhin trug die Klasse `v2.0`, der Aufsteller `v1.0`
