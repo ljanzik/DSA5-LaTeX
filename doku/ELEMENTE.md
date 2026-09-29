@@ -196,8 +196,8 @@ python3 werkzeuge/seitenfarbe.py karmin blau
 
 Fehlt eine Fassung, bleibt der Hintergrund des Baukastens, und die Klasse warnt. Die Farbtabelle
 ist die der Spielkarten. Alle sieben Farben, ihre Wirkung auf der Seite und eigene Farben stehen in
-[Farben](FARBEN.md). Für ein kräftiges Rot eignet sich `karmin`. Das gemessene `rot` des
-Flusslande-Sets wirkt auf den Seiten braun.
+[Farben](FARBEN.md). Für ein kräftiges Rot eignet sich `karmin`; `rot` wirkt auf den Seiten
+braun.
 
 **Kapitelanfang.** Banner 210,1 × 43,2 mm am oberen Papierrand, Titel als Versalien darin, dann
 beide Spalten darunter. Mit Kapitelbild wird die Außenhälfte belegt; dann muss die Anfangsseite mit
@@ -392,6 +392,14 @@ kommt über die Marken von LaTeX aus `\dsakapitel`:
 Ohne diesen Befehl bleibt der Kapitelname allein stehen, vor dem ersten Kapitel bleibt die Zeile
 leer.
 
+Derselbe Titel geht als Dokumenttitel in die PDF-Metadaten. Den Autor dort setzt `\dsaAutor`; im
+Satz erscheint er nicht, dafür sind Impressum und Rückseite da. Als Erzeuger trägt jedes PDF
+`dsa5latex` mit Versionsnummer.
+
+```latex
+\dsaAutor{Alrike Sturmfels}
+```
+
 Er schließt mit dem Satzspiegel ab, auf beiden Seiten 24 mm von der Außenkante — rechts
 rechtsbündig bei 186 mm, links linksbündig bei 24 mm. Damit steht er bündig unter dem Textblock,
 und der Abstand zur Zahl ist auf beiden Seiten gleich. Im Vorbild ist die Lage **nicht**
@@ -559,6 +567,11 @@ n gefüllten. `aufbereiten.py` schneidet daraus drei Kacheln — gefüllt rot, g
 und `\dsaRauten` setzt sie aneinander. Damit ist die Skala beliebig lang, und nichts ist
 nachgezeichnet. Vorher zeichnete TikZ sie nach, obwohl das Material vorlag; die Maße stehen in
 `MASSE.md`.
+
+Im Fließtext steht die Skala ohne Höhe und Tiefe, wie die übrigen Marken: bei 18 mm Breite ist
+eine Raute 15,4 bp hoch, mehr als eine Zeile, und ungeglättet schöbe sie alles darunter vom Raster.
+Ihre Mitte sitzt auf halber x-Höhe. Nur in `\dsaAnforderungen` trägt sie ihre volle Höhe, dort
+bestimmt sie die Zeilen der Tabelle.
 
 ---
 

@@ -25,7 +25,7 @@ Jedes Feature ist eine eigene Klasse oder eine eigene Erweiterung, mit eigener E
 | Abenteuer setzen | `dsa5latex.cls` | Zweispaltiger Satz auf A4 mit Grundlinienraster, Pergament- und Wertekästen in Produktionsgröße, Kapitelbanner, Meistermasken, Seitenhintergründe mit einfärbbarer Schuppenleiste (dieselben Farben wie die Spielkarten), Textumfluss | [Elementreferenz](doku/ELEMENTE.md) |
 | Aufsteller (Standfiguren zum Ausschneiden) | `dsa5aufsteller.sty` | Kleine Standfiguren auf eigenen A4-Bögen in vier Größenklassen (S/M/L/XL), mit automatisch erzeugter Rückseite für den beidseitigen Druck | [Elementreferenz](doku/ELEMENTE.md#aufsteller) |
 | Battlemap mit Zollraster | — (`beispiel/battlemap.tex`, kein `.cls`) | Eigenes Blatt neben dem Heft (A4 bis A1, hoch oder quer) mit gestricheltem Zollraster über der Battlemap, kein eigener Seitentyp der Klasse | [Elementreferenz](doku/ELEMENTE.md#seitentypen) |
-| Spielkarten | `dsa5spielkarten.cls` | Karten im Format der offiziellen Sets (63 × 88 mm), elf Typen (NSC, Waffe, Rüstung, Gegenstand, Monster, Zauber, Sonderfertigkeit, Kultur, Text, Impressum) und einseitige Verbrauchsgegenstände mit generischem Rücken, wahlweise als Einzelkarten für die Druckerei oder als A4-Druckbogen mit duplexdeckender Rückseite und Stückzahl je Karte; Randfarbe einstellbar | [Spielkarten](doku/SPIELKARTEN.md) |
+| Spielkarten | `dsa5spielkarten.cls` | Karten im Format 63 × 88 mm, elf Typen (NSC, Waffe, Rüstung, Gegenstand, Monster, Zauber, Sonderfertigkeit, Kultur, Text, Impressum) und einseitige Verbrauchsgegenstände mit generischem Rücken, wahlweise als Einzelkarten für die Druckerei oder als A4-Druckbogen mit duplexdeckender Rückseite und Stückzahl je Karte; Randfarbe einstellbar | [Spielkarten](doku/SPIELKARTEN.md) |
 | Farben für Heft und Karten | — (`\dsaSeitenfarbe`, `\dsaKartenfarbe`) | Schuppenleiste der Heftseiten und Schuppenband der Karten in sieben Farben oder einer eigenen, aus einer gemeinsamen Tabelle, damit Heft und Kartenset denselben Ton haben | [Farben](doku/FARBEN.md) |
 
 Einrichten, Grafiken und Schriften besorgen, bauen — das gilt featureübergreifend und steht in
@@ -63,8 +63,12 @@ auch mit einer KI setzen: **[Einrichten und Bauen](doku/EINRICHTUNG.md)**. Kurzf
 ```sh
 python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
 cd beispiel
-TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
+latexmk                                  # oder: TEXINPUTS="..;" xelatex beispiel.tex, dreimal
 ```
+
+Ohne den Baukasten baut der Ersatzmodus, mit Platzhaltergrafiken und freier Schrift: zum
+Ansehen der Klasse und für die CI, nicht für das fertige Heft. Beschrieben in
+[Einrichten und Bauen](doku/EINRICHTUNG.md), Abschnitt „Ohne Baukasten bauen“.
 
 Die Elementreferenz der Kernklasse steht in `doku/ELEMENTE.md`, dort auch die Battlemap mit
 Zollraster (`beispiel/battlemap.tex`, Abschnitt „Seitentypen“) — kein eigener Seitentyp der

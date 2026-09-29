@@ -26,16 +26,15 @@ wechseln. Mit einem leeren Argument (`{}`) gilt wieder die ungefärbte Fassung d
 
 | Name | Farbton | Sättigung | woher | auf der Karte | auf der Seite |
 |---|---:|---:|---|---|---|
-| `blau` | 200° | 0,46 | gemessen, *Aventurische Meisterpersonen* | kühles Stahlblau | ebenso |
-| `rot` | 10° | 0,55 | gemessen, *Flusslande* | mattes Rotbraun | wirkt braun |
+| `blau` | 200° | 0,46 | Angebot | kühles Stahlblau | ebenso |
+| `rot` | 10° | 0,55 | Angebot | mattes Rotbraun | wirkt braun |
 | `karmin` | 0° | 0,90 | Angebot, an den Seiten gewählt | kräftiges Dunkelrot | ebenso |
 | `gruen` | 120° | 0,45 | Angebot | sattes Moosgrün | die grüne Ranke geht darin unter |
 | `violett` | 280° | 0,40 | Angebot | gedämpftes Purpur | ebenso |
 | `bernstein` | 30° | 0,90 | Angebot | warmes Braun | ebenso |
 | `petrol` | 175° | 0,45 | Angebot | dunkles, graugrünes Petrol | ebenso |
 
-`blau` und `rot` stammen aus den Schuppenbändern der beiden veröffentlichten Kartensets, dort
-wurden sie gemessen. Die übrigen fünf sind Angebote in derselben Machart. Die Tabelle steht an
+Die Tabelle steht an
 einer Stelle, in `FARBEN` in `werkzeuge/kartengrafik.py`, und `seitenfarbe.py` liest sie von dort.
 Wer eine Farbe ändert oder dazunimmt, ändert sie für beide.
 
@@ -44,9 +43,9 @@ aber der Ton ist kein Türkis, sondern ein dunkles Petrol, und so heißt er jetz
 `\dsaKartenfarbe{tuerkis}` benutzt hat, schreibt `petrol` und legt die Fassung mit
 `--farbe petrol` neu an.
 
-**Wer ein Rot will, nimmt `karmin`.** Das gemessene `rot` ist das Rotbraun des Flusslande-Sets. Auf
-der Karte passt es, auf den breiten Leisten der Heftseiten wirkt es braun. Deshalb bleibt `rot`
-unverändert, weil es als Messwert stimmt, und `karmin` steht daneben.
+**Wer ein Rot will, nimmt `karmin`.** `rot` ist ein Rotbraun. Auf der Karte passt es, auf den
+breiten Leisten der Heftseiten wirkt es braun. Deshalb steht `karmin` daneben, und `rot` bleibt
+für Karten, die schon damit gesetzt sind.
 
 **`gruen` auf den Seiten:** Die Leiste trägt eine grüne Ranke, und die bleibt beim Umfärben, wie sie
 ist. Vor grünen Schuppen ist sie kaum noch zu sehen. Am Bildschirm angesehen, gedruckt nicht

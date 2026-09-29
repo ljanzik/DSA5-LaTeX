@@ -168,6 +168,7 @@ Musterbogen zeigt sie ohne Text.
 | Porträtmedaillon, Größe | 35,39 × 34,97 mm bei 100 % | IDML | `#` |
 | Porträtmedaillon, Lage im Kasten | je Kasten 17,06/17,97, 17,91/16,87 und 17,57/16,62 mm | Alphakanal der Kastengrafiken | `#` |
 | Rautenskalen in TikZ | Vorbild `DSA5_Rauten_*` | PNG | — |
+| Rautenskala im Fließtext auf dem Raster | Grundlinie 84 + k · 12 bp | Regellauf S. 7, alle Zeilen ganzzahlig (Issue #9) | `ok` |
 | Bandmarke `\dsaBand` | Text, keine Grafik: hochgestelltes Kürzel plus Seite | Baukasten | `ok` |
 | Markengrafiken, Auflösung | mit 1700 bis 2700 ppi platziert, zusammen 2 MB | eigene Messung | `ok` |
 
@@ -672,16 +673,14 @@ nächsten mehrfach geprüft.
 | Stückzahl auf dem Bogen | 15 + 10 + 4 = 29 Karten | 29, auf vier Bogenpaaren (9 + 9 + 9 + 2) | `ok` |
 | **Duplex-Passung** des Druckbogens | 0 mm Versatz | 0,001 mm, schlechtester von 29 Karten über vier Bogenpaare | `ok` |
 
-### Wo die Klasse vom Set abweicht
+### Was beim Setzen auffiel
 
-* Die **Spaltenteilung der Wertetabelle** ist von 19,00 auf 21,48 mm umgerechnet, weil die Tabelle
-  dieser Klasse 52 statt 46 mm breit ist. Mit dem Wert des Sets stößt „zusätzliche Abzüge“ auf der
-  Rüstungskarte in die Wertespalte — Gentium Basic läuft breiter als das Times des Sets.
-* Die **Wertetabelle setzt kleiner als der Fließtext** (Beschriftung 6 bp fett, Wert 6,5 bp). Das
-  sind die Grade des Sets; die Tabelle steht nicht im Baukasten, also gilt für sie durchgehend das
-  Set.
-* Der **Zeilenschritt des Attributrasters** ist der Durchschuss dieser Klasse (8 bp), nicht die
-  7,8 bp des Sets — damit das Raster auf denselben Zeilen sitzt wie der Fließtext darunter.
+* Die **Spaltenteilung der Wertetabelle** steht auf 21,48 mm. Mit 19 mm stößt „zusätzliche
+  Abzüge“ auf der Rüstungskarte in die Wertespalte.
+* Die **Wertetabelle setzt kleiner als der Fließtext** (Beschriftung 6 bp fett, Wert 6,5 bp); die
+  Tabelle steht nicht im Baukasten.
+* Der **Zeilenschritt des Attributrasters** ist der Durchschuss dieser Klasse (8 bp) — damit das
+  Raster auf denselben Zeilen sitzt wie der Fließtext darunter.
 * **Blocksatz auf 52 mm** braucht andere Einstellungen als die 80,5 mm der Kernklasse: `tolerance`
   3000 und `emergencystretch` 2em. Das sind die mildesten Werte, mit denen keine Zeile mehr
   überläuft; ab dort ändert sich nichts mehr, höhere kaufen nur löchrigere Zeilen ein.
@@ -697,6 +696,30 @@ nächsten mehrfach geprüft.
   Klasse dort ändert, prüft sie an einer Halb- oder Dreiviertelfigur.
 * **Der Kartenrücken auf Papier.** Das Rautenfeld ist am PDF vermessen und angesehen. Ob es
   gedruckt so dicht wirkt wie am Bildschirm, hängt am Papier und ist hier nicht zu entscheiden.
+
+## Ersatzmodus und CI
+
+Geprüft wurde, ob die Beispiele ohne Baukastenmaterial bauen und ob das Raster dabei dasselbe
+bleibt. Dazu ein Klon ohne `grafiken/` (bis auf `titelbild.jpg`) und ohne `schriften/`, darin
+`werkzeuge/platzhalter.py` und dann `DSA5_OPTIONEN=ersatz,entwurf latexmk <datei>`.
+
+| Prüfung | Ergebnis |
+|---|---|
+| Platzhalter angelegt | 92, davon 91 aus der Sollmaßliste und einer für die Battlemap; `pruefen.py` meldet 91 von 91 in Ordnung |
+| Alle acht Beispiele bauen | `beispiel` 22 Seiten wie mit echtem Material, `kaesten` 15, `rest` 5, `aufsteller` 4, `raster` 2, `battlemap`, `titel`, `titelgrafik` je 1 |
+| `logpruefen.py` über alle acht Logs | in Ordnung |
+| Grundlinien `raster.pdf`, Ersatz gegen echtes Material | alle 51 Zeilen auf 0,01 mm gleich |
+| Fließtext 10 bp in `beispiel.pdf` neben dem Raster | nur, was auch mit echtem Material danebenliegt (Impressum mit eigenem Maß), dazu je Bildrahmen der Dateiname, den `entwurf` hineinschreibt |
+| Schutz gegen gemischten Satz | `platzhalter.py` bricht im Arbeitsklon mit echtem Material ab („91 Dateien aus dem Baukasten“) |
+| `logpruefen.py` schlägt an | eine eingefügte `Class dsa5latex Warning`, ein `Overfull \vbox` und „There were undefined references“ zählen je als Meldung, Rückgabewert 1 |
+
+Dass das Raster gleich bleibt, ist kein Zufall: die Grundlinien hängen an `\baselineskip` und am
+Satzspiegel, nicht an der Schrift. Zeilenfall und Satzbreiten sind mit Gentium dagegen andere,
+darum prüft der Ersatzmodus sie nicht.
+
+Auf GitHub (`texlive/texlive:latest`) läuft die Action in 2 min 18 s durch. Alle acht Beispiele
+mit denselben Seitenzahlen wie lokal, `logpruefen.py` meldet alle acht Logs in Ordnung, und das
+Artefakt `beispiele-ersatzmodus` trägt die PDFs, 345 KB.
 
 ## Vorgehen
 

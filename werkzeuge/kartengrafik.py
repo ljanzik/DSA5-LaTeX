@@ -42,11 +42,9 @@ herunterlaedt.
 
 --- Farbvarianten ---
 
-Das Schuppenband des Baukastens ist neutral graugrau-violett. Die beiden
-veroeffentlichten Kartensets zeigen dasselbe Band in Farbe: „Aventurische
-Meisterpersonen" (2017) blau, „Flusslande" (2018) rotbraun. Am Satz
-nachgemessen ist das eine reine Umfaerbung — Pergament, Messingecken und
-der schwarze Aussenrand sind in beiden Sets Bild fuer Bild dieselben.
+Das Schuppenband des Baukastens ist neutral graugrau-violett. Farbig wird
+es durch eine reine Umfaerbung — Pergament, Messingecken und der schwarze
+Aussenrand bleiben Bild fuer Bild dieselben.
 
 Genau das macht --farbe: die dunklen, fast unbunten Bildpunkte des Bandes
 bekommen einen Farbton, ihre Helligkeit bleibt. Ausgenommen bleiben
@@ -93,13 +91,8 @@ ZIELNAME = 'spielkarte-flaeche.png'
 # denn die Klasse setzt die Grafik ohnehin in Millimetern.
 SOLL_PIXEL = (815, 1110)
 
-# Die beiden Farbtoene, die die veroeffentlichten Sets zeigen, am Schuppenband
-# ihrer eigenen Kartengrafik gemessen (Farbton in Grad, Saettigung 0..1):
-#
-#   blau   Aventurische Meisterpersonen, 2017 -- Haeufung bei 195 bis 200 Grad
-#   rot    Flusslande, 2018               -- Haeufung bei 5 bis 15 Grad
-#
-# Die uebrigen sind keine Messwerte, sondern Angebote in derselben Machart.
+# Die vorgegebenen Farbtoene (Farbton in Grad, Saettigung 0..1). Es sind
+# Angebote, keine Messwerte.
 #
 # Die Saettigung darf nicht nach dem Farbeindruck auf weissem Grund gewaehlt
 # werden. Das Band ist dunkel -- in der eingefaerbten Zone gemessen liegt die
@@ -109,9 +102,8 @@ SOLL_PIXEL = (815, 1110)
 # gelbstichiges Oliv. Erst 30 Grad tragen das warme Braun, und die hohe
 # Saettigung haelt es gegen die 0,28 Helligkeit.
 #
-# karmin ist das kraeftige Rot neben dem gemessenen. rot (10 Grad, 0,55) ist
-# am Flusslande-Set gemessen und bleibt deshalb, wie es ist -- auf den
-# Seitenhintergruenden wirkte es aber braun: Orangerot bei einer Helligkeit
+# karmin ist das kraeftige Rot neben rot. rot (10 Grad, 0,55) bleibt, wie
+# es ist -- auf den Seitenhintergruenden wirkte es aber braun: Orangerot bei einer Helligkeit
 # um 0,24 liest sich als Braun. Erst 0 Grad bei 0,90 wurde als Rot gesehen.
 #
 # Karten und Seiten teilen diese eine Tabelle, und das mit Absicht. Das
@@ -137,8 +129,8 @@ FARBEN = {
 # Woher jeder Wert kommt, fuer die Ausgabe von --farben. Wer eine Farbe
 # aendert, aendert hier mit.
 HERKUNFT = {
-    'blau':      'gemessen, Aventurische Meisterpersonen',
-    'rot':       'gemessen, Flusslande',
+    'blau':      'Angebot',
+    'rot':       'Angebot',
     'gruen':     'Angebot',
     'violett':   'Angebot',
     'bernstein': 'Angebot',
@@ -332,8 +324,6 @@ def main():
             print('    %-10s %4d Grad      %4.2f      %s'
                   % (n, grad, saet, HERKUNFT[n]))
         print()
-        print('blau und rot sind am Schuppenband der beiden veroeffentlichten')
-        print('Sets gemessen; die uebrigen sind Angebote in derselben Machart.')
         print('Eigene gehen mit --farbe name:farbton:saettigung.')
         print()
         print('Zur Saettigung: das Schuppenband ist dunkel. In der eingefaerbten')
