@@ -10,8 +10,12 @@
 
 name: Bauen
 
+# Push nur auf die beiden langlebigen Zweige. Ein Zweig mit offenem PR baut
+# ueber pull_request (synchronize) bei jedem Push neu; stuende push hier ohne
+# Filter, liefe derselbe Stand zweimal.
 on:
   push:
+    branches: [main, development]
   pull_request:
 
 concurrency:

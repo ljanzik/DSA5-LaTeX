@@ -252,8 +252,9 @@ Andalus hat keinen freien Ersatz. Ein PDF aus dem Ersatzmodus ist nie das Ergebn
 
 ### Automatisch bauen
 
-`.github/workflows/bauen.yml` baut bei jedem Push und jedem Pull Request alle Beispiele im
-Ersatzmodus, prüft das Log und hängt die PDFs als Artefakt an. Scheitert ein Lauf, steht die
+`.github/workflows/bauen.yml` baut bei jedem Push auf `main` und `development` und bei jedem Pull
+Request samt jedem weiteren Push auf seinen Zweig alle Beispiele im Ersatzmodus. Ein
+Feature-Zweig ohne PR baut nicht. Der Lauf prüft das Log und hängt die PDFs als Artefakt an. Scheitert ein Lauf, steht die
 Ursache im Protokoll des Schritts „Log prüfen“.
 
 ---
