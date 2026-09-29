@@ -59,6 +59,48 @@ aus innerhalb der Grenzlinien und rechnet aus der gefundenen Fläche dieselbe Se
 `aufbereiten.py`. Das Grenznetz kennt allerdings nur die großen Regionen: eine Saat im Kosch
 flutet das ganze Mittelreich.
 
+### Schritt 1c — der Spielkarten-Baukasten
+
+Nur für `dsa5spielkarten.cls` nötig, siehe [Spielkarten](SPIELKARTEN.md). Der *Scriptorium
+Aventuris – Spielkarten*-Baukasten ist ein eigenes, ebenfalls kostenloses Paket neben dem
+allgemeinen Layout-Baukasten und liegt unter demselben Ulisses-Link.
+
+**Er ersetzt Schritt 1 nicht, er kommt dazu.** Das Kartenpaket bringt zwar eigene Schriften mit,
+aber nur `GenBasR.ttf` und `andlso.ttf` — der Fett- und der Kursivschnitt von Gentium Basic fehlen
+dort, und die braucht auf einer Karte jedes Stichwort. Die Rautenkacheln des generischen
+Kartenrückens kommen ebenfalls aus dem allgemeinen Baukasten. Wer nur Schritt 1c macht, bekommt
+Karten, auf denen alles mager steht und der Rücken fehlt.
+
+```
+Scriptorium Aventuris -Spielkarten/
+├── Document fonts/andlso.ttf, GenBasR.ttf   dieselben wie im Layout-Baukasten
+├── Links/Spielkarte_Ulisses_Design.tif      die Kartenfläche, 815 × 1110 px
+├── Scriptorium Aventuris -Spielkarten.idml  Seiten-, Rahmen- und Absatzmaße
+└── Scriptorium Aventuris -Spielkarten.pdf   der gesetzte Musterbogen
+```
+
+Gebraucht wird daraus genau eine Datei, die TIF. Das Werkzeug dafür ist ein eigenes:
+
+```sh
+python3 werkzeuge/kartengrafik.py "/pfad/zu/Scriptorium Aventuris -Spielkarten"
+python3 werkzeuge/kartengrafik.py "/pfad/zum/Paket" --farbe blau --farbe rot
+python3 werkzeuge/kartengrafik.py --farben
+```
+
+Es legt `grafiken/spielkarte-flaeche.png` an, mit `--farbe` zusätzlich eingefärbte Fassungen des
+Schuppenbands. Die Schriften holt weiterhin `aufbereiten.py` aus dem allgemeinen Baukasten; es
+sind dieselben, und `kartengrafik.py` fasst `schriften/` nicht an. Der generische Kartenrücken
+benutzt die Rautenkacheln, die ebenfalls aus dem allgemeinen Baukasten kommen — auch dafür muss
+`aufbereiten.py` gelaufen sein.
+
+Solange die Illustrationen fehlen, legt `werkzeuge/kartenplatzhalter.py` Platzhalter in der
+richtigen Form an:
+
+```sh
+python3 werkzeuge/kartenplatzhalter.py "Bruder Halmrich" "Zwergenspalter"
+python3 werkzeuge/kartenplatzhalter.py --rund "Halmrich"
+```
+
 ### Schritt 2 — aufbereiten
 
 Der bequeme Weg. Das Werkzeug legt alles an, was die Klasse braucht, und benennt es passend:
@@ -94,6 +136,17 @@ Was es tut:
 - kopiert die fünf Schriftdateien nach `schriften/`
 - schreibt am Ende eine Liste dessen, was fehlt
 
+Wer die Schuppenleiste der Seiten eingefärbt haben will (`\dsaSeitenfarbe`, siehe
+`doku/ELEMENTE.md`), legt die Fassungen danach mit einem zweiten Werkzeug an. Es braucht dazu
+`numpy`:
+
+```sh
+python3 werkzeuge/seitenfarbe.py karmin blau
+python3 werkzeuge/seitenfarbe.py --farben
+```
+
+Welche Farben es gibt und wie sie zu den Spielkarten passen, steht in [Farben](FARBEN.md).
+
 ### Schritt 3 — prüfen
 
 ```sh
@@ -128,6 +181,19 @@ TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 `TEXMFHOME/tex/latex/dsa5latex/` legt, kann es weglassen. Unter Windows in der PowerShell:
 `$env:TEXINPUTS = "..;"`.
 
+Kürzer geht es mit `latexmk`. Die `latexmkrc` in `beispiel/` setzt XeLaTeX und `TEXINPUTS` und
+wiederholt die Läufe selbst, bis Inhaltsverzeichnis und Marken stehen:
+
+```sh
+cd beispiel
+latexmk                 # baut beispiel.tex
+latexmk kaesten.tex     # eine bestimmte Datei
+latexmk -c              # Zwischenstände wegräumen
+```
+
+`latexmk` ist ein Perl-Skript. TeX Live bringt Perl mit, unter MiKTeX braucht es ein eigenes, etwa
+Strawberry Perl.
+
 Fünf Beispieldokumente liegen in `beispiel/`: `beispiel.tex` zeigt jedes Element genau einmal
 (22 Seiten), `raster.tex` nur Text und Raster und baut in Sekunden, `kaesten.tex` alle fünfzehn
 Kästen, `rest.tex` die Seitentypen, `battlemap.tex` eine Battlemap mit Zollraster auf eigenem
@@ -146,9 +212,50 @@ microtype hyperref tabularx environ`.
 \documentclass[ohneraster]{dsa5latex}          % Raster aus
 \documentclass[raster,rasterzeigen]{dsa5latex} % Grundlinien mitdrucken
 \documentclass[raster,entwurf]{dsa5latex}      % Bilder als Rahmen, schnelles Bauen
+\documentclass[ohnehintergrund]{dsa5latex}     % ohne die 7-MB-Seitenhintergründe
+\documentclass[ersatz]{dsa5latex}              % freie Schrift statt schriften/, siehe unten
 ```
 
 Die Elementreferenz steht in `doku/ELEMENTE.md`.
+
+### Ohne Baukasten bauen: der Ersatzmodus
+
+Wer die Klasse nur ansehen will, und die CI, haben das Material aus dem Baukasten nicht. Ohne
+`schriften/` bricht `fontspec` ab, ohne `grafiken/` jede Grafik, die die Klasse vor dem Setzen
+ausmisst. Zwei Teile ersetzen beides:
+
+```sh
+python3 werkzeuge/platzhalter.py      # graue Platzhalter in den Sollmaßen nach grafiken/
+python3 werkzeuge/seitenfarbe.py karmin   # die Seitenfarbe, die beispiel.tex benutzt
+cd beispiel
+DSA5_OPTIONEN=ersatz latexmk beispiel.tex
+```
+
+In der PowerShell: `$env:DSA5_OPTIONEN = "ersatz"; latexmk beispiel.tex`.
+
+* `werkzeuge/platzhalter.py` legt jede Grafik aus der Sollmaßliste von `werkzeuge/pruefen.py`
+  als graue Fläche mit genau den Pixelmaßen an, also in Produktionsgröße. Kästen, Banner und
+  Seitenhintergründe stehen damit so groß da wie mit dem echten Material. Eigene Bilder der
+  Beispiele, etwa die Battlemap, bekommen eine feste Größe. Geschrieben wird nur, was fehlt.
+  Liegt schon Baukastenmaterial in `grafiken/`, bricht das Werkzeug ab. `--weg` löscht die
+  Platzhalter wieder, und nur sie — dazu die Farbfassungen, die `seitenfarbe.py` aus
+  Platzhaltern gemacht hat; sie tragen dieselbe Kennung.
+* Die Klassenoption `ersatz` nimmt statt Gentium Basic und Andalus die freie Gentium aus dem
+  TeX-Live-Paket `gentium-sil`. Die `latexmkrc` reicht den Inhalt von `DSA5_OPTIONEN` als
+  Klassenoptionen weiter, ohne die `.tex` zu ändern; mehrere mit Komma, etwa `ersatz,entwurf`.
+  Ein Wechsel der Variable löst keinen neuen Lauf aus, weil sich keine Datei geändert hat.
+  Dafür `latexmk -g`.
+
+Was der Ersatzmodus zeigt: ob alles baut, ob das Raster hält, ob die Seiten stehen, wo sie
+sollen. Was er nicht zeigt: Zeilenfall und Satzbreiten. Gentium ist nicht Gentium Basic, und
+Andalus hat keinen freien Ersatz. Ein PDF aus dem Ersatzmodus ist nie das Ergebnis.
+
+### Automatisch bauen
+
+`.github/workflows/bauen.yml` baut bei jedem Push auf `main` und `development` und bei jedem Pull
+Request samt jedem weiteren Push auf seinen Zweig alle Beispiele im Ersatzmodus. Ein
+Feature-Zweig ohne PR baut nicht. Der Lauf prüft das Log und hängt die PDFs als Artefakt an. Scheitert ein Lauf, steht die
+Ursache im Protokoll des Schritts „Log prüfen“.
 
 ---
 

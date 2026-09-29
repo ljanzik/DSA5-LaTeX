@@ -78,7 +78,39 @@ SOLL = {
     'kapitelstart-rahmen.png':      (1290, 3543),
     'kapitelstart-pergament.png':   (1290, 3543),
     'kapitelstart-ornament.png':    (1290, 3543),
+    # Innenflaeche und Fenster des Kapitelanfangs, von aufbereiten.py per
+    # Saatpunkt aus kapitelstart-rahmen gewonnen, gleiche Leinwand.
+    'kapitelstart-flaeche.png':     (1290, 3543),
+    'kapitelstart-fenster.png':     (1290, 3543),
+    # Rautenskalen, aus den Aufzaehlern der Rueckseitenvorlage
+    'raute-rot.png':                (215, 259),
+    'raute-gruen.png':              (215, 259),
+    'raute-grau.png':               (215, 259),
 }
+
+# Aus einem anderen Paket: dem "Scriptorium Aventuris - Spielkarten"-
+# Baukasten, geholt von werkzeuge/kartengrafik.py. 815 x 1110 px bei 300 ppi
+# sind 69,003 x 93,980 mm - die Karte 63 x 88 mm mit 3 mm Anschnitt.
+# Steht hier und nicht in einer eigenen Liste, weil pruefen.py alles prueft,
+# was in grafiken/ liegt; unverzichtbar ist sie nur fuer dsa5spielkarten.cls.
+SOLL['spielkarte-flaeche.png'] = (815, 1110)
+# Dieselbe Karte ohne Schuppenband, fuer den generischen Kartenruecken.
+# kartengrafik.py leitet sie aus der Flaeche ab und legt sie immer mit an.
+SOLL['spielkarte-ruecken.png'] = (815, 1110)
+# Die Rueckseite in ihren Regionsfassungen, aus dem Rueckseiten-Paket. Alle
+# auf A4 zu 300 ppi, also 2480 x 3508 px, als JPEG abgelegt. Keine davon ist
+# unverzichtbar: jedes Dokument braucht hoechstens eine.
+REGIONEN = [
+    'neutral', 'al-anfa', 'andergast', 'aranien', 'bergkoenigreiche',
+    'bjaldorn', 'bornland', 'brabak', 'donnerbach',
+    'freie-staedte-elfenlande', 'gjalskerland', 'herzogtum-paavi',
+    'hoher-norden', 'horasreich', 'kalifat', 'maraskan', 'mittelreich',
+    'nivesenlande', 'nostria', 'orkland', 'schattenlande', 'selem',
+    'sultanat-gorien', 'svelltal', 'thorwal', 'tiefer-sueden',
+    'tulamidenlande', 'warunkei', 'zyklopeninseln',
+]
+for r in REGIONEN:
+    SOLL['ruecken-%s.jpg' % r] = (2480, 3508)
 
 # Die acht Einzelseiten aus den vier Doppelseiten. Eine Doppelseite ist
 # 5032 x 3579 px; der Schnitt in der Mitte ergibt je 2516 x 3579 px, also
@@ -182,6 +214,11 @@ def main():
     if fehlt:
         print('Die fehlenden Dateien betreffen nur einzelne Elemente.')
         print('Der Lauf geht durch, solange sie nicht benutzt werden.')
+        if 'spielkarte-flaeche' in fehlt:
+            print()
+            print('Die Kartenflaeche kommt aus einem anderen Paket:')
+            print('    python3 werkzeuge/kartengrafik.py '
+                  '"/pfad/zu/Scriptorium Aventuris -Spielkarten"')
         return 0
 
     print('Alles da. Weiter mit:')

@@ -174,6 +174,31 @@ laufende Seite und macht die Fußzeile leer. Impressum und Inhaltsverzeichnis ru
 `\dsaHintergrundAus` und `\dsaHintergrundAn` schalten den Hintergrund für einzelne Seiten ab und
 wieder ein.
 
+**Seitenfarbe.** Die Schuppenleiste an der Außenkante lässt sich umfärben, mit denselben Farben
+wie der Rand der Spielkarten:
+
+```latex
+\dsaSeitenfarbe{karmin}   % ab hier rote Schuppen
+\dsaSeitenfarbe{blau}     % ab hier blaue, derselbe Ton wie \dsaKartenfarbe{blau}
+\dsaSeitenfarbe{}         % zurück zum Baukasten
+```
+
+Der Hintergrund wird erst beim Ausgeben einer Seite gezeichnet. Deshalb gilt der Befehl schon für
+die Seite, auf der er steht. Wer das Heft ab einem Kapitel umfärben will, setzt ihn nach dem
+`\clearpage` davor. Das geht auch mitten im Heft und gilt für alle vier Hintergründe, auch den
+ohne Seitenzahlfeld. Umgefärbt werden nur die dunklen, fast grauen
+Bildpunkte. Pergament, Ranke, Flecken und die Kartusche der Seitenzahl behalten ihre Farbe. Die
+Fassungen legt ein Werkzeug an, und zwar aus den Seiten, die `aufbereiten.py` geschnitten hat:
+
+```sh
+python3 werkzeuge/seitenfarbe.py karmin blau
+```
+
+Fehlt eine Fassung, bleibt der Hintergrund des Baukastens, und die Klasse warnt. Die Farbtabelle
+ist die der Spielkarten. Alle sieben Farben, ihre Wirkung auf der Seite und eigene Farben stehen in
+[Farben](FARBEN.md). Für ein kräftiges Rot eignet sich `karmin`; `rot` wirkt auf den Seiten
+braun.
+
 **Kapitelanfang.** Banner 210,1 × 43,2 mm am oberen Papierrand, Titel als Versalien darin, dann
 beide Spalten darunter. Mit Kapitelbild wird die Außenhälfte belegt; dann muss die Anfangsseite mit
 `\dsaKapitelseiteEnde` beendet werden, sonst läuft der Text hinter das Bild — eine Grenze von
@@ -367,6 +392,14 @@ kommt über die Marken von LaTeX aus `\dsakapitel`:
 Ohne diesen Befehl bleibt der Kapitelname allein stehen, vor dem ersten Kapitel bleibt die Zeile
 leer.
 
+Derselbe Titel geht als Dokumenttitel in die PDF-Metadaten. Den Autor dort setzt `\dsaAutor`; im
+Satz erscheint er nicht, dafür sind Impressum und Rückseite da. Als Erzeuger trägt jedes PDF
+`dsa5latex` mit Versionsnummer.
+
+```latex
+\dsaAutor{Alrike Sturmfels}
+```
+
 Er schließt mit dem Satzspiegel ab, auf beiden Seiten 24 mm von der Außenkante — rechts
 rechtsbündig bei 186 mm, links linksbündig bei 24 mm. Damit steht er bündig unter dem Textblock,
 und der Abstand zur Zahl ist auf beiden Seiten gleich. Im Vorbild ist die Lage **nicht**
@@ -534,6 +567,11 @@ n gefüllten. `aufbereiten.py` schneidet daraus drei Kacheln — gefüllt rot, g
 und `\dsaRauten` setzt sie aneinander. Damit ist die Skala beliebig lang, und nichts ist
 nachgezeichnet. Vorher zeichnete TikZ sie nach, obwohl das Material vorlag; die Maße stehen in
 `MASSE.md`.
+
+Im Fließtext steht die Skala ohne Höhe und Tiefe, wie die übrigen Marken: bei 18 mm Breite ist
+eine Raute 15,4 bp hoch, mehr als eine Zeile, und ungeglättet schöbe sie alles darunter vom Raster.
+Ihre Mitte sitzt auf halber x-Höhe. Nur in `\dsaAnforderungen` trägt sie ihre volle Höhe, dort
+bestimmt sie die Zeilen der Tabelle.
 
 ---
 

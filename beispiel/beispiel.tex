@@ -18,6 +18,8 @@
 
 % Der Abenteuertitel steht im Kolumnentitel neben der Seitenzahl.
 \dsaAbenteuertitel{Beispielabenteuer}
+% Der Autor steht nur in den PDF-Metadaten, im Satz nirgends.
+\dsaAutor{Die Mitwirkenden an dsa5latex}
 
 \begin{document}
 
@@ -232,12 +234,19 @@ Kontur. Der Absatz muss lang genug sein, dass alle acht Zeilen entstehen.
 
 \clearpage
 
+% Ab hier eingefaerbte Seiten, dieselben Farben wie \dsaKartenfarbe. Fehlt
+% die Fassung (werkzeuge/seitenfarbe.py karmin), bleibt es mit einer Warnung
+% beim Baukasten. Zum Pruefen: nur die Schuppenleiste wird rot, Pergament,
+% Ranke und Kartusche der Seitenzahl bleiben.
+\dsaSeitenfarbe{karmin}
+
 %%% ==================================================================
 \dsakapitel{Seitentypen}
 %%% ==================================================================
 
 Neun Typen, aber nur die zeigen sich in einem Musterbogen, die keine eigene
-Seite brauchen.
+Seite brauchen. Ab diesem Kapitel sind die Seiten mit
+\verb|\dsaSeitenfarbe{karmin}| eingefärbt.
 
 \begin{dsaSeiteOhneZahl}
 Seite ohne Seitenzahl. Hintergrund ja, Seitenzahl nein.

@@ -1,0 +1,39 @@
+# latexmk-Einstellungen fuer die Beispiele. Aufruf in beispiel/:
+#
+#   latexmk                  baut beispiel.tex
+#   latexmk kaesten.tex      baut eine bestimmte Datei
+#   latexmk -c               raeumt die Zwischenstaende weg
+#
+# latexmk wiederholt die Laeufe selbst, bis Inhaltsverzeichnis und Marken
+# stehen -- die drei xelatex-Laeufe von Hand entfallen.
+
+# XeLaTeX ist Pflicht (fontspec, polyglossia). 5 heisst xelatex ueber xdv.
+$pdf_mode = 5;
+
+# Die Klasse liegt eine Ebene hoeher und ist nicht installiert. Das ersetzt
+# das TEXINPUTS="..;" von Hand.
+ensure_path('TEXINPUTS', '..');
+
+# Das Heft braucht drei Laeufe; fuenf lassen Luft, ohne dass ein Fehler in
+# eine Endlosschleife laeuft.
+$max_repeat = 5;
+
+@default_files = ('beispiel.tex');
+
+# Klassenoptionen von aussen, ohne die .tex anzufassen:
+#
+#   DSA5_OPTIONEN=ersatz,entwurf latexmk raster.tex
+#   $env:DSA5_OPTIONEN = "ersatz,entwurf"; latexmk raster.tex   (PowerShell)
+#
+# Das geht ueber eine Umgebungsvariable und nicht ueber -usepretex auf der
+# Kommandozeile: unter Windows zerlegt der Aufrufwrapper von TeX Live das
+# Argument, Backslash, Klammern und Komma kommen nicht an -- gemessen,
+# "\PassOptionsToClass{ersatz,entwurf}{dsa5latex}" wurde zu
+# "PassOptionsToClassentwurfdsa5latex". Hier setzt latexmk den Code selbst.
+#
+# Ein Wechsel der Optionen aendert keine Datei, latexmk haelt das PDF dann
+# fuer aktuell. Nach einem Wechsel also: latexmk -g.
+if (defined $ENV{'DSA5_OPTIONEN'} && $ENV{'DSA5_OPTIONEN'} ne '') {
+    $pre_tex_code = '\PassOptionsToClass{' . $ENV{'DSA5_OPTIONEN'} . '}{dsa5latex}';
+    $xelatex = 'xelatex %O %P';
+}
