@@ -174,6 +174,31 @@ laufende Seite und macht die Fußzeile leer. Impressum und Inhaltsverzeichnis ru
 `\dsaHintergrundAus` und `\dsaHintergrundAn` schalten den Hintergrund für einzelne Seiten ab und
 wieder ein.
 
+**Seitenfarbe.** Die Schuppenleiste an der Außenkante lässt sich umfärben, mit denselben Farben
+wie der Rand der Spielkarten:
+
+```latex
+\dsaSeitenfarbe{karmin}   % ab hier rote Schuppen
+\dsaSeitenfarbe{blau}     % ab hier blaue, derselbe Ton wie \dsaKartenfarbe{blau}
+\dsaSeitenfarbe{}         % zurück zum Baukasten
+```
+
+Der Hintergrund wird erst beim Ausgeben einer Seite gezeichnet. Deshalb gilt der Befehl schon für
+die Seite, auf der er steht. Wer das Heft ab einem Kapitel umfärben will, setzt ihn nach dem
+`\clearpage` davor. Das geht auch mitten im Heft und gilt für alle vier Hintergründe, auch den
+ohne Seitenzahlfeld. Umgefärbt werden nur die dunklen, fast grauen
+Bildpunkte. Pergament, Ranke, Flecken und die Kartusche der Seitenzahl behalten ihre Farbe. Die
+Fassungen legt ein Werkzeug an, und zwar aus den Seiten, die `aufbereiten.py` geschnitten hat:
+
+```sh
+python3 werkzeuge/seitenfarbe.py karmin blau
+```
+
+Fehlt eine Fassung, bleibt der Hintergrund des Baukastens, und die Klasse warnt. Die Farbtabelle
+ist die der Spielkarten. Alle sieben Farben, ihre Wirkung auf der Seite und eigene Farben stehen in
+[Farben](FARBEN.md). Für ein kräftiges Rot eignet sich `karmin`. Das gemessene `rot` des
+Flusslande-Sets wirkt auf den Seiten braun.
+
 **Kapitelanfang.** Banner 210,1 × 43,2 mm am oberen Papierrand, Titel als Versalien darin, dann
 beide Spalten darunter. Mit Kapitelbild wird die Außenhälfte belegt; dann muss die Anfangsseite mit
 `\dsaKapitelseiteEnde` beendet werden, sonst läuft der Text hinter das Bild — eine Grenze von

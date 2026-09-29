@@ -136,6 +136,17 @@ Was es tut:
 - kopiert die fünf Schriftdateien nach `schriften/`
 - schreibt am Ende eine Liste dessen, was fehlt
 
+Wer die Schuppenleiste der Seiten eingefärbt haben will (`\dsaSeitenfarbe`, siehe
+`doku/ELEMENTE.md`), legt die Fassungen danach mit einem zweiten Werkzeug an. Es braucht dazu
+`numpy`:
+
+```sh
+python3 werkzeuge/seitenfarbe.py karmin blau
+python3 werkzeuge/seitenfarbe.py --farben
+```
+
+Welche Farben es gibt und wie sie zu den Spielkarten passen, steht in [Farben](FARBEN.md).
+
 ### Schritt 3 — prüfen
 
 ```sh

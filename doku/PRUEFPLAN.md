@@ -88,6 +88,7 @@ tiefer.
 | Unterkapitel: Grad | **18,9 pt** = 14 × 135 % | IDML-Absatzformat, 7 Zwischenüberschriften | `#` |
 | Impressumtitel | Andalus 31,73 pt, Grundlinie y 94,00 pt | US25324 und US25326 | `#` |
 | Seitenhintergrund: Lage, Anschnitt, Folge 0,0,1,1,2,2,3,3 | 213 × 303 mm an der Außenkante | Schnitt der Doppelseiten | — |
+| Seitenfarbe: nur die Schuppenleiste, Ton wie die Karte | Median H/S höchstens 5° / 0,04 neben der Karte, alle sieben Farben | eigene Messung, siehe unten | `ok` |
 | Kapitelanfang: Banner, Bild, Pergamentrand | Banner 210,1 × 43,2 mm am oberen Rand | IDML | — |
 | Inhaltsverzeichnis | kein Sollmaß | — | — |
 | Ganzseitige Grafik | 184 × 265 mm im Grafikbereich | IDML, zweiter Rahmen | — |
@@ -472,6 +473,34 @@ Klasse nicht zeichnet. An der grauen Fassung fällt das nicht auf, an der roten 
 dadurch flacher auf ihrer Fläche als in der Vorlage. Wer den Schein nachbaut, kann dieselbe
 Lagenroutine wie für die Schlagschatten nehmen, mit Versatz null — und muss damit rechnen, dass
 sich damit auch das Aussehen der grauen Voreinstellung ändert.
+
+### Die Seitenfarbe am Abzug
+
+`beispiel.tex` schaltet vor dem Kapitel „Seitentypen“ auf `\dsaSeitenfarbe{karmin}`. Gebaut mit
+XeLaTeX, zwei Läufe, keine Warnung der Klasse. Laut Log nehmen die Seiten 1 bis 13 die Hintergründe
+des Baukastens und ab Seite 14 die `-karmin`-Fassungen, auch die Variante 3 ohne Seitenzahlfeld auf
+den Seiten 14 und 16. Die Rotation läuft ungestört weiter.
+
+Am Abzug angesehen (Seiten 13 bis 21, 40 und 60 dpi): Nur die Schuppenleiste ist rot. Pergament,
+Ranke, Flecken und Kartusche sind unverändert, Kanten am Übergang sind keine zu sehen. Seite 13
+ist grau, Seite 14 rot. Die Umschaltung greift also an der Seitengrenze nach dem `\clearpage`.
+
+Der Farbvergleich mit der Karte steht in [MASSE.md](MASSE.md) unter „Dieselbe Umfärbung an den
+Seitenhintergründen“. Für alle sieben Farben liegen Karte und Seite im Median höchstens 5° im
+Farbton und 0,04 in der Sättigung auseinander. Karte und Seite im selben Maßstab nebeneinander
+ergeben denselben Ton.
+
+Gegenprobe an einem vierseitigen Testdokument: Eine Farbe, die es nicht gibt, ergibt die Warnung
+`Seitenfarbe 'gibtsnicht' fehlt in grafiken/` und den Hintergrund des Baukastens, ohne Abbruch.
+`blau` nach einem `\clearpage` färbt die folgende Seite. `\dsaSeitenfarbe{}` *vor* dem nächsten
+`\clearpage` stellt schon die laufende Seite zurück, weil der Hintergrund erst beim Ausgeben
+gezeichnet wird. Das ist so gewollt und in ELEMENTE.md beschrieben.
+
+Alle sieben Farben zusätzlich als Übersicht angesehen, je Karte neben der oberen Außenecke von
+`seite-rechts-0`: Die Töne gleichen sich. Bei `gruen` geht die Ranke in der Leiste unter.
+
+Nicht geprüft: die Wirkung im Druck, und `gruen`, `violett`, `bernstein` und `petrol` in einem
+gebauten Heft. Angesehen sind sie nur als Grafik.
 
 ## Elemente mit eigenem Raster
 

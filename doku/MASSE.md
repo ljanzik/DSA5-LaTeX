@@ -1212,6 +1212,45 @@ Für eigene Farben folgt daraus, dass die Sättigung den Farbton gegen eine Hell
 durchsetzen muss. Töne um Gelb brauchen dafür deutlich mehr als die übrigen: `bernstein` steht bei
 30° auf 0,90, während Blau, Grün und Violett mit 0,40 bis 0,46 auskommen.
 
+### Dieselbe Umfärbung an den Seitenhintergründen
+
+`\dsaSeitenfarbe` in `dsa5latex.cls` nimmt für die Schuppenleiste der Heftseiten dieselbe Regel,
+dieselben Schwellen und dieselbe Farbtabelle (`werkzeuge/seitenfarbe.py` importiert sie aus
+`kartengrafik.py`). Das geht nur, weil die Leiste der Seiten so aussieht wie das Band der Karte.
+Gemessen an `seite-rechts-0` und `seite-links-0`, je 2516 × 3579 px:
+
+| Befund | rechte Seiten | linke Seiten | Karte |
+|---|---|---|---|
+| Leiste an der Außenkante, Median | V 0,24, S 0,14 | V 0,20, S 0,17 | V 0,20–0,35, S 0,11–0,14 |
+| dunkle Punkte (V < 0,62) mit S < 0,3 | 81 % | 73 % | — |
+| dunkle Punkte mit S > 0,45 (bleiben) | 9,6 % | 23 % | — |
+| Pergament in der Mitte | V 0,99, S 0,02 | ebenso | V 0,99, S 0,02 |
+
+Die bunten dunklen Punkte der linken Seiten sind die grüne Ranke und das braune Band oben. Sie
+bleiben, wie die Kartusche der Seitenzahl. Die Varianten 0 und 3 unterscheiden sich an der Leiste
+nicht.
+
+Ob dabei auch derselbe Ton herauskommt, ist am Ergebnis gemessen: Median der eingefärbten Punkte
+(Gewicht über 0,5, Schwarz ausgenommen), halbe Auflösung bei den Seiten.
+
+| Farbe | Karte | rechte Seite | linke Seite |
+|---|---|---|---|
+| `blau` 200°/0,46 | H 203,5°, S 0,38, V 0,24 | H 202,5°, S 0,39, V 0,24 | H 203,5°, S 0,40, V 0,23 |
+| `rot` 10°/0,55 | H 4,4°, S 0,44, V 0,24 | H 8,0°, S 0,48, V 0,25 | H 6,7°, S 0,47, V 0,23 |
+| `karmin` 0°/0,90 | H 357,4°, S 0,75, V 0,24 | H 358,8°, S 0,78, V 0,25 | H 358,7°, S 0,78, V 0,23 |
+| `gruen` 120°/0,45 | H 122,7°, S 0,37, V 0,24 | H 120,0°, S 0,39, V 0,24 | H 120,0°, S 0,37, V 0,22 |
+| `violett` 280°/0,40 | H 280,9°, S 0,36, V 0,24 | H 280,9°, S 0,35, V 0,24 | H 280,0°, S 0,36, V 0,23 |
+| `bernstein` 30°/0,90 | H 27,3°, S 0,72, V 0,24 | H 27,5°, S 0,76, V 0,25 | H 27,3°, S 0,76, V 0,23 |
+| `petrol` 175°/0,45 | H 177,3°, S 0,37, V 0,24 | H 175,0°, S 0,39, V 0,24 | H 180,0°, S 0,37, V 0,22 |
+
+Die Abweichung liegt bei höchstens 5° im Farbton (`petrol`, linke Seite) und 0,04 in der Sättigung. Am Abzug nebeneinander
+ist kein Unterschied zu sehen.
+
+`karmin` ist keine Messung, sondern am Abzug gewählt. Das gemessene `rot` wirkte auf der Seite
+braun. Bei der Helligkeit der Leiste, um 0,24, liest sich ein Orangerot von 10° als Braun. Verglichen
+wurden 10°/0,55, 5°/0,70, 0°/0,80 und 0°/0,90. Erst die letzte Fassung wurde als Rot gesehen. `rot` bleibt
+trotzdem, wie es ist, weil es am Flusslande-Set gemessen ist.
+
 ### Die Umfärbung der Raute
 
 Die Rautenkachel liegt im Baukasten in drei Farben vor: `raute-grau`, `raute-gruen`, `raute-rot`.

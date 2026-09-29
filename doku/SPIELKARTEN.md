@@ -502,7 +502,7 @@ Eingefärbt werden nur die dunklen, fast unbunten Bildpunkte des Bandes; ihre He
 Ausgenommen sind das Pergament (hell), die Messingecken (bunt) und der schwarze Rand — der bleibt
 schwarz, weil die Zielfarbe nur den Farbton beiträgt und die Helligkeit aus dem Bild kommt.
 
-### Die sechs vorgegebenen Farben
+### Die sieben vorgegebenen Farben
 
 `--farben` gibt diese Liste auch auf der Kommandozeile aus:
 
@@ -513,10 +513,15 @@ schwarz, weil die Zielfarbe nur den Farbton beiträgt und die Helligkeit aus dem
 | `gruen` | 120° | 0,45 | Angebot | sattes Moosgrün |
 | `violett` | 280° | 0,40 | Angebot | gedämpftes Purpur |
 | `bernstein` | 30° | 0,90 | Angebot | warmes Braun |
-| `tuerkis` | 175° | 0,45 | Angebot | graugrünes Petrol |
+| `petrol` | 175° | 0,45 | Angebot | dunkles, graugrünes Petrol |
+| `karmin` | 0° | 0,90 | Angebot, an den Seitenhintergründen gewählt | kräftiges Dunkelrot |
 
 `blau` und `rot` sind keine Erfindungen, sondern am Schuppenband der beiden veröffentlichten Sets
-gemessen. Die vier übrigen sind Angebote in derselben Machart.
+gemessen. Die fünf übrigen sind Angebote in derselben Machart.
+
+Dieselbe Tabelle gilt für die Seitenhintergründe des Hefts (`\dsaSeitenfarbe`). Ein Heft und sein
+Kartenset mit demselben Namen haben denselben Ton. Wie das gemessen ist, wie jede Farbe auf der
+Seite wirkt und wie man eigene Farben für beide anlegt, steht in [Farben](FARBEN.md).
 
 ### Eigene Farben
 
