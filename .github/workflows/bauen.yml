@@ -1,0 +1,58 @@
+# Baut alle Beispiele im Ersatzmodus und prueft das Log.
+#
+# Das Material aus dem Baukasten gehoert Ulisses Spiele und liegt nicht im
+# Repository, also auch nicht hier. Statt der Schriften nimmt die Klasse mit
+# der Option ersatz Gentium aus TeX Live, statt der Grafiken legt
+# werkzeuge/platzhalter.py graue Flaechen in den Sollmassen an. Was dieser
+# Lauf prueft: dass alles baut, keine Klassenwarnung und kein Overfull \vbox
+# bleibt. Zeilenfall und Satzbreiten prueft er nicht -- siehe
+# doku/EINRICHTUNG.md, "Ohne Baukasten bauen".
+
+name: Bauen
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: bauen-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  beispiele:
+    runs-on: ubuntu-latest
+    container: texlive/texlive:latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pillow
+        run: |
+          apt-get update -qq
+          apt-get install -y -qq python3-pil
+
+      - name: Platzhaltergrafiken
+        run: python3 werkzeuge/platzhalter.py
+
+      - name: Beispiele bauen
+        working-directory: beispiel
+        env:
+          DSA5_OPTIONEN: ersatz,entwurf
+        run: |
+          fehler=0
+          for f in beispiel raster kaesten rest titel titelgrafik aufsteller battlemap; do
+            echo "::group::$f"
+            latexmk -interaction=nonstopmode -halt-on-error "$f.tex" || fehler=1
+            echo "::endgroup::"
+          done
+          exit $fehler
+
+      - name: Log pruefen
+        run: python3 werkzeuge/logpruefen.py beispiel/*.log
+
+      - name: PDFs anhaengen
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: beispiele-ersatzmodus
+          path: beispiel/*.pdf
+          if-no-files-found: ignore
