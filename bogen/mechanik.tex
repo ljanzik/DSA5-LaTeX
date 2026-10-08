@@ -95,14 +95,34 @@
 
 \newsavebox{\feldbox}
 
+% Senkrechte Lage. Frueher sass der Wert per \parbox[c] mittig im Feld; das
+% zentriert die Zeile samt Zeilenabstand und setzt Text sichtbar zu hoch.
+%
+% Text: Die Grundlinie liegt \feldgrundlinie ueber der Unterkante des Feldes.
+% Gemessen an den eingedruckten Beschriftungen auf Bogen 1 (rawdict-Origin,
+% beide Fassungen gleich): Name 36,25 bei Feldunterkante 37,3; Spezies 51,77
+% bei 52,9; Profession 36,08 bei 37,3 -- also 1,05 bis 1,22 mm. So steht der
+% eingetragene Text auf derselben Grundlinie wie die Beschriftung daneben.
+%
+% Zahl: waagerecht mittig, senkrecht nach der Hoehe der Ziffern mittig. Ziffern
+% haben keine Unterlaenge, also ist die Mitte der Glyphe die Mitte des Kastens.
+%
+% Beides als Box ohne Hoehe, deren Grundlinie an der Oberkante des Feldes
+% liegt (der Knoten in \setzeFeldFest haengt mit north west dort an); der
+% Inhalt wird um das gerechnete Mass abgesenkt.
+\newlength{\feldgrundlinie}
+\setlength{\feldgrundlinie}{1.1mm}
+
 \newcommand{\einzeilig}[4]{% breite hoehe art inhalt
   \sbox\feldbox{\feldtextstil #4}%
   \ifdim\wd\feldbox>#1mm\relax
     \sbox\feldbox{\resizebox{#1mm}{!}{\usebox\feldbox}}%
   \fi
   \ifthenelse{\equal{#3}{zahl}}{%
-    \parbox[t][#2mm][c]{#1mm}{\centering\usebox\feldbox}}{%
-    \parbox[t][#2mm][c]{#1mm}{\raggedright\usebox\feldbox}}}
+    \makebox[#1mm][c]{\raisebox{-\dimexpr #2mm/2+\ht\feldbox/2\relax}[0pt][0pt]{%
+      \usebox\feldbox}}}{%
+    \makebox[#1mm][l]{\raisebox{-\dimexpr #2mm-\feldgrundlinie\relax}[0pt][0pt]{%
+      \usebox\feldbox}}}}
 
 % --- Bildfelder ------------------------------------------------------------
 % art=bild. Der Wert ist ein Dateipfad, nicht Text:

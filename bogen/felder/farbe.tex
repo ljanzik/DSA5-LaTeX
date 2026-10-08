@@ -74,7 +74,12 @@
 % --- Eigenschaftsleiste ----------------------------------------------------
 % Die Leiste sitzt an derselben Stelle wie in df (Grafik, nicht Vektorraster
 % — am Bild abgelesen, siehe df.tex).
-\newcommand{\eigenschaftsleiste}[2]{% bogen ycenter
+% Felder mittig auf den Kaestchen, 18 mm breit. Kaestchengrenzen am Seitenbild
+% (300 dpi) gemessen, beide Fassungen gleich: x 26,6 46,1 66,2 86,3 105,2
+% 124,1 144,0 163,9 183,7. Senkrecht Bogen 1: 101,9 bis 114,6; Bogen 2 bis 5:
+% 39,4 bis 52,1. Das zweite Argument ist die OBERKANTE des 6 mm hohen
+% Feldes, also Kastenmitte minus 3.
+\newcommand{\eigenschaftsleiste}[2]{% bogen oberkante
   % Die acht Eigenschaften zaehlen bei -OhneLeere nicht als Inhalt:
   % sonst gilt jeder Bogen als gefuellt, sobald sie gesetzt sind.
   \zaehltnicht{s#1_mu}
@@ -85,16 +90,16 @@
   \zaehltnicht{s#1_ge}
   \zaehltnicht{s#1_ko}
   \zaehltnicht{s#1_kk}
-  \feld{#1}{s#1_mu}{27.5}{#2}{15.5}{6}{zahl}
-  \feld{#1}{s#1_kl}{47}{#2}{15.5}{6}{zahl}
-  \feld{#1}{s#1_in}{66.6}{#2}{15.5}{6}{zahl}
-  \feld{#1}{s#1_ch}{86.1}{#2}{15.5}{6}{zahl}
-  \feld{#1}{s#1_ff}{105.6}{#2}{15.5}{6}{zahl}
-  \feld{#1}{s#1_ge}{125.2}{#2}{15.5}{6}{zahl}
-  \feld{#1}{s#1_ko}{144.7}{#2}{15.5}{6}{zahl}
-  \feld{#1}{s#1_kk}{164.2}{#2}{15.5}{6}{zahl}}
+  \feld{#1}{s#1_mu}{27.35}{#2}{18}{6}{zahl}
+  \feld{#1}{s#1_kl}{47.15}{#2}{18}{6}{zahl}
+  \feld{#1}{s#1_in}{67.25}{#2}{18}{6}{zahl}
+  \feld{#1}{s#1_ch}{86.75}{#2}{18}{6}{zahl}
+  \feld{#1}{s#1_ff}{105.65}{#2}{18}{6}{zahl}
+  \feld{#1}{s#1_ge}{125.05}{#2}{18}{6}{zahl}
+  \feld{#1}{s#1_ko}{144.95}{#2}{18}{6}{zahl}
+  \feld{#1}{s#1_kk}{164.8}{#2}{18}{6}{zahl}}
 
-\eigenschaftsleiste{1}{104}
+\eigenschaftsleiste{1}{105.25}
 
 % --- Abgeleitete Werte -----------------------------------------------------
 % Kaestchen und Reihen identisch mit df (gemessen, nicht uebernommen):
@@ -173,42 +178,42 @@
 
 \feld{2}{s2_belastung}{168.8}{20.1}{14.4}{8}{zahl}
 
-\eigenschaftsleiste{2}{43}
+\eigenschaftsleiste{2}{42.75}
 
 \newcommand{\talentlinks}[2]{% slug y
-  \feld{2}{s2_#1_fw}  {70.5}{#2}{4.2}{4.2}{zahl}
-  \feld{2}{s2_#1_rpr} {75.1}{#2}{3.6}{4.2}{zahl}
-  \feld{2}{s2_#1_anm} {79.1}{#2}{25.3}{4.2}{text}}
+  \feld{2}{s2_#1_fw}  {70.5}{#2}{4.2}{4.58}{zahl}
+  \feld{2}{s2_#1_rpr} {75.1}{#2}{3.6}{4.58}{zahl}
+  \feld{2}{s2_#1_anm} {79.1}{#2}{25.3}{4.58}{text}}
 
 \newcommand{\talentrechts}[2]{% slug y
-  \feld{2}{s2_#1_fw}  {165.4}{#2}{4.2}{4.2}{zahl}
-  \feld{2}{s2_#1_rpr} {170}{#2}{3.6}{4.2}{zahl}
-  \feld{2}{s2_#1_anm} {174}{#2}{22.7}{4.2}{text}}
+  \feld{2}{s2_#1_fw}  {165.4}{#2}{4.2}{4.58}{zahl}
+  \feld{2}{s2_#1_rpr} {170}{#2}{3.6}{4.58}{zahl}
+  \feld{2}{s2_#1_anm} {174}{#2}{22.7}{4.58}{text}}
 
 \foreach \slug/\y in {%
-  fliegen/74.8, gaukeleien/79.4, klettern/84.0,
-  koerperbeherrschung/88.6, kraftakt/93.1, reiten/97.7,
-  schwimmen/102.3, selbstbeherrschung/106.9, singen/111.5,
-  sinnesschaerfe/116.1, tanzen/120.6, taschendiebstahl/125.2,
-  verbergen/129.8, zechen/134.4, bekehren/143.9,
-  betoeren/148.2, einschuechtern/152.7, etikette/157.3,
-  gassenwissen/161.9, menschenkenntnis/166.5, ueberreden/171.1,
-  verkleiden/175.7, willenskraft/180.3, faehrtensuchen/189.8,
-  fesseln/194.0, fischen/198.6, orientierung/203.2,
-  pflanzenkunde/207.8, tierkunde/212.3, wildnisleben/216.9}{%
+  fliegen/75.27, gaukeleien/79.8, klettern/84.37,
+  koerperbeherrschung/88.94, kraftakt/93.51, reiten/98.09,
+  schwimmen/102.62, selbstbeherrschung/107.19, singen/111.76,
+  sinnesschaerfe/116.42, tanzen/120.99, taschendiebstahl/125.52,
+  verbergen/130.09, zechen/134.66, bekehren/144.19,
+  betoeren/148.63, einschuechtern/153.5, etikette/158.07,
+  gassenwissen/162.64, menschenkenntnis/167.22, ueberreden/171.75,
+  verkleiden/176.32, willenskraft/180.89, faehrtensuchen/190.25,
+  fesseln/194.61, fischen/199.18, orientierung/203.75,
+  pflanzenkunde/208.28, tierkunde/212.85, wildnisleben/217.42}{%
   \talentlinks{\slug}{\y}}
 
 \foreach \slug/\y in {%
-  brettspiel/74.5, geographie/79.1, geschichtswissen/83.7,
-  goetterkulte/88.3, kriegskunst/92.9, magiekunde/97.4,
-  mechanik/102.0, rechnen/106.6, rechtskunde/111.2,
-  sagen/115.8, sphaerenkunde/120.4, sternkunde/125.0,
-  alchimie/134.1, boote/138.7, fahrzeuge/143.3,
-  handel/147.9, heilkunde_gift/152.5, heilkunde_krankheiten/157.0,
-  heilkunde_seele/161.6, heilkunde_wunden/166.2, holzbearbeitung/170.8,
-  lebensmittel/175.4, lederbearbeitung/180.0, malen/184.6,
-  metallbearbeitung/189.1, musizieren/193.7, schloesserknacken/198.3,
-  steinbearbeitung/202.9, stoffbearbeitung/207.5}{%
+  brettspiel/75.27, geographie/79.8, geschichtswissen/84.37,
+  goetterkulte/88.94, kriegskunst/93.51, magiekunde/98.09,
+  mechanik/102.62, rechnen/107.19, rechtskunde/111.76,
+  sagen/116.42, sphaerenkunde/120.99, sternkunde/125.52,
+  alchimie/134.7, boote/139.23, fahrzeuge/144.14,
+  handel/148.63, heilkunde_gift/153.5, heilkunde_krankheiten/158.07,
+  heilkunde_seele/162.64, heilkunde_wunden/167.22, holzbearbeitung/171.75,
+  lebensmittel/176.32, lederbearbeitung/180.89, malen/185.72,
+  metallbearbeitung/190.29, musizieren/194.61, schloesserknacken/199.18,
+  steinbearbeitung/203.75, stoffbearbeitung/208.28}{%
   \talentrechts{\slug}{\y}}
 
 % --- Eigenschaftsmodifikationen -------------------------------------------
@@ -272,7 +277,7 @@
 \kopfwert{sk}{167.7}
 \kopfwert{zk}{184.9}
 
-\eigenschaftsleiste{3}{43}
+\eigenschaftsleiste{3}{42.75}
 
 % --- Kampftechniken: eine Spalte, 14 Zeilen -------------------------------
 % Spaltengrenzen: 13.3 | 46.9 | 62.0 | 66.7 | 75.5 | 87.1 | 99.1
@@ -450,8 +455,8 @@
 \feld{5}{s5_asp_max}    {133.8}{20.4}{17.4}{7.8}{zahl}
 \feld{5}{s5_asp_aktuell}{155.5}{20.3}{41.3}{7.9}{text}
 
-\eigenschaftsleiste{4}{43}
-\eigenschaftsleiste{5}{43}
+\eigenschaftsleiste{4}{42.75}
+\eigenschaftsleiste{5}{42.75}
 
 % --- Die große Tabelle -----------------------------------------------------
 % Spaltengrenzen (Schattierungskanten, bestaetigt durch die Kopfmarken
