@@ -715,21 +715,29 @@ aussteht, in dieser Reihenfolge:
    von `dsa5latex.cls` zu heben — dann kennt auch die Abenteuerklasse sie, und die Mappe
    bekommt sie mit `\LoadClass`. Der Unterstrich in den Feldnamen braucht dafür
    `\catcode`\_=12`; das ist gefahrlos, weil die Klasse kein Mathematikpaket lädt.
-3. **`dsa5mappe.cls`** nach dem Muster von `dsa5einleger.cls`: `\LoadClass{dsa5latex}` mit
-   `ohneraster,ohnehintergrund`, dann A4 randabfallend beziehungsweise A3 quer. Damit bekommt
-   die Mappe die echten Schriften, den Titelaufbau aus Abschnitt 18 und `\dsaRechtevermerk`.
-   Drei Befunde gehören dabei erledigt:
-   - Der **Titel** steht in Andalus mit einem Versatzkranz aus acht Kopien. Der Aufbau der
-     Klasse hat fünf Lagen nach dem PSD des Baukastens. Für die Akzentfarbe je Held braucht es
-     ein eigenes Shading pro Farbe — dasselbe `\edef`-Muster, das die Klasse für ihre Fadings
-     schon fährt, weil pgf den Namen unexpandiert nimmt.
-   - Das **Heldenbild** füllt den Kasten nicht: `pruefbild.png` hat 260 × 325 px (0,800), der
-     Kasten 85 × 169 mm (0,503). `keepaspectratio` begrenzt an der Breite, das Bild wird
-     85 × 106,3 mm statt 85 × 169 und die Oberkante sitzt bei y 137,8 statt 75. Es fehlt ein
-     Prüfbild im Mappenverhältnis und ein Hinweis ins Log, wenn ein Bild den Kasten verfehlt.
-   - Die **Kopfzier** ist ein freistehendes Stück des Flechtbands. Weil es exakt das
-     Rahmenmotiv ist, liest es sich als abgerissenes Rahmenstück, nicht als Ornament. Der
-     Rahmen selbst bleibt wie er ist — er ist am Vorbild eingemessen und trägt die Akzentfarbe.
+3. **Erledigt 2026-10-08: `dsa5mappe.cls`** in der Projektwurzel. Sie lädt `dsa5latex` mit
+   `ohneraster,ohnehintergrund`, nimmt Spalten, `twoside` und Satzspiegel zurück
+   (`\geometry{reset, …}`) und setzt A4 hochkant oder, mit `\def\Fassung{druck}`, A3 quer.
+   `bau/mappe-bauen.py` legt die Projektwurzel in `TEXINPUTS`. Die Mappe hat damit die
+   Baukastenschriften und den Pflichttext der Klasse und den **Covertitel mit fünf Lagen**:
+   - `\dsaMappeTitelFadings{Zeilen}` vor dem Blatt (Fadings gehen nur außerhalb einer
+     tikzpicture), `\dsaMappeTitel{x}{oben}{Zeilen}` darin. Dieselben vier Zeichenstufen
+     wie `\dsaUmschlagVorne`, nur von der Oberkante nach unten gesetzt und mit eigener
+     Koordinate. Der Klassencode läuft in einem `scope` mit `x=1cm, y=1cm`, weil das Blatt
+     `y=-1mm` hat.
+   - Vorbild ist der Titel der Verlags-Charakterbögen (Heldenbogen Layariel 2019): der rote
+     Covertitel der Klasse in Versalien, Name und Profession als ein Block (Zeilenfaktor 0,9,
+     Profession 27 pt, keine Lücke). `\dsaMappeTitelFarben{HEX}` übernimmt davon Sättigung
+     und Helligkeit (HSV: Schrift 0,79/0,70 nach 0,81/0,45, Fläche 0,81/0,37) und von
+     `mappe_akzentfarbe` nur den Farbton; die goldene Kante bleibt. Ein bloßes Abdunkeln
+     der Akzentfarbe gab bei der hellen Hexenfarbe einen matten Titel. Mit
+     `\wert{mappe_titelfarbe}{baukasten}` oder ohne Akzentfarbe bleibt der graue Titel.
+   - `mappe_name` mit `\\` wird auf mehrere Titelzeilen verteilt; `\dsaTitelLuecke`
+     (`mappe_professionsluecke`, Vorgabe 0) setzt bei Bedarf Abstand vor die Profession.
+   - Ohne `mappe_empfehlung` entfällt der Fußkasten des Titelblatts, und das Bild wächst
+     auf 170 × 212 mm bis kurz über den unteren Rahmen.
+   Erledigt mit: die **Kopfzier** ist weg (wirkte als doppelter Rahmen über dem Titel), das
+   **Heldenbild** sitzt in 130 × 176 mm. Offen bleibt das Prüfbild im Mappenverhältnis.
 4. **`feature/einleger` einsammeln**, sonst liegen zwei halbfertige Zweigklassen nebeneinander.
 
 **Erledigt:** Der Pflichttext stand zweimal — in `mappe/blaetter.tex` (Blatt 3) in einer

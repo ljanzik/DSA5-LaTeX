@@ -235,7 +235,25 @@
 % XeLaTeX). Bis 2026-10-08 standen hier Cinzel und EB Garamond als
 % pdflatex-fähiger Ersatz; die echten Schriften sehen anders aus, und das
 % fiel am fertigen Umschlag auf.
-\newcommand{\auszeichnung}{\andalus}
+\newcommand{\auszeichnung}{\dsaandalus}
+
+% --- Titelzeilen -----------------------------------------------------------
+% Der Titel ist der Covertitel der Klasse (dsa5mappe.cls, \dsaMappeTitel):
+% Schatten, Flaeche, heller Rand, Verlauf. Die Zeilen: der Name, bei einem
+% \\ in mappe_name auf mehrere Zeilen verteilt, dann die Profession kleiner.
+% Liefert eine Folge von \dsaTitelZeile[Grad]{Text}.
+\def\mappe@namezeilen#1\\#2\@nil{%
+  \dsaTitelZeile[\mappenamengroesse]{#1}%
+  \if\relax\detokenize{#2}\relax\else\mappe@namezeilen#2\@nil\fi}
+\newcommand{\mappetitelzeilen}{%
+  \protected@edef\mappe@name{\wertoder{mappe_name}{s1_name}}%
+  \expandafter\mappe@namezeilen\mappe@name\\\@nil
+  \wertdaP{mappe_profession}{%
+    \dsaTitelLuecke{\mappeprofluecke}%
+    \dsaTitelZeile[\mappeprofgroesse]{\wertvon{mappe_profession}}}{}}
+% Abstand zwischen Name und Profession in mm; die Flaechen beider sollen
+% sich nicht beruehren.
+\newcommand{\mappeprofluecke}{\mappewahl{mappe_professionsluecke}{0}}
 \newcommand{\lesetext}{\rmfamily}
 
 % ACHTUNG, zweimal eingetreten:
@@ -273,9 +291,9 @@
 % Alle über die Heldendatei übersteuerbar, alle mit brauchbarer Vorgabe.
 % Zweck: ein langer Name braucht eine kleinere Schrift, und das soll nicht
 % dazu zwingen, das Layout anzufassen.
-\newcommand{\mappenamengroesse}{\mappewahl{mappe_namengroesse}{40}}
+\newcommand{\mappenamengroesse}{\mappewahl{mappe_namengroesse}{42.8}}
 \newcommand{\mappenamenzeile}{\mappewahl{mappe_namenzeile}{45}}
-\newcommand{\mappeprofgroesse}{\mappewahl{mappe_professionsgroesse}{21}}
+\newcommand{\mappeprofgroesse}{\mappewahl{mappe_professionsgroesse}{27}}
 \newcommand{\mappehintergrundtitel}{\mappewahl{mappe_hintergrundtitel}{HINTERGRUND}}
 \newcommand{\mappecopyright}{\mappewahl{mappe_copyright}{[Jahr] [Name]}}
 

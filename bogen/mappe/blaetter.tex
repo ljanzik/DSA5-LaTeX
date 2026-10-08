@@ -27,23 +27,29 @@
 
 % --- Blatt 1: Titel --------------------------------------------------------
 \newcommand{\blatttitel}{%
+  % Die Fadings des Covertitels muessen vor dem Blatt deklariert werden,
+  % ausserhalb der tikzpicture (dsa5mappe.cls).
+  \dsaMappeTitelFadings{\mappetitelzeilen}%
   \begin{mappenblatt}
     \flechtrahmen
     % Keine Kopfzier ueber dem Titel (Anweisung 2026-10-08): das Kettenstueck
     % an der Stelle des Verlagslogos wirkte als doppelter Rahmen ueber der
     % Ueberschrift. \kopfzier bleibt in mechanik-mappe.tex definiert.
-    \konturzeile{105}{21}{0.30}%
-      {\auszeichnung\fontsize{\mappenamengroesse}{\mappenamenzeile}\selectfont}%
-      {\wertoder{mappe_name}{s1_name}%
-       \wertdaP{mappe_profession}{%
-         \\[2.5mm]{\fontsize{\mappeprofgroesse}{\mappeprofgroesse}\selectfont
-                   \wertvon{mappe_profession}}%
-       }{}}%
+    %
+    % Der Titel ist der Covertitel der Klasse mit Schatten, Flaeche, Rand und
+    % Verlauf (seit 2026-10-08; vorher \konturzeile). Oberkante y 17, die
+    % Zeilen wachsen nach unten, die Profession steht kleiner darunter.
+    \dsaMappeTitel{105}{17}{\mappetitelzeilen}%
     % Ganzkörperbild, auf der Standlinie. Deutlich groesser als am Vorbild
-    % (dort 85 x 169 ab y 75): 130 x 176 ab y 68, Unterkante weiter bei 244
-    % ueber dem Fusskasten (Anweisung 2026-10-08). Am besten freigestellt,
-    % siehe werkzeuge/hintergrundfrei.py.
-    \mappebild{mappe_bild}{s1_bild}{40}{68}{130}{176}
+    % (dort 85 x 169 ab y 75): 130 x 176 ab y 68, Unterkante bei 244 ueber
+    % dem Fusskasten. Ohne Kurzempfehlung gibt es keinen Fusskasten, dann
+    % fuellt das Bild den Platz bis 280 (Anweisung 2026-10-08): 170 x 212.
+    % Am besten freigestellt, siehe werkzeuge/hintergrundfrei.py.
+    \wertdaP{mappe_empfehlung}{%
+      \mappebild{mappe_bild}{s1_bild}{40}{68}{130}{176}%
+    }{%
+      \mappebild{mappe_bild}{s1_bild}{20}{68}{170}{212}%
+    }%
     % Fußkasten mit der Kurzempfehlung
     \wertdaP{mappe_empfehlung}{%
       \pergamentkasten{14}{248}{182}{%

@@ -19,6 +19,7 @@ Copyright 2026 Leif Janzik. Apache License 2.0.
 """
 
 import argparse
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -66,9 +67,14 @@ def baue(fassung, held, wenden):
     befehl = [xelatex(), "-interaction=nonstopmode", "-halt-on-error",
               f"-output-directory={AUSGABE}", f"-jobname={jobname}",
               vorspann + r"\input{mappe/mappe.tex}"]
+    # dsa5mappe.cls und dsa5latex.cls liegen in der Projektwurzel, eine Ebene
+    # ueber bogen/. Der abschliessende Trenner haengt die Standardpfade an.
+    umgebung = dict(os.environ)
+    umgebung["TEXINPUTS"] = (str(PROJEKT.parent) + os.pathsep
+                             + umgebung.get("TEXINPUTS", ""))
     for lauf in (1, 2):
         fertig = subprocess.run(befehl, cwd=PROJEKT, capture_output=True,
-                                text=True, errors="replace")
+                                text=True, errors="replace", env=umgebung)
         if fertig.returncode != 0:
             log = AUSGABE / f"{jobname}.log"
             print(f"    Lauf {lauf} FEHLGESCHLAGEN. Fehler aus dem Log:")
