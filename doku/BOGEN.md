@@ -354,7 +354,7 @@ Drei strikt getrennte Ebenen. Die Trennung ist der ganze Trick des Projekts:
 3. **Wertedateien** — `helden/<name>.tex` mit `\wert{feldname}{Wert}`. Fehlender Wert heißt leeres
    Feld, **kein Abbruch**.
 
-Feldarten: `text`, `zahl` (zentriert), `mehrzeilig` (`multiline=true`) und `bild`.
+Feldarten: `text`, `zahl` (zentriert), `rechts` (rechtsbündig, für Zeilen mit der Beschriftung rechts), `mehrzeilig` (`multiline=true`) und `bild`.
 
 ## Leere Bögen weglassen
 

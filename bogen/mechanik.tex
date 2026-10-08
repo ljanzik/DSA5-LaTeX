@@ -36,8 +36,8 @@
 \newcommand{\feldeintrag}[7]{}
 
 % --- Feldarten -------------------------------------------------------------
-% art = text | zahl | mehrzeilig
-% zahl wird zentriert, mehrzeilig bekommt multiline. Alles andere wie text.
+% art = text | zahl | rechts | mehrzeilig | bild
+% zahl wird zentriert, rechts rechtsbuendig, mehrzeilig bekommt multiline. Alles andere wie text.
 %
 % Die Zusatzoptionen werden als ARGUMENT durchgereicht, nicht in einem Makro
 % abgelegt. Zwei Fallgruben stecken hier drin:
@@ -81,7 +81,8 @@
   \ifthenelse{\equal{#6}{bild}}{}{%
   \ifthenelse{\equal{#6}{mehrzeilig}}{\feldWidget{#1}{#2}{#3}{#4}{#5}{multiline=true}}{%
   \ifthenelse{\equal{#6}{zahl}}{\feldWidget{#1}{#2}{#3}{#4}{#5}{align=1}}{%
-  \feldWidget{#1}{#2}{#3}{#4}{#5}{align=0}}}}}
+  \ifthenelse{\equal{#6}{rechts}}{\feldWidget{#1}{#2}{#3}{#4}{#5}{align=2}}{%
+  \feldWidget{#1}{#2}{#3}{#4}{#5}{align=0}}}}}}
 
 % --- Ein Feld setzen: vorbefuellte Fassung ---------------------------------
 
@@ -107,11 +108,22 @@
 % Zahl: waagerecht mittig, senkrecht nach der Hoehe der Ziffern mittig. Ziffern
 % haben keine Unterlaenge, also ist die Mitte der Glyphe die Mitte des Kastens.
 %
+% rechts: wie Text, aber rechtsbuendig. Fuer Zeilen, deren Beschriftung rechts
+% steht (Tradition auf Bogen 4 und 5 der Farbfassung, links davon das Buecherbild).
+%
 % Beides als Box ohne Hoehe, deren Grundlinie an der Oberkante des Feldes
 % liegt (der Knoten in \setzeFeldFest haengt mit north west dort an); der
 % Inhalt wird um das gerechnete Mass abgesenkt.
 \newlength{\feldgrundlinie}
 \setlength{\feldgrundlinie}{1.1mm}
+
+% Nachgemessen im gesetzten PDF (rawdict-Origin): jeder vorbefuellte Wert lag
+% 0,18 mm tiefer als gerechnet -- Name 36,38 statt 36,20, Vorteile 129,93 statt
+% 129,75, die Zahl in LeP ebenso. Der Versatz ist fuer Text und Zahl gleich, also
+% eine Eigenschaft der Platzierung, nicht des Grundlinienmasses. Die Ursache im
+% TikZ-Knoten ist nicht gefunden; \setzeFeldFest hebt jeden Knoten um diesen Betrag.
+\newlength{\feldkorrektur}
+\setlength{\feldkorrektur}{0.18mm}
 
 \newcommand{\einzeilig}[4]{% breite hoehe art inhalt
   \sbox\feldbox{\feldtextstil #4}%
@@ -121,8 +133,11 @@
   \ifthenelse{\equal{#3}{zahl}}{%
     \makebox[#1mm][c]{\raisebox{-\dimexpr #2mm/2+\ht\feldbox/2\relax}[0pt][0pt]{%
       \usebox\feldbox}}}{%
+  \ifthenelse{\equal{#3}{rechts}}{%
+    \makebox[#1mm][r]{\raisebox{-\dimexpr #2mm-\feldgrundlinie\relax}[0pt][0pt]{%
+      \usebox\feldbox}}}{%
     \makebox[#1mm][l]{\raisebox{-\dimexpr #2mm-\feldgrundlinie\relax}[0pt][0pt]{%
-      \usebox\feldbox}}}}
+      \usebox\feldbox}}}}}
 
 % --- Bildfelder ------------------------------------------------------------
 % art=bild. Der Wert ist ein Dateipfad, nicht Text:
@@ -147,7 +162,7 @@
 
 \newcommand{\setzeFeldFest}[6]{%
   \node[anchor=north west, inner sep=0pt, outer sep=0pt]
-    at ([shift={(#2mm,-#3mm)}]current page.north west)
+    at ([shift={(#2mm,-#3mm+\feldkorrektur)}]current page.north west)
     {\ifthenelse{\equal{#6}{bild}}{\bildkasten{#1}{#4}{#5}}{%
       \ifthenelse{\equal{#6}{mehrzeilig}}{%
        \parbox[t][#5mm][t]{#4mm}{\feldtextstil\raggedright\wertvon{#1}}}{%
