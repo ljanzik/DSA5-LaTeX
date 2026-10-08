@@ -444,8 +444,9 @@
 % die hier keine eigene Beschriftung haben, auf die freien Zeilen:
 %   s4_talente_1/2            -> linke Zeilen 2 und 4
 %   s4_zeremonialgegenstand_1..3 -> rechte Zeilen 2 bis 4
-%   s5_frei_1/2               -> linke Zeilen 2 und 4
-%   s5_artefakt_1..3          -> rechte Zeilen 2 bis 4
+%   s5: Merkmal, Leiteigenschaft und Tradition stehen selbst UNTER ihrer
+%   Ueberschrift (Zeile 2 bzw. 4); s5_artefakt_1/2 -> rechte Zeilen 3 und 4.
+%   s5_frei_1/2 und s5_artefakt_3 haben deshalb hier keinen Platz.
 % Der Wert erscheint dann auf einer unbeschrifteten Zeile statt zu
 % verschwinden. s4_zeremonialgegenstand_4/5 und s5_artefakt_4/5 haben hier
 % keinen Platz.
@@ -516,14 +517,16 @@
 \feld{4}{s4_zeremonialgegenstand_2}{133.6}{186.96}{46.3}{5.5}{rechts}
 \feld{4}{s4_zeremonialgegenstand_3}{133.6}{194.76}{46.3}{5.5}{rechts}
 
-\feld{5}{s5_merkmal}        {45.5}{171.16}{29.5}{5.5}{text}
-\feld{5}{s5_frei_1}         {28.6}{178.4}{46.4}{5.5}{text}
-\feld{5}{s5_leiteigenschaft}{60}{186.4}{15}{5.5}{text}
-\feld{5}{s5_frei_2}         {28.7}{194.3}{46.3}{5.5}{text}
-\feld{5}{s5_tradition}      {133.5}{171.16}{26}{5.5}{rechts}
-\feld{5}{s5_artefakt_1}     {133.5}{178.96}{46.4}{5.5}{rechts}
-\feld{5}{s5_artefakt_2}     {133.6}{186.96}{46.3}{5.5}{rechts}
-\feld{5}{s5_artefakt_3}     {133.6}{194.76}{46.3}{5.5}{rechts}
+% Bogen 5: Werte jeweils in der Zeile UNTER ihrer Ueberschrift (Anweisung
+% 2026-10-08). Links: Merkmal (Zeile 1) -> Zeile 2, Leiteigenschaft (Zeile 3)
+% -> Zeile 4. Rechts: Tradition (Zeile 1) -> Zeile 2, Traditionsartefakt
+% -> Zeilen 3 und 4. y auf der Schreiblinie der Zeile (Unterkante = Linie).
+% s5_frei_1/2 und s5_artefakt_3 haben in dieser Fassung keinen Platz mehr.
+\feld{5}{s5_merkmal}        {28.6}{178.4}{46.4}{5.5}{text}
+\feld{5}{s5_leiteigenschaft}{28.7}{194.3}{46.3}{5.5}{text}
+\feld{5}{s5_tradition}      {133.5}{178.4}{46.4}{5.5}{rechts}
+\feld{5}{s5_artefakt_1}     {133.6}{186.4}{46.3}{5.5}{rechts}
+\feld{5}{s5_artefakt_2}     {133.6}{194.2}{46.3}{5.5}{rechts}
 
 % --- Klerikale bzw. Magische Sonderfertigkeiten ---------------------------
 % Kasten 14.1..103.2. Acht Schreiblinien: 224.0 231.7 239.5 247.3 254.4
