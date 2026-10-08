@@ -69,9 +69,24 @@
     \flechtrahmen
     \node[anchor=north,text=schrift,font=\auszeichnung\fontsize{19}{23}\selectfont]
       at (105,28.5) {\mappehintergrundtitel};
-    \mappetextblock{30.6}{38}{148.9}%
-      {\lesetext\fontsize{13}{19.2}\selectfont}{justify}%
-      {\wertvon{mappe_hintergrund}}%
+    % Ohne Hintergrundtext Schreiblinien, damit der Spieler ihn selbst
+    % eintragen kann (2026-10-08). Sie enden ueber dem Fusskasten, wenn es
+    % einen gibt.
+    \wertdaP{mappe_hintergrund}{%
+      \mappetextblock{30.6}{38}{148.9}%
+        {\lesetext\fontsize{13}{19.2}\selectfont}{justify}%
+        {\wertvon{mappe_hintergrund}}%
+    }{%
+      \wertdaP{mappe_fusstext}{%
+        \foreach \i in {0,...,21} {%
+          \draw[bandkontur,opacity=0.26,line width=0.25mm]
+            (26,{46+\i*9}) -- (184,{46+\i*9});}%
+      }{%
+        \foreach \i in {0,...,24} {%
+          \draw[bandkontur,opacity=0.26,line width=0.25mm]
+            (26,{46+\i*9}) -- (184,{46+\i*9});}%
+      }%
+    }%
     % Fußkasten, frei betextbar
     \wertdaP{mappe_fusstext}{%
       \pergamentkasten{14}{243}{182}{%
