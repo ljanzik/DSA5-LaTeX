@@ -230,18 +230,12 @@
     at ([xshift=\kasteneinzug,yshift=-\kasteneinzughoch]#1,#2) {\usebox\kastenbox};}
 
 % --- Schrift ---------------------------------------------------------------
-% Cinzel für die Auszeichnung, EB Garamond für den Lesetext. Beide liegen in
-% TeX Live und laufen unter pdflatex.
-%
-% Zwei Dinge, die daran nicht zu ändern sind:
-% - Die Titelschrift des Vorbilds ist ein Rasterbild. Sie ist damit nicht
-%   greifbar, auch nicht über die Schriftliste des PDF — dort steht nur
-%   Gentium Basic, und das nur für den Fußtext.
-% - Der Baukasten schreibt Gentium Basic als Fließtext vor. Ein
-%   pdflatex-fähiges Gentium gibt es in TeX Live nicht mehr
-%   ("tlmgr: package gentium-tug not present in repository"). EB Garamond
-%   ist der nächste Verwandte, der da ist.
-\newcommand{\auszeichnung}{\cinzelblack}
+% Die Schriften des Scriptorium-Baukastens: Andalus für die Auszeichnung,
+% Gentium Basic für den Lesetext (geladen in mappe.tex über fontspec, daher
+% XeLaTeX). Bis 2026-10-08 standen hier Cinzel und EB Garamond als
+% pdflatex-fähiger Ersatz; die echten Schriften sehen anders aus, und das
+% fiel am fertigen Umschlag auf.
+\newcommand{\auszeichnung}{\andalus}
 \newcommand{\lesetext}{\rmfamily}
 
 % ACHTUNG, zweimal eingetreten:

@@ -14,7 +14,7 @@
 %   \def\Held{dorle}        Wertedatei helden/<name>.tex
 %   \def\Wenden{kurz}       Wendeachse der Druckfassung, siehe unten
 %
-% ZWINGEND pdflatex (wie der Heldenbogen) und ZWINGEND zweimal — die
+% ZWINGEND XeLaTeX (wegen der Baukastenschriften) und ZWINGEND zweimal — die
 % Blätter sind Boxen, aber tikz braucht seinen zweiten Lauf trotzdem.
 %
 % Die Mappe enthält KEINE Seite des Originalbogens. Sie ist damit anders als
@@ -30,10 +30,18 @@
 \usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{calc}
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{ebgaramond}      % Lesetext; setzt sich als \rmdefault
-\usepackage[black]{cinzel}   % Auszeichnung, liefert \cinzelblack
+% Die Schriften des Scriptorium-Baukastens, dieselben Dateien wie in der
+% Abenteuerklasse: Gentium Basic fuer den Lesetext, Andalus fuer Name,
+% Profession und Ueberschriften. Sie liegen in schriften/ der Projektwurzel
+% (werkzeuge/aufbereiten.py) -- das Arbeitsverzeichnis ist bogen/, daher
+% eine Ebene hoeher. Deshalb laeuft die Mappe mit XeLaTeX, nicht pdflatex.
+\usepackage{fontspec}
+\setmainfont{GenBasR.ttf}[
+  Path           = ../schriften/,
+  BoldFont       = GenBasB.ttf,
+  ItalicFont     = GenBasI.ttf,
+  BoldItalicFont = GenBasBI.ttf]
+\newfontfamily\andalus{andlso.ttf}[Path = ../schriften/]
 
 % Unterstrich als gewoehnliches Zeichen — die Wertenamen brauchen ihn
 % (mappe_akzentfarbe). Das Dokument enthaelt keine Mathematik.

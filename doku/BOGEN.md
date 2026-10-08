@@ -241,9 +241,8 @@ tikz      →  Koordinatensystem zum Einmessen
 ```
 
 Das gilt für den **Bogen**. Die Mappe braucht weder AcroForm noch `pdfpages` und ist an
-pdflatex nicht gebunden. Sie setzt heute in Ersatzschriften (`ebgaramond`, `cinzel`), weil
-Andalus und Gentium Basic `fontspec` verlangen — und die liegen seit dem Umzug in `schriften/`
-der Projektwurzel. Ein XeLaTeX-Lauf steht ihr damit offen; umgestellt ist sie nicht.
+pdflatex nicht gebunden. Seit 2026-10-08 läuft sie mit XeLaTeX und setzt in Andalus und
+Gentium Basic aus `schriften/` der Projektwurzel (siehe „Die Schriften liegen schon da“).
 
 **Distribution: TeX Live.** Bei Projektbeginn war auf dem Rechner kein LaTeX (gemessen: `pdflatex`
 und `latexmk` fehlten; `pdftotext` aus xpdf 4.06 war vorhanden, kennt aber kein `-bbox`). Die
@@ -354,7 +353,7 @@ Drei strikt getrennte Ebenen. Die Trennung ist der ganze Trick des Projekts:
 3. **Wertedateien** — `helden/<name>.tex` mit `\wert{feldname}{Wert}`. Fehlender Wert heißt leeres
    Feld, **kein Abbruch**.
 
-Feldarten: `text`, `zahl` (zentriert), `rechts` (rechtsbündig, für Zeilen mit der Beschriftung rechts), `mehrzeilig` (`multiline=true`) und `bild`.
+Feldarten: `text`, `zahl` (zentriert), `rechts` (rechtsbündig, für Zeilen mit der Beschriftung rechts), `mitte` (zentriert auf der Textgrundlinie, für Tabellen mit zentrierten Spaltenköpfen), `mehrzeilig` (`multiline=true`) und `bild`.
 
 ## Leere Bögen weglassen
 
@@ -444,8 +443,8 @@ und `…_Streuner.pdf`, jeweils erste und letzte Seite). Vier Blätter:
 
 | Blatt | Inhalt |
 |---|---|
-| Titel | Kopfzier, Name, Profession, Ganzkörperbild, Kurzempfehlung im Fußkasten |
-| Innen links | Pflichttext der Vereinbarung über Gemeinschaftsinhalte, dazu ein freier Kasten |
+| Titel | Name, Profession, Ganzkörperbild (130 × 176 mm, am besten freigestellt), Kurzempfehlung im Fußkasten |
+| Innen links | Pflichttext der Vereinbarung über Gemeinschaftsinhalte, dazu ein freier Kasten; mit `\wert{mappe_rechtliches}{aus}` stattdessen eine Notizseite |
 | Innen rechts | frei betextbar; ohne Text erscheinen Notizlinien |
 | Rückseite | Überschrift, Hintergrundtext, Bild als Wasserzeichen, freier Fußkasten |
 
@@ -454,8 +453,8 @@ die erste und die letzte Seite) und `-Fassung druck` (2 × A3 quer, gefalzt der 
 den die Bögen eingelegt werden).
 
 **Sie enthält keine Seite des Originalbogens und ist deshalb weitergebbar** — anders als die
-überlagerten Fassungen, siehe „Rechtliches". Voraussetzung ist der Pflichttext, und der steht
-fest auf dem linken Innenblatt.
+überlagerten Fassungen, siehe „Rechtliches". Voraussetzung ist der Pflichttext auf dem linken
+Innenblatt. Eine Mappe mit `mappe_rechtliches` = `aus` ist nur für den eigenen Tisch.
 
 ### Die Schriften liegen schon da
 
@@ -465,15 +464,12 @@ der Projektwurzel, aufbereitet von `werkzeuge/aufbereiten.py` — dieselben Date
 Abenteuerklasse benutzt. Es gibt sie also genau einmal, und wer den Baukasten erneuert,
 erneuert sie an einer Stelle.
 
-Solange die Mappe unter pdflatex läuft, benutzt sie sie **nicht**: `fontspec` verlangt XeLaTeX,
-und deshalb setzt sie heute in `ebgaramond` und `cinzel` als Ersatz. Der Weg zu den echten
-Schriften führt über eine `dsa5mappe.cls`, die `dsa5latex` lädt — siehe „Was als Nächstes
-ansteht".
-
-Solange das nicht passiert ist, braucht der Bogen von der Wurzel nichts außer `schriften/`,
-und auch das nur, wenn die Mappe umgestellt wird. Grafiken braucht er keine: er legt
-Originalseiten ein, und die Mappe zeichnet ihren Rahmen selbst und leitet ihr Pergament mit
-`bau/pergament-vorbereiten.py` aus dem Baukasten ab.
+**Die Mappe setzt seit 2026-10-08 in genau diesen Schriften** und läuft deshalb mit
+**XeLaTeX** (`fontspec`); `bau/mappe-bauen.py` ruft `xelatex()` aus `werkzeugpfad.py`. Vorher
+standen `cinzel` und `ebgaramond` als pdflatex-fähiger Ersatz da — am fertigen Umschlag sah
+man den Unterschied. Der Heldenbogen selbst bleibt bei pdflatex (Verlags-PDF einlegen,
+Formularfelder). Die Mappe braucht von der Wurzel `schriften/` und das Pergament in
+`grafiken/`.
 
 ### Ein Blatt ist eine Box, keine Seite
 
@@ -510,15 +506,12 @@ gemessenen 18,12). Ein halbes Glied in der Ecke fällt auf, eine Abweichung von 
 
 ### Was nicht nachgezeichnet wird
 
-- **Das Verlagslogo im Seitenkopf.** Eingetragene Marke. An seiner Stelle sitzt ein
-  freistehendes Stück derselben Kette (`\kopfzier`) — das nimmt die Akzentfarbe mit, was das
-  Logo nie getan hätte.
+- **Das Verlagslogo im Seitenkopf.** Eingetragene Marke. Dort steht nichts: das freistehende
+  Kettenstück (`\kopfzier`), das bis 2026-10-08 an seiner Stelle saß, wirkte über der
+  Überschrift wie ein doppelter Rahmen und ist entfernt. Der Befehl bleibt definiert.
 - **Die Titelschrift der Vorbilder.** Sie ist ein Rasterbild; die Schriftliste des PDF nennt
-  nur Gentium Basic, und das nur für den Fußtext. Ersatz ist **Cinzel** (`[black]`), in
-  TeX Live und pdflatex-fähig.
-- **Gentium Basic als Fließtext**, obwohl der Baukasten es vorschreibt: ein pdflatex-fähiges
-  Gentium gibt es in TeX Live nicht mehr (`tlmgr: package gentium-tug not present in
-  repository`). Genommen ist **EB Garamond**, der nächste Verwandte, der da ist.
+  nur Gentium Basic, und das nur für den Fußtext. Genommen ist **Andalus**, die Titelschrift
+  des Baukastens.
 
 ### Das Pergament kommt aus dem Baukasten
 
@@ -726,7 +719,7 @@ aussteht, in dieser Reihenfolge:
    `ohneraster,ohnehintergrund`, dann A4 randabfallend beziehungsweise A3 quer. Damit bekommt
    die Mappe die echten Schriften, den Titelaufbau aus Abschnitt 18 und `\dsaRechtevermerk`.
    Drei Befunde gehören dabei erledigt:
-   - Der **Titel** steht in Cinzel Black mit einem Versatzkranz aus acht Kopien. Der Aufbau der
+   - Der **Titel** steht in Andalus mit einem Versatzkranz aus acht Kopien. Der Aufbau der
      Klasse hat fünf Lagen nach dem PSD des Baukastens. Für die Akzentfarbe je Held braucht es
      ein eigenes Shading pro Farbe — dasselbe `\edef`-Muster, das die Klasse für ihre Fadings
      schon fährt, weil pgf den Namen unexpandiert nimmt.

@@ -25,7 +25,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from bauen import print_logfehler  # noqa: E402
-from werkzeugpfad import AUSGABE, PROJEKT, groesse, pdflatex  # noqa: E402
+from werkzeugpfad import AUSGABE, PROJEKT, groesse, xelatex  # noqa: E402
 
 # Pergamentflaeche und Fusskasten liegen in grafiken/, wie jede andere
 # Baukastengrafik. Erzeugt werden sie beim Einrichten, nicht beim Bauen:
@@ -60,10 +60,10 @@ def baue(fassung, held, wenden):
         vorspann += r"\def\Held{%s}" % held
 
     # flush, sonst steht die Ueberschrift hinter der Ausgabe des
-    # Unterprozesses: unser print ist gepuffert, pdflatex und
+    # Unterprozesses: unser print ist gepuffert, xelatex und
     # quelle-vorbereiten schreiben direkt auf den Handle.
     print(f"=== {jobname}", flush=True)
-    befehl = [pdflatex(), "-interaction=nonstopmode", "-halt-on-error",
+    befehl = [xelatex(), "-interaction=nonstopmode", "-halt-on-error",
               f"-output-directory={AUSGABE}", f"-jobname={jobname}",
               vorspann + r"\input{mappe/mappe.tex}"]
     for lauf in (1, 2):

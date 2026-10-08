@@ -40,24 +40,35 @@ def _texlive_windows():
     return wurzel, wurzel / "bin" / "windows", wurzel / "tlpkg" / "tlgs"
 
 
-def pdflatex():
-    """Pfad zu pdflatex. Bricht mit einer brauchbaren Meldung ab, wenn es
-    fehlt -- "command not found" mitten in einem Bauskript sagt zu wenig."""
-    gefunden = shutil.which("pdflatex")
+def _texprogramm(name):
+    """Pfad zu einem TeX-Programm. Bricht mit einer brauchbaren Meldung ab,
+    wenn es fehlt -- "command not found" mitten in einem Bauskript sagt zu wenig."""
+    gefunden = shutil.which(name)
     if gefunden:
         return gefunden
     if WINDOWS:
         _, texbin, _ = _texlive_windows()
-        kandidat = texbin / "pdflatex.exe"
+        kandidat = texbin / f"{name}.exe"
         if kandidat.exists():
             # In den PATH, damit auch Kindprozesse es finden.
             os.environ["PATH"] = str(texbin) + os.pathsep + os.environ["PATH"]
             return str(kandidat)
-        raise SystemExit(f"pdflatex nicht gefunden. Erwartet unter {texbin}")
+        raise SystemExit(f"{name} nicht gefunden. Erwartet unter {texbin}")
     raise SystemExit(
-        "pdflatex nicht gefunden.\n"
+        f"{name} nicht gefunden.\n"
         "  macOS : brew install --cask mactex-no-gui   (dann neue Shell)\n"
         "  Linux : die texlive-Pakete der Distribution")
+
+
+def pdflatex():
+    """Pfad zu pdflatex (Heldenbogen: legt Verlags-PDF ein, hyperref-Formular)."""
+    return _texprogramm("pdflatex")
+
+
+def xelatex():
+    """Pfad zu xelatex (Charaktermappe: braucht fontspec fuer die
+    Baukastenschriften Andalus und Gentium Basic)."""
+    return _texprogramm("xelatex")
 
 
 def ghostscript():
@@ -124,6 +135,10 @@ if __name__ == "__main__":
         print(f"pdflatex    : {pdflatex()}")
     except SystemExit as f:
         print(f"pdflatex    : {f}")
+    try:
+        print(f"xelatex     : {xelatex()}")
+    except SystemExit as f:
+        print(f"xelatex     : {f}")
     try:
         exe, inc = ghostscript()
         print(f"Ghostscript : {exe}")

@@ -334,14 +334,14 @@
 % hinter dem Emblem und ist unlesbar. Felder starten daher bei 26.5.
 \newcommand{\nahkampfzeile}[2]{% nr y
   \feld{3}{s3_nk_#1_waffe}     {26.5}{#2}{20.4}{4.5}{text}
-  \feld{3}{s3_nk_#1_technik}   {47.9}{#2}{21.4}{4.5}{text}
-  \feld{3}{s3_nk_#1_schaden}   {70.3}{#2}{23.8}{4.5}{text}
-  \feld{3}{s3_nk_#1_tp_gesamt}{95.1}{#2}{10.9}{4.5}{text}
-  \feld{3}{s3_nk_#1_mod}       {107}{#2}{21.7}{4.5}{text}
-  \feld{3}{s3_nk_#1_reichweite}{129.7}{#2}{25.3}{4.5}{text}
-  \feld{3}{s3_nk_#1_at}        {156}{#2}{9.8}{4.5}{zahl}
-  \feld{3}{s3_nk_#1_pa}        {166.8}{#2}{9.7}{4.5}{zahl}
-  \feld{3}{s3_nk_#1_gewicht}   {177.5}{#2}{19}{4.5}{text}}
+  \feld{3}{s3_nk_#1_technik}   {47.9}{#2}{21.4}{4.5}{mitte}
+  \feld{3}{s3_nk_#1_schaden}   {70.3}{#2}{23.8}{4.5}{mitte}
+  \feld{3}{s3_nk_#1_tp_gesamt}{95.1}{#2}{10.9}{4.5}{mitte}
+  \feld{3}{s3_nk_#1_mod}       {107}{#2}{21.7}{4.5}{mitte}
+  \feld{3}{s3_nk_#1_reichweite}{129.7}{#2}{25.3}{4.5}{mitte}
+  \feld{3}{s3_nk_#1_at}        {156}{#2}{9.8}{4.5}{mitte}
+  \feld{3}{s3_nk_#1_pa}        {166.8}{#2}{9.7}{4.5}{mitte}
+  \feld{3}{s3_nk_#1_gewicht}   {177.5}{#2}{19}{4.5}{mitte}}
 
 \foreach \nr [count=\i] in {143.6, 148.4, 153.3, 157.8}{%
   \nahkampfzeile{\i}{\nr}}
@@ -352,13 +352,13 @@
 % Zeilenoberkanten 179.8 184.6 189.5 194.0.
 \newcommand{\fernkampfzeile}[2]{% nr y
   \feld{3}{s3_fk_#1_waffe}     {26.5}{#2}{20.3}{4.5}{text}
-  \feld{3}{s3_fk_#1_technik}   {47.8}{#2}{21.4}{4.5}{text}
-  \feld{3}{s3_fk_#1_ladezeit}  {70.2}{#2}{23.8}{4.5}{text}
-  \feld{3}{s3_fk_#1_tp}        {95}{#2}{10.9}{4.5}{text}
-  \feld{3}{s3_fk_#1_reichweite}{106.9}{#2}{21.8}{4.5}{text}
-  \feld{3}{s3_fk_#1_fernkampf} {129.7}{#2}{25.3}{4.5}{text}
-  \feld{3}{s3_fk_#1_munition}  {156}{#2}{20.5}{4.5}{text}
-  \feld{3}{s3_fk_#1_gewicht}   {177.5}{#2}{19}{4.5}{text}}
+  \feld{3}{s3_fk_#1_technik}   {47.8}{#2}{21.4}{4.5}{mitte}
+  \feld{3}{s3_fk_#1_ladezeit}  {70.2}{#2}{23.8}{4.5}{mitte}
+  \feld{3}{s3_fk_#1_tp}        {95}{#2}{10.9}{4.5}{mitte}
+  \feld{3}{s3_fk_#1_reichweite}{106.9}{#2}{21.8}{4.5}{mitte}
+  \feld{3}{s3_fk_#1_fernkampf} {129.7}{#2}{25.3}{4.5}{mitte}
+  \feld{3}{s3_fk_#1_munition}  {156}{#2}{20.5}{4.5}{mitte}
+  \feld{3}{s3_fk_#1_gewicht}   {177.5}{#2}{19}{4.5}{mitte}}
 
 \foreach \nr [count=\i] in {180, 184.8, 189.7, 194.2}{%
   \fernkampfzeile{\i}{\nr}}
@@ -370,11 +370,11 @@
 % Zeilenoberkanten 215.7 220.4 225.3 229.9.
 \newcommand{\ruestungszeile}[2]{% nr y
   \feld{3}{s3_ru_#1_name}   {26.5}{#2}{20.3}{4.5}{text}
-  \feld{3}{s3_ru_#1_rs}     {47.8}{#2}{7.6}{4.5}{zahl}
-  \feld{3}{s3_ru_#1_be}     {56.4}{#2}{7.7}{4.5}{zahl}
-  \feld{3}{s3_ru_#1_abzuege}{65.1}{#2}{17.7}{4.5}{text}
-  \feld{3}{s3_ru_#1_gewicht}{83.8}{#2}{12.4}{4.5}{text}
-  \feld{3}{s3_ru_#1_wo}     {97.2}{#2}{14.7}{4.5}{text}}
+  \feld{3}{s3_ru_#1_rs}     {47.8}{#2}{7.6}{4.5}{mitte}
+  \feld{3}{s3_ru_#1_be}     {56.4}{#2}{7.7}{4.5}{mitte}
+  \feld{3}{s3_ru_#1_abzuege}{65.1}{#2}{17.7}{4.5}{mitte}
+  \feld{3}{s3_ru_#1_gewicht}{83.8}{#2}{12.4}{4.5}{mitte}
+  \feld{3}{s3_ru_#1_wo}     {97.2}{#2}{14.7}{4.5}{mitte}}
 
 \foreach \nr [count=\i] in {215.9, 220.6, 225.5, 230.1}{%
   \ruestungszeile{\i}{\nr}}
@@ -383,10 +383,10 @@
 % Spaltengrenzen: 114.8 | 142.5 | 159.2 | 177.0 | 197.0
 % Zeilenoberkanten 215.8 220.5 225.4 230.0.
 \newcommand{\schildzeile}[2]{% nr y
-  \feld{3}{s3_sch_#1_name}    {115.3}{#2}{26.7}{4.5}{text}
-  \feld{3}{s3_sch_#1_struktur}{143}{#2}{15.7}{4.5}{zahl}
-  \feld{3}{s3_sch_#1_mod}     {159.7}{#2}{16.8}{4.5}{text}
-  \feld{3}{s3_sch_#1_gewicht} {177.5}{#2}{19}{4.5}{text}}
+  \feld{3}{s3_sch_#1_name}    {115.3}{#2}{26.7}{4.5}{mitte}
+  \feld{3}{s3_sch_#1_struktur}{143}{#2}{15.7}{4.5}{mitte}
+  \feld{3}{s3_sch_#1_mod}     {159.7}{#2}{16.8}{4.5}{mitte}
+  \feld{3}{s3_sch_#1_gewicht} {177.5}{#2}{19}{4.5}{mitte}}
 
 \foreach \nr [count=\i] in {216, 220.7, 225.6, 230.2}{%
   \schildzeile{\i}{\nr}}
@@ -521,26 +521,30 @@
 % 2026-10-08). Links: Merkmal (Zeile 1) -> Zeile 2, Leiteigenschaft (Zeile 3)
 % -> Zeile 4. Rechts: Tradition (Zeile 1) -> Zeile 2, Traditionsartefakt
 % -> Zeilen 3 und 4. y auf der Schreiblinie der Zeile (Unterkante = Linie).
+% Links beginnt der Wert unter dem Anfang der Ueberschrift (x 29,96), rechts
+% endet er unter ihrem Ende (Tradition bis x 178,48).
 % s5_frei_1/2 und s5_artefakt_3 haben in dieser Fassung keinen Platz mehr.
-\feld{5}{s5_merkmal}        {28.6}{178.4}{46.4}{5.5}{text}
-\feld{5}{s5_leiteigenschaft}{28.7}{194.3}{46.3}{5.5}{text}
-\feld{5}{s5_tradition}      {133.5}{178.4}{46.4}{5.5}{rechts}
-\feld{5}{s5_artefakt_1}     {133.6}{186.4}{46.3}{5.5}{rechts}
-\feld{5}{s5_artefakt_2}     {133.6}{194.2}{46.3}{5.5}{rechts}
+\feld{5}{s5_merkmal}{29.96}{178.4}{45.04}{5.5}{text}
+\feld{5}{s5_leiteigenschaft}{29.96}{194.3}{45.04}{5.5}{text}
+\feld{5}{s5_tradition}{133.5}{178.4}{44.98}{5.5}{rechts}
+\feld{5}{s5_artefakt_1}{133.6}{186.4}{44.88}{5.5}{rechts}
+\feld{5}{s5_artefakt_2}{133.6}{194.2}{44.88}{5.5}{rechts}
 
 % --- Klerikale bzw. Magische Sonderfertigkeiten ---------------------------
 % Kasten 14.1..103.2. Acht Schreiblinien: 224.0 231.7 239.5 247.3 254.4
 % 262.1 269.9 277.7, x 17.2..100.4.
 % Beschriftung auf der ersten Zeile, endet bei etwa x 62 (abgelesen).
+% Werte ab Zeile 2, unter der Ueberschrift (Anweisung 2026-10-08), linksbuendig
+% unter ihrem Anfang x 17,65; rechter Rand des Kastens 100,4. Die erste Zeile
+% traegt nur die Ueberschrift, deshalb haben hier sieben Eintraege Platz.
 \newcommand{\sonderfertigkeitenlinks}[2]{% bogen praefix
-  \feld{#1}{s#1_#2_1}{64}{218.32}{36.4}{5.5}{text}
-  \feld{#1}{s#1_#2_2}{17.7}{226.02}{82.7}{5.5}{text}
-  \feld{#1}{s#1_#2_3}{17.7}{233.82}{82.7}{5.5}{text}
-  \feld{#1}{s#1_#2_4}{17.7}{241.62}{82.7}{5.5}{text}
-  \feld{#1}{s#1_#2_5}{17.9}{248.72}{82.5}{5.5}{text}
-  \feld{#1}{s#1_#2_6}{17.3}{256.42}{83.1}{5.5}{text}
-  \feld{#1}{s#1_#2_7}{17.3}{264.22}{83.1}{5.5}{text}
-  \feld{#1}{s#1_#2_8}{17.3}{272.02}{83.1}{5.5}{text}}
+  \feld{#1}{s#1_#2_1}{17.65}{226.2}{82.75}{5.5}{text}
+  \feld{#1}{s#1_#2_2}{17.65}{234}{82.75}{5.5}{text}
+  \feld{#1}{s#1_#2_3}{17.65}{241.8}{82.75}{5.5}{text}
+  \feld{#1}{s#1_#2_4}{17.65}{248.9}{82.75}{5.5}{text}
+  \feld{#1}{s#1_#2_5}{17.65}{256.6}{82.75}{5.5}{text}
+  \feld{#1}{s#1_#2_6}{17.65}{264.4}{82.75}{5.5}{text}
+  \feld{#1}{s#1_#2_7}{17.65}{272.2}{82.75}{5.5}{text}}
 
 \sonderfertigkeitenlinks{4}{ksf}
 \sonderfertigkeitenlinks{5}{msf}
@@ -550,15 +554,17 @@
 % 269.7 277.5, x 110.7..193.9.
 % Beschriftung LINKS auf der ersten Zeile (in df stand sie rechts):
 % Segnungen bis etwa 128, Zaubertricks bis etwa 132 (abgelesen).
-\newcommand{\segnungenrechts}[3]{% bogen praefix x_erste_zeile
-  \feld{#1}{s#1_#2_1}{#3}{218.14}{64}{5.5}{text}
-  \feld{#1}{s#1_#2_2}{111.7}{225.94}{82.2}{5.5}{text}
-  \feld{#1}{s#1_#2_3}{111.7}{233.74}{82.2}{5.5}{text}
-  \feld{#1}{s#1_#2_4}{111.7}{241.44}{82.2}{5.5}{text}
-  \feld{#1}{s#1_#2_5}{111.9}{248.54}{82}{5.5}{text}
-  \feld{#1}{s#1_#2_6}{111.2}{256.24}{82.7}{5.5}{text}
-  \feld{#1}{s#1_#2_7}{111.2}{264.04}{82.7}{5.5}{text}
-  \feld{#1}{s#1_#2_8}{111.2}{271.84}{82.7}{5.5}{text}}
+% Werte ab Zeile 2, linksbuendig unter dem Anfang der Ueberschrift x 111,24;
+% rechter Rand 193,9. Das dritte Argument (frueher x der ersten Zeile) bleibt
+% fuer die Aufrufe stehen und wird nicht mehr gebraucht.
+\newcommand{\segnungenrechts}[3]{% bogen praefix (unbenutzt)
+  \feld{#1}{s#1_#2_1}{111.24}{226.1}{82.66}{5.5}{text}
+  \feld{#1}{s#1_#2_2}{111.24}{233.9}{82.66}{5.5}{text}
+  \feld{#1}{s#1_#2_3}{111.24}{241.6}{82.66}{5.5}{text}
+  \feld{#1}{s#1_#2_4}{111.24}{248.7}{82.66}{5.5}{text}
+  \feld{#1}{s#1_#2_5}{111.24}{256.4}{82.66}{5.5}{text}
+  \feld{#1}{s#1_#2_6}{111.24}{264.2}{82.66}{5.5}{text}
+  \feld{#1}{s#1_#2_7}{111.24}{272}{82.66}{5.5}{text}}
 
 \segnungenrechts{4}{segnungen}{129.5}
 \segnungenrechts{5}{tricks}{133.5}
@@ -598,11 +604,11 @@
 
 \newcommand{\ausruestungszeile}[2]{% nr y
   \feld{6}{s6_gg_l_#1_gegenstand}{14.4}{#2}{46.7}{4.1}{text}
-  \feld{6}{s6_gg_l_#1_gewicht}   {62.1}{#2}{17.2}{4.1}{text}
-  \feld{6}{s6_gg_l_#1_wo}        {80.3}{#2}{24.3}{4.1}{text}
+  \feld{6}{s6_gg_l_#1_gewicht}   {62.1}{#2}{17.2}{4.1}{mitte}
+  \feld{6}{s6_gg_l_#1_wo}        {80.3}{#2}{24.3}{4.1}{mitte}
   \feld{6}{s6_gg_r_#1_gegenstand}{105.6}{#2}{47.5}{4.1}{text}
-  \feld{6}{s6_gg_r_#1_gewicht}   {154.1}{#2}{17.2}{4.1}{text}
-  \feld{6}{s6_gg_r_#1_wo}        {172.3}{#2}{24.1}{4.1}{text}}
+  \feld{6}{s6_gg_r_#1_gewicht}   {154.1}{#2}{17.2}{4.1}{mitte}
+  \feld{6}{s6_gg_r_#1_wo}        {172.3}{#2}{24.1}{4.1}{mitte}}
 
 \foreach \y [count=\i] in {41.6, 46.4, 51.3, 55.8, 60.4, 65.3, 69.9, 74.4,
                            79.3, 83.9, 88.4, 93.3, 97.9, 102.5, 107.3, 111.9,

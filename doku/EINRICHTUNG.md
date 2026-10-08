@@ -204,7 +204,7 @@ Gebraucht werden aus TeX Live oder MiKTeX: `geometry graphicx xcolor fontspec po
 tcolorbox eso-pic fancyhdr enumitem wrapfig contour changepage intcalc array colortbl textcomp
 microtype hyperref tabularx environ`.
 
-**Für den Heldenbogen (`bogen/`)** kommen `pdfpages ifthen fontenc inputenc ebgaramond cinzel`
+**Für den Heldenbogen (`bogen/`)** kommen `pdfpages ifthen fontenc inputenc`
 dazu, dazu zwei Programme außerhalb von Python:
 
 | | wofür | woher |

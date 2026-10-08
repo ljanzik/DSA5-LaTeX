@@ -29,8 +29,9 @@
 \newcommand{\blatttitel}{%
   \begin{mappenblatt}
     \flechtrahmen
-    % Kopfzier statt des Verlagslogos — siehe mechanik-mappe.tex
-    \kopfzier{105}{14}{86}{4}
+    % Keine Kopfzier ueber dem Titel (Anweisung 2026-10-08): das Kettenstueck
+    % an der Stelle des Verlagslogos wirkte als doppelter Rahmen ueber der
+    % Ueberschrift. \kopfzier bleibt in mechanik-mappe.tex definiert.
     \konturzeile{105}{21}{0.30}%
       {\auszeichnung\fontsize{\mappenamengroesse}{\mappenamenzeile}\selectfont}%
       {\wertoder{mappe_name}{s1_name}%
@@ -38,8 +39,11 @@
          \\[2.5mm]{\fontsize{\mappeprofgroesse}{\mappeprofgroesse}\selectfont
                    \wertvon{mappe_profession}}%
        }{}}%
-    % Ganzkörperbild, auf der Standlinie
-    \mappebild{mappe_bild}{s1_bild}{62.5}{75}{85}{169}
+    % Ganzkörperbild, auf der Standlinie. Deutlich groesser als am Vorbild
+    % (dort 85 x 169 ab y 75): 130 x 176 ab y 68, Unterkante weiter bei 244
+    % ueber dem Fusskasten (Anweisung 2026-10-08). Am besten freigestellt,
+    % siehe werkzeuge/hintergrundfrei.py.
+    \mappebild{mappe_bild}{s1_bild}{40}{68}{130}{176}
     % Fußkasten mit der Kurzempfehlung
     \wertdaP{mappe_empfehlung}{%
       \pergamentkasten{14}{248}{182}{%
@@ -54,7 +58,7 @@
     % Das Heldenbild als blasses Wasserzeichen hinter dem Text, wie beim
     % Vorbild: dieselbe Stelle, nur heruntergenommen.
     \begin{scope}[opacity=0.13]
-      \mappebild{mappe_bild}{s1_bild}{62.5}{75}{85}{169}
+      \mappebild{mappe_bild}{s1_bild}{40}{68}{130}{176}
     \end{scope}
     \flechtrahmen
     \node[anchor=north,text=schrift,font=\auszeichnung\fontsize{19}{23}\selectfont]
@@ -90,9 +94,24 @@
 %
 % Die Absatztrennung bleibt hier bei der Vorgabe \par: den Abstand macht
 % \parskip, siehe unten.
+%
+% Mit \wert{mappe_rechtliches}{aus} entfaellt der Pflichttext; das Blatt wird
+% dann wie das rechte Innenblatt zur Notizseite (Titel aus
+% mappe_innen_links_titel, sonst NOTIZEN). Nur fuer eine Mappe, die nicht
+% weitergegeben wird: ohne Pflichttext gilt die Weitergabe-Erlaubnis der
+% Vereinbarung nicht.
 \newcommand{\blattinnenlinks}{%
   \begin{mappenblatt}
     \flechtrahmen
+    \ifthenelse{\equal{\mappewahl{mappe_rechtliches}{an}}{aus}}{%
+      \node[anchor=north,text=schrift,font=\auszeichnung\fontsize{15}{19}\selectfont]
+        at (105,28.5) {%
+        \wertdaP{mappe_innen_links_titel}{\wertvon{mappe_innen_links_titel}}{NOTIZEN}};
+      \wertdaP{mappe_innen_links_text}{}{%
+        \foreach \i in {0,...,24} {%
+          \draw[bandkontur,opacity=0.26,line width=0.25mm]
+            (26,{46+\i*9}) -- (184,{46+\i*9});}}%
+    }{%
     \node[anchor=north,text=schrift,font=\auszeichnung\fontsize{15}{19}\selectfont]
       at (105,28.5) {RECHTLICHES};
     % Absätze durch Leerzeilen, nicht durch \par\vspace: nach einem \vspace
@@ -101,6 +120,7 @@
     \mappetextblock{30.6}{42}{148.9}%
       {\lesetext\fontsize{10.5}{14.5}\selectfont\setlength{\parskip}{4mm}}%
       {center}{\dsaPflichttext{\mappecopyright}}%
+    }%
     \wertdaP{mappe_innen_links_text}{%
       \pergamentkasten{14}{205}{182}{%
         \centering

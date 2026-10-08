@@ -212,15 +212,15 @@
 % hinter dem Emblem und ist unlesbar. Felder starten daher bei 26.5.
 \newcommand{\nahkampfzeile}[2]{% nr y
   \feld{3}{s3_nk_#1_waffe}     {26.5}{#2}{20.1}{4.5}{text}
-  \feld{3}{s3_nk_#1_technik}   {47.6}{#2}{21.9}{4.5}{text}
-  \feld{3}{s3_nk_#1_schaden}   {70.5}{#2}{22.8}{4.5}{text}
-  \feld{3}{s3_nk_#1_tp_basis}  {94.8}{#2}{10.4}{4.5}{zahl}
-  \feld{3}{s3_nk_#1_tp_gesamt} {106.7}{#2}{11.7}{4.5}{zahl}
-  \feld{3}{s3_nk_#1_mod}       {119.9}{#2}{17.3}{4.5}{text}
-  \feld{3}{s3_nk_#1_reichweite}{138.7}{#2}{15.3}{4.5}{text}
-  \feld{3}{s3_nk_#1_at}        {155.5}{#2}{9.8}{4.5}{zahl}
-  \feld{3}{s3_nk_#1_pa}        {166.8}{#2}{8.9}{4.5}{zahl}
-  \feld{3}{s3_nk_#1_gewicht}   {177.2}{#2}{18.7}{4.5}{text}}
+  \feld{3}{s3_nk_#1_technik}   {47.6}{#2}{21.9}{4.5}{mitte}
+  \feld{3}{s3_nk_#1_schaden}   {70.5}{#2}{22.8}{4.5}{mitte}
+  \feld{3}{s3_nk_#1_tp_basis}  {94.8}{#2}{10.4}{4.5}{mitte}
+  \feld{3}{s3_nk_#1_tp_gesamt} {106.7}{#2}{11.7}{4.5}{mitte}
+  \feld{3}{s3_nk_#1_mod}       {119.9}{#2}{17.3}{4.5}{mitte}
+  \feld{3}{s3_nk_#1_reichweite}{138.7}{#2}{15.3}{4.5}{mitte}
+  \feld{3}{s3_nk_#1_at}        {155.5}{#2}{9.8}{4.5}{mitte}
+  \feld{3}{s3_nk_#1_pa}        {166.8}{#2}{8.9}{4.5}{mitte}
+  \feld{3}{s3_nk_#1_gewicht}   {177.2}{#2}{18.7}{4.5}{mitte}}
 
 \nahkampfzeile{1}{137.1}
 \nahkampfzeile{2}{141.9}
@@ -233,13 +233,13 @@
 
 \newcommand{\fernkampfzeile}[2]{% nr y
   \feld{3}{s3_fk_#1_waffe}     {26.5}{#2}{20}{4.5}{text}
-  \feld{3}{s3_fk_#1_technik}   {47.5}{#2}{21.9}{4.5}{text}
-  \feld{3}{s3_fk_#1_ladezeit}  {70.4}{#2}{20.8}{4.5}{text}
-  \feld{3}{s3_fk_#1_tp}        {92.2}{#2}{11.7}{4.5}{zahl}
-  \feld{3}{s3_fk_#1_reichweite}{104.9}{#2}{23.5}{4.5}{text}
-  \feld{3}{s3_fk_#1_fernkampf} {129.4}{#2}{25.4}{4.5}{text}
-  \feld{3}{s3_fk_#1_munition}  {156.3}{#2}{19.3}{4.5}{text}
-  \feld{3}{s3_fk_#1_gewicht}   {177.1}{#2}{18.8}{4.5}{text}}
+  \feld{3}{s3_fk_#1_technik}   {47.5}{#2}{21.9}{4.5}{mitte}
+  \feld{3}{s3_fk_#1_ladezeit}  {70.4}{#2}{20.8}{4.5}{mitte}
+  \feld{3}{s3_fk_#1_tp}        {92.2}{#2}{11.7}{4.5}{mitte}
+  \feld{3}{s3_fk_#1_reichweite}{104.9}{#2}{23.5}{4.5}{mitte}
+  \feld{3}{s3_fk_#1_fernkampf} {129.4}{#2}{25.4}{4.5}{mitte}
+  \feld{3}{s3_fk_#1_munition}  {156.3}{#2}{19.3}{4.5}{mitte}
+  \feld{3}{s3_fk_#1_gewicht}   {177.1}{#2}{18.8}{4.5}{mitte}}
 
 \fernkampfzeile{1}{173.5}
 \fernkampfzeile{2}{178.3}
@@ -252,11 +252,11 @@
 
 \newcommand{\ruestungszeile}[2]{% nr y
   \feld{3}{s3_ru_#1_name}   {26.5}{#2}{20}{4.5}{text}
-  \feld{3}{s3_ru_#1_rs}     {47.5}{#2}{7.9}{4.5}{zahl}
-  \feld{3}{s3_ru_#1_be}     {56.4}{#2}{7.8}{4.5}{zahl}
-  \feld{3}{s3_ru_#1_abzuege}{65.2}{#2}{17.3}{4.5}{text}
-  \feld{3}{s3_ru_#1_gewicht}{83.5}{#2}{13}{4.5}{text}
-  \feld{3}{s3_ru_#1_wo}     {97.5}{#2}{13.7}{4.5}{text}}
+  \feld{3}{s3_ru_#1_rs}     {47.5}{#2}{7.9}{4.5}{mitte}
+  \feld{3}{s3_ru_#1_be}     {56.4}{#2}{7.8}{4.5}{mitte}
+  \feld{3}{s3_ru_#1_abzuege}{65.2}{#2}{17.3}{4.5}{mitte}
+  \feld{3}{s3_ru_#1_gewicht}{83.5}{#2}{13}{4.5}{mitte}
+  \feld{3}{s3_ru_#1_wo}     {97.5}{#2}{13.7}{4.5}{mitte}}
 
 \ruestungszeile{1}{209.4}
 \ruestungszeile{2}{214.1}
@@ -267,10 +267,10 @@
 % Zeilen-y: 209.3 214.0 218.9
 
 \newcommand{\schildzeile}[2]{% nr y
-  \feld{3}{s3_sch_#1_name}    {115.4}{#2}{26.3}{4.5}{text}
-  \feld{3}{s3_sch_#1_struktur}{142.7}{#2}{16}{4.5}{zahl}
-  \feld{3}{s3_sch_#1_mod}     {159.7}{#2}{16.4}{4.5}{text}
-  \feld{3}{s3_sch_#1_gewicht} {177.1}{#2}{18.8}{4.5}{text}}
+  \feld{3}{s3_sch_#1_name}    {115.4}{#2}{26.3}{4.5}{mitte}
+  \feld{3}{s3_sch_#1_struktur}{142.7}{#2}{16}{4.5}{mitte}
+  \feld{3}{s3_sch_#1_mod}     {159.7}{#2}{16.4}{4.5}{mitte}
+  \feld{3}{s3_sch_#1_gewicht} {177.1}{#2}{18.8}{4.5}{mitte}}
 
 \schildzeile{1}{209.5}
 \schildzeile{2}{214.2}
@@ -406,25 +406,25 @@
 
 % --- Klerikale Sonderfertigkeiten -----------------------------------------
 % Beschriftung auf der ersten Zeile, endet bei etwa x 62 (abgelesen).
-\feld{4}{s4_ksf_1}{63}{218.32}{22.3}{5.5}{text}
-\feld{4}{s4_ksf_2}{17.1}{226.02}{74}{5.5}{text}
-\feld{4}{s4_ksf_3}{17.1}{233.82}{82.1}{5.5}{text}
-\feld{4}{s4_ksf_4}{17.1}{241.62}{82.1}{5.5}{text}
-\feld{4}{s4_ksf_5}{17.3}{248.72}{82.1}{5.5}{text}
-\feld{4}{s4_ksf_6}{16.7}{256.42}{82.1}{5.5}{text}
-\feld{4}{s4_ksf_7}{16.7}{264.22}{82.1}{5.5}{text}
-\feld{4}{s4_ksf_8}{16.7}{272.02}{82.1}{5.5}{text}
+% s4_ksf_: ab Zeile 2 unter der Ueberschrift (2026-10-08), _8 entfaellt
+\feld{4}{s4_ksf_1}{16.64}{226.02}{82.5}{5.5}{text}
+\feld{4}{s4_ksf_2}{16.64}{233.82}{82.5}{5.5}{text}
+\feld{4}{s4_ksf_3}{16.64}{241.62}{82.5}{5.5}{text}
+\feld{4}{s4_ksf_4}{16.64}{248.72}{82.5}{5.5}{text}
+\feld{4}{s4_ksf_5}{16.64}{256.42}{82.5}{5.5}{text}
+\feld{4}{s4_ksf_6}{16.64}{264.22}{82.5}{5.5}{text}
+\feld{4}{s4_ksf_7}{16.64}{272.02}{82.5}{5.5}{text}
 
 % --- Segnungen -------------------------------------------------------------
 % Beschriftung oben RECHTS, ab x 176.
-\feld{4}{s4_segnungen_1}{124.5}{218.3}{51}{5.5}{text}
-\feld{4}{s4_segnungen_2}{118.5}{226.1}{74.5}{5.5}{text}
-\feld{4}{s4_segnungen_3}{111}{233.9}{82.1}{5.5}{text}
-\feld{4}{s4_segnungen_4}{111}{241.6}{82.1}{5.5}{text}
-\feld{4}{s4_segnungen_5}{111.1}{248.7}{82.1}{5.5}{text}
-\feld{4}{s4_segnungen_6}{110.5}{256.4}{82.1}{5.5}{text}
-\feld{4}{s4_segnungen_7}{110.5}{264.2}{82.1}{5.5}{text}
-\feld{4}{s4_segnungen_8}{110.5}{272}{82.1}{5.5}{text}
+% s4_segnungen_: ab Zeile 2 unter der Ueberschrift (2026-10-08), _8 entfaellt
+\feld{4}{s4_segnungen_1}{110.5}{226.02}{82.6}{5.5}{text}
+\feld{4}{s4_segnungen_2}{110.5}{233.82}{82.6}{5.5}{text}
+\feld{4}{s4_segnungen_3}{110.5}{241.62}{82.6}{5.5}{text}
+\feld{4}{s4_segnungen_4}{110.5}{248.72}{82.6}{5.5}{text}
+\feld{4}{s4_segnungen_5}{110.5}{256.42}{82.6}{5.5}{text}
+\feld{4}{s4_segnungen_6}{110.5}{264.22}{82.6}{5.5}{text}
+\feld{4}{s4_segnungen_7}{110.5}{272.02}{82.6}{5.5}{text}
 
 % ===========================================================================
 % BOGEN 5 — Zauber & Rituale
@@ -478,25 +478,25 @@
 
 % --- Magische Sonderfertigkeiten ------------------------------------------
 % Beschriftung auf der ersten Zeile, endet bei etwa x 62 (abgelesen).
-\feld{5}{s5_msf_1}{63}{218.32}{22.3}{5.5}{text}
-\feld{5}{s5_msf_2}{17.1}{226.02}{74}{5.5}{text}
-\feld{5}{s5_msf_3}{17.1}{233.82}{82.1}{5.5}{text}
-\feld{5}{s5_msf_4}{17.1}{241.62}{82.1}{5.5}{text}
-\feld{5}{s5_msf_5}{17.3}{248.72}{82.1}{5.5}{text}
-\feld{5}{s5_msf_6}{16.7}{256.42}{82.1}{5.5}{text}
-\feld{5}{s5_msf_7}{16.7}{264.22}{82.1}{5.5}{text}
-\feld{5}{s5_msf_8}{16.7}{272.02}{82.1}{5.5}{text}
+% s5_msf_: ab Zeile 2 unter der Ueberschrift (2026-10-08), _8 entfaellt
+\feld{5}{s5_msf_1}{16.64}{226.02}{82.5}{5.5}{text}
+\feld{5}{s5_msf_2}{16.64}{233.82}{82.5}{5.5}{text}
+\feld{5}{s5_msf_3}{16.64}{241.62}{82.5}{5.5}{text}
+\feld{5}{s5_msf_4}{16.64}{248.72}{82.5}{5.5}{text}
+\feld{5}{s5_msf_5}{16.64}{256.42}{82.5}{5.5}{text}
+\feld{5}{s5_msf_6}{16.64}{264.22}{82.5}{5.5}{text}
+\feld{5}{s5_msf_7}{16.64}{272.02}{82.5}{5.5}{text}
 
 % --- Zaubertricks ----------------------------------------------------------
 % Beschriftung oben RECHTS, ab x 172.7 (abgelesen).
-\feld{5}{s5_tricks_1}{124.5}{218.3}{47.5}{5.5}{text}
-\feld{5}{s5_tricks_2}{118.5}{226.1}{74.5}{5.5}{text}
-\feld{5}{s5_tricks_3}{111}{233.9}{82.1}{5.5}{text}
-\feld{5}{s5_tricks_4}{111}{241.6}{82.1}{5.5}{text}
-\feld{5}{s5_tricks_5}{111.1}{248.7}{82.1}{5.5}{text}
-\feld{5}{s5_tricks_6}{110.5}{256.4}{82.1}{5.5}{text}
-\feld{5}{s5_tricks_7}{110.5}{264.2}{82.1}{5.5}{text}
-\feld{5}{s5_tricks_8}{110.5}{272}{82.1}{5.5}{text}
+% s5_tricks_: ab Zeile 2 unter der Ueberschrift (2026-10-08), _8 entfaellt
+\feld{5}{s5_tricks_1}{110.5}{226.02}{82.6}{5.5}{text}
+\feld{5}{s5_tricks_2}{110.5}{233.82}{82.6}{5.5}{text}
+\feld{5}{s5_tricks_3}{110.5}{241.62}{82.6}{5.5}{text}
+\feld{5}{s5_tricks_4}{110.5}{248.72}{82.6}{5.5}{text}
+\feld{5}{s5_tricks_5}{110.5}{256.42}{82.6}{5.5}{text}
+\feld{5}{s5_tricks_6}{110.5}{264.22}{82.6}{5.5}{text}
+\feld{5}{s5_tricks_7}{110.5}{272.02}{82.6}{5.5}{text}
 
 % ===========================================================================
 % BOGEN 6 — Ausrüstung
@@ -512,11 +512,11 @@
 
 \newcommand{\ausruestungszeile}[2]{% nr y
   \feld{6}{s6_gg_l_#1_gegenstand}{14.4}{#2}{46.6}{4.2}{text}
-  \feld{6}{s6_gg_l_#1_gewicht}   {62}{#2}{17.4}{4.2}{text}
-  \feld{6}{s6_gg_l_#1_wo}        {80.4}{#2}{24.2}{4.2}{text}
+  \feld{6}{s6_gg_l_#1_gewicht}   {62}{#2}{17.4}{4.2}{mitte}
+  \feld{6}{s6_gg_l_#1_wo}        {80.4}{#2}{24.2}{4.2}{mitte}
   \feld{6}{s6_gg_r_#1_gegenstand}{105.6}{#2}{47.3}{4.2}{text}
-  \feld{6}{s6_gg_r_#1_gewicht}   {153.9}{#2}{17.4}{4.2}{text}
-  \feld{6}{s6_gg_r_#1_wo}        {172.3}{#2}{24.1}{4.2}{text}}
+  \feld{6}{s6_gg_r_#1_gewicht}   {153.9}{#2}{17.4}{4.2}{mitte}
+  \feld{6}{s6_gg_r_#1_wo}        {172.3}{#2}{24.1}{4.2}{mitte}}
 
 \foreach \y [count=\i] in {35.7, 40.5, 45.4, 49.9, 54.5, 59.4, 63.9, 68.5,
                            73.4, 78, 82.5, 87.4, 92, 96.5, 101.4, 106,

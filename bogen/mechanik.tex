@@ -36,8 +36,8 @@
 \newcommand{\feldeintrag}[7]{}
 
 % --- Feldarten -------------------------------------------------------------
-% art = text | zahl | rechts | mehrzeilig | bild
-% zahl wird zentriert, rechts rechtsbuendig, mehrzeilig bekommt multiline. Alles andere wie text.
+% art = text | zahl | rechts | mitte | mehrzeilig | bild
+% zahl wird zentriert, rechts rechtsbuendig, mitte zentriert auf der Textgrundlinie, mehrzeilig bekommt multiline. Alles andere wie text.
 %
 % Die Zusatzoptionen werden als ARGUMENT durchgereicht, nicht in einem Makro
 % abgelegt. Zwei Fallgruben stecken hier drin:
@@ -82,7 +82,8 @@
   \ifthenelse{\equal{#6}{mehrzeilig}}{\feldWidget{#1}{#2}{#3}{#4}{#5}{multiline=true}}{%
   \ifthenelse{\equal{#6}{zahl}}{\feldWidget{#1}{#2}{#3}{#4}{#5}{align=1}}{%
   \ifthenelse{\equal{#6}{rechts}}{\feldWidget{#1}{#2}{#3}{#4}{#5}{align=2}}{%
-  \feldWidget{#1}{#2}{#3}{#4}{#5}{align=0}}}}}}
+  \ifthenelse{\equal{#6}{mitte}}{\feldWidget{#1}{#2}{#3}{#4}{#5}{align=1}}{%
+  \feldWidget{#1}{#2}{#3}{#4}{#5}{align=0}}}}}}}
 
 % --- Ein Feld setzen: vorbefuellte Fassung ---------------------------------
 
@@ -111,6 +112,11 @@
 % rechts: wie Text, aber rechtsbuendig. Fuer Zeilen, deren Beschriftung rechts
 % steht (Tradition auf Bogen 4 und 5 der Farbfassung, links davon das Buecherbild).
 %
+% mitte: wie Text, aber waagerecht zentriert. Fuer Tabellen mit zentrierten
+% Spaltenkoepfen (Nahkampf, Fernkampf, Ruestungen, Schild auf Bogen 3). Anders
+% als zahl auf der Textgrundlinie, damit alle Spalten einer Zeile auf einer
+% Grundlinie stehen.
+%
 % Beides als Box ohne Hoehe, deren Grundlinie an der Oberkante des Feldes
 % liegt (der Knoten in \setzeFeldFest haengt mit north west dort an); der
 % Inhalt wird um das gerechnete Mass abgesenkt.
@@ -136,8 +142,11 @@
   \ifthenelse{\equal{#3}{rechts}}{%
     \makebox[#1mm][r]{\raisebox{-\dimexpr #2mm-\feldgrundlinie\relax}[0pt][0pt]{%
       \usebox\feldbox}}}{%
+  \ifthenelse{\equal{#3}{mitte}}{%
+    \makebox[#1mm][c]{\raisebox{-\dimexpr #2mm-\feldgrundlinie\relax}[0pt][0pt]{%
+      \usebox\feldbox}}}{%
     \makebox[#1mm][l]{\raisebox{-\dimexpr #2mm-\feldgrundlinie\relax}[0pt][0pt]{%
-      \usebox\feldbox}}}}}
+      \usebox\feldbox}}}}}}
 
 % --- Bildfelder ------------------------------------------------------------
 % art=bild. Der Wert ist ein Dateipfad, nicht Text:
