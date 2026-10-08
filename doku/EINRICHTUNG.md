@@ -51,6 +51,8 @@ Karte in Sepia, allein die aktive Region in Farbe, ein weicher Schlagschatten da
 Region deutlich besser heraus. In einem dunkelgrünen Waldgebiet war die bloß abgedunkelte Fassung
 kaum zu erkennen. `aufbereiten.py --rueckseiten` rechnet das aus Maske und Rückseite aus und legt
 alle 29 Fassungen als `ruecken-neutral`, `ruecken-mittelreich`, `ruecken-thorwal` und so weiter ab.
+Dazu stellt es den unteren Zierrahmen als `ruecken-rahmen` frei, damit Kasten und Bild auf der
+Rückseite unter ihm verschwinden können wie im gesetzten Heft.
 Die Sepiarampe ist an zwei gesetzten Rücktiteln gemessen; die Herleitung steht in `doku/MASSE.md`
 unter „Die Sepiakarte der Rückseite“.
 
@@ -90,7 +92,7 @@ Was es tut:
 - holt aus `Links/DSA5-Kapitelstart-Beispielgrafik.psd` die Pergamentfläche und das
   Drachenornament für den Kapitelanfang
 - rechnet mit `--rueckseiten` die 29 Rückseiten aus: Karte in Sepia, die aktive Region in
-  Farbe, Schlagschatten darum
+  Farbe, Schlagschatten darum, und stellt den unteren Zierrahmen frei (`ruecken-rahmen`)
 - kopiert die fünf Schriftdateien nach `schriften/`
 - schreibt am Ende eine Liste dessen, was fehlt
 

@@ -370,6 +370,7 @@ Gemessene Zahlen finden nicht alles. Diese Fehler waren erst am gerenderten Abzu
 | Inhaltsverzeichnis einspaltig | 166 mm Zeilen mit Punktführung | zweispaltig über `multicol` |
 | Kapitelseiten ohne Bildrahmen | die Klasse konnte ihn nur mit Bild setzen | `\dsakapitelbild`, mit Bild oder als Platzhalter |
 | Rückseite: Karte ganzseitig, Text dunkel darauf | es fehlte die Vorlage | Rückseiten-Karten-Paket, Aufbau am Vorbild vermessen |
+| Rückseite: grauer Kasten über dem Zierrahmen, Klappentext zu tief und zu weit rechts, kein Umfluss | Kasten deckend und zuoberst, Maße von einem anderen Heft | Ebenen wie im Heft, Rahmen freigestellt, neu vermessen an US25317, siehe unten |
 
 ### Die beiden Schlagschatten am Titel
 
@@ -472,6 +473,32 @@ Klasse nicht zeichnet. An der grauen Fassung fällt das nicht auf, an der roten 
 dadurch flacher auf ihrer Fläche als in der Vorlage. Wer den Schein nachbaut, kann dieselbe
 Lagenroutine wie für die Schlagschatten nehmen, mit Versatz null — und muss damit rechnen, dass
 sich damit auch das Aussehen der grauen Voreinstellung ändert.
+
+### Die Rückseite neben dem gesetzten Heft
+
+Nachgemessen an der Rückseite des Ganter (`ganter.tex`, 54 Seiten) gegen *Die Verschwörung der
+Magier* (US25317), Grundlinien in mm ab Papieroberkante:
+
+| Maß | Heft | Klasse | |
+|---|---|---|---|
+| Titel, Grundlinie / links | 54,8 / 19,2 | 54,8 / 19,3 | `ok` |
+| Autorzeile | 59,1 | 59,1 | `ok` |
+| Strich darunter, Mitte / von–bis | 62,4 / 37,7–87,5 | 62,4 / 37,8–87,6 | `ok` |
+| Klappentext, Zeilenabstand | 4,23 | 4,23 | `ok` |
+| Absatzsprung (Grundlinie zu Grundlinie) | 7,2–7,3 | 7,3 | `ok` |
+| Kasten, x / Oberkante | 72,3–139,1 / 180,4 | 72,0–139,4 / 180,1 | `ok` — der Rest ist der Ausschlag der gerissenen Kante |
+| erste Kastenzeile | 188,2 | 188,2 | `ok` |
+| Strich im Kasten | 197,2 | 197,1 | `ok` |
+| erste Rubrik / Abstand | 203,6 / 3,6 | 203,6 / 3,6 | `ok` |
+| Kastenfläche | (47, 33, 24), 21,2 % | (47, 33, 24), 21,2 % | `ok` |
+
+Sichtprüfung am Abzug bei 200 ppi: der Schleier läuft unter dem Auge und den Drachenecken durch,
+ohne Pergamentstreifen über ihm und ohne abgeschnittenen Goldrand; die ersten Zeilen des
+Klappentexts enden vor der Inselkette bei 104 mm, die tieferen bei 110 bis 123 mm. Der Umfluss
+um ein Bild links unten ist an einer Testseite mit runder Fiole geprüft, einmal als Rahmen und
+einmal mit `\dsaRueckBildKontur` aus `werkzeuge/umfluss.py`: mit Kontur folgen die Zeilen dem
+Kreis, darüber laufen sie frei. Im Regellauf (`beispiel.tex`, 22 Seiten, ohne Fehler) steht das
+Bild links unten auf Seite 21; Rahmenleiste und Drachenecke liegen darüber.
 
 ## Elemente mit eigenem Raster
 

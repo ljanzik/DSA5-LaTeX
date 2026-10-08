@@ -53,6 +53,7 @@ diese Aufteilung.
 | Kapitelanfang ohne Rahmen | `\dsakapitel{Titel}` | 2 | ja | ja |
 | Kapitelanfang mit Rahmen | `\dsakapitelbild[Bild]{Titel}` | 2 | ja | ja |
 | Rückseite | `\dsaRueckseite{Grafik}{Titel}{Autor}{Text}{Kasten}` | — | nein | nein |
+| Bild auf der Rückseite | `\dsaRueckBild{Datei}{Breite}` vor `\dsaRueckseite` | — | — | — |
 | Normalseite | — (Regelfall) | 2 | ja | ja |
 | Seite ohne Seitenzahl | `\begin{dsaSeiteOhneZahl}` | 2 | nein | ja |
 | Ganzseitige Grafik | `\dsaGanzseite{Bild}` | — | nein | nein |
@@ -298,6 +299,7 @@ nicht bis zum Rand deckt.
 ### Die Rückseite
 
 ```latex
+\dsaRueckBild{grafiken/gaensemagd}{80mm}     % optional, links unten
 \dsaRueckseite{ruecken-mittelreich}{Der falsche Ganter}{von Leif Janzik}{%
   Klappentext, Absätze durch Leerzeilen getrennt.
 }{%
@@ -312,7 +314,8 @@ Die Grafik kommt aus dem **Rückseiten-Karten-Paket** von Ulisses, einem zweiten
 Baukasten. Es bringt eine fertige Rückseite mit Zierrahmen (`ruecken-neutral`) und 28 **Masken** —
 jede ist die verdunkelte Karte mit einem Loch an der Stelle einer Region.
 `werkzeuge/aufbereiten.py --rueckseiten <pfad>` baut daraus die 28 Rückseiten und legt sie als
-`ruecken-mittelreich`, `ruecken-thorwal` und so weiter ab.
+`ruecken-mittelreich`, `ruecken-thorwal` und so weiter ab, dazu den unteren Zierrahmen
+freigestellt als `ruecken-rahmen`.
 
 **Gesetzt wird nicht die Verdunkelung des Pakets, sondern die Fassung der offiziellen Hefte:**
 die Karte in Sepia, nur die aktive Region in Farbe, ein weicher Schlagschatten darum. Das hebt
@@ -326,9 +329,48 @@ innerhalb der Grenzlinien und rechnet aus der gefundenen Fläche dieselbe Sepiaf
 des Pakets kennt allerdings nur die großen Regionen — eine Saat im Kosch flutet das ganze
 Mittelreich, und eine fertige Kosch-Fassung gibt es nicht mehr: sie kam aus einer fremden Sammlung.
 
-Der Aufbau ist an der Rückseite einer gesetzten Veröffentlichung vermessen: Titel in Andalus 18 bp,
-Autorzeile 12 bp, ein Strich darunter, der Klappentext 81,7 mm breit im Blocksatz, und der graue
-Kasten unten rechts mit Kopfzeile, Rubriken und Fertigkeiten. Die Maße stehen in `MASSE.md`.
+Der Aufbau folgt dem gesetzten Heft *Die Verschwörung der Magier*, auch in der Reihenfolge der
+Ebenen — von unten nach oben:
+
+1. die Rückseite mit Karte,
+2. der **Kasten**: ein dunkelbrauner Schleier mit 21 Prozent Deckung und gerissenen Kanten, durch
+   den das Pergament scheint, bis unter die Papierkante,
+3. das Bild links unten, falls `\dsaRueckBild` gesetzt ist — über dem Kasten, wo es ihn berührt,
+4. der **Zierrahmen** (`ruecken-rahmen`), der Kasten und Bild unten abschneidet,
+5. Titel (Andalus 17,2 bp), Autorzeile, Strich und Klappentext (11 auf 12 bp, Blocksatz).
+
+Fehlt `ruecken-rahmen`, baut die Seite trotzdem, mit einer Warnung — dann liegt der Kasten über
+dem Rahmen.
+
+**Der Klappentext umfließt die Karte** so, wie sie gezeichnet ist, über alle Absätze hinweg. Die
+Kontur steht als gemessene Tabelle in der Klasse; jede Zeile hält zur engsten Stelle der Karte
+`\dsarueckeumfluss` Abstand (2,5 mm, geschätzt). Die Satzbreite `\dsarueckebreite` (104 mm) ist
+die Obergrenze, wo keine Karte im Weg ist.
+
+**Das Bild links unten** setzt `\dsaRueckBild{<Datei>}{<Breite>}` vor `\dsaRueckseite`. Es
+beginnt an der Papierkante (`\dsarueckebildx`, 0 mm) und endet bei `\dsarueckebildunten`
+(291,7 mm, wie die Figur im Heft) — also unter dem Rahmen. Reicht es in den Klappentext, rücken
+die Zeilen auf seiner Höhe um seine Breite ein. Soll der Text der Figur folgen statt ihrem Rahmen,
+gibt man danach ihre rechte Kante je Millimeter Papierhöhe an:
+
+```latex
+\setlength{\dsarueckebildunten}{285mm}
+\dsaRueckBild{grafiken/gaensemagd}{80mm}
+\dsaRueckBildKontur{150:42,151:44,152:45,153:47}   % y in mm : rechte Kante in mm
+```
+
+Die Kontur ersetzt den Bildrahmen ganz: Zeilen ohne Eintrag bleiben frei. Ausmessen muss man sie
+nicht von Hand — `werkzeuge/umfluss.py` liest sie aus dem Alphakanal und gibt die fertige Zeile aus:
+
+```sh
+python3 werkzeuge/umfluss.py grafiken/gaensemagd.png --breite 80 --unten 285
+```
+
+Das Bild gilt nur für die nächste Rückseite.
+
+`\dsaRueckKopf` setzt die Kopfzeilen des Kastens zentriert in 12 bp und zieht den Strich darunter;
+`\dsaRueckFeld` setzt eine Rubrik fett mit ihrem Wert in 8,5 bp; `\dsaRueckStrich` ist der Strich
+allein. Alle Maße stehen in `MASSE.md` unter „Die Rückseite“.
 
 ### Die Probenzeile
 
