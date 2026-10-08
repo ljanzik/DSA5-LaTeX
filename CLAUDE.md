@@ -9,7 +9,7 @@ Wer nur ein Abenteuer schreiben soll, braucht Teil A.
 `dsa5latex.cls` setzt Abenteuer im Layout von *Das Schwarze Auge 5*, nach den Maßen des
 offiziellen *Scriptorium Aventuris – Layout Baukastens*: A4 hoch, zweispaltig, mit
 Grundlinienraster. Die Elementreferenz steht in `doku/ELEMENTE.md`, wie man einrichtet und baut
-in `doku/EINRICHTUNG.md`. Dazu sechs Python-Werkzeuge in `werkzeuge/`, vier Dokumente in `doku/`
+in `doku/EINRICHTUNG.md`. Dazu sieben Python-Werkzeuge in `werkzeuge/`, vier Dokumente in `doku/`
 und fünf Beispieldokumente in `beispiel/`.
 
 Dazu kommt der **Aufsteller** (`dsa5aufsteller.sty`): kleine Standfiguren zum Ausschneiden auf

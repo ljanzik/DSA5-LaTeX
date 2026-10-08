@@ -512,24 +512,73 @@ Alphakanal einer Vorlage auf ein eigenes Bild.
 
 ## Die Rückseite
 
-Gemessen an der Rückseite einer gesetzten Veröffentlichung:
+Gemessen an der Rückseite von *Die Verschwörung der Magier* (US25317, 5. Auflage), Textzeilen an
+ihrer Grundlinie, alles ab Papieroberkante und -links. Das Heft hat einen anderen Zierrahmen als
+das Rückseiten-Karten-Paket; das Aventurien-Logo sitzt aber in beiden auf 30 bis 47 mm, und darauf
+beziehen sich Titel und Klappentext.
 
 | Maß | Wert |
 |---|---|
-| Titel | Andalus 18 bp, x 27,65 mm, Grundlinie 57,6 mm |
-| Autorzeile | Gentium 12 bp, Grundlinie 62,0 mm |
-| Strich darunter | 65 mm lang, 0,53 mm stark |
-| Klappentext | Gentium 12 bp auf 15 bp, Blocksatz, 81,7 mm breit, erste Grundlinie 97,9 mm |
-| Absatzabstand im Klappentext | 2,83 mm |
-| grauer Kasten, Text | ab x 76,3 mm |
-| Kopfzeilen | Gentium fett 12 bp, zentriert, Grundlinien 208,8 und 213,6 mm |
-| Rubriken | 9 bp, Grundlinien ab 220,4 mm im Abstand von 3,67 mm |
-| Fertigkeiten | 9 bp, ab 258,1 mm |
-| Kastenfarbe | rund (160, 157, 154), also A09D9A |
+| Titel | Andalus 17,2 bp, x 19,2 mm, Grundlinie 54,8 mm |
+| Autorzeile | Gentium 10 bp, Grundlinie 59,1 mm |
+| Strich darunter | 0,5 bp, Mitte 62,4 mm, von x 37,7 bis 87,5 mm |
+| Klappentext | Gentium 11 bp auf 12 bp, Blocksatz, x 19,2 mm, erste Grundlinie 67,9 mm |
+| Absatzabstand im Klappentext | 3,0 mm zusätzlich |
+| längste Zeile | endet bei 122,7 mm, daher 104 mm Satzbreite |
+| Kasten | x 72,3 bis 139,1 mm, Oberkante 180,4 mm, bis unter die Papierkante |
+| Kastenfläche | (47, 33, 24) mit Softmaske 54/255, also 21,2 Prozent Deckung |
+| Kastentext | ab x 76,7 mm, erste Grundlinie 188,2 mm |
+| Kopfzeilen | Gentium 12 bp, nicht fett, zentriert, Grundlinien 188,2 und 193,3 mm |
+| Strich im Kasten | 0,5 bp, 55,1 mm lang, Mitte 197,2 mm |
+| Rubriken | 8,5 bp auf 10,2 bp, erste Grundlinie 203,6 mm |
+| Rautenskala | beginnt 31,1 mm nach der Rubrik, 17,6 mm breit |
+| Figur links unten | x −0,4 bis 79,6 mm, y 152,1 bis 291,7 mm |
 
-Der Kasten ist im PDF des Vorbilds kein Rechteck, sondern gerastert — die Farbe ist deshalb am
-gerenderten Bild abgelesen. Blocksatz verträgt die Breite nicht: bei 55 mm wurde
-„Komplexität (Spieler/Meister)“ gesperrt und trotzdem getrennt, deshalb linksbündig.
+Das Heft ist geschichtet, und die Reihenfolge der Bilder im PDF ist die Reihenfolge der Ebenen:
+Rückseite, Kasten, Karte, Figur, und **zuoberst der Zierrahmen als eigenes Bild mit Softmaske**.
+Kasten und Figur laufen bis zur Papierkante und verschwinden unter dem Rahmen. Der Kasten ist kein
+Grau, sondern ein dunkelbrauner Schleier mit gerissenen Kanten; durch ihn scheint der Schmutz des
+Pergaments. Die Klasse zeichnet ihn mit TikZ (`random steps`, 0,9 mm Schritt, 0,35 mm Ausschlag,
+fester Startwert).
+
+Der Kasten ist schmal: Blocksatz verträgt die Breite nicht, „Komplexität (Spieler/Meister)“ wurde
+gesperrt und trotzdem getrennt. Er steht deshalb linksbündig, wie im Heft.
+
+### Der freigestellte Zierrahmen
+
+Das Paket hat den Rahmen nicht als Ebene, nur eingebacken in `ScriptoriumAventuris-hinten.png`.
+`aufbereiten.py --rueckseiten` stellt den unteren Teil frei und legt ihn als `ruecken-rahmen.png`
+ab; er gilt für alle Regionalfassungen, die sich nur in der Karte unterscheiden. Gesucht wird
+spaltenweise ab 195 mm abwärts — die Karte endet bei 192 mm — bis zum ersten Pixel, das nicht
+Pergament ist:
+
+| Bereich | „nicht Pergament“ heißt | Grund |
+|---|---|---|
+| x 30 bis 180 mm | Helligkeit unter 110 oder Buntheit (max − min) über 28 | das Pergament ist dort fast unbunt, höchstens 10 Stufen zwischen 200 und 262 mm; der Goldrand des Auges hat an den Flanken keine dunkle Kontur |
+| außen | Helligkeit unter 50 | bunter Randschmutz reicht bis an die Papierkante und würde sonst als Rahmen über die Figur fallen |
+
+Die Grenze wird danach über 4 mm morphologisch geöffnet, damit Schmutzpunkte von 1 bis 2 mm über dem
+Auge keine Türmchen in die Maske stellen, rückt 0,3 mm in den Rahmen hinein und wird um 1,5 px
+weich.
+
+### Die Kartenkontur für den Umfluss
+
+Der Klappentext umfließt die Karte so, wie sie gezeichnet ist. Ihre linke Kante steht je Millimeter
+Papierhöhe als Tabelle in der Klasse (`\dsa@kartenkontur`), gemessen an der Differenz von
+`ScriptoriumAventuris-hinten.png` und `KarteVerdunkelt.png` — die Kartenfläche samt ihrem weichen
+Schatten —, gezählt ab dem ersten Lauf von 0,7 mm. Zwei Einzelwerte bei 101 und 183 mm lagen auf
+winzigen Inseln bei x ≈ 101 mm und sind durch den kleineren Nachbarn ersetzt.
+
+| Höhe | linke Kartenkante |
+|---|---|
+| 51 bis 65 mm | 106 bis 108 mm (die Inselkette im Nordwesten) |
+| 67 bis 93 mm | 113 bis 118 mm |
+| 94 bis 114 mm | 123 bis 129 mm |
+| 115 bis 132 mm | 131 bis 137 mm |
+| 133 bis 179 mm | 123 bis 142 mm |
+| ab 180 mm | 167 mm und weiter rechts, ab 193 mm keine Karte |
+
+Maßgeblich für eine Zeile ist die engste Stelle zwischen 3 mm über und 1 mm unter ihrer Grundlinie.
 
 Die Grafiken kommen aus dem Rückseiten-Karten-Paket, einem zweiten Paket neben dem Baukasten. Die
 28 Regionalfassungen sind **Masken**, keine fertigen Seiten: jede ist die verdunkelte Karte auf
@@ -934,3 +983,6 @@ Multiplizieren rechnerisch ergibt.
 7. Die Form des Umflusses um freigestellte Grafiken ist an einem gesetzten
    Scriptorium-Abenteuer gemessen, nicht an einem Verlagsband. Die Konturform ist übertragbar, die
    absoluten Werte nicht.
+8. Abstand des Klappentexts zur Karte und zum Bild auf der Rückseite, als `\dsarueckeumfluss`
+   (2,5 mm) geschätzt. Das vermessene Heft hat eine andere Karte an anderer Stelle; der Abstand
+   seiner Zeilen zu ihr lässt sich nicht übertragen.

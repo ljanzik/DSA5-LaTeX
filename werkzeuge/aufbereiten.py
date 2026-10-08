@@ -254,6 +254,91 @@ SCHATTEN_TIEFE = 0.55     # Faktor auf die weichgezeichnete Silhouette
 SCHATTEN_WEICH = 15       # Radius der Weichzeichnung in Pixeln bei 300 ppi
 
 
+# ---- Der untere Zierrahmen als eigene Ebene ----
+#
+# Im gesetzten Heft liegt der Rahmen ueber dem grauen Kasten und der Figur
+# links unten: „Die Verschwoerung der Magier" (US25317) legt ihn als
+# eigenes Bild mit Softmaske zuoberst, der Kasten laeuft bis zur
+# Papierkante darunter durch. Das Paket hat den Rahmen nicht als Ebene,
+# nur eingebacken in die Rueckseite. Er wird deshalb hier freigestellt.
+#
+# Gesucht wird spaltenweise von 195 mm abwaerts -- die Karte endet bei
+# 192 mm -- bis zum ersten Pixel, das nicht Pergament ist. Was darunter
+# liegt, ist Rahmen. „Nicht Pergament" heisst zweierlei, je nach Ort:
+#
+#   Mitte, 30 bis 180 mm   dunkel (L < 110) oder bunt (max - min > 28)
+#   aussen                 nur dunkel (L < 50)
+#
+# In der Mitte ist das Pergament fast unbunt, gemessen hoechstens 10 Stufen
+# zwischen 200 und 262 mm; der Goldrand des Auges hat an seinen Flanken
+# keine dunkle Kontur und waere mit „dunkel" allein abgeschnitten worden.
+# Aussen liegt bunter Randschmutz bis an die Papierkante, und mit „bunt"
+# waeren dort 8 mm breite Streifen Pergament ueber die Figur gefallen.
+#
+# Danach wird die Grenze morphologisch geoeffnet, Maximum und dann Minimum
+# ueber 4 mm: Schmutzpunkte von 1 bis 2 mm ueber dem Auge hatten sonst
+# Tuermchen in die Maske gestellt, ein Median ueber 1,4 mm liess sie
+# stehen. Zuletzt rueckt die Grenze 0,3 mm in den Rahmen hinein und wird um
+# 1,5 px weich -- lieber ein Hauch Rahmenschatten unter dem Kasten als ein
+# Streifen weisses Pergament darueber.
+RAHMEN_AB_MM = 195
+RAHMEN_MITTE_MM = (30, 180)
+
+
+def rahmen_freistellen(bild):
+    """Gibt den unteren Zierrahmen der Rueckseite als RGBA zurueck."""
+    from PIL import Image, ImageChops, ImageDraw, ImageFilter
+    bild = bild.convert('RGB')
+    w, h = bild.size
+    k = w / 210.0
+    r, g, b = bild.split()
+    hell = bild.convert('L')
+    bunt = ImageChops.subtract(
+        ImageChops.lighter(ImageChops.lighter(r, g), b),
+        ImageChops.darker(ImageChops.darker(r, g), b))
+    dunkel = hell.point(lambda v: 255 if v < 50 else 0)
+    fremd = ImageChops.lighter(hell.point(lambda v: 255 if v < 110 else 0),
+                               bunt.point(lambda v: 255 if v > 28 else 0))
+
+    def grenze(maske, lauf):
+        px = maske.load()
+        y0 = int(RAHMEN_AB_MM * k)
+        aus = []
+        for x in range(w):
+            n, gy = 0, h
+            for y in range(y0, h):
+                if px[x, y]:
+                    n += 1
+                    if n >= lauf:
+                        gy = y - lauf + 1
+                        break
+                else:
+                    n = 0
+            aus.append(gy)
+        return aus
+
+    def oeffnen(werte):
+        rad = int(2 * k)
+        def fenster(a, f):
+            return [f(a[max(0, i - rad):i + rad + 1]) for i in range(len(a))]
+        return fenster(fenster(werte, max), min)
+
+    g_dunkel = oeffnen(grenze(dunkel, 6))
+    g_fremd = oeffnen(grenze(fremd, 5))
+    links, rechts = RAHMEN_MITTE_MM[0] * k, RAHMEN_MITTE_MM[1] * k
+    ein = int(0.3 * k)
+    maske = Image.new('L', (w, h), 0)
+    zeichnen = ImageDraw.Draw(maske)
+    for x in range(w):
+        gy = g_fremd[x] if links <= x <= rechts else g_dunkel[x]
+        zeichnen.line([(x, min(h, gy + ein)), (x, h)], fill=255)
+    maske = maske.filter(ImageFilter.GaussianBlur(1.5))
+    # Durchsichtiges auf Schwarz, damit das PNG klein bleibt.
+    aus = Image.composite(bild, Image.new('RGB', (w, h)), maske)
+    aus.putalpha(maske)
+    return aus
+
+
 def kuerzel(name):
     """Aventurien_TieferSueden.png -> tiefer-sueden"""
     stamm = os.path.splitext(name)[0]
@@ -579,6 +664,11 @@ def main():
         if os.path.exists(quelle):
             speichern(Image.open(quelle), zg, 'ruecken-neutral.png',
                       nur_png, ppi)
+            rueck += 1
+            # Der Rahmen gilt fuer alle Regionalfassungen: sie unterscheiden
+            # sich nur in der Karte.
+            speichern(rahmen_freistellen(Image.open(quelle)), zg,
+                      'ruecken-rahmen.png', nur_png, ppi)
             rueck += 1
         else:
             fehlt.append('ruecken-neutral (gesucht: %s)' % RUECKEN_NEUTRAL)
