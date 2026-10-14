@@ -119,6 +119,11 @@ REGIONEN = [
 for r in REGIONEN:
     SOLL['ruecken-%s.jpg' % r] = (2480, 3508)
 
+# Der untere Zierrahmen der Rueckseite, von aufbereiten.py --rueckseiten aus
+# ruecken-neutral freigestellt: dieselbe Leinwand, alles ausser dem Rahmen
+# durchsichtig. Die Klasse legt ihn ueber den Schleierkasten.
+SOLL['ruecken-rahmen.png'] = (2480, 3508)
+
 # Die acht Einzelseiten aus den vier Doppelseiten. Eine Doppelseite ist
 # 5032 x 3579 px; der Schnitt in der Mitte ergibt je 2516 x 3579 px, also
 # 213,0 x 303,0 mm — A4 plus 3 mm Anschnitt an drei Kanten.

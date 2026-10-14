@@ -17,7 +17,7 @@ Vier LaTeX-Dokumentklassen im Layout von *Das Schwarze Auge 5*, nach den Maßen 
 | `dsa5mappe.cls` | Charaktermappe, der Umschlag für die Heldenbögen in `bogen/` | `doku/BOGEN.md` |
 
 `dsa5einleger` und `dsa5mappe` laden `dsa5latex` und ändern nur, was sie anders machen. Wie man einrichtet
-und baut, steht featureübergreifend in `doku/EINRICHTUNG.md`. Dazu fünfzehn Python-Werkzeuge in
+und baut, steht featureübergreifend in `doku/EINRICHTUNG.md`. Dazu sechzehn Python-Werkzeuge in
 `werkzeuge/`, neun Dokumente in `doku/` und die Beispieldokumente in `beispiel/`.
 
 Dazu kommt der **Aufsteller** (`dsa5aufsteller.sty`) — keine eigene Klasse, sondern eine

@@ -22,6 +22,10 @@ ausliefern wird.
 * Die Heldendokumente liegen in `bogen/quellen/` (von git ignoriert), `bogen/konfig.tex` nennt sie
   relativ. `einrichten.py --heldendokumente <ordner>` kopiert sie dorthin. Vorher stand dort ein
   absoluter Windows-Pfad mit Benutzername.
+* Rückseite wie im gesetzten Heft: Schleierkasten und Bild unter dem Zierrahmen, Klappentext
+  umfließt die Karte, `\dsaRueckBild` setzt ein Bild links unten, `werkzeuge/umfluss.py` legt die
+  Kontur einer freigestellten Figur an. `aufbereiten.py --rueckseiten` stellt dafür
+  `ruecken-rahmen` frei.
 
 ## 1.2.0 — unveröffentlicht
 
