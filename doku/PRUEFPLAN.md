@@ -88,6 +88,7 @@ tiefer.
 | Unterkapitel: Grad | **18,9 pt** = 14 × 135 % | IDML-Absatzformat, 7 Zwischenüberschriften | `#` |
 | Impressumtitel | Andalus 31,73 pt, Grundlinie y 94,00 pt | US25324 und US25326 | `#` |
 | Seitenhintergrund: Lage, Anschnitt, Folge 0,0,1,1,2,2,3,3 | 213 × 303 mm an der Außenkante | Schnitt der Doppelseiten | — |
+| Seitenfarbe: nur die Schuppenleiste, Ton wie die Karte | Median H/S höchstens 5° / 0,04 neben der Karte, alle sieben Farben | eigene Messung, siehe unten | `ok` |
 | Kapitelanfang: Banner, Bild, Pergamentrand | Banner 210,1 × 43,2 mm am oberen Rand | IDML | — |
 | Inhaltsverzeichnis | kein Sollmaß | — | — |
 | Ganzseitige Grafik | 184 × 265 mm im Grafikbereich | IDML, zweiter Rahmen | — |
@@ -167,6 +168,7 @@ Musterbogen zeigt sie ohne Text.
 | Porträtmedaillon, Größe | 35,39 × 34,97 mm bei 100 % | IDML | `#` |
 | Porträtmedaillon, Lage im Kasten | je Kasten 17,06/17,97, 17,91/16,87 und 17,57/16,62 mm | Alphakanal der Kastengrafiken | `#` |
 | Rautenskalen in TikZ | Vorbild `DSA5_Rauten_*` | PNG | — |
+| Rautenskala im Fließtext auf dem Raster | Grundlinie 84 + k · 12 bp | Regellauf S. 7, alle Zeilen ganzzahlig (Issue #9) | `ok` |
 | Bandmarke `\dsaBand` | Text, keine Grafik: hochgestelltes Kürzel plus Seite | Baukasten | `ok` |
 | Markengrafiken, Auflösung | mit 1700 bis 2700 ppi platziert, zusammen 2 MB | eigene Messung | `ok` |
 
@@ -473,6 +475,34 @@ dadurch flacher auf ihrer Fläche als in der Vorlage. Wer den Schein nachbaut, k
 Lagenroutine wie für die Schlagschatten nehmen, mit Versatz null — und muss damit rechnen, dass
 sich damit auch das Aussehen der grauen Voreinstellung ändert.
 
+### Die Seitenfarbe am Abzug
+
+`beispiel.tex` schaltet vor dem Kapitel „Seitentypen“ auf `\dsaSeitenfarbe{karmin}`. Gebaut mit
+XeLaTeX, zwei Läufe, keine Warnung der Klasse. Laut Log nehmen die Seiten 1 bis 13 die Hintergründe
+des Baukastens und ab Seite 14 die `-karmin`-Fassungen, auch die Variante 3 ohne Seitenzahlfeld auf
+den Seiten 14 und 16. Die Rotation läuft ungestört weiter.
+
+Am Abzug angesehen (Seiten 13 bis 21, 40 und 60 dpi): Nur die Schuppenleiste ist rot. Pergament,
+Ranke, Flecken und Kartusche sind unverändert, Kanten am Übergang sind keine zu sehen. Seite 13
+ist grau, Seite 14 rot. Die Umschaltung greift also an der Seitengrenze nach dem `\clearpage`.
+
+Der Farbvergleich mit der Karte steht in [MASSE.md](MASSE.md) unter „Dieselbe Umfärbung an den
+Seitenhintergründen“. Für alle sieben Farben liegen Karte und Seite im Median höchstens 5° im
+Farbton und 0,04 in der Sättigung auseinander. Karte und Seite im selben Maßstab nebeneinander
+ergeben denselben Ton.
+
+Gegenprobe an einem vierseitigen Testdokument: Eine Farbe, die es nicht gibt, ergibt die Warnung
+`Seitenfarbe 'gibtsnicht' fehlt in grafiken/` und den Hintergrund des Baukastens, ohne Abbruch.
+`blau` nach einem `\clearpage` färbt die folgende Seite. `\dsaSeitenfarbe{}` *vor* dem nächsten
+`\clearpage` stellt schon die laufende Seite zurück, weil der Hintergrund erst beim Ausgeben
+gezeichnet wird. Das ist so gewollt und in ELEMENTE.md beschrieben.
+
+Alle sieben Farben zusätzlich als Übersicht angesehen, je Karte neben der oberen Außenecke von
+`seite-rechts-0`: Die Töne gleichen sich. Bei `gruen` geht die Ranke in der Leiste unter.
+
+Nicht geprüft: die Wirkung im Druck, und `gruen`, `violett`, `bernstein` und `petrol` in einem
+gebauten Heft. Angesehen sind sie nur als Grafik.
+
 ## Elemente mit eigenem Raster
 
 Nicht jede Zeile gehört auf das Grundlinienraster der Seite. Diese Elemente weichen bewusst ab —
@@ -582,6 +612,115 @@ setzt die `4` in den Text — eine Ziffer ist kein Buchstabe; über `\@namedef` 
 Ziffern tragen. Und eine Zahl ohne Einheit ist in einer TikZ-Koordinate ein Vielfaches der
 Achseneinheit: `0.5*\paperheight` wären dort 420 Zentimeter, nicht die halbe Blatthöhe. Beides
 fiel erst am Abzug auf.
+
+## Spielkarten (dsa5spielkarten.cls)
+
+Eigene Klasse mit eigener Quelle — dem *Scriptorium Aventuris – Spielkarten*-Baukasten, nicht dem
+allgemeinen Layout-Baukasten. Die Sollmaße stehen in [MASSE.md](MASSE.md), Abschnitt 8.
+
+Gemessen wird am gebauten PDF mit `pymupdf`: Seitenformat, Lage und Größe der Kartenfläche, jede
+Grundlinie, die Füllrechtecke der Wertetabelle, die Spaltenkanten des Attributrasters. Für den
+Druckbogen zusätzlich die Duplexprobe — zu jeder Kartenfläche auf dem Vorderseitenbogen muss es
+auf dem Rückseitenbogen eine geben, deren Mitte auf der an der senkrechten Blattachse gespiegelten
+Stelle liegt.
+
+Gebaut wurden `beispiel/spielkarten.tex` (Einzelkarten), `beispiel/spielkarten-bogen.tex`
+(A4-Bogen) und dieselbe Datei mit Option `anschnitt`. Alle drei mit XeLaTeX aus TeX Live 2026,
+**ein Lauf, fehlerfrei** — die Klasse benutzt kein `remember picture` und braucht deshalb keine
+drei Durchläufe wie ein Aufstellerbogen.
+
+Das Beispieldokument hat siebzehn Karten und deckt alle acht Kartentypen ab, dazu die Raute als
+Rücken (in drei Farben und einmal auf der bandlosen Fläche) und das Rautenfeld als Alternative. Zwei Karten tragen eine Stückzahl (zehn und vier), sodass auf den Bogen 29
+Karten landen — vier Bogenpaare, und damit ist auch der Übergang von einem Bogen auf den
+nächsten mehrfach geprüft.
+
+| Prüfung | Sollwert | Gemessen | Status |
+|---|---|---|---|
+| Seitenformat, Einzelkarte | 63,00 × 88,00 mm | 62,999 × 88,000 | `ok` |
+| Seitenformat mit `anschnitt` | 69,00 × 93,98 mm | 69,00 × 93,98 | `ok` |
+| Seitenformat, Druckbogen | 210 × 297 mm | 210,002 × 297,000 | `ok` |
+| Kartenfläche, Pixelmaß | 815 × 1110 px | 815 × 1110 | `ok` |
+| Kartenfläche, Lage | −3,00 / −2,99 mm | −3,000 / −2,988 | `ok` |
+| Kartenfläche, Größe | 69,003 × 93,980 mm | 69,001 × 93,976 | `ok` |
+| Grundlinie Überschrift | 17,657 mm | 17,657 | `ok` |
+| Grundlinie Untertitel | 20,621 mm | 20,621 | `ok` |
+| Überschrift, Mitte | 31,50 mm | 31,499 | `ok` |
+| zweizeiliger Name, Zeile 2 | 17,657 + 12 bp = 21,890 mm | 21,891 | `ok` |
+| zweizeiliger Name, Untertitel | 17,657 + 20,4 bp = 24,854 mm | 24,854 | `ok` |
+| erste Grundlinie Rückseite | 14,790 mm | 14,790 | `ok` |
+| Zeilenabstand Rückseite | 8,0 bp | 8,000 | `ok` |
+| linke Satzkante | 5,50 mm | 5,500 | `ok` |
+| Kartennummer, Grundlinie | 85,09 mm | 85,090 | `ok` |
+| Kartennummer, rechte Kante | 60,00 mm | 60,001 | `ok` |
+| Medaillon, Lage und Größe | 2,50 / 65,90 mm, 20 mm | 2,500 / 65,900, 19,997 | `ok` |
+| Wertetabelle, Oberkante | 12,20 mm | 12,200 | `ok` |
+| Wertetabelle, linke Kante und Breite | 5,50 / 52,00 mm | 5,500 / 52,000 | `ok` |
+| Wertetabelle, Zeilenhöhe | 4,00 mm | 4,000 | `ok` |
+| Wertetabelle, Abstand gefüllter Zeilen | 8,00 mm | 8,000 | `ok` |
+| Attributraster, erste Grundlinie | 14,790 mm | 14,790 | `ok` |
+| Attributraster, Spaltenschritt | 12,70 mm | 12,700 | `ok` |
+| Verbrauchsgegenstand, Text unten | letzte Grundlinie auf 75,7 mm | 75,821 | `ok` |
+| Verbrauchsgegenstand, linke Satzkante | 5,50 mm | 5,500 | `ok` |
+| Kartenrücken, Raute | 34,00 mm hoch | 34,000 | `ok` |
+| Kartenrücken, Rautenfeld | Kachel 14,00 mm | 14,000 | `ok` |
+| Kartenrücken, kein Text | keine Textzeile | keine | `ok` |
+| bandlose Rückseitenfläche | 69,003 × 93,980 mm | 69,001 × 93,976 | `ok` |
+| Medaillon, Porträtmitte | 12,50 / 75,90 mm | 12,500 / 75,900 | `ok` |
+| Medaillon, Porträtdurchmesser | 16,69 mm | 16,686 | `ok` |
+| Medaillon, Ringdatei | 22,72 mm breit | 22,718 | `ok` |
+| Medaillon, sichtbarer Kranz | 20,00 mm | 20,001 | `ok` |
+| Medaillon, Ringmitte waagerecht | 13,016 mm | 13,016 | `ok` |
+| Stückzahl auf dem Bogen | 15 + 10 + 4 = 29 Karten | 29, auf vier Bogenpaaren (9 + 9 + 9 + 2) | `ok` |
+| **Duplex-Passung** des Druckbogens | 0 mm Versatz | 0,001 mm, schlechtester von 29 Karten über vier Bogenpaare | `ok` |
+
+### Was beim Setzen auffiel
+
+* Die **Spaltenteilung der Wertetabelle** steht auf 21,48 mm. Mit 19 mm stößt „zusätzliche
+  Abzüge“ auf der Rüstungskarte in die Wertespalte.
+* Die **Wertetabelle setzt kleiner als der Fließtext** (Beschriftung 6 bp fett, Wert 6,5 bp); die
+  Tabelle steht nicht im Baukasten.
+* Der **Zeilenschritt des Attributrasters** ist der Durchschuss dieser Klasse (8 bp) — damit das
+  Raster auf denselben Zeilen sitzt wie der Fließtext darunter.
+* **Blocksatz auf 52 mm** braucht andere Einstellungen als die 80,5 mm der Kernklasse: `tolerance`
+  3000 und `emergencystretch` 2em. Das sind die mildesten Werte, mit denen keine Zeile mehr
+  überläuft; ab dort ändert sich nichts mehr, höhere kaufen nur löchrigere Zeilen ein.
+
+### Was noch nicht geprüft ist
+
+* **Der wirkliche Duplexdruck.** Die Passung ist am PDF nachgerechnet, nicht auf Papier. Wie genau
+  ein bestimmter Drucker Vorder- und Rückseite trifft, ist Sache des Geräts, nicht der Vorlage.
+* **Der Schnitt auf Kartenformat.** Die Fassung mit `anschnitt` ist gebaut und vermessen, aber
+  nicht bei einer Druckerei gewesen.
+* **Das Medaillon an einem hochkanten Bild.** Das Beispieldokument benutzt quadratische
+  Platzhalter, und an einem Quadrat ist am Bildausschnitt des Medaillons nichts zu sehen. Wer die
+  Klasse dort ändert, prüft sie an einer Halb- oder Dreiviertelfigur.
+* **Der Kartenrücken auf Papier.** Das Rautenfeld ist am PDF vermessen und angesehen. Ob es
+  gedruckt so dicht wirkt wie am Bildschirm, hängt am Papier und ist hier nicht zu entscheiden.
+
+## Ersatzmodus und CI
+
+Geprüft wurde, ob die Beispiele ohne Baukastenmaterial bauen und ob das Raster dabei dasselbe
+bleibt. Dazu ein Klon ohne `grafiken/` (bis auf `titelbild.jpg`) und ohne `schriften/`, darin
+`werkzeuge/platzhalter.py` und dann `DSA5_OPTIONEN=ersatz,entwurf latexmk <datei>`.
+
+| Prüfung | Ergebnis |
+|---|---|
+| Platzhalter angelegt | 92, davon 91 aus der Sollmaßliste und einer für die Battlemap; `pruefen.py` meldet 91 von 91 in Ordnung |
+| Alle acht Beispiele bauen | `beispiel` 22 Seiten wie mit echtem Material, `kaesten` 15, `rest` 5, `aufsteller` 4, `raster` 2, `battlemap`, `titel`, `titelgrafik` je 1 |
+| `logpruefen.py` über alle acht Logs | in Ordnung |
+| `seitenfarbe.py karmin` auf den Platzhalterseiten | acht Fassungen, alle mit Platzhalterkennung, also von `platzhalter.py --weg` erfasst; aus echten Seiten ohne Kennung |
+| Grundlinien `raster.pdf`, Ersatz gegen echtes Material | alle 51 Zeilen auf 0,01 mm gleich |
+| Fließtext 10 bp in `beispiel.pdf` neben dem Raster | nur, was auch mit echtem Material danebenliegt (Impressum mit eigenem Maß), dazu je Bildrahmen der Dateiname, den `entwurf` hineinschreibt |
+| Schutz gegen gemischten Satz | `platzhalter.py` bricht im Arbeitsklon mit echtem Material ab („91 Dateien aus dem Baukasten“) |
+| `logpruefen.py` schlägt an | eine eingefügte `Class dsa5latex Warning`, ein `Overfull \vbox` und „There were undefined references“ zählen je als Meldung, Rückgabewert 1 |
+
+Dass das Raster gleich bleibt, ist kein Zufall: die Grundlinien hängen an `\baselineskip` und am
+Satzspiegel, nicht an der Schrift. Zeilenfall und Satzbreiten sind mit Gentium dagegen andere,
+darum prüft der Ersatzmodus sie nicht.
+
+Auf GitHub (`texlive/texlive:latest`) läuft die Action in 2 min 18 s durch. Alle acht Beispiele
+mit denselben Seitenzahlen wie lokal, `logpruefen.py` meldet alle acht Logs in Ordnung, und das
+Artefakt `beispiele-ersatzmodus` trägt die PDFs, 345 KB.
 
 ## Vorgehen
 
