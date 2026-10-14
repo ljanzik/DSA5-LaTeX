@@ -33,7 +33,9 @@
 %%% Der Stand jeder Messung steht in doku/PRUEFPLAN.md.
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{dsa5einleger}[2026/09/09 v1.0 DSA5 Spielleiterschirm-Einleger]
+% Dieselbe Versionsnummer wie dsa5latex.cls und alle anderen Dateien, keine
+% eigene Zaehlung fuer den Einleger. Siehe CHANGELOG.md.
+\ProvidesClass{dsa5einleger}[2026/10/14 v1.2.0 DSA5 Spielleiterschirm-Einleger]
 
 %%% ==================================================================
 %%% 1  Optionen

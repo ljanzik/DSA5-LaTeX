@@ -13,10 +13,11 @@ Zwei LaTeX-Dokumentklassen im Layout von *Das Schwarze Auge 5*, nach den Maßen 
 |---|---|---|
 | `dsa5latex.cls` | Abenteuer, A4 hoch, zweispaltig mit Grundlinienraster | `doku/ELEMENTE.md` |
 | `dsa5einleger.cls` | Einleger für den Spielleiterschirm, A4 quer, vier freie Spalten, kein Raster | `doku/EINLEGER.md` |
+| `dsa5spielkarten.cls` | Spielkarten 63 × 88 mm, als Einzelkarten oder A4-Druckbogen | `doku/SPIELKARTEN.md` |
 
 `dsa5einleger` lädt `dsa5latex` und ändert nur, was ein Einleger anders macht. Wie man einrichtet
-und baut, steht featureübergreifend in `doku/EINRICHTUNG.md`. Dazu sieben Python-Werkzeuge in
-`werkzeuge/`, fünf Dokumente in `doku/` und sechs Beispieldokumente in `beispiel/`.
+und baut, steht featureübergreifend in `doku/EINRICHTUNG.md`. Dazu dreizehn Python-Werkzeuge in
+`werkzeuge/`, sechs Dokumente in `doku/` und die Beispieldokumente in `beispiel/`.
 
 Dazu kommt der **Aufsteller** (`dsa5aufsteller.sty`) — keine eigene Klasse, sondern eine
 Erweiterung: kleine Standfiguren zum Ausschneiden auf eigenen A4-Bögen in vier Größenklassen,
@@ -216,7 +217,17 @@ TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
 `TEXINPUTS` ist nötig, weil `dsa5latex.cls` eine Ebene höher liegt und nicht installiert ist. Wer
 die Klasse nach `TEXMFHOME/tex/latex/dsa5latex/` legt, kann es weglassen.
 
-Sechs Beispieldokumente, alle in `beispiel/`:
+Kürzer: `latexmk` in `beispiel/`. Die `latexmkrc` dort setzt XeLaTeX und `TEXINPUTS` und
+wiederholt die Läufe selbst. Klassenoptionen von außen gibt `DSA5_OPTIONEN=entwurf latexmk -g
+raster.tex` mit, ohne die `.tex` anzufassen.
+
+**Ohne Baukasten** (frischer Klon, CI): `python3 werkzeuge/platzhalter.py` legt graue Platzhalter
+in den Sollmaßen an, die Klassenoption `ersatz` nimmt Gentium aus TeX Live statt `schriften/`.
+Das Raster bleibt damit prüfbar, Zeilenfall und Satzbreiten nicht — ein Ersatz-PDF ist nie das
+Ergebnis. `werkzeuge/logpruefen.py beispiel/*.log` findet, was LaTeX nur als Warnung meldet;
+die GitHub Action `.github/workflows/bauen.yml` macht genau diese drei Schritte.
+
+Sechs Beispieldokumente der beiden Klassen oben, alle in `beispiel/`:
 
 | Datei | Klasse | wofür |
 |---|---|---|
@@ -225,7 +236,7 @@ Sechs Beispieldokumente, alle in `beispiel/`:
 | `kaesten.tex` | `dsa5latex` | alle fünfzehn Kästen |
 | `rest.tex` | `dsa5latex` | Seitentypen, Umschlag, Rückseite |
 | `battlemap.tex` | `dsa5latex` | eine Battlemap auf A4, A3, A2 oder A1 mit Zollraster |
-| `einleger.tex` | `dsa5einleger` | jedes Element der Einlegerklasse, drei Seiten A4 quer |
+| `einleger.tex` | `dsa5einleger` | jedes Element der Einlegerklasse, vier Seiten A4 quer |
 
 Klassenoptionen zum Arbeiten: `entwurf` setzt Bilder als Rahmen und macht den Lauf um ein
 Vielfaches schneller, `ohnehintergrund` lässt die 7-MB-Seitenhintergründe weg, `rasterzeigen`
@@ -321,6 +332,14 @@ Beispieldokumente, eigene Klassenoptionen).
 aufsplitten. Jedes Feature bekommt darin einen eigenen, klar abgegrenzten Abschnitt (wie
 Abschnitt 8 in `doku/MASSE.md` für den Einleger), damit Messungen an einem Ort auffindbar und
 über Features hinweg vergleichbar bleiben.
+
+## Version
+
+Das Projekt hat **eine** Versionsnummer, und jede `.cls` und `.sty` trägt sie: gleichlautend in
+`\ProvidesClass` beziehungsweise `\ProvidesPackage`, in `\dsa@version` in `dsa5latex.cls` und im
+Git-Tag. Eine neue Klasse fängt nicht bei `v1.0` an, sondern übernimmt die laufende
+Projektversion; keine Datei zählt für sich. Wer die Version hebt, hebt sie in allen Dateien
+zugleich und trägt die Änderungen in `CHANGELOG.md` unter dieser Version ein.
 
 ## Git
 
