@@ -63,7 +63,8 @@ def quellpfad(quelle):
     treffer = re.search(r"^\\def\\quelleDF\{([^}]*)\}", konfig, re.M)
     if not treffer:
         raise SystemExit(r"In konfig.tex fehlt \def\quelleDF{...}")
-    return Path(treffer.group(1))
+    # Relativ zu bogen/, wie pdflatex ihn liest -- nicht zum Aufrufort.
+    return PROJEKT / treffer.group(1)
 
 
 def entpacken(quellpfad, seite, quelle):

@@ -22,7 +22,9 @@
 %%% Zeilen sind eine Folge von \dsaTitelZeile[Grad]{Text}, wie beim Umschlag.
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{dsa5mappe}[2026/10/08 v1.0 DSA5 Charaktermappe]
+% Dieselbe Versionsnummer wie dsa5latex.cls und alle anderen Dateien, keine
+% eigene Zaehlung fuer die Mappe. Siehe CHANGELOG.md.
+\ProvidesClass{dsa5mappe}[2026/10/14 v1.2.0 DSA5 Charaktermappe]
 
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{dsa5latex}}
 \ProcessOptions\relax

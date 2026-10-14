@@ -30,6 +30,12 @@ beispiel/*.pdf
 bogen/bau/ausgabe/
 bogen/bau/bilder/
 
+# Die beiden Heldendokumente, die der Bogen einlegt: Verlagsmaterial, ein
+# eigenes kostenpflichtiges Produkt. Sie liegen hier, damit bogen/konfig.tex
+# sie mit einem relativen Pfad findet -- eingecheckt werden sie nie.
+bogen/quellen/*
+!bogen/quellen/.gitkeep
+
 # Python
 __pycache__/
 *.pyc

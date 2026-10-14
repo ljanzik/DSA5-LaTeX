@@ -78,6 +78,14 @@ SOLL = {
     'kapitelstart-rahmen.png':      (1290, 3543),
     'kapitelstart-pergament.png':   (1290, 3543),
     'kapitelstart-ornament.png':    (1290, 3543),
+    # Innenflaeche und Fenster des Kapitelanfangs, von aufbereiten.py per
+    # Saatpunkt aus kapitelstart-rahmen gewonnen, gleiche Leinwand.
+    'kapitelstart-flaeche.png':     (1290, 3543),
+    'kapitelstart-fenster.png':     (1290, 3543),
+    # Rautenskalen, aus den Aufzaehlern der Rueckseitenvorlage
+    'raute-rot.png':                (215, 259),
+    'raute-gruen.png':              (215, 259),
+    'raute-grau.png':               (215, 259),
     # Abgeleitet: das Pergament der Charaktermappe, werkzeuge/pergament.py.
     # Die Flaeche ist A4 bei 300 ppi, also 2480 x 3508 — sie wird formatfuellend
     # aus Kasten_Pergament.png eingepasst, deren Verhaeltnis nur um 0,7 Prozent
@@ -86,6 +94,30 @@ SOLL = {
     'mappe-pergament-a4.jpg':       (2480, 3508),
     'mappe-pergament-kasten.png':   (1010, 599),
 }
+
+# Aus einem anderen Paket: dem "Scriptorium Aventuris - Spielkarten"-
+# Baukasten, geholt von werkzeuge/kartengrafik.py. 815 x 1110 px bei 300 ppi
+# sind 69,003 x 93,980 mm - die Karte 63 x 88 mm mit 3 mm Anschnitt.
+# Steht hier und nicht in einer eigenen Liste, weil pruefen.py alles prueft,
+# was in grafiken/ liegt; unverzichtbar ist sie nur fuer dsa5spielkarten.cls.
+SOLL['spielkarte-flaeche.png'] = (815, 1110)
+# Dieselbe Karte ohne Schuppenband, fuer den generischen Kartenruecken.
+# kartengrafik.py leitet sie aus der Flaeche ab und legt sie immer mit an.
+SOLL['spielkarte-ruecken.png'] = (815, 1110)
+# Die Rueckseite in ihren Regionsfassungen, aus dem Rueckseiten-Paket. Alle
+# auf A4 zu 300 ppi, also 2480 x 3508 px, als JPEG abgelegt. Keine davon ist
+# unverzichtbar: jedes Dokument braucht hoechstens eine.
+REGIONEN = [
+    'neutral', 'al-anfa', 'andergast', 'aranien', 'bergkoenigreiche',
+    'bjaldorn', 'bornland', 'brabak', 'donnerbach',
+    'freie-staedte-elfenlande', 'gjalskerland', 'herzogtum-paavi',
+    'hoher-norden', 'horasreich', 'kalifat', 'maraskan', 'mittelreich',
+    'nivesenlande', 'nostria', 'orkland', 'schattenlande', 'selem',
+    'sultanat-gorien', 'svelltal', 'thorwal', 'tiefer-sueden',
+    'tulamidenlande', 'warunkei', 'zyklopeninseln',
+]
+for r in REGIONEN:
+    SOLL['ruecken-%s.jpg' % r] = (2480, 3508)
 
 # Die acht Einzelseiten aus den vier Doppelseiten. Eine Doppelseite ist
 # 5032 x 3579 px; der Schnitt in der Mitte ergibt je 2516 x 3579 px, also
@@ -189,11 +221,44 @@ def main():
     if fehlt:
         print('Die fehlenden Dateien betreffen nur einzelne Elemente.')
         print('Der Lauf geht durch, solange sie nicht benutzt werden.')
+        if 'spielkarte-flaeche' in fehlt:
+            print()
+            print('Die Kartenflaeche kommt aus einem anderen Paket:')
+            print('    python3 werkzeuge/kartengrafik.py '
+                  '"/pfad/zu/Scriptorium Aventuris -Spielkarten"')
         return 0
 
     print('Alles da. Weiter mit:')
     print('    cd beispiel && xelatex beispiel.tex')
+    einleger_hinweis(zg)
     return 0
+
+
+def einleger_hinweis(zg):
+    """Sagt, ob die Grafiken fuer den Einleger im Querformat da sind.
+
+    Geprueft wird nur die Anwesenheit, nicht das Pixelmass: diese Dateien
+    kommen nicht aus dem Baukasten, sondern werden von werkzeuge/einleger.py
+    daraus erzeugt, und ihre Groesse haengt an dessen --ppi und --leiste. Was
+    sich pruefen laesst — die Quellen und die Breite der Schuppenkante —,
+    prueft dieses Werkzeug selbst mit --pruefen.
+    """
+    noetig = ['einleger-flaeche-0', 'einleger-flaeche-1', 'einleger-flaeche-2',
+              'einleger-leiste-oben', 'einleger-leiste-unten']
+    fehlt = []
+    for name in noetig:
+        if not any(os.path.exists(os.path.join(zg, name + e))
+                   for e in ('.jpg', '.jpeg', '.png')):
+            fehlt.append(name)
+    print()
+    if fehlt:
+        print('Fuer den Spielleiterschirm-Einleger fehlen %d von %d Grafiken.'
+              % (len(fehlt), len(noetig)))
+        print('Nur noetig fuer dsa5einleger.cls. Erzeugen mit:')
+        print('    python3 werkzeuge/einleger.py')
+    else:
+        print('Die Grafiken fuer den Einleger sind auch da:')
+        print('    cd beispiel && xelatex einleger.tex')
 
 
 if __name__ == '__main__':

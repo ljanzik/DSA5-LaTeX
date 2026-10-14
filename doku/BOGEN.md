@@ -6,7 +6,7 @@ Es ist der einzige Teil dieses Projekts, der mit **pdflatex** läuft und ein Ver
 alles andere setzt mit XeLaTeX aus eigenen Quellen. Die Klasse und ihre Elemente stehen in
 `CLAUDE.md`, `doku/ELEMENTE.md` und `doku/MASSE.md`.
 
-Der Bogen lag bis zum 10.09.2026 als eigenes Projekt unter `C:\SVN\dsa-charlatex`, ohne
+Der Bogen lag bis zum 10.09.2026 als eigenes Projekt `dsa-charlatex`, ohne
 Versionskontrolle. Er ist unverändert hierher übernommen worden; die Läufe erzeugen dieselben
 Dateien wie dort, byte-genau in derselben Größe.
 
@@ -230,7 +230,7 @@ dieselbe Feldtabelle und sollte von Anfang an mitgedacht werden.
 ## Toolchain
 
 **pdflatex, nicht XeLaTeX.** `hyperref`s Formularfelder sind unter pdflatex weit besser erprobt.
-Das benachbarte Satzprojekt (`C:\SVN\dsa-sl\kampagnen\fuchsgrund\satz\`) läuft zwingend mit
+Das benachbarte Satzprojekt (`dsa-sl/kampagnen/fuchsgrund/satz/`) läuft zwingend mit
 XeLaTeX, weil DSaTeX `fontspec` lädt — von dort ist **nichts** übernehmbar. Die Projekte teilen nur
 den Anlass.
 
@@ -277,7 +277,7 @@ als Schalter). Gemessen an den Dateien:
 
 | | `Heldendokument_druckerfreundlich.pdf` | `US25505PDF_Heldendokumente.pdf` |
 |---|---|---|
-| Ort | `~/Downloads/` | `~/Downloads/` |
+| Ort | `bogen/quellen/` | `bogen/quellen/` |
 | Größe | 826 KB | 8,2 MB |
 | Seiten | **6** | **10** |
 | Seitenformat | `/MediaBox [0 0 595.276 841.89]` = A4 (gemessen) | **MediaBox 230,8 × 317,8 mm, TrimBox 208,8 × 295,8 mm** — eine Druckdatei mit 11 mm Beschnitt, **nicht** A4 (gemessen) |
@@ -314,9 +314,11 @@ Seitenzuordnung, aus der Textextraktion je Seite:
 - Seiten 4 und 5 der druckerfreundlichen Fassung (bzw. 5 und 6 der Farbfassung) sind dieselbe
   Geometrie mit anderen Beschriftungen: einmal einmessen, zweimal verwenden.
 
-Beide PDF liegen außerhalb des Projektverzeichnisses, in `~/Downloads` — die Pfade stehen in
-`konfig.tex`. Das ist Absicht: es ist Verlagsmaterial, siehe „Rechtliches". Nicht ins Projekt
-kopieren, ohne das geklärt zu haben.
+Beide PDF liegen in `bogen/quellen/`, einem Ordner, den git ignoriert; `konfig.tex` nennt sie mit
+einem Pfad relativ zu `bogen/`. Dorthin kopiert sie `werkzeuge/einrichten.py --heldendokumente
+<ordner>`. Es ist Verlagsmaterial, siehe „Rechtliches" — **nie einchecken**, auch nicht verkleinert.
+Früher stand in `konfig.tex` ein absoluter Pfad mit Laufwerk und Benutzername; der galt auf einem
+Rechner und brach auf jedem anderen.
 
 ### Die Farbfassung muss normalisiert werden
 
@@ -438,7 +440,7 @@ Seite 1 und 3 zuerst (die meisten Einzelfelder, zeigen die meisten Fehler), Seit
 ## Die Charaktermappe
 
 Die Mappe (`mappe/`) ist der **Umschlag** zu den Heldenbögen, nachempfunden den
-Charakterbögen der Heldenwerk-Reihe (`~/Downloads/US25015PDF_HvS_PDF_Charakterbogen_Hexe.pdf`
+Charakterbögen der Heldenwerk-Reihe (`US25015PDF_HvS_PDF_Charakterbogen_Hexe.pdf`
 und `…_Streuner.pdf`, jeweils erste und letzte Seite). Vier Blätter:
 
 | Blatt | Inhalt |

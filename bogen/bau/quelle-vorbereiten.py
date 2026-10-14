@@ -46,14 +46,16 @@ def quellpfad():
     treffer = re.search(r"^\\def\\quelleFarbeRoh\{([^}]*)\}", konfig, re.M)
     if not treffer:
         raise SystemExit(r"In konfig.tex fehlt \def\quelleFarbeRoh{...}")
-    return Path(treffer.group(1))
+    # Relativ zu bogen/, wie pdflatex ihn liest -- nicht zum Aufrufort.
+    return PROJEKT / treffer.group(1)
 
 
 def vorbereiten(neu=False):
     quelle = quellpfad()
     if not quelle.exists():
         raise SystemExit(f"Quelle nicht gefunden: {quelle}\n"
-                         r"Pfad in konfig.tex anpassen (\quelleFarbeRoh).")
+                         "  python3 werkzeuge/einrichten.py --heldendokumente "
+                         "\"/ordner/mit/den/pdf\"")
 
     AUSGABE.mkdir(parents=True, exist_ok=True)
     if ZIEL.exists() and not neu and ZIEL.stat().st_mtime > quelle.stat().st_mtime:

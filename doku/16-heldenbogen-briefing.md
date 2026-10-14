@@ -22,7 +22,7 @@ Beide sollen **aussehen wie das Original**. Der Bogen wird nicht nachgebaut, son
 
 ## 2. Die Quelldatei, gemessen
 
-`~/Downloads/Heldendokument_druckerfreundlich.pdf`
+`Heldendokument_druckerfreundlich.pdf`
 
 | | |
 |---|---|

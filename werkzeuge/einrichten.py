@@ -4,6 +4,7 @@
     python3 werkzeuge/einrichten.py "/pfad/zu/Scriptorium Aventuris v4"
     python3 werkzeuge/einrichten.py "/pfad/zum/Baukasten" \\
         --rueckseiten "/pfad/zum/Rueckseiten_Karten_Paket"
+    python3 werkzeuge/einrichten.py --heldendokumente "/ordner/mit/den/pdf"
     python3 werkzeuge/einrichten.py --pruefen
 
 Es ruft die Werkzeuge auf, die es dafuer schon gibt, und gibt allen
@@ -23,9 +24,10 @@ wie ein Pfadfehler. Jetzt nennt ihn der Anwender einmal.
 --pruefen richtet nichts ein, sondern sagt nur, was da ist und was fehlt.
 Das ist der schnellste Weg zu der Frage "warum kompiliert das nicht".
 
-Die Heldendokumente fuer bogen/ werden nur gesucht, nicht aufbereitet: sie
-sind ein eigenes, kostenpflichtiges Verlagsprodukt und werden vom Bogen
-unveraendert eingelegt. Ihre Pfade stehen in bogen/konfig.tex.
+Die Heldendokumente fuer bogen/ werden nicht aufbereitet: sie sind ein
+eigenes, kostenpflichtiges Verlagsprodukt und werden vom Bogen unveraendert
+eingelegt. --heldendokumente kopiert sie nur nach bogen/quellen/, einen
+Ordner, den git ignoriert; ihre Namen stehen in bogen/konfig.tex.
 
 Copyright 2026 Leif Janzik. Apache License 2.0.
 """
@@ -37,6 +39,7 @@ import sys
 from pathlib import Path
 
 PROJEKT = Path(__file__).resolve().parent.parent
+BOGEN = PROJEKT / "bogen"
 
 # Modulname, Name auf PyPI, wofuer. Der dritte Eintrag steht in der
 # Fehlermeldung: "numpy fehlt" allein sagt niemandem, was dann nicht geht.
@@ -105,7 +108,7 @@ def heldendokumente():
     Bogen legt sie ein, aufbereitet wird an ihnen nichts -- ausser der
     Normalisierung der Farbfassung, und die macht quelle-vorbereiten.ps1
     beim Bauen von selbst."""
-    konfig = PROJEKT / "bogen" / "konfig.tex"
+    konfig = BOGEN / "konfig.tex"
     if not konfig.is_file():
         return []
     text = konfig.read_text(encoding="utf-8")
@@ -114,8 +117,30 @@ def heldendokumente():
                           ("quelleFarbeRoh", "Farbfassung, 10 Seiten")):
         treffer = re.search(r"\\def\\" + marke + r"\{([^}]*)\}", text)
         if treffer:
-            gefunden.append((Path(treffer.group(1)), marke, wofuer))
+            # Relativ zu bogen/, wie pdflatex den Pfad liest.
+            gefunden.append((BOGEN / treffer.group(1), marke, wofuer))
     return gefunden
+
+
+def heldendokumente_holen(ordner):
+    """Kopiert die beiden Quell-PDF aus einem beliebigen Ordner an die Stelle,
+    die bogen/konfig.tex nennt. Gibt die Zahl der nicht gefundenen zurueck."""
+    ordner = Path(ordner).expanduser()
+    if not ordner.is_dir():
+        print(f"Kein Ordner: {ordner}")
+        return 2
+    print("\n=== Heldendokumente", flush=True)
+    fehlt = 0
+    for ziel, marke, wofuer in heldendokumente():
+        quelle = ordner / ziel.name
+        if not quelle.is_file():
+            print(f"  FEHLT  {ziel.name}  ({wofuer})")
+            fehlt += 1
+            continue
+        ziel.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(quelle, ziel)
+        print(f"  kopiert  {ziel.name} -> {ziel.relative_to(PROJEKT)}")
+    return fehlt
 
 
 def lauf(werkzeug, argumente):
@@ -166,7 +191,7 @@ def bestand():
         stand = "da   " if pfad.exists() else "FEHLT"
         print(f"  {stand}  {marke:<16} {wofuer}")
         if not pfad.exists():
-            print(f"         erwartet: {pfad}")
+            print(f"         erwartet: {pfad.relative_to(PROJEKT)}")
     return fehlt
 
 
@@ -180,13 +205,27 @@ def main():
                   f"kompiliert nichts.")
             print('  python3 werkzeuge/einrichten.py "/pfad/zum/Baukasten"')
             print("Die Heldendokumente werden nicht aufbereitet, sondern")
-            print("gekauft und in bogen/konfig.tex eingetragen. Siehe README,")
-            print('Abschnitt "Schritt 1c".')
+            print("gekauft und nach bogen/quellen/ kopiert:")
+            print('  python3 werkzeuge/einrichten.py --heldendokumente "/ordner/mit/den/pdf"')
+            print('Siehe doku/EINRICHTUNG.md, Abschnitt "Schritt 1d".')
         else:
             print("\nAlles da.")
         return 1 if offen else 0
 
     stellen = [a for a in argv if not a.startswith("--")]
+    # --heldendokumente nimmt einen Ordner; auch der ist kein Baukastenpfad.
+    if "--heldendokumente" in argv:
+        i = argv.index("--heldendokumente")
+        if i + 1 >= len(argv):
+            print("--heldendokumente braucht einen Ordner.")
+            return 2
+        helden = argv[i + 1]
+        stellen = [a for a in stellen if a != helden]
+        if heldendokumente_holen(helden) == 2:
+            return 2
+        # Nur die Heldendokumente geholt, kein Baukasten: dann ist hier Schluss.
+        if not stellen:
+            return 1 if bestand() else 0
     # --rueckseiten nimmt selbst einen Pfad; der ist kein Baukastenpfad.
     if "--rueckseiten" in argv:
         i = argv.index("--rueckseiten")
