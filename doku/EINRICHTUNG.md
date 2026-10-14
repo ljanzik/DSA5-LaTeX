@@ -61,6 +61,82 @@ aus innerhalb der Grenzlinien und rechnet aus der gefundenen Fläche dieselbe Se
 `aufbereiten.py`. Das Grenznetz kennt allerdings nur die großen Regionen: eine Saat im Kosch
 flutet das ganze Mittelreich.
 
+### Schritt 1c — der Spielkarten-Baukasten
+
+Nur für `dsa5spielkarten.cls` nötig, siehe [Spielkarten](SPIELKARTEN.md). Der *Scriptorium
+Aventuris – Spielkarten*-Baukasten ist ein eigenes, ebenfalls kostenloses Paket neben dem
+allgemeinen Layout-Baukasten und liegt unter demselben Ulisses-Link.
+
+**Er ersetzt Schritt 1 nicht, er kommt dazu.** Das Kartenpaket bringt zwar eigene Schriften mit,
+aber nur `GenBasR.ttf` und `andlso.ttf` — der Fett- und der Kursivschnitt von Gentium Basic fehlen
+dort, und die braucht auf einer Karte jedes Stichwort. Die Rautenkacheln des generischen
+Kartenrückens kommen ebenfalls aus dem allgemeinen Baukasten. Wer nur Schritt 1c macht, bekommt
+Karten, auf denen alles mager steht und der Rücken fehlt.
+
+```
+Scriptorium Aventuris -Spielkarten/
+├── Document fonts/andlso.ttf, GenBasR.ttf   dieselben wie im Layout-Baukasten
+├── Links/Spielkarte_Ulisses_Design.tif      die Kartenfläche, 815 × 1110 px
+├── Scriptorium Aventuris -Spielkarten.idml  Seiten-, Rahmen- und Absatzmaße
+└── Scriptorium Aventuris -Spielkarten.pdf   der gesetzte Musterbogen
+```
+
+Gebraucht wird daraus genau eine Datei, die TIF. Das Werkzeug dafür ist ein eigenes:
+
+```sh
+python3 werkzeuge/kartengrafik.py "/pfad/zu/Scriptorium Aventuris -Spielkarten"
+python3 werkzeuge/kartengrafik.py "/pfad/zum/Paket" --farbe blau --farbe rot
+python3 werkzeuge/kartengrafik.py --farben
+```
+
+Es legt `grafiken/spielkarte-flaeche.png` an, mit `--farbe` zusätzlich eingefärbte Fassungen des
+Schuppenbands. Die Schriften holt weiterhin `aufbereiten.py` aus dem allgemeinen Baukasten; es
+sind dieselben, und `kartengrafik.py` fasst `schriften/` nicht an. Der generische Kartenrücken
+benutzt die Rautenkacheln, die ebenfalls aus dem allgemeinen Baukasten kommen — auch dafür muss
+`aufbereiten.py` gelaufen sein.
+
+Solange die Illustrationen fehlen, legt `werkzeuge/kartenplatzhalter.py` Platzhalter in der
+richtigen Form an:
+
+```sh
+python3 werkzeuge/kartenplatzhalter.py "Bruder Halmrich" "Zwergenspalter"
+python3 werkzeuge/kartenplatzhalter.py --rund "Halmrich"
+```
+
+### Schritt 1d — die Heldendokumente
+
+**<https://www.ulisses-ebooks.de/de/product/159699/dsa5-heldendokumente-pdf-als-download-kaufen>**
+
+Nur für `bogen/` nötig, nicht für die Klasse. Wer keine Heldenbögen setzt, überspringt diesen
+Schritt — alles andere baut ohne sie.
+
+Der Bogen legt diese PDF als Grund ein und setzt seine Formularfelder darüber. Erwartet werden
+zwei Fassungen, die sich **nicht** nur in der Farbe unterscheiden:
+
+| | Seiten | Format |
+|---|---|---|
+| `Heldendokument_druckerfreundlich.pdf` | 6 | A4, `MediaBox 595,276 × 841,89` |
+| `US25505PDF_Heldendokumente.pdf` | 10 | Druckdatei, `MediaBox 230,8 × 317,8 mm`, `TrimBox 208,8 × 295,8 mm` |
+
+Es sind unterschiedliche Auflagen: die Seitenreihenfolge weicht ab (Ausrüstung ist dort Seite 6,
+hier Seite 4), und die Beschriftungen ebenso („Talente“ gegen „FERTIGKEITEN“). Deshalb hat jede
+Fassung ihre eigene Koordinatentabelle. Die Farbfassung wird außerdem vor dem Einlegen einmal auf
+ihre TrimBox beschnitten und unskaliert auf A4 gesetzt — sonst skalierte `pdfpages` sie um etwa
++0,6 Prozent, und keine gemessene Koordinate träfe mehr. Das erledigt
+`bogen/bau/quelle-vorbereiten.py` von selbst.
+
+**Die beiden PDF gehören nach `bogen/quellen/`, und nie ins Repository.** Sie sind Verlagsmaterial
+und stehen anders als der Baukasten nicht unter der Scriptorium-Vereinbarung; git ignoriert den
+Ordner wie `grafiken/` und `schriften/`. Hinein kommen sie mit
+
+```sh
+python3 werkzeuge/einrichten.py --heldendokumente "/ordner/mit/den/pdf"
+```
+
+oder von Hand, unter ihren Originalnamen. `bogen/konfig.tex` nennt sie mit einem Pfad relativ zu
+`bogen/` — absolute Pfade gehören in keine Datei des Projekts. Näheres in `doku/BOGEN.md`,
+Abschnitt „Die zwei Quelldateien“.
+
 ### Schritt 2 — aufbereiten
 
 Der bequeme Weg. Das Werkzeug legt alles an, was die Klasse braucht, und benennt es passend:
@@ -96,6 +172,54 @@ Was es tut:
 - kopiert die fünf Schriftdateien nach `schriften/`
 - schreibt am Ende eine Liste dessen, was fehlt
 
+Wer die Schuppenleiste der Seiten eingefärbt haben will (`\dsaSeitenfarbe`, siehe
+`doku/ELEMENTE.md`), legt die Fassungen danach mit einem zweiten Werkzeug an. Es braucht dazu
+`numpy`:
+
+```sh
+python3 werkzeuge/seitenfarbe.py karmin blau
+python3 werkzeuge/seitenfarbe.py --farben
+```
+
+Welche Farben es gibt und wie sie zu den Spielkarten passen, steht in [Farben](FARBEN.md).
+
+**Für den Heldenbogen (`bogen/`) gibt es `einrichten.py` statt `aufbereiten.py`.** Ein Aufruf,
+und alles ist da — auch das, was `bogen/` zusätzlich braucht:
+
+```sh
+python3 werkzeuge/einrichten.py "/pfad/zu/Scriptorium Aventuris v4" \
+    --rueckseiten "/pfad/zum/Rueckseiten_Karten_Paket"
+```
+
+Das `--rueckseiten` ist optional; ohne es fehlen nur die 29 Rückseiten aus Schritt 1b.
+`einrichten.py` ist die Klammer um drei Werkzeuge, die die Arbeit tun — und der einzige Ort, an
+dem der Pfad zum Baukasten genannt wird:
+
+| | |
+|---|---|
+| `aufbereiten.py` | Grafiken und Schriften aus dem Baukasten |
+| `pergament.py` | die Pergamentfläche der Charaktermappe |
+| `pruefen.py` | Pixelmaße gegen `doku/MASSE.md` |
+
+`pergament.py` leitet daraus die beiden Flächen der Charaktermappe ab: `mappe-pergament-a4.jpg`
+formatfüllend auf A4 bei 300 ppi, dazu `mappe-pergament-kasten.png` als Fußkasten. Quelle ist
+`Kasten_Pergament.png` — die Doppelseiten des Baukastens taugen dafür nicht, ihre Innenfläche ist
+mit einer Standardabweichung von 1,0 praktisch glattes Weiß. Die Herleitung steht im Kopf des
+Werkzeugs.
+
+Am Ende steht, was noch fehlt — auch die Heldendokumente aus Schritt 1d, die nicht aufbereitet,
+sondern nur gesucht werden. Wer nur wissen will, wie es steht, fragt ohne Baukasten:
+
+```sh
+python3 werkzeuge/einrichten.py --pruefen
+```
+
+Es braucht `Pillow`, `psd-tools` und `numpy`, für `nachmessen.py` außerdem `pdfplumber`:
+
+```sh
+python3 -m pip install Pillow psd-tools numpy pdfplumber
+```
+
 ### Schritt 3 — prüfen
 
 ```sh
@@ -104,7 +228,8 @@ python3 werkzeuge/pruefen.py
 
 Vergleicht jede Datei in `grafiken/` gegen die erwarteten Pixelmaße aus `doku/MASSE.md`. Weicht
 eine ab, ist entweder eine andere Fassung des Baukastens im Umlauf oder beim Kopieren etwas
-schiefgegangen. Beides würde sonst erst im gesetzten PDF auffallen.
+schiefgegangen. Beides würde sonst erst im gesetzten PDF auffallen. `einrichten.py` ruft es am
+Ende bereits selbst auf.
 
 ### Der Weg von Hand
 
@@ -124,22 +249,67 @@ herstellen. Dafür braucht es das Werkzeug oder ein Bildbearbeitungsprogramm.
 ```sh
 cd beispiel
 TEXINPUTS="..;" xelatex beispiel.tex     # dreimal, wegen Inhalt und Marken
+TEXINPUTS="..;" xelatex einleger.tex     # einmal genügt, kein Inhaltsverzeichnis
 ```
 
 `TEXINPUTS` ist nötig, weil `dsa5latex.cls` eine Ebene höher liegt. Wer die Datei nach
 `TEXMFHOME/tex/latex/dsa5latex/` legt, kann es weglassen. Unter Windows in der PowerShell:
 `$env:TEXINPUTS = "..;"`.
 
-Fünf Beispieldokumente liegen in `beispiel/`: `beispiel.tex` zeigt jedes Element genau einmal
+Kürzer geht es mit `latexmk`. Die `latexmkrc` in `beispiel/` setzt XeLaTeX und `TEXINPUTS` und
+wiederholt die Läufe selbst, bis Inhaltsverzeichnis und Marken stehen:
+
+```sh
+cd beispiel
+latexmk                 # baut beispiel.tex
+latexmk kaesten.tex     # eine bestimmte Datei
+latexmk -c              # Zwischenstände wegräumen
+```
+
+`latexmk` ist ein Perl-Skript. TeX Live bringt Perl mit, unter MiKTeX braucht es ein eigenes, etwa
+Strawberry Perl.
+
+Sechs Beispieldokumente liegen in `beispiel/`: `beispiel.tex` zeigt jedes Element genau einmal
 (22 Seiten), `raster.tex` nur Text und Raster und baut in Sekunden, `kaesten.tex` alle fünfzehn
 Kästen, `rest.tex` die Seitentypen, `battlemap.tex` eine Battlemap mit Zollraster auf eigenem
-Blatt (A4 bis A1, hoch oder quer) statt einer Heftseite. Jedes weitere Feature bringt seine
-eigenen Beispieldokumente mit — welche das sind, steht in seiner eigenen Doku-Datei aus der
-Feature-Liste.
+Blatt (A4 bis A1, hoch oder quer) statt einer Heftseite, `einleger.tex` jedes Element der
+Einlegerklasse. Jedes weitere Feature bringt seine eigenen Beispieldokumente mit — welche das
+sind, steht in seiner eigenen Doku-Datei aus der Feature-Liste.
+
+Der Einleger braucht einmalig zwei eigene Hintergrundgrafiken. Der Baukasten hat kein
+Querformat; `werkzeuge/einleger.py` erzeugt Pergamentfläche und Zierleiste aus den Buchseiten,
+indem es deren Schuppenkante am Bund um 90 Grad dreht — dasselbe Motiv, das auch der offizielle
+Einleger oben und unten legt:
+
+```sh
+python3 werkzeuge/einleger.py            # nach aufbereiten.py, einmal
+```
 
 Gebraucht werden aus TeX Live oder MiKTeX: `geometry graphicx xcolor fontspec polyglossia tikz
 tcolorbox eso-pic fancyhdr enumitem wrapfig contour changepage intcalc array colortbl textcomp
 microtype hyperref tabularx environ`.
+
+**Für den Heldenbogen (`bogen/`)** kommen `pdfpages ifthen fontenc inputenc`
+dazu, dazu zwei Programme außerhalb von Python:
+
+| | wofür | woher |
+|---|---|---|
+| **XeLaTeX** | die Klasse; ohne das baut kein Beispiel | TeX Live / MacTeX |
+| **pdflatex** | `bogen/`, alle Fassungen des Heldenbogens | dieselbe Distribution |
+| **Ghostscript** | `bogen/`: `rendern`, `linien-lesen`, Farbquelle normalisieren | siehe unten |
+
+**Ghostscript ist unter Windows kostenlos dabei, anderswo nicht.** TeX Live bringt es dort in
+`tlpkg/tlgs` mit, ohne dass man etwas tun muss. Unter macOS gehört es **nicht** zu MacTeX:
+
+```sh
+brew install ghostscript          # macOS
+sudo apt install ghostscript      # Debian, Ubuntu
+```
+
+Ohne Ghostscript baut alles außer den drei genannten Werkzeugen. `werkzeuge/einrichten.py
+--pruefen` sagt, was davon da ist. Windows, macOS und Linux: die Bauskripte in `bogen/bau/` sind
+Python, zu jedem gibt es eine `.ps1` und eine `.sh`, beide dreizeilig und ohne eigene Logik,
+damit die Aufrufe auf allen Plattformen dieselben bleiben.
 
 ### Klassenoptionen
 
@@ -148,9 +318,58 @@ microtype hyperref tabularx environ`.
 \documentclass[ohneraster]{dsa5latex}          % Raster aus
 \documentclass[raster,rasterzeigen]{dsa5latex} % Grundlinien mitdrucken
 \documentclass[raster,entwurf]{dsa5latex}      % Bilder als Rahmen, schnelles Bauen
+\documentclass[ohnehintergrund]{dsa5latex}     % ohne die 7-MB-Seitenhintergründe
+\documentclass[ersatz]{dsa5latex}              % freie Schrift statt schriften/, siehe unten
 ```
 
-Die Elementreferenz steht in `doku/ELEMENTE.md`.
+Für den Einleger:
+
+```latex
+\documentclass{dsa5einleger}                    % A4 quer, vier Spalten
+\documentclass[spaltenzeigen]{dsa5einleger}     % Spaltenkanten mitdrucken
+\documentclass[ohnehintergrund]{dsa5einleger}   % ohne Pergament und Leisten
+```
+
+Die Elementreferenz steht in `doku/ELEMENTE.md`, die des Einlegers in `doku/EINLEGER.md`.
+
+### Ohne Baukasten bauen: der Ersatzmodus
+
+Wer die Klasse nur ansehen will, und die CI, haben das Material aus dem Baukasten nicht. Ohne
+`schriften/` bricht `fontspec` ab, ohne `grafiken/` jede Grafik, die die Klasse vor dem Setzen
+ausmisst. Zwei Teile ersetzen beides:
+
+```sh
+python3 werkzeuge/platzhalter.py      # graue Platzhalter in den Sollmaßen nach grafiken/
+python3 werkzeuge/seitenfarbe.py karmin   # die Seitenfarbe, die beispiel.tex benutzt
+cd beispiel
+DSA5_OPTIONEN=ersatz latexmk beispiel.tex
+```
+
+In der PowerShell: `$env:DSA5_OPTIONEN = "ersatz"; latexmk beispiel.tex`.
+
+* `werkzeuge/platzhalter.py` legt jede Grafik aus der Sollmaßliste von `werkzeuge/pruefen.py`
+  als graue Fläche mit genau den Pixelmaßen an, also in Produktionsgröße. Kästen, Banner und
+  Seitenhintergründe stehen damit so groß da wie mit dem echten Material. Eigene Bilder der
+  Beispiele, etwa die Battlemap, bekommen eine feste Größe. Geschrieben wird nur, was fehlt.
+  Liegt schon Baukastenmaterial in `grafiken/`, bricht das Werkzeug ab. `--weg` löscht die
+  Platzhalter wieder, und nur sie — dazu die Farbfassungen, die `seitenfarbe.py` aus
+  Platzhaltern gemacht hat; sie tragen dieselbe Kennung.
+* Die Klassenoption `ersatz` nimmt statt Gentium Basic und Andalus die freie Gentium aus dem
+  TeX-Live-Paket `gentium-sil`. Die `latexmkrc` reicht den Inhalt von `DSA5_OPTIONEN` als
+  Klassenoptionen weiter, ohne die `.tex` zu ändern; mehrere mit Komma, etwa `ersatz,entwurf`.
+  Ein Wechsel der Variable löst keinen neuen Lauf aus, weil sich keine Datei geändert hat.
+  Dafür `latexmk -g`.
+
+Was der Ersatzmodus zeigt: ob alles baut, ob das Raster hält, ob die Seiten stehen, wo sie
+sollen. Was er nicht zeigt: Zeilenfall und Satzbreiten. Gentium ist nicht Gentium Basic, und
+Andalus hat keinen freien Ersatz. Ein PDF aus dem Ersatzmodus ist nie das Ergebnis.
+
+### Automatisch bauen
+
+`.github/workflows/bauen.yml` baut bei jedem Push auf `main` und `development` und bei jedem Pull
+Request samt jedem weiteren Push auf seinen Zweig alle Beispiele im Ersatzmodus. Ein
+Feature-Zweig ohne PR baut nicht. Der Lauf prüft das Log und hängt die PDFs als Artefakt an. Scheitert ein Lauf, steht die
+Ursache im Protokoll des Schritts „Log prüfen“.
 
 ---
 
