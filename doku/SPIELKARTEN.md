@@ -6,7 +6,7 @@ Rückseite beim Duplexdruck exakt auf der Vorderseite liegt.
 
 Die Maße stammen aus dem **„Scriptorium Aventuris – Spielkarten“-Baukasten** von Ulisses Spiele,
 einem eigenen Paket neben dem allgemeinen Layout-Baukasten. Woher jede einzelne Zahl kommt, steht
-in [Die Maße und woher sie kommen](MASSE.md), Abschnitt 8. Was daran geprüft wurde, steht im
+in [Die Maße und woher sie kommen](MASSE.md), Abschnitt 9. Was daran geprüft wurde, steht im
 [Prüfplan](PRUEFPLAN.md).
 
 ---

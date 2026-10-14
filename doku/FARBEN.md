@@ -2,7 +2,7 @@
 
 *Die Schuppenleiste der Heftseiten und das Schuppenband der Spielkarten lassen sich umfärben, beide
 mit derselben Farbtabelle. Ein Heft und sein Kartenset mit demselben Farbnamen haben denselben Ton.
-Die Messungen dazu stehen in [MASSE.md](MASSE.md), Abschnitt 8.*
+Die Messungen dazu stehen in [MASSE.md](MASSE.md), Abschnitt 9.*
 
 ---
 

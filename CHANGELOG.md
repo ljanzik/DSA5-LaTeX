@@ -4,6 +4,14 @@ Eine Versionsnummer für das ganze Projekt. Sie steht gleichlautend in `\Provide
 `\ProvidesPackage` jeder Datei und im Git-Tag. Neues kommt oben dazu, unter der Version, die es
 ausliefern wird.
 
+## 1.3.0 — unveröffentlicht
+
+* Einleger für den Spielleiterschirm (`dsa5einleger.cls`): DIN A4 quer, vier freie Spalten ohne
+  Grundlinienraster, Tabellen mit Quellenmarke und Verlaufskopf, Stimmungsbildseite.
+  `werkzeuge/einleger.py` legt die Querformat-Hintergründe an. Die Klasse trägt bis zur nächsten
+  Versionshebung die laufende Projektversion 1.2.0.
+* Die CI baut `einleger.tex` im Ersatzmodus mit.
+
 ## 1.2.0 — unveröffentlicht
 
 * Spielkarten im Format 63 × 88 mm (`dsa5spielkarten.cls`): elf Kartentypen, als Einzelkarten

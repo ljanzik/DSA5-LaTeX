@@ -43,13 +43,18 @@ jobs:
       - name: Seitenfarbe des Beispiels
         run: python3 werkzeuge/seitenfarbe.py karmin
 
+      # einleger.tex braucht die Querformat-Hintergruende. einleger.py leitet
+      # sie aus den Seitenhintergruenden ab, hier also aus deren Platzhaltern.
+      - name: Hintergruende des Einlegers
+        run: python3 werkzeuge/einleger.py
+
       - name: Beispiele bauen
         working-directory: beispiel
         env:
           DSA5_OPTIONEN: ersatz,entwurf
         run: |
           fehler=0
-          for f in beispiel raster kaesten rest titel titelgrafik aufsteller battlemap; do
+          for f in beispiel raster kaesten rest titel titelgrafik aufsteller battlemap einleger; do
             echo "::group::$f"
             latexmk -interaction=nonstopmode -halt-on-error "$f.tex" || fehler=1
             echo "::endgroup::"
