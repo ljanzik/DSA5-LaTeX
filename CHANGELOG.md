@@ -11,6 +11,17 @@ ausliefern wird.
   `werkzeuge/einleger.py` legt die Querformat-Hintergründe an. Die Klasse trägt bis zur nächsten
   Versionshebung die laufende Projektversion 1.2.0.
 * Die CI baut `einleger.tex` im Ersatzmodus mit.
+* Ausfüllbarer Heldenbogen (`bogen/`): überlagert das offizielle DSA5-Heldendokument mit
+  Formularfeldern, leer oder mit den Werten eines Helden vorbefüllt, gebaut mit `pdflatex`.
+  Dazu die Charaktermappe als Umschlag (`dsa5mappe.cls`), die bis zur nächsten Versionshebung
+  ebenfalls die laufende Projektversion 1.2.0 trägt.
+* `werkzeuge/einrichten.py` richtet alles aus dem Baukasten mit einem Aufruf ein,
+  `werkzeuge/pergament.py` legt das Pergament der Mappe an.
+* Der Pflichttext der Vereinbarung über Gemeinschaftsinhalte steht nur noch in `pflichttext.tex`
+  und wird von Impressum und Mappe gemeinsam benutzt.
+* Die Heldendokumente liegen in `bogen/quellen/` (von git ignoriert), `bogen/konfig.tex` nennt sie
+  relativ. `einrichten.py --heldendokumente <ordner>` kopiert sie dorthin. Vorher stand dort ein
+  absoluter Windows-Pfad mit Benutzername.
 
 ## 1.2.0 — unveröffentlicht
 

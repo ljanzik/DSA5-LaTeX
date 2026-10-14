@@ -28,6 +28,7 @@ Jedes Feature ist eine eigene Klasse oder eine eigene Erweiterung, mit eigener E
 | Einleger für den Spielleiterschirm | `dsa5einleger.cls` | DIN A4 quer, vier freie Spalten, über die ein Block beliebig laufen darf, Tabellen mit Quellenmarke und Verlaufskopf, Pergament mit Schuppenleiste oben und unten. Lädt `dsa5latex.cls` und ändert nur, was ein Einleger anders macht; Vorbild und Maßquelle ist zusätzlich der offizielle *Universal Spielleiterschirm Einleger, Auflage 5* | [Elementreferenz](doku/EINLEGER.md) |
 | Spielkarten | `dsa5spielkarten.cls` | Karten im Format 63 × 88 mm, elf Typen (NSC, Waffe, Rüstung, Gegenstand, Monster, Zauber, Sonderfertigkeit, Kultur, Text, Impressum) und einseitige Verbrauchsgegenstände mit generischem Rücken, wahlweise als Einzelkarten für die Druckerei oder als A4-Druckbogen mit duplexdeckender Rückseite und Stückzahl je Karte; Randfarbe einstellbar | [Spielkarten](doku/SPIELKARTEN.md) |
 | Farben für Heft und Karten | — (`\dsaSeitenfarbe`, `\dsaKartenfarbe`) | Schuppenleiste der Heftseiten und Schuppenband der Karten in sieben Farben oder einer eigenen, aus einer gemeinsamen Tabelle, damit Heft und Kartenset denselben Ton haben | [Farben](doku/FARBEN.md) |
+| Ausfüllbarer Heldenbogen samt Charaktermappe | `dsa5mappe.cls` für die Mappe (`bogen/`) | Überlagert das offizielle DSA5-Heldendokument mit echten Formularfeldern (leer zum Ausfüllen oder mit den Werten eines Helden vorbefüllt) und setzt eine Charaktermappe als Umschlag dazu. Der Bogen läuft mit `pdflatex`, die Mappe mit XeLaTeX auf `dsa5mappe.cls` (lädt `dsa5latex.cls`, Covertitel mit Schatten); eigene Bauregeln, Windows/macOS/Linux | [Elementreferenz](doku/BOGEN.md) |
 
 Einrichten, Grafiken und Schriften besorgen, bauen — das gilt featureübergreifend und steht in
 [Einrichten und Bauen](doku/EINRICHTUNG.md).
@@ -59,10 +60,11 @@ Die Maße in diesem Projekt sind kein Bildmaterial, sondern Messergebnisse. Sie 
 ## Einrichten und Bauen
 
 Grafiken und Schriften besorgen, XeLaTeX aufsetzen, die Beispieldokumente bauen und, wer mag,
-auch mit einer KI setzen: **[Einrichten und Bauen](doku/EINRICHTUNG.md)**. Kurzfassung:
+auch mit einer KI setzen: **[Einrichten und Bauen](doku/EINRICHTUNG.md)**. Für den Heldenbogen
+kommen die Heldendokumente und Ghostscript dazu, siehe dort. Kurzfassung:
 
 ```sh
-python3 werkzeuge/aufbereiten.py "/pfad/zu/Scriptorium Aventuris v4"
+python3 werkzeuge/einrichten.py "/pfad/zu/Scriptorium Aventuris v4"
 cd beispiel
 latexmk                                  # oder: TEXINPUTS="..;" xelatex beispiel.tex, dreimal
 ```
@@ -75,7 +77,9 @@ Die Elementreferenz der Kernklasse steht in `doku/ELEMENTE.md`, dort auch die Ba
 Zollraster (`beispiel/battlemap.tex`, Abschnitt „Seitentypen“) — kein eigener Seitentyp der
 Klasse, sondern ein eigenes Blatt (A4 bis A1, hoch oder quer) neben dem Heft. Die des Einlegers
 steht in `doku/EINLEGER.md`; was er zusätzlich braucht (eigene Hintergrundgrafiken,
-Klassenoptionen, eigenes Beispieldokument) steht ebenfalls in `doku/EINRICHTUNG.md`.
+Klassenoptionen, eigenes Beispieldokument) steht ebenfalls in `doku/EINRICHTUNG.md`. Die des
+Heldenbogens steht in `doku/BOGEN.md`; der Bogen läuft mit `pdflatex` statt XeLaTeX und hat
+eigene Bauskripte in `bogen/bau/`, dokumentiert ebenfalls dort.
 
 Die Spielkarten brauchen ein **zweites** Ulisses-Paket, den *Scriptorium Aventuris – Spielkarten*-
 Baukasten, und ein zweites Werkzeug dafür — zusätzlich zum allgemeinen Baukasten, nicht statt

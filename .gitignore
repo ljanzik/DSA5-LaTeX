@@ -24,6 +24,18 @@ schriften/*
 *.xdv
 beispiel/*.pdf
 
+# Der Heldenbogen legt seine Ausgaben unter bogen/bau/ ab. Darin steckt
+# Verlagsmaterial: jede ueberlagerte Fassung enthaelt die Quellseiten
+# vollstaendig, und pergament-a4.jpg ist aus dem Baukasten abgeleitet.
+bogen/bau/ausgabe/
+bogen/bau/bilder/
+
+# Die beiden Heldendokumente, die der Bogen einlegt: Verlagsmaterial, ein
+# eigenes kostenpflichtiges Produkt. Sie liegen hier, damit bogen/konfig.tex
+# sie mit einem relativen Pfad findet -- eingecheckt werden sie nie.
+bogen/quellen/*
+!bogen/quellen/.gitkeep
+
 # Python
 __pycache__/
 *.pyc

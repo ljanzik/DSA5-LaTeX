@@ -86,6 +86,13 @@ SOLL = {
     'raute-rot.png':                (215, 259),
     'raute-gruen.png':              (215, 259),
     'raute-grau.png':               (215, 259),
+    # Abgeleitet: das Pergament der Charaktermappe, werkzeuge/pergament.py.
+    # Die Flaeche ist A4 bei 300 ppi, also 2480 x 3508 — sie wird formatfuellend
+    # aus Kasten_Pergament.png eingepasst, deren Verhaeltnis nur um 0,7 Prozent
+    # abweicht. Der Fusskasten behaelt die Masse seiner Vorlage; er ist dieselbe
+    # Datei wie pergament-klein, nur entsaettigt, daher dieselben 1010 x 599.
+    'mappe-pergament-a4.jpg':       (2480, 3508),
+    'mappe-pergament-kasten.png':   (1010, 599),
 }
 
 # Aus einem anderen Paket: dem "Scriptorium Aventuris - Spielkarten"-
