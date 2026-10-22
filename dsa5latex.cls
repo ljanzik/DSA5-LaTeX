@@ -3517,28 +3517,40 @@
 % stehen, eine \newenvironment-Umgebung bildet aber eine.
 %
 % \newgeometry allein genuegt nicht. Es nimmt keine Papierformatangaben an —
-% „a4paper" und „landscape" werden dort verworfen, und die Seite bleibt
-% hochkant, nur mit breiterem Textblock. Gemessen war die Querseite 210 x
-% 297 mm wie jede andere.
+% „a4paper" und „landscape" werden dort verworfen. Schlimmer: es stellt zu
+% Beginn das Papier und den Spaltenzustand der Praeambel wieder her. Ein
+% vorher gesetztes \paperwidth ist danach weg, und der Satzspiegel wird aus
+% dem Hochformat gerechnet: 180 mm breit statt 267, die Tabellen des
+% Meisterschirms liefen 8 cm ueber den Rand. Und es schaltet zurueck auf
+% zwei Spalten. Deshalb bekommt \newgeometry hier Breite und Hoehe des
+% Satzspiegels ausdruecklich und dazu „onecolumn".
 %
-% Die Papiergroesse mitten im Dokument aendert man ueber die Ausgabemasse:
-% \pagewidth und \pageheight sind die XeTeX-Register dafuer. \paperwidth und
-% \paperheight muessen mit, sonst rechnen geometry und TikZ weiter mit dem
-% alten Papier — „current page" waere dann falsch.
+% Die Papiergroesse setzen danach \pdfpagewidth und \pdfpageheight. Sie gelten
+% fuer jede folgende Seite. Das fruehere \special{papersize=...} galt bei
+% xdvipdfmx nur fuer die Seite, auf der es stand: Blatt 1 war quer, Blatt 2
+% und 3 hochkant. \paperwidth und \paperheight muessen mit, sonst rechnen
+% geometry und TikZ weiter mit dem alten Papier — „current page" waere dann
+% falsch.
+%
+% geometry meldet dabei einen negativen rechten Rand, weil es gegen das
+% Papier der Praeambel rechnet. Die Warnung ist hier erwartet.
 \newlength{\dsa@querbreite} \setlength{\dsa@querbreite}{297mm}
 \newlength{\dsa@querhoehe}  \setlength{\dsa@querhoehe}{210mm}
+\newlength{\dsa@querrand}   \setlength{\dsa@querrand}{15mm}
 
 \newcommand*{\dsaQuerAnfang}{%
   \clearpage
+  \onecolumn
+  \newgeometry{onecolumn,left=\dsa@querrand,top=\dsa@querrand,
+    textwidth=\dimexpr\dsa@querbreite-2\dsa@querrand\relax,
+    textheight=\dimexpr\dsa@querhoehe-2\dsa@querrand\relax}%
   \setlength{\paperwidth}{\dsa@querbreite}%
   \setlength{\paperheight}{\dsa@querhoehe}%
-  \newgeometry{margin=15mm}%
-  % Nach \newgeometry: geometry schreibt beim Aufruf seine gespeicherten
-  % Papiermasse in die Ausgaberegister zurueck. Davor gesetzt, waeren sie
-  % gleich wieder ueberschrieben, und die Seite bliebe hochkant.
-  % dvipdfmx nimmt die Papiergroesse aus einem Special; \pagewidth gibt es
-  % in XeTeX nicht.
-  \special{papersize=297mm,210mm}%
+  \pdfpagewidth=\paperwidth \pdfpageheight=\paperheight
+  % Im doppelseitigen Satz gilt „left" nur fuer rechte Seiten; linke bekaemen
+  % den rechten Rand, und der ist gegen das alte Papier gerechnet negativ.
+  % Ein Schirm hat keinen Bund, also beide Seiten gleich.
+  \setlength{\evensidemargin}{\oddsidemargin}%
   % \newgeometry hat \normalsize gezogen; ausdruecklich neu setzen, damit
   % der Durchschuss nicht von der Reihenfolge der Aufrufe abhaengt.
   \normalsize
@@ -3549,14 +3561,14 @@
   \ifdsa@raster
     \setlength{\topskip}{\dimexpr 12.7mm+2\dsaRastermass-15mm\relax}%
   \fi
-  \onecolumn\pagestyle{empty}\dsaHintergrundAus}
+  \pagestyle{empty}\dsaHintergrundAus}
 
 \newcommand*{\dsaQuerEnde}{%
   \clearpage
+  \restoregeometry
   \setlength{\paperwidth}{\dsa@querhoehe}%
   \setlength{\paperheight}{\dsa@querbreite}%
-  \restoregeometry
-  \special{papersize=210mm,297mm}%
+  \pdfpagewidth=\paperwidth \pdfpageheight=\paperheight
   \normalsize
   \ifdsa@raster\setlength{\topskip}{\dsa@topskip}\fi
   \pagestyle{fancy}\dsaHintergrundAn\twocolumn}

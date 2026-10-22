@@ -64,6 +64,12 @@ diese Aufteilung.
 | Ganzseitige Grafik | `\dsaGanzseite{Bild}` | — | nein | nein |
 | Querformat | `\dsaQuerAnfang` … `\dsaQuerEnde` | 1 | nein | nein |
 
+**Das Querformat darf mehrere Blätter lang sein**, etwa für einen Meisterschirm aus drei Blättern.
+Jede Seite bis `\dsaQuerEnde` ist A4 quer, mit 15 mm Rand ringsum und damit einem Satzspiegel von
+267 × 180 mm. Linke und rechte Seiten haben denselben Rand, weil ein Schirm keinen Bund hat. Ein
+Blatt wechselt man mit `\clearpage`. `geometry` meldet beim Umschalten einen negativen rechten
+Rand, weil es gegen das Papier der Präambel rechnet. Diese Warnung ist erwartet.
+
 **Die Battlemap ist kein Seitentyp der Klasse.** Eine Battlemap mit Zollraster braucht ein
 anderes Blatt als das Heft — A4, A3, A2 oder A1 —, und das Blattformat setzt `geometry` in der
 Präambel. Sie steht deshalb als eigenes Dokument in `beispiel/battlemap.tex`:
