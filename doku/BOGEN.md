@@ -355,7 +355,7 @@ Drei strikt getrennte Ebenen. Die Trennung ist der ganze Trick des Projekts:
 3. **Wertedateien** — `helden/<name>.tex` mit `\wert{feldname}{Wert}`. Fehlender Wert heißt leeres
    Feld, **kein Abbruch**.
 
-Feldarten: `text`, `zahl` (zentriert), `rechts` (rechtsbündig, für Zeilen mit der Beschriftung rechts), `mitte` (zentriert auf der Textgrundlinie, für Tabellen mit zentrierten Spaltenköpfen), `mehrzeilig` (`multiline=true`) und `bild`.
+Feldarten: `text`, `zahl` (zentriert), `rechts` (rechtsbündig, für Zeilen mit der Beschriftung rechts), `mitte` (zentriert auf der Textgrundlinie, für Tabellen mit zentrierten Spaltenköpfen), `mehrzeilig` (`multiline=true`), `bild` und `rundbild`.
 
 ## Leere Bögen weglassen
 
@@ -403,6 +403,22 @@ bleibt der Rahmen leer, und `s1_bild` erzeugt bewusst **kein** Widget. Wer dort 
 einsetzbar machen will, braucht einen Druckknopf mit Icon (`\PushButton` plus
 `buttonImportIcon`) — das läuft nur mit JavaScript und praktisch nur im Adobe-Acrobat, in
 Firefox und Edge tut es stillschweigend nichts. Deshalb ist es hier nicht eingebaut.
+
+### Das Tierbild
+
+`art=rundbild` — wie `bild`, aber auf einen Kreis zugeschnitten. Für den runden Rahmen rechts im
+Tierbogen (Bogen 6):
+
+```latex
+\wert{s6_tier_bild}{helden/bilder/leria.png}
+```
+
+Die Feldtabelle gibt das umschreibende Quadrat an: x und y sind seine linke obere Ecke, die Breite
+ist der Durchmesser. Das Bild wird auf den Durchmesser eingepasst; ein **quadratisches** Bild füllt
+den Kreis ganz, jedes andere lässt Ränder. Gemessen ist jeweils die helle Innenfläche, per
+Flutfüllung bei 200 dpi: in der Farbfassung der Innenraum des Zierrings (Durchmesser 25,02 mm), in
+der druckerfreundlichen Fassung der Kreis (36,96 mm). Wie `bild` nur in der vorbefüllten Fassung,
+und die Werteliste überspringt es.
 
 Der Rahmen auf Bogen 1 ist eine **Klammerform** mit ausgesparten Ecken: die waagerechten Kanten
 laufen von x 83,1 bis 126,4, die senkrechten von y 38,5 bis 92,7. Der Bildkasten ist deren
