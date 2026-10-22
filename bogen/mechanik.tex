@@ -36,7 +36,7 @@
 \newcommand{\feldeintrag}[7]{}
 
 % --- Feldarten -------------------------------------------------------------
-% art = text | zahl | rechts | mitte | mehrzeilig | bild
+% art = text | zahl | rechts | mitte | mehrzeilig | bild | rundbild
 % zahl wird zentriert, rechts rechtsbuendig, mitte zentriert auf der Textgrundlinie, mehrzeilig bekommt multiline. Alles andere wie text.
 %
 % Die Zusatzoptionen werden als ARGUMENT durchgereicht, nicht in einem Makro
@@ -78,7 +78,7 @@
                 charsize=\feldschrift, #6]{}};}
 
 \newcommand{\setzeFeldFormular}[6]{% name x y breite hoehe art
-  \ifthenelse{\equal{#6}{bild}}{}{%
+  \ifthenelse{\equal{#6}{bild}\OR\equal{#6}{rundbild}}{}{%
   \ifthenelse{\equal{#6}{mehrzeilig}}{\feldWidget{#1}{#2}{#3}{#4}{#5}{multiline=true}}{%
   \ifthenelse{\equal{#6}{zahl}}{\feldWidget{#1}{#2}{#3}{#4}{#5}{align=1}}{%
   \ifthenelse{\equal{#6}{rechts}}{\feldWidget{#1}{#2}{#3}{#4}{#5}{align=2}}{%
@@ -169,13 +169,35 @@
     }%
   \fi}
 
+% art=rundbild. Wie bild, aber auf den Kreis zugeschnitten, den das Feld
+% umschreibt: x und y sind die linke obere Ecke des umschreibenden Quadrats,
+% die Breite ist der Durchmesser. Das Bild wird auf den Durchmesser
+% eingepasst; ein quadratisches Bild fuellt den Kreis ganz, ein anderes
+% laesst Raender. Fuer den runden Rahmen des Tierbogens (Bogen 6).
+\newcommand{\rundbild}[4]{% name x y durchmesser
+  \ifcsname wert@#1\endcsname
+    \edef\bild@pfad{\csname wert@#1\endcsname}%
+    \IfFileExists{\bild@pfad}{%
+      \begin{scope}
+        \clip ([shift={(#2mm+#4mm/2,-#3mm-#4mm/2)}]current page.north west)
+          circle (#4mm/2);
+        \node[inner sep=0pt, outer sep=0pt]
+          at ([shift={(#2mm+#4mm/2,-#3mm-#4mm/2)}]current page.north west)
+          {\includegraphics[width=#4mm, height=#4mm, keepaspectratio]{\bild@pfad}};
+      \end{scope}%
+    }{%
+      \message{^^JHINWEIS: Bilddatei nicht gefunden: \bild@pfad^^J}%
+    }%
+  \fi}
+
 \newcommand{\setzeFeldFest}[6]{%
+  \ifthenelse{\equal{#6}{rundbild}}{\rundbild{#1}{#2}{#3}{#4}}{%
   \node[anchor=north west, inner sep=0pt, outer sep=0pt]
     at ([shift={(#2mm,-#3mm+\feldkorrektur)}]current page.north west)
     {\ifthenelse{\equal{#6}{bild}}{\bildkasten{#1}{#4}{#5}}{%
       \ifthenelse{\equal{#6}{mehrzeilig}}{%
        \parbox[t][#5mm][t]{#4mm}{\feldtextstil\raggedright\wertvon{#1}}}{%
-       \einzeilig{#4}{#5}{#6}{\wertvon{#1}}}}};}
+       \einzeilig{#4}{#5}{#6}{\wertvon{#1}}}}};}}
 
 \newcommand{\feldschrift}{8pt}
 \newcommand{\feldtextstil}{\fontsize{8pt}{9pt}\selectfont}

@@ -24,7 +24,7 @@
 % Bildfelder ebenso: ihr Wert ist ein Dateipfad, der als Textzeile nichts
 % aussagt. Das Bild selbst kommt weiter unten.
 \renewcommand{\feldeintrag}[7]{%
-  \ifthenelse{\equal{#7}{bild}}{}{%
+  \ifthenelse{\equal{#7}{bild}\OR\equal{#7}{rundbild}}{}{%
     \wertdaP{#2}{\textbf{#2}\hfill\wertvon{#2}\par\vspace{1mm}}{}}}
 
 \feldliste
