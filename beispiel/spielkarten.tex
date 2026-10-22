@@ -1,0 +1,28 @@
+% spielkarten.tex — die erste Druckfassung: Einzelkarten, eine Seite je
+% Kartenseite, 63 x 88 mm.
+%
+% Die Karten selbst stehen in spielkarten-inhalt.tex und sind dieselben wie
+% in spielkarten-bogen.tex. Was hier steht, ist nur die Druckfassung.
+%
+%   cd beispiel
+%   TEXINPUTS="..;" xelatex spielkarten.tex
+%
+% Ein Lauf genuegt: die Klasse merkt sich nichts ueber den Lauf hinaus und
+% benutzt kein remember picture.
+%
+% Vor dem ersten Lauf muessen Schriften und Kartenflaeche da sein:
+%
+%   python3 werkzeuge/aufbereiten.py  "/pfad/zu/Scriptorium Aventuris v4"
+%   python3 werkzeuge/kartengrafik.py "/pfad/zu/Scriptorium Aventuris -Spielkarten" \
+%       --farbe blau
+%
+% Fuer die Druckerei statt dessen mit Anschnitt bauen — dann ist die Seite
+% 69 x 94 mm und die Kartenflaeche reicht bis an die Blattkante:
+%
+%   \documentclass[anschnitt]{dsa5spielkarten}
+
+\documentclass{dsa5spielkarten}
+
+\begin{document}
+\input{spielkarten-inhalt}
+\end{document}

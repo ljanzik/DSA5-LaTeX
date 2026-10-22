@@ -1,0 +1,54 @@
+% pflichttext.tex — der Wortlaut der Vereinbarung ueber Gemeinschaftsinhalte,
+% genau einmal.
+%
+% Der Baukasten schreibt ihn vor: „Lies mich zuerst", Seite 2, und die
+% Muster-PDF selbst — „Der folgende Text muss stets im Werk enthalten sein".
+% Nicht umformulieren, nicht kuerzen, die Versalien nicht glaetten.
+%
+% Warum eine eigene Datei? Weil er zweimal stand und die beiden Fassungen
+% verschieden waren. Das Impressum der Abenteuerklasse fuehrte
+%
+%   ... eingetragene Marken der Ulisses Spiele GmbH, Waldems
+%
+% und das linke Innenblatt der Charaktermappe
+%
+%   ... eingetragene Marken von Ulisses Medien und Spiele Distribution GmbH
+%       in Deutschland, den U.S.A. und anderen Laendern
+%
+% mit einer anderen Markenliste dazu. Der Kommentar an \dsaRechtevermerk
+% beschrieb genau diesen Fall — „es gibt absichtlich nur diesen einen Ort
+% dafuer" — und traf trotzdem nicht zu. Jetzt trifft er zu.
+%
+% Welche der beiden die richtige ist: die hier. Sie steht im Baukasten v4,
+% die andere stammt aus einer aelteren Auflage. Wer eine neuere Fassung vom
+% Verlag hat, ersetzt sie HIER und nirgends sonst.
+%
+%   \dsaPflichttext{<Copyright-Angabe>}
+%
+% Die Copyright-Angabe ist der einzige veraenderliche Teil, etwa
+% „2026 von Leif Janzik". Die Absatztrennung liefert der Aufrufer in
+% \dsaPflichttextLuft: im Impressum ist das eine Freizeile im Raster, in der
+% Mappe ein fester Abstand. Ohne Angabe ein schlichtes \par.
+%
+% Eingebunden wird die Datei von dsa5latex.cls (ueber TEXINPUTS gefunden, sie
+% liegt neben der Klasse) und von bogen/mappe/blaetter.tex als
+% ../pflichttext — dort ist das Arbeitsverzeichnis bogen/.
+%
+% Copyright 2026 Leif Janzik. Apache License 2.0. Der zitierte Pflichttext
+% selbst gehoert Ulisses Spiele.
+
+\providecommand{\dsaPflichttextLuft}{\par}
+
+\newcommand{\dsaPflichttext}[1]{%
+  Dieses Produkt wurde unter Lizenz erstellt. DAS SCHWARZE AUGE, AVENTURIEN,
+  DERE, MYRANOR, THARUN, UTHURIA, RIESLAND und THE DARK EYE sind eingetragene
+  Marken der Ulisses Spiele GmbH, Waldems.\dsaPflichttextLuft
+  Ulisses Spiele und sein Logo sind eingetragene Marken der Ulisses Medien und
+  Spiele Distribution GmbH.\dsaPflichttextLuft
+  Dieses Werk enthält Material, das durch Ulisses Spiele und/oder andere
+  Autoren urheberrechtlich geschützt ist. Solches Material wird mit Erlaubnis
+  im Rahmen der Vereinbarung über Gemeinschaftsinhalte für SCRIPTORIUM
+  AVENTURIS verwendet.\dsaPflichttextLuft
+  Alle anderen Originalmaterialien in diesem Werk sind Copyright #1 und
+  werden im Rahmen der Vereinbarung über Gemeinschaftsinhalte für SCRIPTORIUM
+  AVENTURIS veröffentlicht.\par}
