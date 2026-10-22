@@ -751,6 +751,93 @@ Die früheren 19,4 mm unter der Oberkante kamen daher, dass dort der Außenradiu
 gerechnet wurde — 17,7 mm, die halbe Bildbreite — und nicht der Kranz. Das Medaillon saß damit
 2,1 mm zu tief.
 
+## Der Pergamentkasten in freier Höhe
+
+`dsaKastenFrei` schneidet drei Scheiben aus `pergament-lang.png`, aus demselben Grund wie der
+Wertekasten unten: die Grafik hat oben **und** unten eine gezeichnete Kante, und ein mittiger
+Beschnitt wirft beide weg.
+
+Gemessen an der Datei, 1010 × 2272 px bei 300 ppi = **85,51 × 192,36 mm**. Helligkeit je Zeile
+über die Kastenmitte:
+
+| | Lage | Befund |
+|---|---|---|
+| durchsichtiger Rand oben | 0 – 2,46 mm | keine Deckung |
+| gezeichnete Kante oben | 2,7 – 4,1 mm | Helligkeit fällt von 175 auf 67 |
+| gezeichnete Kante unten | 188,7 – 189,7 mm | spiegelbildlich |
+| durchsichtiger Rand unten | 189,74 – 192,36 mm | keine Deckung |
+
+Daraus **10 mm** Kopf- und **10 mm** Fußscheibe (`\dsapergamentkopf`, `\dsapergamentfuss`): beide
+tragen Rand und Kante mit Luft. Zusammen 20 mm, also 4,72 Rastereinheiten — die Untergrenze des
+Kastens ist deshalb 5, die Obergrenze 45, dort ist die Grafik zu Ende.
+
+Ohne diese Scheiben hatte der Kasten keinen Rand, und die Zierleisten schienen in der Fläche zu
+schweben statt auf ihr zu sitzen. Am Abzug gesehen, nicht gerechnet.
+
+## Der Wertekasten in freier Höhe
+
+`dsaWerteFreiPortrait` schneidet drei Scheiben aus `werte-gross-portrait.png`. Die Grenzen sind
+an der Datei gemessen — Weg 2, Pixel geteilt durch 300 ppi. Die Grafik ist 1110 × 2351 px, also
+**93,98 × 199,05 mm**; in der Klasse steht 94,0 mm, wie bei den drei festen Fassungen auch.
+
+Gemessen wurde die Helligkeit je Zeile über die Kastenmitte (x 15 bis 70 Prozent der Breite, also
+ohne die dunklen Seitenkanten und ohne den Ring). Dunkel heißt unter 130 von 255:
+
+| Grafik | Höhe | Kopfleiste dunkel | Fußleiste dunkel, über der Unterkante |
+|---|---|---|---|
+| `werte-klein-portrait` | 59,18 mm | 5,76 – 9,57 mm | 2,88 – 9,14 mm |
+| `werte-mittel-portrait` | 103,97 mm | 4,74 – 8,30 mm | 3,05 – 9,40 mm |
+| `werte-gross-portrait` | 199,05 mm | 4,49 – 8,13 mm | 2,71 – 9,06 mm |
+
+Die Leisten sitzen in allen drei Fassungen gleich weit von der Kante. Deshalb darf der Kasten in
+freier Höhe die Innenabstände von `dsaWerteMittelPortrait` übernehmen, statt eigene zu bekommen.
+
+Daraus die beiden Scheibenhöhen:
+
+| Wert | Maß | woher |
+|---|---|---|
+| Kopfscheibe `\dsawertefreikopf` | **35,60 mm** | muss Leiste (bis 8,13 mm) **und** Ring tragen. Der Ring reicht 16,62 mm + 15,5 mm = 32,12 mm unter die Oberkante, siehe oben; 35,60 mm lässt 3,5 mm Luft |
+| Fußscheibe `\dsawertefreifuss` | **12,80 mm** | die Leiste beginnt 9,06 mm über der Unterkante; 12,80 mm lässt 3,7 mm Luft |
+| Gesamthöhe `\dsawertefreihoehe` | **199,05 mm** | 2351 px / 300 ppi |
+
+Beide Zuschläge sind gerundet und nicht aus dem Baukasten belegt — sie müssen nur groß genug
+sein, damit keine Zierleiste angeschnitten wird, und klein genug, dass bei der kleinsten Höhe
+noch Fläche für die Mitte bleibt. Zusammen 48,40 mm, also 11,43 Rastereinheiten; die Untergrenze
+des Kastens ist deshalb 12.
+
+## Die Werteblöcke
+
+`\dsaGegner`, `\dsaZauber`, `\dsaLiturgie` und `\dsaFeld` setzen im Absatzformat „Werte“. Das
+steht in `Resources/Styles.xml` — Weg 3, aber ein Absatzformat hat kein ppi-Problem:
+
+| Eigenschaft | IDML | in der Klasse |
+|---|---|---|
+| Grundlage | `BasedOn` 2_Fließtext: Gentium Basic, `PointSize` 10 | Fließtext, 10 bp auf 12 bp |
+| Raster | `GridAlignment` AlignBaseline | auf dem Grundlinienraster |
+| Einzug | `LeftIndent` 8,5039, `FirstLineIndent` −8,5039 | `\dsawerteeinzug` = **3 mm**, hängend ab Zeile 2 |
+
+8,5039 bp sind genau 3 mm; `dsaWerteabsatz` nimmt dieselbe Länge. Ein kleineres Werteformat gibt
+es im Baukasten nicht.
+
+Was der Baukasten **nicht** hergibt, ist der Inhalt: welche Werte in welcher Folge, was fett
+steht, wie weit die Paare auseinanderliegen. Das kommt aus einem gesetzten Abenteuer mit zwölf
+Gegnerblöcken, gemessen mit PyMuPDF an jedem Zeichen:
+
+| Wert | gemessen | in der Klasse |
+|---|---|---|
+| Schrift | alle Zeilen Gentium Basic 10,0 bp, Grundlinien im Abstand von 12,0 bp | Absatzformat „Werte“ |
+| Schnitt | Name, Kürzel (MU, AT, RS/BE …) und Rubriken fett; Werte und Waffenname mager | ebenso |
+| Kürzel → Wert | 2,19 bis 2,49 bp, Median 2,49 über 96 Stellen: ein fetter Wortzwischenraum | fester Wortzwischenraum im fetten Schnitt |
+| Wert → Kürzel | 2,20 / 4,41 / 6,61 / 8,81 bp, Median 6,61 über 77 Stellen: ein bis vier Leerzeichen von Hand | `\dsawertepaarabstand` = drei Wortzwischenräume, ohne Dehnung |
+| Tabulatoren | keine; die Lage von KL wandert mit der Breite des MU-Werts | Paare hintereinander |
+| Folge | Name / MU KL IN CH / FF GE KO KK / LeP AsP KaP INI / VW SK ZK GS / Angriffe / RS/BE / Aktionen / Sonderfertigkeiten / Talente / Größenkategorie / Typus / Kampfverhalten / Flucht / Schmerz +1 bei | ebenso, dazu AW, Vorteile/Nachteile, Anzahl, Beute und Sonderregeln an ihrer Stelle im Regelwerk |
+
+Am Nachbau desselben Blocks gemessen: Kürzel → Wert 2,36 bis 2,50 bp, Wert → Kürzel 6,61 bp, alle
+Grundlinien auf dem Raster, Folgezeilen 8,5 bp eingezogen.
+
+Die Rubriken von Zauber und Liturgie sind die des Regelwerks. Die Veröffentlichung taugt hier, weil
+der Baukasten diese Elemente nicht kennt. Für den Satzspiegel taugt sie nach Abschnitt 1 nie.
+
 ## Fußzeile
 
 Gemessen an einer gesetzten Veröffentlichung des Verlags, vier Seiten:
@@ -994,11 +1081,14 @@ Multiplizieren rechnerisch ergibt.
 8. Abstand des Klappentexts zur Karte und zum Bild auf der Rückseite, als `\dsarueckeumfluss`
    (2,5 mm) geschätzt. Das vermessene Heft hat eine andere Karte an anderer Stelle; der Abstand
    seiner Zeilen zu ihr lässt sich nicht übertragen.
-9. **Einleger:** Eckenrundung der Quellenmarke, abgelesen statt gemessen.
-10. **Einleger:** Rand oben und unten. Das Original hat 13,07 und 11,75 mm bei einer 18,8 mm hohen
+9. Folge und Abstände der Gegnerwerte sind an einem gesetzten Abenteuer gemessen, nicht am
+   Baukasten, siehe „Die Werteblöcke“. Der Abstand zwischen den Paaren ist dort von Hand gesetzt,
+   die Klasse nimmt den Median.
+10. **Einleger:** Eckenrundung der Quellenmarke, abgelesen statt gemessen.
+11. **Einleger:** Rand oben und unten. Das Original hat 13,07 und 11,75 mm bei einer 18,8 mm hohen
     Zierleiste; die Klasse nimmt 12 mm bei einer 8,5 mm hohen. Frei gewählt, über
     `\dsaeinlegerrandoben` einstellbar.
-11. **Einleger:** Die Kästen der Abenteuerklasse sind im Querformat ungeprüft. Ihre
+12. **Einleger:** Die Kästen der Abenteuerklasse sind im Querformat ungeprüft. Ihre
     Pergamentflächen sind für A4 hoch angelegt und für ein Grundlinienraster gebaut, das es im
     Einleger nicht gibt.
 

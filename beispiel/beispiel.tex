@@ -121,8 +121,13 @@ Der Totenkopf markiert das Gegenteil. Ebenfalls 9,1 mm.
 \end{dsalisteblau}
 
 \begin{dsaWerteabsatz}
-Werteabsatz mit haengendem Einzug von 8,504 pt. Die zweite Zeile ruecken ein.
+Werteabsatz mit haengendem Einzug von 3 mm. Die zweite Zeile ruecken ein.
 \end{dsaWerteabsatz}
+
+% Zauber und Liturgie: feste Rubrikenfolge, nur die Werte kommen von hier.
+\dsaZauber{Balsam Salabunde}{Probe=KL/IN/FF,
+  Wirkung={Heilt je QS \dsaFormel{1W6} LeP.},
+  Zauberdauer=16 Aktionen, AsP-Kosten=8 AsP, Reichweite=Berührung}
 
 \dsaVorlesetext{Vorlesetext mit der Zierleiste darueber.}
 
@@ -154,6 +159,19 @@ LeP 30 \quad INI \dsaFormel{12+1W6}
 Wertekasten mittel mit Portrait, 94,0 mal 104,0 mm. Das Medaillon tritt
 13,5 mm zur Aussenseite heraus. Vorlaeufig nur die rechte Lage.
 \end{dsaWerteMittelPortrait}
+
+% Der Gegner- und Kreaturkasten: dieselbe Vorlagengrafik, aber in freier
+% Hoehe aus drei Scheiben gebaut.
+% Darin die Gegnerwerte: Reihenfolge und Beschriftung legt \dsaGegner fest,
+% hier stehen nur die Werte. Was fehlt, erscheint nicht.
+\begin{dsaWerteFreiPortrait}[dsaportrait=grafiken/aventurienkarte]{18}
+\dsaGegner{Wolfsratte}{
+  MU=11, KL=2 (t), IN=13, CH=8, FF=10, GE=14, KO=12, KK=11,
+  LeP=18, AsP=--, KaP=--, INI=\dsaFormel{13+1W6},
+  VW=7, SK=\dsaMinus3, ZK=0, GS=10,
+  angriff={Biss}{AT=12, TP=\dsaFormel{1W6+1}, RW=kurz},
+  RSBE=1/0, Aktionen=1, Groesse=klein, Typus={Tier, nicht humanoid}}
+\end{dsaWerteFreiPortrait}
 
 \begin{dsaMeisterMaske}
 Meisterkasten mit angesetzter Maske, 84,0 mal 108,0 mm, Text weiss. Der

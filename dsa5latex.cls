@@ -692,13 +692,24 @@
 \newcommand*{\dsa@kolumnetext}{%
   \begingroup
     \protected@edef\dsa@kolumnemarke{\leftmark}%
+    % Der Titel muss fuer den Vergleich genauso weit expandiert sein wie
+    % die Marke, sonst sind zwei gleiche Namen fuer \ifx verschiedene
+    % Makros.
+    \protected@edef\dsa@kolumnetitel{\dsa@abenteuertitel}%
     \ifx\dsa@kolumnemarke\@empty
       \dsa@abenteuertitel
     \else
-      \ifx\dsa@abenteuertitel\@empty
+      \ifx\dsa@kolumnetitel\@empty
         \leftmark
       \else
-        \dsa@abenteuertitel\,--\,\leftmark
+        \ifx\dsa@kolumnemarke\dsa@kolumnetitel
+          % Heisst das einzige Kapitel wie das Abenteuer -- bei einem Solo
+          % und bei jedem einkapitligen Heft der Normalfall --, stuende der
+          % Name sonst zweimal nebeneinander in der Fusszeile.
+          \dsa@abenteuertitel
+        \else
+          \dsa@abenteuertitel\,--\,\leftmark
+        \fi
       \fi
     \fi
   \endgroup}
@@ -1217,9 +1228,62 @@
 % \dsaKastenNeu{<Umgebung>}{<Breite>}{<Grafikhoehe>}{<Rastereinheiten>}
 %              {<Grafik>}{<weitere Schluessel>}
 \newlength{\dsa@kastenbreite}
+\newsavebox{\dsa@kastenbox}
+
+% Der Kasten steht in einer Box OHNE Hoehe und Tiefe, und seinen Raum
+% liefert \dsaRasterluft -- dieselbe Bauform wie \dsaProbe.
+%
+% Vorher stand er als gewoehnliche Box in der vertikalen Liste. Seine Hoehe
+% ist zwar ein Vielfaches von 12 bp, aber sie ist groesser als
+% \baselineskip, und dann legt TeX keinen Durchschuss mehr davor, sondern
+% faellt auf \lineskip zurueck. Der Kasten sass damit richtig, alles unter
+% ihm nicht mehr: gemessen an einem Abzug mit Text vor und nach dem Kasten
+% lagen die Zeilen danach 3,44 bp neben dem Raster (dsaPergamentMittel) und
+% 3,97 bp (dsaWerteMittel).
+%
+% Aufgefallen ist es lange nicht, weil beispiel/kaesten.tex jeden Kasten
+% allein auf eine Seite setzt und mit \clearpage abschliesst — dort steht
+% hinter keinem Kasten eine Zeile, die daneben liegen koennte. Erst ein
+% Kasten mitten im Fliesstext bringt es ans Licht, und im Solo ist das der
+% Regelfall.
+%
+% Die Box wird erst gesetzt und dann gehoben: \raisebox nimmt ein Argument,
+% keine Umgebung, und tcolorbox laeuft ueber \begin und \end. Deshalb der
+% Umweg ueber die savebox.
+%
+% \dsa@kastenauf und \dsa@kastenzu{<Einheiten>} klammern jeden Kasten der
+% Klasse ein -- die fertigen aus \dsaKastenNeu ebenso wie die beiden in
+% freier Hoehe, die ihre tcolorbox selbst bauen. Die Regel gilt fuer alle
+% oder fuer keinen: ein Kasten, der sie nicht befolgt, verschiebt den Satz
+% unter sich genauso wie vorher.
+% Die Einheitenzahl wird beim Oeffnen gemerkt, weil der Schlussteil einer
+% \newenvironment die Argumente der Umgebung nicht mehr sieht.
+%
+% Vor und hinter dem Kasten muss TeX umbrechen duerfen, zwischen der Box
+% und ihrem Raum nicht -- dafuer sorgt schon die Linie, die \vspace*
+% setzt. Die erste Fassung hatte \nobreak an beiden Enden. Weil hinter
+% \dsaRasterluft nur Leim folgt und Leim nach Leim keine Umbruchstelle ist,
+% hingen damit aufeinanderfolgende Kaesten samt der Zeile davor zu einem
+% einzigen Block zusammen. Im Regellauf waren das auf Seite 10 vier Kaesten,
+% hoeher als die Spalte: Overfull \vbox von 497,8 pt im \output, und
+% dsaMeisterSchmal stand bei 948 bp unter der Papierkante (842 bp), also
+% unsichtbar. Deshalb jetzt kein \nobreak davor und \penalty\z@ dahinter.
+\newcommand*{\dsa@kasteneinheiten}{0}
+
+\newcommand{\dsa@kastenauf}[1]{%
+  \gdef\dsa@kasteneinheiten{#1}%
+  \par
+  \begin{lrbox}{\dsa@kastenbox}}
+
+\newcommand{\dsa@kastenzu}{%
+  \end{lrbox}%
+  \noindent\makebox[\linewidth][l]{%
+    \raisebox{-\dsaRaster{\dsa@kasteneinheiten}}[0pt][0pt]{%
+      \usebox{\dsa@kastenbox}}}%
+  \par\dsaRasterluft{\dsa@kasteneinheiten}\penalty\z@}
 
 \newcommand{\dsaKastenNeu}[6]{%
-  \newtcolorbox{#1}[1][]{%
+  \newtcolorbox{dsa@kasten@#1}[1][]{%
     dsa@grundkasten,
     % Die Breite der Kastengrafik merken: das Portraitmedaillon braucht sie,
     % weil es an der Grafik haengt und nicht am Rahmen.
@@ -1227,7 +1291,13 @@
     width=#2, height=\dsaRaster{#4},
     underlay={\node[anchor=north west, inner sep=0] at (frame.north west)
       {\includegraphics[width=#2,height=#3]{\dsagrafik{#5}}};},
-    #6, ##1}}
+    #6, ##1}%
+  \newenvironment{#1}[1][]{%
+    \dsa@kastenauf{#4}%
+    \begin{dsa@kasten@#1}[##1]%
+  }{%
+    \end{dsa@kasten@#1}%
+    \dsa@kastenzu}}
 
 % ---- Pergament ----
 \dsaKastenNeu{dsaPergamentKlein} {85.5mm} {50.7mm} {12}{pergament-klein} {dsaueberhang=2.5mm}
@@ -1354,17 +1424,62 @@
 % den Portrait-Rahmen von Seite 10." Und zum Abstand: „Feste Abstaende fuer
 % Objekte haben wir nicht." Die fertigen Kaesten sind Bequemlichkeit, nicht
 % das Verfahren.
+% Die drei Scheiben von pergament-lang. Gemessen an der Datei, 1010 x 2272 px
+% bei 300 ppi = 85,51 x 192,36 mm; durchsichtig sind oben 2,46 und unten
+% 2,62 mm, die gezeichnete Kante liegt oben bei 2,7 bis 4,1 mm und unten bei
+% 188,7 bis 189,7 mm. Zehn Millimeter Scheibe tragen beides mit Luft.
+\newlength{\dsapergamenthoehe} \setlength{\dsapergamenthoehe}{192.36mm}
+\newlength{\dsapergamentkopf}  \setlength{\dsapergamentkopf}{10mm}
+\newlength{\dsapergamentfuss}  \setlength{\dsapergamentfuss}{10mm}
+\newlength{\dsa@pgmitte}\newlength{\dsa@pga}\newlength{\dsa@pgb}\newlength{\dsa@pgc}
+
+% Kopf und Fuss brauchen zusammen 20 mm, also 4,72 Rastereinheiten; unter 5
+% bleibt keine Flaeche fuer die Mitte. Nach oben ist bei 45 Schluss, dort ist
+% die Grafik zu Ende.
+\newcommand*{\dsa@pergamentscheiben}[1]{%
+  \ifnum#1<5
+    \ClassWarning{dsa5latex}{dsaKastenFrei mit #1 Rastereinheiten ist zu
+      niedrig -- Kopf und Fuss brauchen zusammen 5. Der Kasten wird falsch
+      gesetzt}%
+  \fi
+  \ifnum#1>45
+    \ClassWarning{dsa5latex}{dsaKastenFrei mit #1 Rastereinheiten ist hoeher
+      als pergament-lang (45). Die Mitte wird gestreckt}%
+  \fi
+  \setlength{\dsa@pgmitte}{\dimexpr\dsaRaster{#1}-\dsapergamentkopf-\dsapergamentfuss\relax}%
+  \setlength{\dsa@pga}{\dimexpr\dsapergamenthoehe-\dsapergamentkopf\relax}%
+  \setlength{\dsa@pgb}{\dimexpr\dsapergamenthoehe-\dsapergamentfuss\relax}%
+  \setlength{\dsa@pgc}{\dimexpr\dsapergamenthoehe-\dsapergamentkopf-\dsa@pgmitte\relax}}
+
 \newenvironment{dsaKastenFrei}[2][]{%
+  \dsa@kastenauf{#2}%
   \begin{tcolorbox}[
     dsa@grundkasten,
     width=85.5mm, height=\dsaRaster{#2},
     dsaueberhang=2.5mm, top=8mm, bottom=8mm,
+    /utils/exec={\dsa@pergamentscheiben{#2}},
     underlay={%
       % Die Pergamentflaeche wird beschnitten, nicht gestaucht: bei 14
       % Rastereinheiten waeren aus 192,4 mm Grafik 59,3 mm zu machen, ein
       % Faktor von 3,2, und die Textur waere sichtbar gequetscht.
+      %
+      % Drei Scheiben, nicht ein mittiger Beschnitt. \dsaBildDeckend schneidet
+      % mittig, und pergament-lang hat oben wie unten eine GEZEICHNETE Kante --
+      % gemessen faellt die Helligkeit oben bei 2,7 bis 4,1 mm von 175 auf 67,
+      % unten spiegelbildlich bei 188,7 bis 189,7 mm. Mittig beschnitten fielen
+      % beide weg, der Kasten hatte keinen Rand mehr, und die Zierleisten
+      % schienen in der Flaeche zu schweben statt auf ihr zu sitzen. Am Abzug
+      % gesehen, nicht gerechnet.
       \node[anchor=north west, inner sep=0] at (frame.north west)
-        {\dsaBildDeckend{85.5mm}{\dsaRaster{#2}}{\dsagrafik{pergament-lang}}};
+        {\includegraphics[width=85.5mm, clip,
+          trim={0pt} {\the\dsa@pga} {0pt} {0pt}]{\dsagrafik{pergament-lang}}};
+      \node[anchor=north west, inner sep=0]
+        at ([yshift=-\dsapergamentkopf]frame.north west)
+        {\includegraphics[width=85.5mm, height=\the\dsa@pgmitte, clip,
+          trim={0pt} {\the\dsa@pgc} {0pt} {\the\dsapergamentkopf}]{\dsagrafik{pergament-lang}}};
+      \node[anchor=south west, inner sep=0] at (frame.south west)
+        {\includegraphics[width=85.5mm, clip,
+          trim={0pt} {0pt} {0pt} {\the\dsa@pgb}]{\dsagrafik{pergament-lang}}};
       % 55,80 x 10,37 mm: das Rahmenmass von Absatztrenner_oben.psd im IDML.
       \node[anchor=north, inner sep=0] at (frame.north)
         {\includegraphics[width=55.8mm,height=10.37mm]{\dsagrafik{trenner-oben}}};
@@ -1374,10 +1489,96 @@
       % Maskenleiste (trenner-maske) gehoert an einen Meisterhinweis, die
       % Buchleiste (trenner-buch) an einen Vorlesetext.
     #1]%
-}{\end{tcolorbox}}
-% Die Pergamentflaeche wird beschnitten statt gestreckt, und
-% pergament-lang hat auch in der Flaeche eine gezeichnete Kante. Sauberer
-% waere ein Mittelstreifen zum Kacheln.
+}{\end{tcolorbox}\dsa@kastenzu}
+
+% ---- Wertekasten mit Medaillon in freier Hoehe ----
+%
+% Der Gegner- und Kreaturkasten. Befund an einem offiziellen, gesetzten Solo
+% des Verlags (68 Seiten A4, liegt nicht im Projekt, wird nicht benannt):
+% fuenf solche Kaesten, alle gleich gebaut, aber in VIER verschiedenen
+% Hoehen -- gemessene Koerperhoehen 72,7 / 73,4 / 76,9 / 78,1 mm. Der Kasten
+% waechst also mit seinem Inhalt, und die drei festen Hoehen des Baukastens
+% (59,2 / 104,0 / 199,1 mm) treffen keine davon.
+%
+% Die Maessse des Hefts sind dabei NICHT die Sollmaesse -- es hat einen
+% eigenen Satzspiegel, 92,6 mm Koerperbreite gegen 94,0 mm der Vorlage. Es
+% belegt nur, DASS es den Kasten in freier Hoehe gibt. Gebaut wird er
+% deshalb aus der Vorlagengrafik.
+%
+% Drei Scheiben aus werte-gross-portrait, alle in wahrer Groesse:
+%
+%   Kopf   0,00 .. 35,60 mm   Zierleiste und Medaillonring
+%   Mitte  35,60 .. je nach Hoehe   Pergament mit den dunklen Seitenkanten
+%   Fuss   186,25 .. 199,05 mm  Zierleiste mit dem Ornament
+%
+% Kein \dsaBildDeckend wie bei dsaKastenFrei: das beschneidet mittig und
+% wuerde hier beide Zierleisten und den Ring zerschneiden. Gemessen an der
+% Grafik (2351 px / 300 ppi = 199,05 mm): die Kopfleiste liegt dunkel von
+% 4,49 bis 8,13 mm, die Fussleiste von 189,99 bis 196,34 mm, und der Ring
+% reicht nach doku/MASSE.md bis 32,1 mm unter die Oberkante -- 16,62 mm
+% Mitte plus 15,5 mm halber Aussendurchmesser. Die Kopfscheibe von 35,60 mm
+% traegt beide vollstaendig.
+%
+% Weil nur beschnitten und nie gestreckt wird, ist die Textur an den zwei
+% Naehten dieselbe wie im Rest der Flaeche.
+\newlength{\dsawertefreihoehe}  \setlength{\dsawertefreihoehe}{199.05mm}
+\newlength{\dsawertefreikopf}   \setlength{\dsawertefreikopf}{35.60mm}
+\newlength{\dsawertefreifuss}   \setlength{\dsawertefreifuss}{12.80mm}
+% Hilfslaengen fuer die drei Beschnitte.
+\newlength{\dsa@wfmitte}\newlength{\dsa@wfa}\newlength{\dsa@wfb}\newlength{\dsa@wfc}
+
+% \begin{dsaWerteFreiPortrait}[<Schluessel>]{<Rastereinheiten>}
+%
+% Kopf und Fuss brauchen zusammen 48,40 mm, also 11,43 Rastereinheiten --
+% unter 12 gibt es keine Flaeche mehr fuer die Mitte. Nach oben ist bei 47
+% Schluss, dort ist die Grafik zu Ende; das ist genau dsaWerteGrossPortrait.
+\newtcolorbox{dsa@kasten@wfp}[2][]{%
+  dsa@grundkasten,
+  /utils/exec={%
+    \setlength{\dsa@kastenbreite}{94.0mm}%
+    \ifnum#2<12
+      \ClassWarning{dsa5latex}{dsaWerteFreiPortrait mit #2 Rastereinheiten ist
+        zu niedrig -- Kopf und Fuss brauchen zusammen 12. Der Kasten wird
+        falsch gesetzt}%
+    \fi
+    \ifnum#2>47
+      \ClassWarning{dsa5latex}{dsaWerteFreiPortrait mit #2 Rastereinheiten ist
+        hoeher als die Vorlagengrafik (47). Die Mitte wird gestreckt}%
+    \fi
+    \setlength{\dsa@wfmitte}{\dimexpr\dsaRaster{#2}-\dsawertefreikopf-\dsawertefreifuss\relax}%
+    % Beschnitt unten fuer die Kopfscheibe, oben fuer die Fussscheibe,
+    % und fuer die Mitte beides.
+    \setlength{\dsa@wfa}{\dimexpr\dsawertefreihoehe-\dsawertefreikopf\relax}%
+    \setlength{\dsa@wfb}{\dimexpr\dsawertefreihoehe-\dsawertefreifuss\relax}%
+    \setlength{\dsa@wfc}{\dimexpr\dsawertefreihoehe-\dsawertefreikopf-\dsa@wfmitte\relax}},
+  width=94.0mm, height=\dsaRaster{#2},
+  underlay={%
+    \node[anchor=north west, inner sep=0] at (frame.north west)
+      {\includegraphics[width=94.0mm, clip,
+        trim={0pt} {\the\dsa@wfa} {0pt} {0pt}]{\dsagrafik{werte-gross-portrait}}};
+    \node[anchor=north west, inner sep=0]
+      at ([yshift=-\dsawertefreikopf]frame.north west)
+      {\includegraphics[width=94.0mm, height=\the\dsa@wfmitte, clip,
+        trim={0pt} {\the\dsa@wfc} {0pt} {\the\dsawertefreikopf}]{\dsagrafik{werte-gross-portrait}}};
+    \node[anchor=south west, inner sep=0] at (frame.south west)
+      {\includegraphics[width=94.0mm, clip,
+        trim={0pt} {0pt} {0pt} {\the\dsa@wfb}]{\dsagrafik{werte-gross-portrait}}};},
+  % Die Innenmasse von dsaWerteMittelPortrait. Zulaessig, weil die Leisten
+  % in allen drei Fassungen gleich weit von der Kante sitzen: die Kopfleiste
+  % endet 8,13 bis 9,57 mm unter der Oberkante, die Fussleiste beginnt 9,06
+  % bis 9,40 mm ueber der Unterkante. Gemessen an allen drei Grafiken.
+  dsaportraitlage, dsaportraitlagen={17.57mm}{16.62mm},
+  left=7mm, right=\dsaportraitfrei, top=8.9mm, bottom=9.6mm,
+  #1}
+
+% Wie jeder Kasten der Klasse in eine Box ohne Hoehe, damit der Satz unter
+% ihm auf dem Raster bleibt -- siehe \dsa@kastenauf.
+\newenvironment{dsaWerteFreiPortrait}[2][]{%
+  \dsa@kastenauf{#2}%
+  \begin{dsa@kasten@wfp}[#1]{#2}%
+}{%
+  \end{dsa@kasten@wfp}%
+  \dsa@kastenzu}
 
 %%% ==================================================================
 %%% 14  Vorlesetext, Meistermaske, NSC-Kopf
@@ -1602,10 +1803,12 @@
   label={\smash{\raisebox{-0.25\height}{%
     \includegraphics[height=2.4mm]{\dsagrafik{aufzaehlung-rot}}}}}}
 
-% Haengender Einzug, Absatzformat „Werte" des Baukastens: -8,504 pt
+% Haengender Einzug, Absatzformat „Werte" des Baukastens. Das Mass steht
+% als \dsawerteeinzug in Abschnitt 19: 8,5039 bp im IDML, also 3 mm. Hier
+% standen vorher 8,504 pt -- TeX-Punkte, 0,03 pt zu wenig.
 \newenvironment{dsaWerteabsatz}{%
   \par\setlength{\parindent}{0pt}%
-  \setlength{\hangindent}{8.504pt}\hangafter=1
+  \setlength{\hangindent}{\dsawerteeinzug}\hangafter=1
 }{\par}
 
 \newcommand{\dsaEinfuehrung}[1]{%
@@ -1729,11 +1932,24 @@
 % einen Satz ohne Grundlinienraster, wo eine Zeile keine Rastereinheit misst
 % und eine Kopfzeile mehrzeilig sein darf. Das Band selbst, Rechteck, Verlauf
 % und die zwei Linien, bleibt dasselbe.
-\newcommand*{\dsa@bandmasse}{%
+% Die Hoehe des Bandes in Rastereinheiten. Eine Rubrikzeile ist eine Zeile
+% hoch, eine Anmerkung bricht aber um, und dann muss das Band mitwachsen --
+% sonst liegt der graue Grund nur unter der ersten Zeile und hoert mitten im
+% Satz auf. Am Abzug gesehen.
+%
+% Die Zahl kommt vom Autor und nicht aus einer Messung: das Band wird in der
+% ERSTEN Zelle gezeichnet, und dort weiss noch niemand, wie oft die letzte
+% Zelle umbrechen wird. Das ist dieselbe Ansage wie bei jedem anderen hohen
+% Element der Klasse -- \dsaBildSpalte, dsaKastenFrei, \dsaVorlesetext nennen
+% ihre Rastereinheiten auch selbst.
+\newcommand*{\dsa@bandmasse}[1]{%
+  \setlength{\dsa@bandoben}{\dimexpr\dsaRaster{1}-\dp\strutbox\relax}%
   \setlength{\dsa@bandunten}{\dp\strutbox}%
-  \setlength{\dsa@bandoben}{\dimexpr\dsaRaster{1}-\dp\strutbox\relax}}
-\newcommand{\dsa@tabellenband}[3]{%
-  \dsa@bandmasse
+  \ifnum#1>1
+    \addtolength{\dsa@bandunten}{\dsaRaster{\numexpr#1-1\relax}}%
+  \fi}
+\newcommand{\dsa@tabellenband}[4]{%
+  \dsa@bandmasse{#4}
   \begin{tikzpicture}[overlay, blend mode=multiply]
     \path[#2] (-#1,-\dsa@bandunten)
       rectangle (\dimexpr\dsa@tabellenbreite-#1\relax,\dsa@bandoben);
@@ -1759,7 +1975,7 @@
   \setlength{\dsa@tabellenbreite}{\linewidth}%
   \dsa@tabellenband{0pt}%
     {shade,left color=dsatabellenrot,right color=white}%
-    {dsatabellenkopflinie}%
+    {dsatabellenkopflinie}{1}%
   \hspace*{\dsatabelleninnen}\textbf{#1}%
   \par\nobreak}
 
@@ -1795,8 +2011,9 @@
   \bfseries}
 \newcommand*{\dsaAnmerkungsschrift}{%
   \fontsize{\dsatabellenrubrikgrad bp}{\dsagrunddurchschuss bp}\selectfont}
-\newcommand*{\dsaTabellenrubrik}{%
-  \dsa@tabellenband{\dsatabelleninnen}{fill=dsatabellengrau}{}%
+% \dsaTabellenrubrik[<Rastereinheiten>] -- ohne Angabe eine Zeile hoch.
+\newcommand*{\dsaTabellenrubrik}[1][1]{%
+  \dsa@tabellenband{\dsatabelleninnen}{fill=dsatabellengrau}{}{#1}%
   \ignorespaces}
 
 % Die Linie unter jeder Zeile. \hline taugt nicht: sie bringt ihre
@@ -3352,15 +3569,36 @@
 %%% ==================================================================
 %%% 19  Raster fuer wiederkehrende Angaben
 %%% ==================================================================
+%
+% Das Absatzformat „Werte" im IDML (Resources/Styles.xml) ist der Fliesstext
+% mit haengendem Einzug: BasedOn 2_Fliesstext, also Gentium Basic 10 bp auf
+% dem Grundlinienraster (GridAlignment AlignBaseline), LeftIndent 8,5039 und
+% FirstLineIndent -8,5039. Die 8,5039 sind bp und damit genau 3 mm. Ein
+% kleineres Werteformat hat der Baukasten nicht.
+%
+% Gegenprobe an einem gesetzten Abenteuer, zwoelf Gegnerbloecke: alle Zeilen
+% Gentium Basic 10,0 bp, Grundlinien im Abstand von 12,0 bp, Kuerzel und
+% Rubriken fett, Werte mager.
+\newlength{\dsawerteeinzug}  \setlength{\dsawerteeinzug}{3mm}
 
-\newcommand{\dsaFeld}[2]{\par\noindent\textbf{#1:} #2}
+% Ein Werteabsatz: haengend eingezogen, jede Folgezeile um den Einzug.
+\newcommand*{\dsa@werteabsatz}{%
+  \par\noindent\hangindent\dsawerteeinzug\hangafter\@ne}
 
+\newcommand{\dsaFeld}[2]{\dsa@werteabsatz\textbf{#1:} #2}
+
+% Beide Umgebungen setzen in der Schrift ihrer Umgebung: im Fliesstext auf
+% dem Raster, im Kasten im Kastentext. Frueher standen hier \small und
+% \footnotesize -- die Groessen der Basisklasse, nicht ans Raster
+% angepasst, und ohne Quelle: gemessen 8,0 bp auf 9,47 bp im Wertekasten,
+% wo der Kastentext 9,5 auf 11,4 bp setzt (Issue #10). Das Werteformat
+% des Baukastens ist die Grundschrift, siehe oben.
 \newenvironment{dsaKurzcharakteristik}{%
-  \small\setlength{\parindent}{0pt}%
+  \par\setlength{\parindent}{0pt}%
 }{\par}
 
 \newenvironment{dsaWerteblock}{%
-  \footnotesize\setlength{\parindent}{0pt}%
+  \par\setlength{\parindent}{0pt}%
 }{\par}
 
 % Die Probenzeile: ein farbiger Balken ueber die Spaltenbreite, darin der
@@ -3429,6 +3667,165 @@
     Handwerkstalente              & \dsa@rautenskala{#3}{4}{rot}{\dsaanforderungskala}\\
     \textbf{Lebendige Geschichte} & \dsa@rautenskala{#4}{4}{gruen}{\dsaanforderungskala}\\
   \end{tabular}\par}
+
+% ---- Gegnerwerte ----
+%
+% \dsaGegner{<Name>}{<Schluessel>} setzt die Werte eines Gegners oder
+% einer Kreatur. Die Klasse legt Reihenfolge und Beschriftung fest, der
+% Autor nur die Werte; was er weglaesst, steht nicht da -- auch keine
+% Leerzeile. Gerechnet wird nichts: in den gesetzten Baenden weichen
+% abgeleitete Werte oft von der Grundregel ab, und eine Klasse, die
+% nachrechnet, druckte dort falsche Zahlen.
+%
+% Reihenfolge und Rubriken nennt der Baukasten nicht, sie kommen aus dem
+% gesetzten Abenteuer oben (zwoelf Bloecke, ueberall dieselbe Folge):
+%
+%   Name                                   fett, eigene Zeile
+%   MU KL IN CH / FF GE KO KK              je vier Paare in einer Zeile
+%   LeP AsP KaP INI / VW SK ZK GS
+%   <Waffe>: AT PA TP RW                   eine Zeile je Angriff
+%   RS/BE
+%   Aktionen, Vorteile/Nachteile, Sonderfertigkeiten, Talente, Anzahl,
+%   Groessenkategorie, Typus, Beute, Kampfverhalten, Flucht,
+%   Schmerz +1 bei, Sonderregeln           je ein Werteabsatz
+%
+% AW steht neben VW, weil beides vorkommt: die Kreaturen der Baende fuehren
+% VW, Meisterpersonen oft AW. Gesetzt wird, was angegeben ist.
+%
+% Die Paare stehen nicht an Tabulatoren, sie laufen hintereinander --
+% gemessen wandert das KL mit der Breite des MU-Werts. Zwischen Kuerzel und
+% Wert steht ein fetter Wortzwischenraum (gemessen 2,49 bp, Median ueber 96
+% Stellen), zwischen Wert und naechstem Kuerzel drei magere (6,61 bp,
+% Median ueber 77 Stellen). Im Vorbild sind es von Hand ein bis vier
+% Leerzeichen; die Klasse nimmt den Median und haelt ihn fest, ohne Dehnung.
+\newcommand*{\dsawertepaarabstand}{3\fontdimen2\font}
+
+\newif\ifdsa@zeileleer
+
+% #1 Kuerzel, #2 Wert
+\newcommand{\dsa@paar}[2]{%
+  \ifdsa@zeileleer\dsa@zeileleerfalse\else\hskip\dsawertepaarabstand\relax\fi
+  \mbox{\textbf{#1\nobreakspace}#2}}
+
+% Eine Zeile aus Paaren. Sie wird erst in eine Box gesetzt: bleibt die
+% leer, weil kein Wert der Zeile angegeben ist, entfaellt der ganze Absatz.
+% Zwischen den Paaren darf umbrochen werden, falls ein Kasten schmal ist.
+\newcommand{\dsa@wertezeile}[1]{%
+  \setbox\@tempboxa\hbox{\dsa@zeileleertrue#1}%
+  \ifdim\wd\@tempboxa>\z@
+    \dsa@werteabsatz\unhbox\@tempboxa\par
+  \fi}
+
+% Die Werte liegen als \dsa@<Block>@<Schluessel>. Nie gesetzte Schluessel
+% sind undefiniert, und \ifcsvoid behandelt beides gleich.
+% #1 Block, #2 Schluessel, #3 Kuerzel
+\newcommand*{\dsa@wpaar}[3]{%
+  \ifcsvoid{dsa@#1@#2}{}{\dsa@paar{#3}{\csname dsa@#1@#2\endcsname}}}
+% #1 Block, #2 Schluessel, #3 Rubrik
+\newcommand*{\dsa@wrubrik}[3]{%
+  \ifcsvoid{dsa@#1@#2}{}{\dsaFeld{#3}{\csname dsa@#1@#2\endcsname}}}
+
+% Die Schluessel eines Blocks werden gegen eine Liste geprueft. Ein
+% vertippter Schluessel waere sonst still verschwunden, und mit ihm der
+% Wert im Satz -- genau der Fehler, den niemand im PDF sucht.
+% #1 Block, #2 Befehl fuer die Meldung
+\newcommand*{\dsa@wertschluessel}[2]{%
+  \pgfkeys{/dsa/#1/.unknown/.code={%
+    \edef\dsa@tmp{\noexpand\in@{,\pgfkeyscurrentname,}%
+      {,\csname dsa@#1@liste\endcsname,}}%
+    \dsa@tmp
+    \ifin@
+      \expandafter\def\csname dsa@#1@\pgfkeyscurrentname\endcsname{##1}%
+    \else
+      \ClassError{dsa5latex}{Unbekannter Schluessel
+        `\pgfkeyscurrentname' in \string#2}{Zulaessig sind:
+        \csname dsa@#1@liste\endcsname}%
+    \fi}}}
+
+\newcommand*{\dsa@g@liste}{MU,KL,IN,CH,FF,GE,KO,KK,LeP,AsP,KaP,INI,VW,AW,%
+  SK,ZK,GS,RSBE,Aktionen,VorNachteile,Sonderfertigkeiten,Talente,Anzahl,%
+  Groesse,Typus,Beute,Kampfverhalten,Flucht,Schmerz,Sonderregeln}
+\dsa@wertschluessel{g}{\dsaGegner}
+
+% Angriffe: der Schluessel angriff darf mehrfach stehen, jede Zeile in der
+% Reihenfolge, in der sie angegeben ist. Der Waffenname steht mager mit
+% Doppelpunkt, dahinter die Paare -- so im Vorbild ("Scheren: AT 12 ...").
+%   angriff={Scheren}{AT=12, TP=\dsaFormel{1W6}, RW=kurz}
+\pgfkeys{/dsa/g/angriff/.code 2 args={%
+  \appto\dsa@g@angriffe{\dsa@angriffzeile{#1}{#2}}}}
+\newcommand*{\dsa@a@liste}{AT,PA,TP,RW}
+\dsa@wertschluessel{a}{\dsaGegner (angriff)}
+\newcommand{\dsa@angriffzeile}[2]{%
+  \begingroup
+    \pgfkeys{/dsa/a/.cd,#2}%
+    \dsa@wertezeile{#1:\nobreakspace
+      \dsa@zeileleertrue
+      \dsa@wpaar{a}{AT}{AT}\dsa@wpaar{a}{PA}{PA}%
+      \dsa@wpaar{a}{TP}{TP}\dsa@wpaar{a}{RW}{RW}}%
+  \endgroup}
+
+\newcommand{\dsaGegner}[2]{%
+  \begingroup
+    \let\dsa@g@angriffe\@empty
+    \pgfkeys{/dsa/g/.cd,#2}%
+    \dsa@werteabsatz\textbf{#1}\par
+    \dsa@wertezeile{\dsa@wpaar{g}{MU}{MU}\dsa@wpaar{g}{KL}{KL}%
+      \dsa@wpaar{g}{IN}{IN}\dsa@wpaar{g}{CH}{CH}}%
+    \dsa@wertezeile{\dsa@wpaar{g}{FF}{FF}\dsa@wpaar{g}{GE}{GE}%
+      \dsa@wpaar{g}{KO}{KO}\dsa@wpaar{g}{KK}{KK}}%
+    \dsa@wertezeile{\dsa@wpaar{g}{LeP}{LeP}\dsa@wpaar{g}{AsP}{AsP}%
+      \dsa@wpaar{g}{KaP}{KaP}\dsa@wpaar{g}{INI}{INI}}%
+    \dsa@wertezeile{\dsa@wpaar{g}{VW}{VW}\dsa@wpaar{g}{AW}{AW}%
+      \dsa@wpaar{g}{SK}{SK}\dsa@wpaar{g}{ZK}{ZK}\dsa@wpaar{g}{GS}{GS}}%
+    \dsa@g@angriffe
+    \dsa@wertezeile{\dsa@wpaar{g}{RSBE}{RS/BE}}%
+    \dsa@wrubrik{g}{Aktionen}{Aktionen}%
+    \dsa@wrubrik{g}{VorNachteile}{Vorteile/Nachteile}%
+    \dsa@wrubrik{g}{Sonderfertigkeiten}{Sonderfertigkeiten}%
+    \dsa@wrubrik{g}{Talente}{Talente}%
+    \dsa@wrubrik{g}{Anzahl}{Anzahl}%
+    \dsa@wrubrik{g}{Groesse}{Größenkategorie}%
+    \dsa@wrubrik{g}{Typus}{Typus}%
+    \dsa@wrubrik{g}{Beute}{Beute}%
+    \dsa@wrubrik{g}{Kampfverhalten}{Kampfverhalten}%
+    \dsa@wrubrik{g}{Flucht}{Flucht}%
+    \dsa@wrubrik{g}{Schmerz}{Schmerz +1 bei}%
+    \dsa@wrubrik{g}{Sonderregeln}{Sonderregeln}%
+    \par
+  \endgroup}
+
+% ---- Zauber und Liturgien ----
+%
+% Dieselbe Mechanik, nur Rubriken. Die Folge ist die des Regelwerks; der
+% Baukasten nennt keine. Zauber und Liturgie unterscheiden sich in drei
+% Rubriken: Zauberdauer/Liturgiedauer, AsP-/KaP-Kosten, Merkmal/Aspekt.
+% Wirkung und Anmerkung sind Fliesstext und koennen lang werden; der
+% haengende Einzug des Werteformats traegt sie.
+\newcommand*{\dsa@z@liste}{Probe,Wirkung,Zauberdauer,AsP-Kosten,Reichweite,%
+  Wirkungsdauer,Zielkategorie,Merkmal,Verbreitung,Steigerungsfaktor,Anmerkung}
+\dsa@wertschluessel{z}{\dsaZauber}
+\newcommand*{\dsa@l@liste}{Probe,Wirkung,Liturgiedauer,KaP-Kosten,Reichweite,%
+  Wirkungsdauer,Zielkategorie,Aspekt,Verbreitung,Steigerungsfaktor,Anmerkung}
+\dsa@wertschluessel{l}{\dsaLiturgie}
+
+% #1 Block, #2 Name, #3 Schluessel
+%
+% Die Liste wird erst unter festem Namen abgelegt: \@for expandiert sein
+% Listenargument genau einmal, und aus \csname...\endcsname wird dabei nur
+% das Makro, nicht sein Inhalt. Die Schleife lief dann ueber ein einziges
+% Element, den Makronamen, und setzte keine Rubrik -- gemessen: nur der
+% Name stand im PDF.
+\newcommand{\dsa@spruch}[3]{%
+  \begingroup
+    \pgfkeys{/dsa/#1/.cd,#3}%
+    \dsa@werteabsatz\textbf{#2}\par
+    \expandafter\let\expandafter\dsa@liste\csname dsa@#1@liste\endcsname
+    \@for\dsa@k:=\dsa@liste\do{%
+      \dsa@wrubrik{#1}{\dsa@k}{\dsa@k}}%
+    \par
+  \endgroup}
+\newcommand{\dsaZauber}[2]{\dsa@spruch{z}{#1}{#2}}
+\newcommand{\dsaLiturgie}[2]{\dsa@spruch{l}{#1}{#2}}
 
 %%% ==================================================================
 %%% 20  Freigestellte Grafiken und Textumfluss
