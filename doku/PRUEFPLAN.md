@@ -336,6 +336,28 @@ Voreinstellung der Basisklasse. Die bp-Maße standen nur in einem `\AtBeginDocum
 24 mm gerechnet ist und dort 15 mm gelten. `\dsaQuerAnfang` rechnet ihn neu, `\dsaQuerEnde`
 stellt den alten Wert zurück.
 
+**Nur das erste Querblatt war quer, und der Satzspiegel war hochkant gerechnet.** Aufgefallen ist
+das an einem Meisterschirm aus drei Blättern. Der Regellauf hat nur ein Querblatt und konnte es
+nicht zeigen. Zwei Ursachen:
+- `\special{papersize}` wirkt bei xdvipdfmx nur auf der Seite, auf der es steht.
+- `\newgeometry` stellt zu Beginn das Papier und den Spaltenzustand der Präambel wieder her. Der
+  Satzspiegel wurde aus dem Hochformat gerechnet, 180 statt 267 mm breit.
+
+Jetzt bekommt `\newgeometry` Breite, Höhe und `onecolumn` ausdrücklich, die Papiergröße setzen
+`\pdfpagewidth` und `\pdfpageheight`, und linke Seiten bekommen denselben Rand wie rechte.
+Nachgemessen an einem Probedokument: zweispaltiger Text, drei Querblätter mit `\clearpage`
+dazwischen, eine Tabelle aus vier Spalten zu 60 mm, danach wieder Hochformat.
+
+| | vorher | nachher |
+|---|---|---|
+| Blatt 1 | 297 × 210 mm | 297 × 210 mm |
+| Blatt 2 und 3 | **210 × 297 mm** | 297 × 210 mm |
+| Text, links bis rechts | 15,0 bis 195,0 mm | **15,0 bis 282,0 mm** |
+| Tabelle aus 4 × 60 mm | Overfull um 198 pt | **endet bei 282,0 mm** |
+| Grundlinien der Querblätter | ±0,00 bp | **±0,00 bp** |
+| Grundlinien danach, Hochformat | ±0,00 bp | **±0,00 bp** |
+| Regellauf `beispiel.tex` | 22 Seiten | **22, Seite für Seite text- und formatgleich** |
+
 ### Vier Statuszeilen nachgeprüft
 
 Vier Zeilen trugen noch „Abweichung gefunden“. An den Abzügen nachgemessen:

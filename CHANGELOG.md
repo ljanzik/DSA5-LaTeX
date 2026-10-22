@@ -26,6 +26,9 @@ ausliefern wird.
   umfließt die Karte, `\dsaRueckBild` setzt ein Bild links unten, `werkzeuge/umfluss.py` legt die
   Kontur einer freigestellten Figur an. `aufbereiten.py --rueckseiten` stellt dafür
   `ruecken-rahmen` frei.
+* Querformat über mehrere Blätter: Jede Seite zwischen `\dsaQuerAnfang` und `\dsaQuerEnde` ist
+  jetzt A4 quer, mit einem Satzspiegel von 267 × 180 mm und gleichen Rändern links wie rechts.
+  Vorher war nur das erste Blatt quer, und der Satzspiegel war 180 mm breit.
 
 ## 1.2.0 — unveröffentlicht
 
