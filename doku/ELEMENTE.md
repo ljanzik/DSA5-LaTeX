@@ -5,6 +5,11 @@
 
 Vollständiges Beispiel: `beispiel/beispiel.tex`.
 
+**Für den Spielleiterschirm-Einleger gilt eine eigene Klasse und eine eigene Referenz:**
+`dsa5einleger.cls`, dokumentiert in [EINLEGER.md](EINLEGER.md). Sie lädt diese hier, setzt aber
+A4 quer in vier freien Spalten und **ohne Grundlinienraster**. Alles, was unten mit `\dsaRaster`
+zu tun hat, gilt dort nicht; Zahlen, Marken, Aufzählungen und Kästen dagegen schon.
+
 ---
 
 ## Klassenoptionen
@@ -53,6 +58,7 @@ diese Aufteilung.
 | Kapitelanfang ohne Rahmen | `\dsakapitel{Titel}` | 2 | ja | ja |
 | Kapitelanfang mit Rahmen | `\dsakapitelbild[Bild]{Titel}` | 2 | ja | ja |
 | Rückseite | `\dsaRueckseite{Grafik}{Titel}{Autor}{Text}{Kasten}` | — | nein | nein |
+| Bild auf der Rückseite | `\dsaRueckBild{Datei}{Breite}` vor `\dsaRueckseite` | — | — | — |
 | Normalseite | — (Regelfall) | 2 | ja | ja |
 | Seite ohne Seitenzahl | `\begin{dsaSeiteOhneZahl}` | 2 | nein | ja |
 | Ganzseitige Grafik | `\dsaGanzseite{Bild}` | — | nein | nein |
@@ -173,6 +179,31 @@ deshalb den Seiten vorbehalten, die keine tragen: `\dsaHintergrundOhneFeld` wäh
 laufende Seite und macht die Fußzeile leer. Impressum und Inhaltsverzeichnis rufen das selbst auf.
 `\dsaHintergrundAus` und `\dsaHintergrundAn` schalten den Hintergrund für einzelne Seiten ab und
 wieder ein.
+
+**Seitenfarbe.** Die Schuppenleiste an der Außenkante lässt sich umfärben, mit denselben Farben
+wie der Rand der Spielkarten:
+
+```latex
+\dsaSeitenfarbe{karmin}   % ab hier rote Schuppen
+\dsaSeitenfarbe{blau}     % ab hier blaue, derselbe Ton wie \dsaKartenfarbe{blau}
+\dsaSeitenfarbe{}         % zurück zum Baukasten
+```
+
+Der Hintergrund wird erst beim Ausgeben einer Seite gezeichnet. Deshalb gilt der Befehl schon für
+die Seite, auf der er steht. Wer das Heft ab einem Kapitel umfärben will, setzt ihn nach dem
+`\clearpage` davor. Das geht auch mitten im Heft und gilt für alle vier Hintergründe, auch den
+ohne Seitenzahlfeld. Umgefärbt werden nur die dunklen, fast grauen
+Bildpunkte. Pergament, Ranke, Flecken und die Kartusche der Seitenzahl behalten ihre Farbe. Die
+Fassungen legt ein Werkzeug an, und zwar aus den Seiten, die `aufbereiten.py` geschnitten hat:
+
+```sh
+python3 werkzeuge/seitenfarbe.py karmin blau
+```
+
+Fehlt eine Fassung, bleibt der Hintergrund des Baukastens, und die Klasse warnt. Die Farbtabelle
+ist die der Spielkarten. Alle sieben Farben, ihre Wirkung auf der Seite und eigene Farben stehen in
+[Farben](FARBEN.md). Für ein kräftiges Rot eignet sich `karmin`; `rot` wirkt auf den Seiten
+braun.
 
 **Kapitelanfang.** Banner 210,1 × 43,2 mm am oberen Papierrand, Titel als Versalien darin, dann
 beide Spalten darunter. Mit Kapitelbild wird die Außenhälfte belegt; dann muss die Anfangsseite mit
@@ -298,6 +329,7 @@ nicht bis zum Rand deckt.
 ### Die Rückseite
 
 ```latex
+\dsaRueckBild{grafiken/gaensemagd}{80mm}     % optional, links unten
 \dsaRueckseite{ruecken-mittelreich}{Der falsche Ganter}{von Leif Janzik}{%
   Klappentext, Absätze durch Leerzeilen getrennt.
 }{%
@@ -312,7 +344,8 @@ Die Grafik kommt aus dem **Rückseiten-Karten-Paket** von Ulisses, einem zweiten
 Baukasten. Es bringt eine fertige Rückseite mit Zierrahmen (`ruecken-neutral`) und 28 **Masken** —
 jede ist die verdunkelte Karte mit einem Loch an der Stelle einer Region.
 `werkzeuge/aufbereiten.py --rueckseiten <pfad>` baut daraus die 28 Rückseiten und legt sie als
-`ruecken-mittelreich`, `ruecken-thorwal` und so weiter ab.
+`ruecken-mittelreich`, `ruecken-thorwal` und so weiter ab, dazu den unteren Zierrahmen
+freigestellt als `ruecken-rahmen`.
 
 **Gesetzt wird nicht die Verdunkelung des Pakets, sondern die Fassung der offiziellen Hefte:**
 die Karte in Sepia, nur die aktive Region in Farbe, ein weicher Schlagschatten darum. Das hebt
@@ -326,9 +359,48 @@ innerhalb der Grenzlinien und rechnet aus der gefundenen Fläche dieselbe Sepiaf
 des Pakets kennt allerdings nur die großen Regionen — eine Saat im Kosch flutet das ganze
 Mittelreich, und eine fertige Kosch-Fassung gibt es nicht mehr: sie kam aus einer fremden Sammlung.
 
-Der Aufbau ist an der Rückseite einer gesetzten Veröffentlichung vermessen: Titel in Andalus 18 bp,
-Autorzeile 12 bp, ein Strich darunter, der Klappentext 81,7 mm breit im Blocksatz, und der graue
-Kasten unten rechts mit Kopfzeile, Rubriken und Fertigkeiten. Die Maße stehen in `MASSE.md`.
+Der Aufbau folgt dem gesetzten Heft *Die Verschwörung der Magier*, auch in der Reihenfolge der
+Ebenen — von unten nach oben:
+
+1. die Rückseite mit Karte,
+2. der **Kasten**: ein dunkelbrauner Schleier mit 21 Prozent Deckung und gerissenen Kanten, durch
+   den das Pergament scheint, bis unter die Papierkante,
+3. das Bild links unten, falls `\dsaRueckBild` gesetzt ist — über dem Kasten, wo es ihn berührt,
+4. der **Zierrahmen** (`ruecken-rahmen`), der Kasten und Bild unten abschneidet,
+5. Titel (Andalus 17,2 bp), Autorzeile, Strich und Klappentext (11 auf 12 bp, Blocksatz).
+
+Fehlt `ruecken-rahmen`, baut die Seite trotzdem, mit einer Warnung — dann liegt der Kasten über
+dem Rahmen.
+
+**Der Klappentext umfließt die Karte** so, wie sie gezeichnet ist, über alle Absätze hinweg. Die
+Kontur steht als gemessene Tabelle in der Klasse; jede Zeile hält zur engsten Stelle der Karte
+`\dsarueckeumfluss` Abstand (2,5 mm, geschätzt). Die Satzbreite `\dsarueckebreite` (104 mm) ist
+die Obergrenze, wo keine Karte im Weg ist.
+
+**Das Bild links unten** setzt `\dsaRueckBild{<Datei>}{<Breite>}` vor `\dsaRueckseite`. Es
+beginnt an der Papierkante (`\dsarueckebildx`, 0 mm) und endet bei `\dsarueckebildunten`
+(291,7 mm, wie die Figur im Heft) — also unter dem Rahmen. Reicht es in den Klappentext, rücken
+die Zeilen auf seiner Höhe um seine Breite ein. Soll der Text der Figur folgen statt ihrem Rahmen,
+gibt man danach ihre rechte Kante je Millimeter Papierhöhe an:
+
+```latex
+\setlength{\dsarueckebildunten}{285mm}
+\dsaRueckBild{grafiken/gaensemagd}{80mm}
+\dsaRueckBildKontur{150:42,151:44,152:45,153:47}   % y in mm : rechte Kante in mm
+```
+
+Die Kontur ersetzt den Bildrahmen ganz: Zeilen ohne Eintrag bleiben frei. Ausmessen muss man sie
+nicht von Hand — `werkzeuge/umfluss.py` liest sie aus dem Alphakanal und gibt die fertige Zeile aus:
+
+```sh
+python3 werkzeuge/umfluss.py grafiken/gaensemagd.png --breite 80 --unten 285
+```
+
+Das Bild gilt nur für die nächste Rückseite.
+
+`\dsaRueckKopf` setzt die Kopfzeilen des Kastens zentriert in 12 bp und zieht den Strich darunter;
+`\dsaRueckFeld` setzt eine Rubrik fett mit ihrem Wert in 8,5 bp; `\dsaRueckStrich` ist der Strich
+allein. Alle Maße stehen in `MASSE.md` unter „Die Rückseite“.
 
 ### Die Probenzeile
 
@@ -367,6 +439,14 @@ kommt über die Marken von LaTeX aus `\dsakapitel`:
 Ohne diesen Befehl bleibt der Kapitelname allein stehen, vor dem ersten Kapitel bleibt die Zeile
 leer. **Heißt das Kapitel wie das Abenteuer**, steht der Name nur einmal statt zweimal
 nebeneinander — bei einem Solo und bei jedem einkapitligen Heft der Normalfall.
+
+Derselbe Titel geht als Dokumenttitel in die PDF-Metadaten. Den Autor dort setzt `\dsaAutor`; im
+Satz erscheint er nicht, dafür sind Impressum und Rückseite da. Als Erzeuger trägt jedes PDF
+`dsa5latex` mit Versionsnummer.
+
+```latex
+\dsaAutor{Alrike Sturmfels}
+```
 
 Er schließt mit dem Satzspiegel ab, auf beiden Seiten 24 mm von der Außenkante — rechts
 rechtsbündig bei 186 mm, links linksbündig bei 24 mm. Damit steht er bündig unter dem Textblock,
@@ -586,6 +666,11 @@ n gefüllten. `aufbereiten.py` schneidet daraus drei Kacheln — gefüllt rot, g
 und `\dsaRauten` setzt sie aneinander. Damit ist die Skala beliebig lang, und nichts ist
 nachgezeichnet. Vorher zeichnete TikZ sie nach, obwohl das Material vorlag; die Maße stehen in
 `MASSE.md`.
+
+Im Fließtext steht die Skala ohne Höhe und Tiefe, wie die übrigen Marken: bei 18 mm Breite ist
+eine Raute 15,4 bp hoch, mehr als eine Zeile, und ungeglättet schöbe sie alles darunter vom Raster.
+Ihre Mitte sitzt auf halber x-Höhe. Nur in `\dsaAnforderungen` trägt sie ihre volle Höhe, dort
+bestimmt sie die Zeilen der Tabelle.
 
 ---
 
@@ -843,11 +928,16 @@ Aufbau und Rubriken nach dem Vorbild einer gesetzten Scriptorium-Veröffentlichu
 Redaktion, Lektorat, Korrektorat, Künstlerische Leitung, Coverbild, Satz Layout und Gestaltung,
 Innenillustrationen und Pläne, Version — oft mit einer Danksagung am Ende.
 
-**Der Rechtevermerk steht wörtlich in der Klasse und darf nicht umformuliert werden** — nicht
-kürzen, die Versalien nicht glätten. Ältere Veröffentlichungen führen einen anderen Wortlaut, unter
-anderem mit einem anderen Rechteinhaber; der in der Klasse ist der aktuelle. Wer eine neuere Fassung
-vom Verlag hat, ersetzt ihn dort. Es gibt absichtlich nur diesen einen Ort und nur diesen einen
-Befehl dafür.
+**Der Rechtevermerk steht wörtlich in `pflichttext.tex` und darf nicht umformuliert werden** —
+nicht kürzen, die Versalien nicht glätten. Ältere Veröffentlichungen führen einen anderen Wortlaut,
+unter anderem mit einem anderen Rechteinhaber; der dort ist der aktuelle. Wer eine neuere Fassung
+vom Verlag hat, ersetzt ihn dort. Es gibt absichtlich nur diesen einen Ort dafür.
+
+Die Datei liegt neben der Klasse, weil die Charaktermappe (`bogen/mappe/`) denselben Text braucht
+und ihn eine Zeit lang in einer älteren Fassung führte. Sie stellt `\dsaPflichttext{<Copyright>}`
+bereit; die Absatztrennung kommt vom Aufrufer über `\dsaPflichttextLuft`, weil das Impressum eine
+Freizeile im Raster setzt und die Mappe einen festen Abstand. Im Dokument benutzt man weiterhin
+nur `\dsaRechtevermerk`.
 
 ---
 

@@ -1,0 +1,25 @@
+% spielkarten-bogen.tex — die zweite Druckfassung: A4-Druckbogen mit
+% 3 x 3 Karten, Vorder- und Rueckseitenbogen im Wechsel.
+%
+% Die Karten selbst stehen in spielkarten-inhalt.tex und sind dieselben wie
+% in spielkarten.tex. Was hier steht, ist nur die Druckfassung.
+%
+%   cd beispiel
+%   TEXINPUTS="..;" xelatex spielkarten-bogen.tex
+%
+% Gedruckt wird beidseitig, Wenden an der LANGEN Kante — das ist die
+% Vorgabe jedes Druckertreibers fuer Hochformat. Die Klasse spiegelt die
+% Rueckseitenbogen dafuer spaltenweise, damit jede Rueckseite hinter ihrer
+% eigenen Vorderseite liegt. Wer an der kurzen Kante wendet, nimmt
+%
+%   \documentclass[bogen,kurz]{dsa5spielkarten}
+%
+% Ohne Schnittmarken:
+%
+%   \documentclass[bogen,ohneschnittmarken]{dsa5spielkarten}
+
+\documentclass[bogen]{dsa5spielkarten}
+
+\begin{document}
+\input{spielkarten-inhalt}
+\end{document}

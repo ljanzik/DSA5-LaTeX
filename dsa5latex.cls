@@ -20,13 +20,17 @@
 %%% gleich sind und das Bild also auf 100 Prozent liegt.
 %%%
 %%% Zeilen mit  % OFFEN:  nennen einen Wert, fuer den der Baukasten keine
-%%% Quelle hergibt. Es sind vier, und sie sind nicht ungeprueft — es gibt
+%%% Quelle hergibt. Es sind fuenf, und sie sind nicht ungeprueft — es gibt
 %%% nichts, woran man sie messen koennte. Wer eine Quelle findet, entfernt
 %%% die Marke und traegt den Wert in doku/MASSE.md ein. Was bisher gemessen
 %%% wurde, steht in doku/PRUEFPLAN.md.
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{dsa5latex}[2026/09/07 v2.0 DSA5-Satz nach Scriptorium Aventuris v4]
+% Eine Versionsnummer fuer das ganze Projekt, gleich dem Git-Tag: Klasse,
+% Aufsteller und alle weiteren Dateien tragen dieselbe. Was sich je Version
+% geaendert hat, steht in CHANGELOG.md.
+\def\dsa@version{1.2.0}
+\ProvidesClass{dsa5latex}[2026/09/26 v1.2.0 DSA5-Satz nach Scriptorium Aventuris v4]
 
 %%% ==================================================================
 %%% 1  Optionen
@@ -39,12 +43,18 @@
 % Seite. Wer am Umschlag oder am Text arbeitet, braucht sie nicht, und der
 % Lauf wird deutlich kuerzer.
 \newif\ifdsa@ohnehintergrund \dsa@ohnehintergrundfalse
+% Ersatzschrift aus TeX Live statt der Baukastenschriften aus schriften/.
+% Fuer Laeufe ohne das Material von Ulisses, vor allem die CI: die Schriften
+% duerfen nicht ins Repository, und ohne sie bricht fontspec ab. Raster und
+% Seitenaufbau bleiben pruefbar, Zeilenfall und Satzbreiten nicht.
+\newif\ifdsa@ersatz        \dsa@ersatzfalse
 
 \DeclareOption{raster}{\dsa@rastertrue}
 \DeclareOption{ohneraster}{\dsa@rasterfalse}
 \DeclareOption{rasterzeigen}{\dsa@rasterzeigentrue}
 \DeclareOption{entwurf}{\dsa@entwurftrue}
 \DeclareOption{ohnehintergrund}{\dsa@ohnehintergrundtrue}
+\DeclareOption{ersatz}{\dsa@ersatztrue}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions\relax
 
@@ -65,7 +75,7 @@
 \RequirePackage{fontspec}
 \RequirePackage{polyglossia}
 \RequirePackage{tikz}
-\usetikzlibrary{calc,shadows.blur}
+\usetikzlibrary{calc,shadows.blur,decorations.pathmorphing}
 \RequirePackage[most]{tcolorbox}
 \RequirePackage{eso-pic}
 \RequirePackage{fancyhdr}
@@ -84,7 +94,10 @@
 \RequirePackage{textcomp}
 \RequirePackage{microtype}
 \RequirePackage{hyperref}
-\hypersetup{hidelinks}
+% pdfcreator nennt die Klasse samt Version, damit man einem fertigen PDF
+% ansieht, womit es gesetzt ist. Titel und Autor setzen \dsaAbenteuertitel
+% und \dsaAutor, siehe Abschnitt 11.
+\hypersetup{hidelinks, pdfcreator={dsa5latex v\dsa@version}}
 
 \ifdsa@entwurf \setkeys{Gin}{draft} \fi
 
@@ -157,6 +170,22 @@
 % es vom Arbeitsverzeichnis aus nicht gibt, und der Lauf endete mit "not
 % loadable". Ein fuehrendes ./ schaltet die Suche ab und fragt genau das
 % Arbeitsverzeichnis.
+%
+% Mit der Option ersatz entfaellt die Suche: dann kommt Gentium aus dem
+% TeX-Live-Paket gentium-sil, ueber kpathsea gefunden. Das ist der Nachfolger
+% von Gentium Basic aus derselben Hand (SIL), die Laufweite liegt nahe, und
+% er ist in jeder vollen TeX-Live-Installation vorhanden. Gleich ist sie
+% nicht: Zeilenfall und Satzbreiten im Ersatzmodus sind nicht verbindlich.
+\ifdsa@ersatz
+  \ClassWarning{dsa5latex}{Option ersatz: Gentium aus TeX Live statt der
+    Baukastenschriften. Zeilenfall und Satzbreiten sind nicht verbindlich}
+  \setmainfont{Gentium}[
+    Extension      = .ttf,
+    UprightFont    = *-Regular,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic ]
+\else
 \IfFileExists{./schriften/GenBasR.ttf}
   {\newcommand*{\dsa@schriften}{./schriften/}}
   {\IfFileExists{./../schriften/GenBasR.ttf}
@@ -164,7 +193,8 @@
      {\newcommand*{\dsa@schriften}{./schriften/}%
       \ClassWarning{dsa5latex}{Der Ordner schriften/ ist weder neben dem
         Dokument noch eine Ebene hoeher zu finden. Erzeugen mit
-        werkzeuge/aufbereiten.py}}}
+        werkzeuge/aufbereiten.py, oder ohne Baukasten die Option ersatz
+        setzen}}}
 
 \setmainfont{GenBasR}[
   Path           = \dsa@schriften,
@@ -172,6 +202,7 @@
   BoldFont       = GenBasB,
   ItalicFont     = GenBasI,
   BoldItalicFont = GenBasBI ]
+\fi
 
 % Der Fliesstext: 10 bp auf 12 bp. Der Baukasten nennt „10 pt", und das sind
 % InDesign-Punkte, also bp. In TeX-Punkten waeren es 10,04 pt — der
@@ -211,11 +242,22 @@
 % „Font shape TU/andlso(0)/b/n undefined" und faellt still auf den normalen
 % zurueck — der Baukasten verlangt fuer Kapitel und Covertitel aber fett.
 % Also nachbilden lassen.
+%
+% Fuer Andalus gibt es keinen freien Ersatz mit aehnlichem Bild. Im
+% Ersatzmodus steht dort Gentium mit denselben nachgebildeten Schnitten --
+% die Ueberschriften sehen falsch aus, aber sie stehen an ihrem Platz, und
+% nur darum geht es in diesem Modus.
+\ifdsa@ersatz
+  \newfontfamily{\dsaandalus}{Gentium-Regular.ttf}[
+    AutoFakeBold  = 1.5,
+    AutoFakeSlant = 0.2 ]
+\else
 \newfontfamily{\dsaandalus}{andlso}[
   Path          = \dsa@schriften,
   Extension     = .ttf,
   AutoFakeBold  = 1.5,
   AutoFakeSlant = 0.2 ]
+\fi
 
 % Kapitaelchen. Keine der beiden Schriften hat das OpenType-Feature smcp —
 % nachgesehen in allen fuenf Dateien. \textsc tut damit nichts, still und
@@ -520,6 +562,34 @@
     \dsa@bgfest
   \fi}
 
+% Seitenfarbe. Leer ist der Baukasten, wie er ist; ein Name haengt sich an
+% den Dateinamen, seite-rechts-0 wird zu seite-rechts-0-karmin. Die
+% Fassungen legt werkzeuge/seitenfarbe.py an, mit derselben Farbtabelle und
+% derselben Umfaerbung wie die Spielkarten -- \dsaSeitenfarbe{blau} und
+% \dsaKartenfarbe{blau} ergeben denselben Ton, gemessen im Median H 203 Grad
+% S 0,38 auf der Karte gegen H 203 Grad S 0,39 auf der Seite. Global, damit
+% ein Wechsel mitten im Heft ueber Gruppen hinweg haelt. Gelesen wird der
+% Wert erst beim Ausgeben, also gilt er schon fuer die laufende Seite:
+% geprueft mit \dsaSeitenfarbe{} vor \clearpage, die Seite davor war dann
+% nicht mehr blau.
+%
+% Fehlt die Fassung, bleibt der Baukasten mit einer Warnung -- sonst braeche
+% jedes Dokument ab, dessen Grafiken ohne seitenfarbe.py aufbereitet sind.
+% Gesucht wird mit dem \graphicspath: \IfFileExists kennt nur \input@path,
+% und ohne den Tausch fand es die Datei aus beispiel/ heraus nicht.
+\newcommand*{\dsa@seitenfarbe}{}
+\newcommand*{\dsaSeitenfarbe}[1]{%
+  \ifstrempty{#1}%
+    {\gdef\dsa@seitenfarbe{}}%
+    {\begingroup
+       \ifdefined\Ginput@path\let\input@path\Ginput@path\fi
+       \IfFileExists{\dsagrafik{seite-rechts-0-#1.jpg}}%
+         {\endgroup\gdef\dsa@seitenfarbe{-#1}}%
+         {\endgroup\gdef\dsa@seitenfarbe{}%
+          \ClassWarning{dsa5latex}{Seitenfarbe '#1' fehlt in grafiken/,
+            es bleibt der Hintergrund des Baukastens. Anlegen mit
+            werkzeuge/seitenfarbe.py #1}}}}
+
 \AddToShipoutPictureBG{%
   \ifdsa@ohnehintergrund\else
   \ifdsa@bgaus\else
@@ -527,11 +597,11 @@
       \ifodd\count0
         \node[anchor=north east, inner sep=0]
           at ([shift={(\dsabeschnitt,\dsabeschnitt)}]current page.north east)
-          {\includegraphics[width=213mm,height=303mm]{\dsagrafik{seite-rechts-\dsa@bgvariante}}};
+          {\includegraphics[width=213mm,height=303mm]{\dsagrafik{seite-rechts-\dsa@bgvariante\dsa@seitenfarbe}}};
       \else
         \node[anchor=north west, inner sep=0]
           at ([shift={(-\dsabeschnitt,\dsabeschnitt)}]current page.north west)
-          {\includegraphics[width=213mm,height=303mm]{\dsagrafik{seite-links-\dsa@bgvariante}}};
+          {\includegraphics[width=213mm,height=303mm]{\dsagrafik{seite-links-\dsa@bgvariante\dsa@seitenfarbe}}};
       \fi
     \end{tikzpicture}%
   \fi\fi}
@@ -600,7 +670,16 @@
 % Der Abenteuertitel, in der Praeambel zu setzen. Ohne ihn bleibt der
 % Kolumnentitel der Kapitelname allein; ohne Kapitel bleibt er ganz leer.
 \newcommand*{\dsa@abenteuertitel}{}
-\newcommand*{\dsaAbenteuertitel}[1]{\renewcommand*{\dsa@abenteuertitel}{#1}}
+% Derselbe Titel geht als Dokumenttitel in die PDF-Metadaten -- sonst zeigt
+% der Betrachter im Fensterkopf den Dateinamen.
+\newcommand*{\dsaAbenteuertitel}[1]{%
+  \renewcommand*{\dsa@abenteuertitel}{#1}%
+  \hypersetup{pdftitle={#1}}}
+% Der Autor erscheint nirgends im Satz, nur in den PDF-Metadaten. Im Heft
+% steht er im Impressum und auf der Rueckseite, und dort mit eigener
+% Rubrik und eigenem Wortlaut; ein zentraler Befehl dafuer wuerde beides
+% nur einengen.
+\newcommand*{\dsaAutor}[1]{\hypersetup{pdfauthor={#1}}}
 
 % Der Kapitelname kommt ueber die Marken von LaTeX, damit jede Seite den
 % Namen ihres Kapitels traegt und nicht den des naechsten.
@@ -1642,7 +1721,10 @@
 % 3,75 mm heraus, und die Tabellenzeilen landeten bei y 346 bis 624 mm.
 \newlength{\dsa@rautebreite}
 \newcount\dsa@rautezahl
-\newcommand{\dsaRauten}[4]{%
+% Die Skala selbst, in ihrer vollen Hoehe. Die nimmt nur die Tabelle von
+% \dsaAnforderungen: dort traegt die Skala die Zeilenhoehe, und die
+% Rueckseite ist so ausgemessen.
+\newcommand{\dsa@rautenskala}[4]{%
   \begingroup
     % Die Breite einer Kachel: die Gesamtbreite durch die Zahl der Rauten.
     \setlength{\dsa@rautebreite}{\dimexpr#4/#2\relax}%
@@ -1656,6 +1738,18 @@
       \advance\dsa@rautezahl by 1
     \repeat
   \endgroup}
+
+% Im Fliesstext ohne Hoehe und Tiefe, wie die anderen Marken auch. Eine
+% Raute ist 215 x 259 px, bei 18 mm Skalenbreite also 4,5 x 5,42 mm und
+% 15,4 bp hoch -- hoeher als eine Zeile. Ungeglaettet griff die
+% Grundlinienregel nicht mehr, TeX fiel auf \lineskip zurueck, und im
+% Regellauf lag die Zeile mit der Skala 1,61 bp neben dem Raster, alles
+% darunter bis zum Spaltenende mit ihr (Issue #9). Die Mitte der Skala
+% sitzt auf halber x-Hoehe, so ragt sie nach oben und unten gleich weit
+% ueber die Zeile.
+\newcommand{\dsaRauten}[4]{%
+  \smash{\raisebox{\dimexpr0.5ex-0.5\height\relax}{%
+    \dsa@rautenskala{#1}{#2}{#3}{#4}}}}
 
 % Die beiden gewohnten Aufrufe: vier Rauten, davon #1 gefuellt.
 \newcommand{\dsaRautenRot}[2]{\dsaRauten{#1}{4}{rot}{#2}}
@@ -2890,45 +2984,214 @@
 % Das Paket bringt eine fertige Rueckseite mit Zierrahmen, Banner und
 % kleiner Aventurienkarte, dazu 28 Fassungen mit je einer hervorgehobenen
 % Region. werkzeuge/aufbereiten.py legt sie als ruecken-neutral und
-% ruecken-<region> ab -- etwa ruecken-mittelreich.
+% ruecken-<region> ab -- etwa ruecken-mittelreich --, dazu den unteren
+% Zierrahmen freigestellt als ruecken-rahmen.
 %
-% Alle Masse sind an der Rueckseite einer gesetzten Veroeffentlichung
-% vermessen. Sie sind Laengen, damit sich jede Zeile einzeln verschieben
-% laesst.
-\newlength{\dsarueckelinks}   \setlength{\dsarueckelinks}{27.7mm}
-\newlength{\dsarueckebreite}  \setlength{\dsarueckebreite}{81.7mm}
-\newlength{\dsarueckentitel}  \setlength{\dsarueckentitel}{57.6mm}
-\newlength{\dsarueckenautor}  \setlength{\dsarueckenautor}{62.0mm}
-\newlength{\dsarueckenstrich} \setlength{\dsarueckenstrich}{67.5mm}
-\newlength{\dsarueckestrichbreite}\setlength{\dsarueckestrichbreite}{65mm}
-\newlength{\dsarueckentext}   \setlength{\dsarueckentext}{95.5mm}
-\newcommand*{\dsarueckentitelgrad}{18}
+% Alle Masse sind an der Rueckseite von „Die Verschwoerung der Magier"
+% (US25317, 5. Auflage) vermessen, Textzeilen an ihrer Grundlinie, ab
+% Papieroberkante. Sie sind Laengen, damit sich jede Zeile einzeln
+% verschieben laesst. Das Heft hat einen anderen Rahmen als das Paket, das
+% Aventurien-Logo sitzt aber in beiden auf 30 bis 47 mm, und darauf
+% beziehen sich Titel und Klappentext.
+%
+%   Titel           Andalus 17,2 bp, Grundlinie 54,8 mm, links 19,2 mm
+%   Autorzeile      10 bp, Grundlinie 59,1 mm
+%   Linie           0,5 bp, Mitte 62,4 mm, von 37,7 bis 87,5 mm
+%   Klappentext     11 auf 12 bp, erste Grundlinie 67,9 mm, Absatz 3,0 mm
+%                   mehr, laengste Zeile endet bei 122,7 mm
+\newlength{\dsarueckelinks}   \setlength{\dsarueckelinks}{19.2mm}
+\newlength{\dsarueckebreite}  \setlength{\dsarueckebreite}{104mm}
+\newlength{\dsarueckentitel}  \setlength{\dsarueckentitel}{54.8mm}
+\newlength{\dsarueckenautor}  \setlength{\dsarueckenautor}{59.1mm}
+\newlength{\dsarueckenstrich} \setlength{\dsarueckenstrich}{62.4mm}
+\newlength{\dsarueckestrichx} \setlength{\dsarueckestrichx}{37.7mm}
+\newlength{\dsarueckestrichbreite}\setlength{\dsarueckestrichbreite}{49.8mm}
+\newlength{\dsarueckentext}   \setlength{\dsarueckentext}{67.9mm}
+\newlength{\dsarueckeabsatz}  \setlength{\dsarueckeabsatz}{3.0mm}
+\newcommand*{\dsarueckentitelgrad}{17.2}
 
-% Der graue Kasten unten. Im Vorbild sitzt sein Text ab 76,3 mm, der Kasten
-% selbst reicht etwas darueber hinaus.
-\newlength{\dsarueckekastenx}  \setlength{\dsarueckekastenx}{72.5mm}
-\newlength{\dsarueckekasteny}  \setlength{\dsarueckekasteny}{202.0mm}
-\newlength{\dsarueckekastenb}  \setlength{\dsarueckekastenb}{63.0mm}
-% Am gerenderten Vorbild abgelesen: rund (160, 157, 154).
-\definecolor{dsarueckegrau}{HTML}{A09D9A}
+% Der Kasten unten. Er ist kein Grau, sondern ein dunkelbrauner Schleier:
+% im Heft ein Bild in (47, 33, 24) mit einer Softmaske von 54/255, also
+% 21 Prozent Deckung, mit gerissenen Kanten. Darunter scheint das
+% Pergament mit seinem Schmutz durch -- ein deckendes Grau, wie es hier
+% bis dahin stand, sah daneben aus wie aufgeklebt. Der Schleier reicht bis
+% unter die Papierkante; der Rahmen liegt darueber und schneidet ihn ab.
+%
+%   Kasten          x 72,3 bis 139,1 mm, Oberkante 180,4 mm
+%   Kastentext      ab 76,7 mm, erste Grundlinie 188,2 mm
+\newlength{\dsarueckekastenx}    \setlength{\dsarueckekastenx}{72.3mm}
+\newlength{\dsarueckekasteny}    \setlength{\dsarueckekasteny}{180.4mm}
+\newlength{\dsarueckekastenb}    \setlength{\dsarueckekastenb}{66.8mm}
+\newlength{\dsarueckekastenrand} \setlength{\dsarueckekastenrand}{4.4mm}
+\newlength{\dsarueckekastenzeile}\setlength{\dsarueckekastenzeile}{188.2mm}
+\definecolor{dsarueckebraun}{RGB}{47,33,24}
+\newcommand*{\dsarueckedeckung}{0.212}
 
-% Ein Feld im grauen Kasten: Rubrik fett, Wert dahinter.
+% Ein Feld im Kasten: Rubrik fett, Wert dahinter. 8,5 auf 10,2 bp im Heft.
 \newcommand{\dsaRueckFeld}[2]{{\bfseries #1:} #2\par}
-% Die Kopfzeilen des Kastens, fett und zentriert, mit der Linie darunter,
-% die das Vorbild zeigt.
+% Die Kopfzeilen des Kastens, zentriert, mit der Linie darunter. Im Heft
+% Gentium 12 bp, nicht fett, Grundlinien 5,1 mm auseinander.
 \newcommand{\dsaRueckKopf}[1]{%
-  {\centering\bfseries\fontsize{12bp}{13.8bp}\selectfont #1\par}%
+  {\centering\fontsize{12bp}{14.5bp}\selectfont #1\par}%
   \dsaRueckStrich}
-% Ein Strich ueber die Kastenbreite.
+% Ein Strich ueber den Kasten. Im Heft 0,5 bp, 55,1 mm breit, 3,9 mm unter
+% der letzten Kopfzeile, die naechste Grundlinie 6,4 mm darunter. Die
+% Zeile mit dem Strich hat selbst schon 10,2 bp Grundlinienabstand; der
+% Rest kommt als Luft davor und danach.
 \newcommand*{\dsaRueckStrich}{%
-  \par\nobreak\vspace{2bp}%
-  \noindent\rule{\linewidth}{0.4bp}\par
-  \vspace{2bp}\nobreak}
+  \par\nobreak\vspace{0.3mm}%
+  {\centering\rule{55.1mm}{0.5bp}\par}%
+  \vspace{2.8mm}\nobreak}
+
+% ---- Umfluss um Karte und Bild ----
+%
+% Der Klappentext umfliesst die Karte so, wie sie gezeichnet ist, nicht
+% ihren Rahmen. Dafuer steht hier ihre linke Kante je Millimeter
+% Papierhoehe, gemessen an ScriptoriumAventuris-hinten.png gegen
+% KarteVerdunkelt.png: die Differenz beider ist die Kartenflaeche samt
+% ihrem weichen Schatten, und gezaehlt wird der erste Lauf von mindestens
+% 0,7 mm. Alle 28 Regionalfassungen haben dieselbe Karte. Zwei Einzelwerte
+% bei 101 und 183 mm lagen auf winzigen Inseln weit links; sie stehen hier
+% durch den kleineren Nachbarn ersetzt.
+\def\dsa@kartenkontur{%
+  40:155.0,41:153.4,42:152.2,43:150.5,44:150.3,45:149.7,46:149.2,47:148.0,%
+  48:147.0,49:146.5,50:146.5,51:107.3,52:106.9,53:106.6,54:106.9,55:107.4,%
+  56:107.4,57:107.7,58:106.8,59:106.2,60:105.9,61:106.3,62:106.9,63:106.7,%
+  64:106.8,65:107.0,66:109.8,67:114.4,68:114.8,69:113.6,70:113.6,71:113.5,%
+  72:114.0,73:113.5,74:113.2,75:113.0,76:113.2,77:113.4,78:113.3,79:113.2,%
+  80:113.3,81:114.5,82:114.8,83:115.5,84:117.7,85:116.9,86:116.8,87:116.4,%
+  88:116.3,89:116.0,90:115.9,91:116.1,92:116.8,93:118.3,94:122.9,95:122.6,%
+  96:122.7,97:123.1,98:124.5,99:124.3,100:124.4,101:124.4,102:127.1,%
+  103:127.0,104:127.0,105:127.4,106:129.4,107:128.2,108:128.1,109:126.9,%
+  110:126.9,111:126.9,112:127.4,113:127.4,114:129.0,115:130.8,116:130.9,%
+  117:131.1,118:133.2,119:134.0,120:134.9,121:135.3,122:135.6,123:135.5,%
+  124:135.7,125:136.2,126:135.5,127:135.1,128:134.9,129:134.6,130:134.8,%
+  131:135.5,132:136.8,133:125.7,134:125.2,135:124.5,136:123.7,137:123.0,%
+  138:122.8,139:122.7,140:123.5,141:128.2,142:127.6,143:127.4,144:127.4,%
+  145:135.8,146:136.2,147:136.8,148:136.3,149:136.2,150:136.1,151:136.8,%
+  152:132.6,153:131.6,154:131.2,155:131.2,156:131.9,157:132.7,158:131.8,%
+  159:131.6,160:131.2,161:131.1,162:131.1,163:131.4,164:132.5,165:130.1,%
+  166:129.6,167:129.1,168:128.4,169:127.9,170:127.4,171:127.4,172:127.7,%
+  173:128.5,174:129.6,175:131.5,176:138.3,177:139.6,178:141.6,179:142.5,%
+  180:167.3,181:169.4,182:169.9,183:169.9,184:175.5,185:176.7,186:180.1,%
+  187:186.5,188:177.1,189:177.2,190:179.9,191:179.9,192:180.0}
+\def\dsa@kk@setzen#1:#2\@nil{\@namedef{dsa@kk@#1}{#2mm}}
+\@for\dsa@e:=\dsa@kartenkontur\do{\expandafter\dsa@kk@setzen\dsa@e\@nil}
+
+% Abstand zwischen Text und Kartenkante. Die Kontur enthaelt schon den
+% Schatten der Karte; im Heft liegt die Karte anders, ein Sollmass gibt
+% es nicht.
+% OFFEN: Abstand zur Karte und zum Bild, geschaetzt.
+\newlength{\dsarueckeumfluss} \setlength{\dsarueckeumfluss}{2.5mm}
+
+% Das Bild links unten. Im Heft eine Figur von 80 mm Breite, die an der
+% Papierkante beginnt und bei 291,7 mm endet -- unter dem Rahmen.
+\newlength{\dsarueckebildx}     \setlength{\dsarueckebildx}{0mm}
+\newlength{\dsarueckebildunten} \setlength{\dsarueckebildunten}{291.7mm}
+\newif\ifdsa@rueckbild \dsa@rueckbildfalse
+\def\dsa@rueckbilddatei{}
+\newlength{\dsa@rueckbildb}
+
+% \dsaRueckBild{<Datei>}{<Breite>}
+%
+% Vor \dsaRueckseite. Der Text umfliesst den Bildrahmen; wer die Figur
+% selbst umfliessen will, gibt danach \dsaRueckBildKontur.
+\newcommand*{\dsa@rb@leeren}{%
+  \@tempcnta=0
+  \@whilenum\@tempcnta<310\do{%
+    \global\expandafter\let\csname dsa@rb@\the\@tempcnta\endcsname\relax
+    \advance\@tempcnta by 1}}
+\newcommand{\dsaRueckBild}[2]{%
+  \dsa@rb@leeren
+  \global\dsa@rueckbildtrue
+  \gdef\dsa@rueckbilddatei{#1}%
+  \global\setlength{\dsa@rueckbildb}{#2}%
+  \sbox\dsa@bildbox{\includegraphics[width=#2]{#1}}%
+  \begingroup
+    \@tempdima=\dimexpr\dsarueckebildunten-\ht\dsa@bildbox\relax
+    \@tempcnta=\numexpr\@tempdima/186467\relax
+    \@tempcntb=\numexpr\dsarueckebildunten/186467\relax
+    \edef\dsa@w{\the\dimexpr\dsarueckebildx+#2\relax}%
+    \@whilenum\@tempcnta<\@tempcntb\do{%
+      \expandafter\xdef\csname dsa@rb@\the\@tempcnta\endcsname{\dsa@w}%
+      \advance\@tempcnta by 1}%
+  \endgroup}
+
+% \dsaRueckBildKontur{<y>:<x>,<y>:<x>,...}
+%
+% Die rechte Kante der Figur je Millimeter Papierhoehe, beide in mm ab
+% Papieroberkante und -links. Ersetzt den Bildrahmen ganz: Zeilen ohne
+% Eintrag bleiben frei, auch wenn der Rahmen bis zu ihnen reicht -- ein
+% Freisteller hat oben fast immer einen durchsichtigen Rand.
+\newcommand{\dsaRueckBildKontur}[1]{%
+  \dsa@rb@leeren
+  \@for\dsa@e:=#1\do{\expandafter\dsa@rb@setzen\dsa@e\@nil}}
+\def\dsa@rb@setzen#1:#2\@nil{%
+  \expandafter\xdef\csname dsa@rb@\number#1\endcsname{#2mm}}
+
+% Der Umfluss selbst. \parshape gilt nur fuer einen Absatz, der
+% Klappentext hat mehrere, und seine Kontur haengt an der Papierhoehe,
+% nicht an der Zeilennummer. Deshalb fuehrt \dsa@ry die Grundlinie der
+% naechsten Zeile mit: jeder Absatz baut beim Beginn seine Form ab dieser
+% Hoehe, und \par schreibt sie um seine Zeilen und den Absatzabstand fort.
+% Je Zeile zaehlt die engste Stelle zwischen 3 mm ueber und 1 mm unter der
+% Grundlinie -- so hoch reichen Versalien und Unterlaengen bei 11 bp.
+\newlength{\dsa@ry}
+\newlength{\dsa@rl}
+\newlength{\dsa@rr}
+\newcommand*{\dsa@rueckzeile}[1]{%
+  \dsa@rl=\dsarueckelinks
+  \dsa@rr=\dimexpr\dsarueckelinks+\dsarueckebreite\relax
+  \@tempcntb=\numexpr\dimexpr#1-3mm\relax/186467\relax
+  \@whilenum\@tempcntb<\numexpr\dimexpr#1+1mm\relax/186467+1\relax\do{%
+    \@ifundefined{dsa@kk@\the\@tempcntb}{}{%
+      \ifdim\dimexpr\csname dsa@kk@\the\@tempcntb\endcsname
+        -\dsarueckeumfluss\relax<\dsa@rr
+        \dsa@rr=\dimexpr\csname dsa@kk@\the\@tempcntb\endcsname
+          -\dsarueckeumfluss\relax
+      \fi}%
+    \ifdsa@rueckbild
+      \@ifundefined{dsa@rb@\the\@tempcntb}{}{%
+        \ifdim\dimexpr\csname dsa@rb@\the\@tempcntb\endcsname
+          +\dsarueckeumfluss\relax>\dsa@rl
+          \dsa@rl=\dimexpr\csname dsa@rb@\the\@tempcntb\endcsname
+            +\dsarueckeumfluss\relax
+        \fi}%
+    \fi
+    \advance\@tempcntb by 1}%
+  \ifdim\dsa@rr<\dimexpr\dsa@rl+20mm\relax \dsa@rr=\dimexpr\dsa@rl+20mm\relax\fi
+  \edef\dsa@ps{\dsa@ps\space\the\dimexpr\dsa@rl-\dsarueckelinks\relax
+    \space\the\dimexpr\dsa@rr-\dsa@rl\relax}}
+\newcommand*{\dsa@rueckform}{%
+  \begingroup
+    \def\dsa@ps{}%
+    \@tempdimb=\dsa@ry
+    \@tempcnta=0
+    \@whilenum\@tempcnta<60\do{%
+      \dsa@rueckzeile{\@tempdimb}%
+      \advance\@tempdimb by \baselineskip
+      \advance\@tempcnta by 1}%
+    \xdef\dsa@psg{\dsa@ps}%
+  \endgroup
+  \parshape=60 \dsa@psg\relax}
+\newcommand*{\dsa@rueckpar}{%
+  \ifhmode
+    \@@par
+    \global\advance\dsa@ry by \dimexpr\prevgraf\baselineskip+\parskip\relax
+  \else
+    \@@par
+  \fi}
 
 % \dsaRueckseite{<Grafik>}{<Titel>}{<Autorzeile>}{<Klappentext>}{<Kasten>}
 %
 % Die Grafik ist eine der Rueckseiten aus dem Paket, ohne Endung und ohne
 % Ordner: „ruecken-mittelreich" oder „ruecken-neutral".
+%
+% Die Ebenen in der Reihenfolge des Hefts, abgelesen an der Reihenfolge
+% der Bilder im PDF: Rueckseite, Schleier, Bild, Rahmen, Text. Die Figur
+% liegt also ueber dem Kasten, wo sie ihn beruehrt. Fehlt ruecken-rahmen,
+% liegt der Schleier ueber dem Rahmen -- die Seite baut trotzdem, mit einer
+% Warnung.
 \newcommand{\dsaRueckseite}[5]{%
   \clearpage\dsaHintergrundAus\onecolumn
   \thispagestyle{empty}%
@@ -2937,6 +3200,32 @@
     % gebracht und dabei beschnitten, damit kein weisser Streifen bleibt.
     \node[anchor=center, inner sep=0] at (current page.center)
       {\dsaBildDeckend{216mm}{303mm}{\dsagrafik{#1}}};
+    % Der Schleier, mit gerissenen Kanten. Der Zufall ist fest gesaet,
+    % damit jeder Lauf dieselbe Kante zeichnet.
+    \pgfmathsetseed{1040}%
+    \fill[dsarueckebraun, fill opacity=\dsarueckedeckung,
+          decorate, decoration={random steps, segment length=0.9mm,
+            amplitude=0.35mm}]
+      ([shift={(\dsarueckekastenx,-303mm)}]current page.north west)
+      -- ([shift={(\dsarueckekastenx,-\dsarueckekasteny)}]current page.north west)
+      -- ([shift={(\dsarueckekastenx+\dsarueckekastenb,-\dsarueckekasteny)}]current page.north west)
+      -- ([shift={(\dsarueckekastenx+\dsarueckekastenb,-303mm)}]current page.north west)
+      -- cycle;
+    \ifdsa@rueckbild
+      \node[anchor=south west, inner sep=0]
+        at ([shift={(\dsarueckebildx,-\dsarueckebildunten)}]current page.north west)
+        {\includegraphics[width=\dsa@rueckbildb]{\dsa@rueckbilddatei}};
+    \fi
+    \IfFileExists{\dsagrafik{ruecken-rahmen.png}}{\def\dsa@rr@da{1}}{%
+      \IfFileExists{../\dsagrafik{ruecken-rahmen.png}}{\def\dsa@rr@da{1}}{%
+        \def\dsa@rr@da{0}%
+        \ClassWarning{dsa5latex}{ruecken-rahmen.png fehlt -- der Kasten
+          liegt ueber dem Rahmen. werkzeuge/aufbereiten.py --rueckseiten
+          legt ihn an}}}%
+    \if1\dsa@rr@da
+      \node[anchor=center, inner sep=0] at (current page.center)
+        {\dsaBildDeckend{216mm}{303mm}{\dsagrafik{ruecken-rahmen}}};
+    \fi
     % Titel und Autorzeile
     \node[anchor=base west, inner sep=0]
       at ([shift={(\dsarueckelinks,-\dsarueckentitel)}]current page.north west)
@@ -2944,38 +3233,36 @@
         {\dsarueckentitelgrad bp}\selectfont #2};
     \node[anchor=base west, inner sep=0]
       at ([shift={(\dsarueckelinks,-\dsarueckenautor)}]current page.north west)
-      {\fontsize{12bp}{14.4bp}\selectfont #3};
-    \node[anchor=north west, inner sep=0]
-      at ([shift={(\dsarueckelinks,-\dsarueckenstrich)}]current page.north west)
-      {\rule{\dsarueckestrichbreite}{0.6bp}};
-    % Klappentext, Blocksatz in der gemessenen Breite
-    \node[anchor=north west, inner sep=0, align=justify,
-          text width=\dsarueckebreite]
+      {\fontsize{10bp}{12bp}\selectfont #3};
+    \node[anchor=west, inner sep=0]
+      at ([shift={(\dsarueckestrichx,-\dsarueckenstrich)}]current page.north west)
+      {\rule{\dsarueckestrichbreite}{0.5bp}};
+    % Klappentext, Blocksatz um Karte und Bild. Der Knoten sitzt mit der
+    % ersten Grundlinie auf ihrer Hoehe: \vtop hat die Grundlinie seiner
+    % ersten Zeile.
+    \node[anchor=base west, inner sep=0]
       at ([shift={(\dsarueckelinks,-\dsarueckentext)}]current page.north west)
-      % \parskip steht im Heft auf null; der Klappentext braucht seine
-      % Absatzabstaende. Im Vorbild sind es 2,83 mm zwischen den Absaetzen.
-      {\fontsize{12bp}{15bp}\selectfont
-       \setlength{\parskip}{2.83mm}\setlength{\parindent}{0pt}#4\par};
-    % Der graue Kasten
-    \node[anchor=north west, inner sep=0]
-      at ([shift={(\dsarueckekastenx,-\dsarueckekasteny)}]current page.north west)
-      {\begin{tcolorbox}[enhanced, nobeforeafter, sharp corners,
-          boxrule=0pt, frame hidden,
-          width=\dsarueckekastenb, colback=dsarueckegrau,
-          left=3.8mm, right=3.8mm, top=4mm, bottom=4mm,
-          % „blankest" schaltet die Fuellung ab; sie kommt ueber
-          % „interior style" zurueck.
-          interior style={fill=dsarueckegrau},
-          % 55 mm sind fuer Blocksatz zu schmal: „Komplexitaet
-          % (Spieler/Meister)" wurde gesperrt und trotzdem getrennt.
-          % Der Kasten ist schmal: die Rubrikspalte und die Rautenskala
-          % muessen zusammen unter 55,4 mm bleiben.
-          fontupper=\raggedright\fontsize{9bp}{10.4bp}\selectfont
-            \setlength{\dsaanforderungrubrik}{36mm}%
-            \setlength{\dsaanforderungskala}{15mm}]
-        #5
-      \end{tcolorbox}};
+      {\vtop{\hsize=\dsarueckebreite
+        \fontsize{11bp}{12bp}\selectfont
+        \setlength{\parskip}{\dsarueckeabsatz}\setlength{\parindent}{0pt}%
+        \global\dsa@ry=\dsarueckentext
+        \let\par\dsa@rueckpar
+        \everypar{\dsa@rueckform}%
+        #4\par}};
+    % Der Kastentext
+    \node[anchor=base west, inner sep=0]
+      at ([shift={(\dsarueckekastenx+\dsarueckekastenrand,
+                   -\dsarueckekastenzeile)}]current page.north west)
+      {\vtop{\hsize=\dimexpr\dsarueckekastenb-2\dsarueckekastenrand\relax
+        \raggedright\fontsize{8.5bp}{10.2bp}\selectfont
+        \setlength{\parindent}{0pt}\setlength{\parskip}{0pt}%
+        % Im Heft beginnen die Rauten 31,1 mm nach der Rubrik und sind
+        % 17,6 mm breit; dazwischen haelt \dsaAnforderungen 2 mm.
+        \setlength{\dsaanforderungrubrik}{29mm}%
+        \setlength{\dsaanforderungskala}{17.6mm}%
+        #5\par}};
   \end{tikzpicture}%
+  \global\dsa@rueckbildfalse
   \mbox{}%
   \clearpage\dsaHintergrundAn}
 
@@ -3109,6 +3396,13 @@
 % Eine Freizeile zwischen zwei Absaetzen des Vermerks.
 \newcommand*{\dsa@vermerkluft}{\par\vspace{\dsaimpressumzeile pt}}
 
+% Der Wortlaut selbst steht in pflichttext.tex, neben dieser Datei. Er wird
+% auch von der Charaktermappe gebraucht (bogen/mappe/blaetter.tex), und dort
+% stand frueher eine aeltere Fassung mit einem anderen Rechteinhaber. Genau
+% das soll der Kommentar oben verhindern, und dafuer muss der Text einen Ort
+% haben, den beide erreichen.
+\input{pflichttext}
+
 \newcommand{\dsaRechtevermerk}[2]{%
   \par
   {\fontsize{\dsaimpressumwert bp}{\dsaimpressumabvermerk bp}\selectfont
@@ -3128,18 +3422,10 @@
   % Kein \parskip: der wuerde auch hinter „Disclaimer" wirken. Die Freizeile
   % steht einzeln zwischen den Absaetzen.
   \setlength{\parskip}{0pt}%
-  Dieses Produkt wurde unter Lizenz erstellt. DAS SCHWARZE AUGE, AVENTURIEN,
-  DERE, MYRANOR, THARUN, UTHURIA, RIESLAND und THE DARK EYE sind eingetragene
-  Marken der Ulisses Spiele GmbH, Waldems.\dsa@vermerkluft
-  Ulisses Spiele und sein Logo sind eingetragene Marken der Ulisses Medien und
-  Spiele Distribution GmbH.\dsa@vermerkluft
-  Dieses Werk enthält Material, das durch Ulisses Spiele und/oder andere
-  Autoren urheberrechtlich geschützt ist. Solches Material wird mit Erlaubnis
-  im Rahmen der Vereinbarung über Gemeinschaftsinhalte für SCRIPTORIUM
-  AVENTURIS verwendet.\dsa@vermerkluft
-  Alle anderen Originalmaterialien in diesem Werk sind Copyright #1 von #2 und
-  werden im Rahmen der Vereinbarung über Gemeinschaftsinhalte für SCRIPTORIUM
-  AVENTURIS veröffentlicht.\par}
+  % Die Absatztrennung des Impressums an den gemeinsamen Text weiterreichen.
+  % Lokal, weil \dsaRechtevermerk ohnehin in einer Gruppe steht.
+  \let\dsaPflichttextLuft\dsa@vermerkluft
+  \dsaPflichttext{#1 von #2}}
 
 % ---- Inhaltsverzeichnis ----
 % Die Eintraege setzt die Klasse selbst, statt \l@section aus article zu
@@ -3362,11 +3648,14 @@
   % Zwischen den Spalten liegt sonst zweimal \tabcolsep, also 4,23 mm.
   % Mit 38 mm Rubrik und 15 mm Skala sprengt das die 55,4 mm des grauen
   % Kastens um 10,86 pt. Der Abstand steht deshalb ausdruecklich auf 2 mm.
+  % Die Skalen in voller Hoehe, nicht \dsaRautenRot: hier traegt die Skala
+  % die Zeile, geglaettet ruecken die vier Zeilen zusammen und die Rauten
+  % ueberlappen sich.
   \noindent\begin{tabular}{@{}p{\dsaanforderungrubrik}@{\hspace{2mm}}l@{}}
-    Kampftalente                  & \dsaRautenRot{#1}{\dsaanforderungskala}\\
-    Gesellschaftstalente          & \dsaRautenRot{#2}{\dsaanforderungskala}\\
-    Handwerkstalente              & \dsaRautenRot{#3}{\dsaanforderungskala}\\
-    \textbf{Lebendige Geschichte} & \dsaRautenGruen{#4}{\dsaanforderungskala}\\
+    Kampftalente                  & \dsa@rautenskala{#1}{4}{rot}{\dsaanforderungskala}\\
+    Gesellschaftstalente          & \dsa@rautenskala{#2}{4}{rot}{\dsaanforderungskala}\\
+    Handwerkstalente              & \dsa@rautenskala{#3}{4}{rot}{\dsaanforderungskala}\\
+    \textbf{Lebendige Geschichte} & \dsa@rautenskala{#4}{4}{gruen}{\dsaanforderungskala}\\
   \end{tabular}\par}
 
 % ---- Gegnerwerte ----
