@@ -806,6 +806,36 @@ python3 werkzeuge/nachmessen.py <datei>.pdf --text \
   | awk '$2=="mm" && $4=="mm" && $10!="+0.00" {print $9, $10, $11}'
 ```
 
+### Befund: aufeinanderfolgende Kästen ließen sich nicht mehr umbrechen
+
+`logpruefen.py` meldete im Regellauf ein `Overfull \vbox (497.8282pt too high) has occurred while
+\output is active`. Auf Seite 10 fehlte `dsaMeisterSchmal`: Er stand bei 948 bp, also unter der
+Papierkante (842 bp). Die linke Spalte war leer, die rechte trug die anderen drei Kästen.
+
+Ursache war die Korrektur oben. `\dsa@kastenauf` begann mit `\par\nobreak`, `\dsa@kastenzu`
+endete mit `\nobreak`. Hinter `\dsaRasterluft` folgt nur Leim, und Leim nach Leim ist für TeX keine
+Umbruchstelle. Damit hingen aufeinanderfolgende Kästen samt der letzten Zeile davor zu einem Block
+zusammen. Im Regellauf waren das vier: Wertekasten mit Porträt, Gegnerkasten, Meistermaske und
+Meisterkasten schmal, zusammen höher als eine Spalte. Auf `development` gab es die Meldung nicht.
+Dort fehlte die Korrektur oben noch, und mit ihr die beiden `\nobreak`.
+
+Behoben, indem der Kasten vorn kein `\nobreak` mehr setzt und hinten `\penalty\z@`. Zwischen der
+Box und ihrem Raum bleibt der Umbruch verboten, dafür sorgt schon die Linie aus `\vspace*`.
+
+| | vorher | nachher |
+|---|---|---|
+| `beispiel.tex`, Overfull `\vbox` | 1 | **0** |
+| `beispiel.tex`, Seite 10 | links leer, rechts drei Kästen, einer unter der Papierkante | **links zwei, rechts zwei**, alle Oberkanten auf dem Raster (+0,20 bp) |
+| `beispiel.tex`, Prüfbefehl oben | 741 Zeilen | **741, dieselben**, nur auf Seite 10 umgeordnet (Kastentext) |
+| `kaesten.tex`, `rest.tex`, `raster.tex` | — | **unverändert**, Grundlinien identisch |
+| Solo, Prüfbefehl oben | 106 Zeilen | **106** |
+| Solo, `solo-bauen.py` | in Ordnung | **in Ordnung** |
+
+Im Solo ändert sich der Umbruch an zwei Stellen, beide zum Besseren. Auf Seite 1 zog der Kasten
+die letzte Zeile des Abschnitts „Proben“ mit in die rechte Spalte. Jetzt endet der Absatz links,
+und der Kasten beginnt oben rechts. Auf Seite 6 rückt der Wertekasten nach, statt die Spalte früh
+zu beenden.
+
 ## Aufsteller (dsa5aufsteller.sty)
 
 Eigenständiges Extra, kein Teil der Baukasten-Prüfung oben — die Maße kommen aus dem

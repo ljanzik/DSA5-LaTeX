@@ -1258,11 +1258,21 @@
 % unter sich genauso wie vorher.
 % Die Einheitenzahl wird beim Oeffnen gemerkt, weil der Schlussteil einer
 % \newenvironment die Argumente der Umgebung nicht mehr sieht.
+%
+% Vor und hinter dem Kasten muss TeX umbrechen duerfen, zwischen der Box
+% und ihrem Raum nicht -- dafuer sorgt schon die Linie, die \vspace*
+% setzt. Die erste Fassung hatte \nobreak an beiden Enden. Weil hinter
+% \dsaRasterluft nur Leim folgt und Leim nach Leim keine Umbruchstelle ist,
+% hingen damit aufeinanderfolgende Kaesten samt der Zeile davor zu einem
+% einzigen Block zusammen. Im Regellauf waren das auf Seite 10 vier Kaesten,
+% hoeher als die Spalte: Overfull \vbox von 497,8 pt im \output, und
+% dsaMeisterSchmal stand bei 948 bp unter der Papierkante (842 bp), also
+% unsichtbar. Deshalb jetzt kein \nobreak davor und \penalty\z@ dahinter.
 \newcommand*{\dsa@kasteneinheiten}{0}
 
 \newcommand{\dsa@kastenauf}[1]{%
   \gdef\dsa@kasteneinheiten{#1}%
-  \par\nobreak
+  \par
   \begin{lrbox}{\dsa@kastenbox}}
 
 \newcommand{\dsa@kastenzu}{%
@@ -1270,7 +1280,7 @@
   \noindent\makebox[\linewidth][l]{%
     \raisebox{-\dsaRaster{\dsa@kasteneinheiten}}[0pt][0pt]{%
       \usebox{\dsa@kastenbox}}}%
-  \par\dsaRasterluft{\dsa@kasteneinheiten}\nobreak}
+  \par\dsaRasterluft{\dsa@kasteneinheiten}\penalty\z@}
 
 \newcommand{\dsaKastenNeu}[6]{%
   \newtcolorbox{dsa@kasten@#1}[1][]{%
