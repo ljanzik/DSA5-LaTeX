@@ -344,6 +344,15 @@ def kuerzel(name):
     stamm = os.path.splitext(name)[0]
     if stamm.startswith(RUECKEN_PRAEFIX):
         stamm = stamm[len(RUECKEN_PRAEFIX):]
+    # Das ZIP des Rueckseiten-Pakets traegt die Namen in Codepage 437. Das
+    # Archivprogramm von macOS liest sie als Windows-1252, und aus
+    # Bergkoenigreiche wird Bergk”nigreiche, aus Staedte St„dte, aus
+    # Sueden S�den -- 0x81 ist in 1252 nicht belegt. Gemessen am
+    # entpackten Paket: drei von 28 Regionen fehlten deshalb in grafiken/.
+    kaputt = {'„': 'ä', '”': 'ö', '�': 'ü',
+              'Ž': 'Ä', '™': 'Ö', 'š': 'Ü'}
+    for a, b in kaputt.items():
+        stamm = stamm.replace(a, b)
     ersatz = {'\u00e4': 'ae', '\u00f6': 'oe', '\u00fc': 'ue',
               '\u00c4': 'Ae', '\u00d6': 'Oe', '\u00dc': 'Ue',
               '\u00df': 'ss'}
